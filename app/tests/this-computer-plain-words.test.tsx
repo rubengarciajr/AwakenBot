@@ -1,5 +1,5 @@
 /**
- * Settings → This computer says what OpenBot runs in plain words, as the desktop app's Status window
+ * Settings → This computer says what AwakenBot runs in plain words, as the desktop app's Status window
  * does. It said "Back end", "Podman" or "Docker", and the build's commit and time, on a page any
  * Desktop user opens. The technical names stay in Copy diagnostics and the logs, for support.
  *
@@ -51,7 +51,7 @@ const RUNNING: DesktopStatus = {
   build: "Built 2026-11-09 18:30 UTC from 795f619 on main",
 };
 
-/** Nothing running, and the software OpenBot runs on not answering. */
+/** Nothing running, and the software AwakenBot runs on not answering. */
 const STOPPED: DesktopStatus = {
   ...RUNNING,
   openbotRunning: false,
@@ -159,9 +159,9 @@ test("every label and value on This computer is in plain words, and the technica
     expect({ state, technical }).toEqual({ state, technical: [] });
     // Each part is named as the setup window and the Status window name it.
     expect(
-      view.getByRole("heading", { name: "OpenBot's services" }),
+      view.getByRole("heading", { name: "AwakenBot's services" }),
     ).toBeTruthy();
-    expect(view.getByText("Software OpenBot runs on")).toBeTruthy();
+    expect(view.getByText("Software AwakenBot runs on")).toBeTruthy();
     expect(view.getByText(`Version ${now.version}`)).toBeTruthy();
     // What support needs is one click away.
     await userEvent.click(

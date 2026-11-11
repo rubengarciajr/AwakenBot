@@ -346,7 +346,7 @@ beforeAll(() => {
           return NativeResponse.json({
             url: "https://github.com/CopilotKit/OpenBot/releases",
             title: "Releases · CopilotKit/OpenBot · GitHub",
-            text: "OpenBot 1.0.1",
+            text: "AwakenBot 1.0.1",
             truncated: false,
           });
         return NativeResponse.json({ error: "Not found" }, { status: 404 });
@@ -985,11 +985,11 @@ test("a Bot that only browses lists each page it opened and each click and field
               action: "click",
               ref: "e7",
               url: "https://github.com/CopilotKit/OpenBot/releases",
-              element: { role: "link", name: "OpenBot 1.0.1" },
+              element: { role: "link", name: "AwakenBot 1.0.1" },
             },
     });
   const view = render(app());
-  await ask(view, "What is the latest OpenBot release?");
+  await ask(view, "What is the latest AwakenBot release?");
   expect(
     await view.findByText(
       "The latest release is 1.0.1.",
@@ -1008,7 +1008,7 @@ test("a Bot that only browses lists each page it opened and each click and field
   expect(typed).toContain("Find a release");
   expect(typed).not.toContain("hunter2-secret");
   expect(click).toContain("Clicked on page");
-  expect(click).toContain("OpenBot 1.0.1");
+  expect(click).toContain("AwakenBot 1.0.1");
   // Watched happen on this page, so each says when.
   expect(
     view.getByRole("region", { name: "Activity" }).querySelectorAll("time"),
@@ -1025,7 +1025,7 @@ test("reopening a conversation that only browsed lists what the Bot read and whe
       ok: true,
       url: "https://github.com/CopilotKit/OpenBot/releases",
       title: "Releases · CopilotKit/OpenBot · GitHub",
-      text: "OpenBot 1.0.1",
+      text: "AwakenBot 1.0.1",
     }),
     calling("call-look", "computer_snapshot", {}),
     answering("call-look", {

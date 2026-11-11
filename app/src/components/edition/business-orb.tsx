@@ -1,12 +1,12 @@
 import AgentOrb from "@/components/agents/orb/agent-orb";
 import { ORB_PALETTES } from "@/lib/orb-palette";
 
-/** The big orb's palette: periwinkle, the nearest of the eight to OpenBot's own mark. */
+/** The big orb's palette: periwinkle, the nearest of the eight to AwakenBot's own mark. */
 const ORB_COLORS = ORB_PALETTES[2];
 
 /**
  * A Bot's live orb, the one at the top of a conversation, over an endless field of smaller orbs in
- * every Bot colour drifting upwards: one OpenBot, and the many a team runs. The field is CSS, so it
+ * every Bot colour drifting upwards: one AwakenBot, and the many a team runs. The field is CSS, so it
  * costs nothing to load; its animation is in styles.css. Both hold still under reduced motion.
  */
 export function BusinessOrb() {

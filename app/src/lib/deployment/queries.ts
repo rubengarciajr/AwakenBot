@@ -23,13 +23,13 @@ export type DeploymentCapabilities = {
    */
   generativeUi: boolean;
   /**
-   * Whether to show the banner offering help self-hosting OpenBot. A fork that runs OpenBot for its
+   * Whether to show the banner offering help self-hosting AwakenBot. A fork that runs AwakenBot for its
    * own organization turns it off with OPENBOT_SELF_HOST_BANNER=false, and the server answers false
    * for a deployment on a paid Intelligence plan.
    */
   selfHostBanner: boolean;
   /**
-   * Whether this is somebody trying OpenBot on their own machine rather than an organization's
+   * Whether this is somebody trying AwakenBot on their own machine rather than an organization's
    * deployment: single-user mode on the server, which only a local, unreachable install can be in.
    */
   localEvaluation: boolean;
@@ -71,7 +71,7 @@ export function deploymentCapabilitiesQueryOptions() {
        */
       const body = (await (
         await client("/api/capabilities", {
-          fallback: "Couldn't load what OpenBot can do.",
+          fallback: "Couldn't load what AwakenBot can do.",
         })
       ).json()) as {
         generativeUi?: boolean;
@@ -98,10 +98,10 @@ export function deploymentCapabilitiesQueryOptions() {
  * Whether this deployment offers memory: what a person's Bots remember about them, and the apps a
  * Bot learns it from. Every memory screen, row and link reads this.
  *
- * NOT IN THE PERSONAL EDITION. OpenBot Desktop runs a local Intelligence whose licence leaves memory
+ * NOT IN THE PERSONAL EDITION. AwakenBot Desktop runs a local Intelligence whose licence leaves memory
  * out, so the personal edition has no memory to show. Read from the edition, not from Intelligence's
  * entitlement: the server's entitlement read only chooses where memory is kept (Intelligence, or
- * OpenBot's own tables when Intelligence is unlicensed or unreachable), and it changes from one
+ * AwakenBot's own tables when Intelligence is unlicensed or unreachable), and it changes from one
  * minute to the next while Intelligence starts. A screen gated on it would come and go, and a team
  * deployment that keeps memory in its own tables would lose screens that work.
  *

@@ -38,7 +38,7 @@
 //!   and never behind a click: the package downloads while the person signs in, then the step says
 //!   the prompt is coming and why, leaves it a moment to be read, and raises it by itself
 //!   (`install_with_password`). A prompt closed without a password is asked again (`GoAhead`). The
-//!   prompt itself says why in OpenBot's words (`PODMAN_PASSWORD_PROMPT`).
+//!   prompt itself says why in AwakenBot's words (`PODMAN_PASSWORD_PROMPT`).
 //! - **Linux.** Podman there is not a binary but a set of them (`conmon`, `crun`, `netavark`,
 //!   `slirp4netns`), wired to the distribution's own paths, so downloading one file would produce
 //!   something that runs nothing. The distribution's package manager installs it, through
@@ -88,18 +88,18 @@ pub fn podman_download() -> Result<Download, Problem> {
                 "9c7b90b406681e5458d69cdb1164a589f7c9b214cab1ca6705fe375876491c09",
             ),
             ("macos", _) => return Err(Problem::with(
-                "OpenBot can't install the software it runs on on an Intel Mac. Install Docker \
-                 Desktop or Podman Desktop, then start OpenBot again.",
+                "AwakenBot can't install the software it runs on on an Intel Mac. Install Docker \
+                 Desktop or Podman Desktop, then start AwakenBot again.",
                 format!("Podman {PODMAN} publishes an arm64 package only"),
             )),
             ("linux", _) => return Err(Problem::with(
-                "On Linux, the software OpenBot runs on comes from your system's own packages. \
-                 Install the podman package, then start OpenBot again.",
+                "On Linux, the software AwakenBot runs on comes from your system's own packages. \
+                 Install the podman package, then start AwakenBot again.",
                 "on Linux the engine comes from the distribution's own packages",
             )),
             (os, arch) => {
                 return Err(Problem::with(
-                    "OpenBot can't install the software it runs on on this kind of computer.",
+                    "AwakenBot can't install the software it runs on on this kind of computer.",
                     format!("no Podman installer for {os} on {arch}"),
                 ))
             }
@@ -145,7 +145,7 @@ pub fn compose_download() -> Result<Download, Problem> {
         ),
         (os, arch) => {
             return Err(Problem::with(
-                "OpenBot can't install the software it runs on on this kind of computer.",
+                "AwakenBot can't install the software it runs on on this kind of computer.",
                 format!("no Compose build for {os} on {arch}"),
             ))
         }
@@ -167,7 +167,7 @@ pub fn compose_download() -> Result<Download, Problem> {
 fn fetch_verified(download: &Download, into: &Path) -> Result<PathBuf, Problem> {
     fetch_pinned(download, into, &()).map_err(|error| {
         Problem::with(
-            "OpenBot could not download the software it needs to run. Check the internet \
+            "AwakenBot could not download the software it needs to run. Check the internet \
              connection and try again.",
             format!("{}: {error}", download.url),
         )
@@ -240,7 +240,7 @@ pub fn fetch_compose(
 /// One sentence for every "could not write here", because the person's fix is the same each time.
 fn unwritable(path: &Path, error: &str) -> Problem {
     Problem::with(
-        "OpenBot could not save the software it downloaded. Check there is free disk space and \
+        "AwakenBot could not save the software it downloaded. Check there is free disk space and \
          try again.",
         format!("{}: {error}", path.display()),
     )
@@ -278,7 +278,7 @@ pub struct EngineChosen {
 /// Observe an actual engine install, excluding engines that were already here, starting Docker
 /// Desktop and Compose repair; `progress` is each line for the step row.
 ///
-/// `back` brings OpenBot's window to the front again after another app's window took it: Docker
+/// `back` brings AwakenBot's window to the front again after another app's window took it: Docker
 /// Desktop once it answers, or the system's password prompt once Podman's installer is done.
 ///
 /// `cancelled` ends a wait for the person's go-ahead (`GoAhead`): Stop or Quit while it waits.
@@ -304,20 +304,20 @@ pub fn install_engine_observed(
 }
 
 /*
- * The person reads "the software OpenBot runs on", never "Podman": a person setting OpenBot up
+ * The person reads "the software AwakenBot runs on", never "Podman": a person setting AwakenBot up
  * does not know what Podman is, and does not need to. The log names it (`StepLine::logged`).
  */
 
 /// The step row's line while Podman's package downloads, before anything needs the person.
 pub fn podman_downloading() -> StepLine {
-    StepLine::here("Downloading the software OpenBot runs on.").logged("Downloading Podman.")
+    StepLine::here("Downloading the software AwakenBot runs on.").logged("Downloading Podman.")
 }
 
 /// After the person closed macOS's password prompt without a password: said plainly, with Try
 /// again in the window, and asked again by itself after `ASK_AGAIN_AFTER`.
 pub fn podman_declined() -> StepLine {
     StepLine::asks(
-        "OpenBot needs your password to install what it needs to run. It asks again in a moment, \
+        "AwakenBot needs your password to install what it needs to run. It asks again in a moment, \
          or choose Try again.",
     )
     .logged("The password prompt was closed, so Podman isn't installed yet; asking again.")
@@ -325,12 +325,12 @@ pub fn podman_declined() -> StepLine {
 
 /// What macOS's password prompt says, under the name of the process that raised it.
 pub const PODMAN_PASSWORD_PROMPT: &str =
-    "OpenBot needs your password to install the software it runs on.";
+    "AwakenBot needs your password to install the software it runs on.";
 
 /// How long the line saying the prompt is coming stays on screen before the prompt covers it.
 pub const BEFORE_PROMPT: Duration = Duration::from_millis(2500);
 
-/// How long after a closed prompt OpenBot asks again by itself.
+/// How long after a closed prompt AwakenBot asks again by itself.
 pub const ASK_AGAIN_AFTER: Duration = Duration::from_secs(15);
 
 /**
@@ -415,7 +415,7 @@ impl GoAhead {
 
 fn stopped_before_installing() -> Problem {
     Problem::with(
-        "OpenBot stopped before installing the software it runs on. Start again when you're \
+        "AwakenBot stopped before installing the software it runs on. Start again when you're \
          ready.",
         "stopped before the password prompt to install Podman",
     )
@@ -443,7 +443,7 @@ pub(crate) enum Prompted {
 Download Podman's package, say the password prompt is coming and why, then raise it.
 
 No click first. The download needs nobody, so it runs while the person signs in. Then the step says
-"Your Mac will ask for your password so OpenBot can install what it needs to run." and leaves it
+"Your Mac will ask for your password so AwakenBot can install what it needs to run." and leaves it
 `before_prompt` to be read before the prompt covers it. A prompt closed without a password is said
 plainly and asked again, by itself after `ask_again_after` or at once on Try again, rather than
 failing Install behind a screen with no way to start it again.
@@ -477,7 +477,7 @@ fn install_with_password(
             return Err(stopped_before_installing());
         }
         let prompted = prompt(&script);
-        // The prompt was in front of OpenBot's window, however it ended.
+        // The prompt was in front of AwakenBot's window, however it ended.
         back();
         match prompted {
             Prompted::Installed => return Ok(()),
@@ -489,7 +489,7 @@ fn install_with_password(
     }
 }
 
-/// The AppleScript that installs Podman's package as an administrator, with OpenBot's own words in
+/// The AppleScript that installs Podman's package as an administrator, with AwakenBot's own words in
 /// the password prompt. `with prompt` is `do shell script`'s text for that dialog (StandardAdditions).
 #[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 fn podman_install_script(package: &Path) -> String {
@@ -511,19 +511,19 @@ pub(crate) fn applescript_string(text: &str) -> String {
 ///
 /// macOS asks for the person's password, because the package writes to `/opt/podman`. Windows
 /// asks for nothing here: the MSI installs for this account alone. Linux asks through `pkexec`.
-/// A prompt is a window of the system's own, in front of OpenBot's, so its line is `elsewhere`.
+/// A prompt is a window of the system's own, in front of AwakenBot's, so its line is `elsewhere`.
 pub fn podman_install_said(os: &str) -> StepLine {
     match os {
         "macos" => StepLine::elsewhere(
-            "Your Mac will ask for your password so OpenBot can install what it needs to run.",
+            "Your Mac will ask for your password so AwakenBot can install what it needs to run.",
         )
         .logged("Installing Podman's package; macOS asks for the password."),
         "linux" => StepLine::elsewhere(
-            "Your computer will ask for your password so OpenBot can install what it needs to run.",
+            "Your computer will ask for your password so AwakenBot can install what it needs to run.",
         )
         .logged("Installing Podman with pkexec; the system asks for the password."),
         _ => {
-            StepLine::here("Installing the software OpenBot runs on.").logged("Installing Podman.")
+            StepLine::here("Installing the software AwakenBot runs on.").logged("Installing Podman.")
         }
     }
 }
@@ -579,7 +579,7 @@ pub enum Choice {
  *
  * A new installation uses a Docker that answers, then a stopped Docker Desktop that has run before,
  * then Podman. A Docker Desktop that has never run is not opened: its first window is Docker's
- * terms, and OpenBot must never put a person in front of them or wait on them. A `docker` command
+ * terms, and AwakenBot must never put a person in front of them or wait on them. A `docker` command
  * that does not answer is not a reason to stop either. That machine gets Podman too.
  *
  * An installation that saved its engine keeps it. Its images and its database are there, and
@@ -634,14 +634,12 @@ fn install_engine_with(
         Choice::OpenDockerDesktop => {
             return start_docker().map(|said| chosen(Engine::Docker, said))
         }
-        Choice::DockerNotRunning => {
-            return Err(Problem::with(
-                "OpenBot was installed with Docker, and Docker isn't running. Start Docker, then \
+        Choice::DockerNotRunning => return Err(Problem::with(
+            "AwakenBot was installed with Docker, and Docker isn't running. Start Docker, then \
                  try again.",
-                "this installation saved Docker as its engine; docker does not answer and there \
+            "this installation saved Docker as its engine; docker does not answer and there \
                  is no Docker Desktop to open",
-            ))
-        }
+        )),
         Choice::UsePodman => return place_compose(&into).map(|said| chosen(Engine::Podman, said)),
         Choice::InstallPodman => {}
     }
@@ -656,8 +654,8 @@ fn install_engine_with(
     // reporting no engine on a machine that has just installed one.
     if engine::program(Engine::Podman).is_none() {
         return Err(Problem::with(
-            "OpenBot installed the software it runs on, but can't find it afterwards. Install \
-             Podman Desktop, then start OpenBot again.",
+            "AwakenBot installed the software it runs on, but can't find it afterwards. Install \
+             Podman Desktop, then start AwakenBot again.",
             format!(
                 "the {PODMAN} installer reported success; podman is on neither PATH nor any \
                  install location this platform uses"
@@ -674,9 +672,9 @@ fn install_engine_with(
 
 /// Place the Compose provider where the engine will find it, unless something already provides one.
 ///
-/// Nothing is placed when a Compose new enough for OpenBot already answers. Docker Desktop ships a
+/// Nothing is placed when a Compose new enough for AwakenBot already answers. Docker Desktop ships a
 /// provider, and a Linux machine may have `docker-compose-v2` from its own packages; putting a
-/// second one in front of either is a version somebody did not choose. One too old to run OpenBot
+/// second one in front of either is a version somebody did not choose. One too old to run AwakenBot
 /// (an old Docker Desktop's, found on PATH by Podman) is put behind ours: see `engine_versions`.
 fn place_compose(into: &Path) -> Result<String, Problem> {
     let address = crate::acquire::address();
@@ -686,7 +684,7 @@ fn place_compose(into: &Path) -> Result<String, Problem> {
     place_newer_compose(into)
 }
 
-/// Whether the Compose that answers through `address` is older than OpenBot needs. Not on Linux,
+/// Whether the Compose that answers through `address` is older than AwakenBot needs. Not on Linux,
 /// whose Compose comes from the distribution (see `engine_versions`).
 fn compose_too_old(address: &engine::Address) -> bool {
     cfg!(any(target_os = "macos", target_os = "windows"))
@@ -695,9 +693,9 @@ fn compose_too_old(address: &engine::Address) -> bool {
             .is_some_and(|version| version < crate::engine_versions::COMPOSE)
 }
 
-/// Place OpenBot's own Compose provider, in front of whatever provider is already there.
+/// Place AwakenBot's own Compose provider, in front of whatever provider is already there.
 ///
-/// It goes in OpenBot's tools directory, which every engine command OpenBot runs has first on its
+/// It goes in AwakenBot's tools directory, which every engine command AwakenBot runs has first on its
 /// PATH (`engine::command_at`). Nothing anybody else installed is changed or removed.
 pub fn place_newer_compose(into: &Path) -> Result<String, Problem> {
     let download = compose_download()?;
@@ -717,7 +715,7 @@ pub fn place_newer_compose(into: &Path) -> Result<String, Problem> {
         std::fs::set_permissions(&named, std::fs::Permissions::from_mode(0o755)).map_err(
             |error| {
                 Problem::with(
-                    "OpenBot couldn't finish installing the software it runs on. Try again.",
+                    "AwakenBot couldn't finish installing the software it runs on. Try again.",
                     format!("chmod 755 {}: {error}", named.display()),
                 )
             },
@@ -728,7 +726,7 @@ pub fn place_newer_compose(into: &Path) -> Result<String, Problem> {
 }
 
 /**
-Update a Podman that is too old to run OpenBot, by running OpenBot's own pinned installer over it.
+Update a Podman that is too old to run AwakenBot, by running AwakenBot's own pinned installer over it.
 
 The same installer, the same digest check and the same prompt as a first install (`install_podman`):
 the package on a Mac, the MSI on Windows. Both upgrade in place. Neither removes Podman's machines,
@@ -737,10 +735,10 @@ it are there afterwards. Podman 6 reads the machines Podman 5 made on macOS and 
 machines on Linux had to be made again, and Linux is not updated here).
 
 EVERY MACHINE THAT WAS RUNNING IS RUNNING AFTERWARDS, WITH ITS API ANSWERING: the person's own as
-much as OpenBot's. OpenBot runs on its own machine beside the person's `podman-machine-default` on
+much as AwakenBot's. AwakenBot runs on its own machine beside the person's `podman-machine-default` on
 Windows (see `own_machine`), and the MSI stops the helpers of every machine it finds running. On a live Windows run the 6.1.1 MSI over
 5.8.9 left the person's machine up and its `win-sshproxy` gone, and with it the Docker API every
-pull uses (see `acquire`). Only OpenBot's own machine used to be stopped and started.
+pull uses (see `acquire`). Only AwakenBot's own machine used to be stopped and started.
 
 So the machines running are listed first. On Windows they are stopped before the MSI, because their
 helpers (`gvproxy`, `win-sshproxy`) run from Podman's folder. Afterwards each one whose API does not
@@ -748,7 +746,7 @@ answer is stopped and started (`bring_back`), with the containers that were runn
 the package does not stop them: its `preinstall` removes `/opt/podman` and its `postinstall` installs
 `podman-mac-helper`, and a running `vfkit` or `gvproxy` keeps running from the file it opened. A Mac
 machine is restarted only if its API does not answer afterwards. A machine is started again even when
-the installer failed, so one OpenBot stopped is never left stopped.
+the installer failed, so one AwakenBot stopped is never left stopped.
 */
 pub fn update_podman(
     cache: &Path,
@@ -765,8 +763,8 @@ pub fn update_podman(
             install_podman(&into, progress, back, cancelled)?;
             if engine::program(Engine::Podman).is_none() {
                 return Err(Problem::with(
-                    "OpenBot updated the software it runs on, but can't find it afterwards. \
-                     Start OpenBot again.",
+                    "AwakenBot updated the software it runs on, but can't find it afterwards. \
+                     Start AwakenBot again.",
                     format!("the Podman {PODMAN} installer reported success; podman is not found"),
                 ));
             }
@@ -777,11 +775,13 @@ pub fn update_podman(
 
 /// The row's line while Podman updates: why it is updating, since it is the person's own Podman.
 pub fn podman_updating() -> StepLine {
-    StepLine::here("The Podman on this computer is too old for OpenBot, so OpenBot is updating it.")
-        .updating()
+    StepLine::here(
+        "The Podman on this computer is too old for AwakenBot, so AwakenBot is updating it.",
+    )
+    .updating()
 }
 
-/// A line the installer says, as the update says it. Work OpenBot does by itself says why it is
+/// A line the installer says, as the update says it. Work AwakenBot does by itself says why it is
 /// updating. A system prompt that is coming says why, then the prompt, so it is explained before it
 /// comes up. A wait for the person's go-ahead is said as it is. The log keeps the installer's words.
 fn while_updating(line: StepLine) -> StepLine {
@@ -789,13 +789,13 @@ fn while_updating(line: StepLine) -> StepLine {
         return line;
     }
     let why = podman_updating().said;
-    // The installer's prompt, said short after why: "...so OpenBot is updating it. Your Mac will
+    // The installer's prompt, said short after why: "...so AwakenBot is updating it. Your Mac will
     // ask for your password." The whole of both did not fit the background row.
     let said = if line.elsewhere {
         format!(
             "{why} {}",
             line.said
-                .split_once(" so OpenBot")
+                .split_once(" so AwakenBot")
                 .map_or(line.said.clone(), |(prompt, _)| format!("{prompt}."))
         )
     } else {
@@ -935,7 +935,7 @@ fn bring_back(
         return Ok(());
     }
     Err(Problem::with(
-        "OpenBot updated Podman, but couldn't start it again. Try again.",
+        "AwakenBot updated Podman, but couldn't start it again. Try again.",
         failed.join("; "),
     ))
 }
@@ -1019,7 +1019,7 @@ fn msiexec(verb: &[&str], msi: &Path, log: &Path) -> Result<(), MsiexecFailure> 
 fn installer_stopped(verb: &str, msi: &Path, failure: MsiexecFailure, log: &Path) -> Problem {
     match failure {
         MsiexecFailure::Start(error) => Problem::with(
-            "OpenBot could not start the installer for the software it needs. Try again.",
+            "AwakenBot could not start the installer for the software it needs. Try again.",
             format!(
                 "msiexec {verb} {} could not start: {error}; intended log path is {}",
                 msi.display(),
@@ -1030,11 +1030,11 @@ fn installer_stopped(verb: &str, msi: &Path, failure: MsiexecFailure, log: &Path
             if code == 1625 {
                 // ERROR_INSTALL_PACKAGE_REJECTED requires an administrator to resolve policy.
                 // https://learn.microsoft.com/en-us/windows/win32/msi/error-codes
-                "Windows policy blocks installing Podman, which OpenBot needs to run. Ask an \
+                "Windows policy blocks installing Podman, which AwakenBot needs to run. Ask an \
                  administrator to allow the installation or install Podman for your account, \
                  then try again."
             } else {
-                "Installing the software OpenBot needs did not finish. Try again."
+                "Installing the software AwakenBot needs did not finish. Try again."
             },
             format!(
                 "msiexec {verb} {} stopped with exit code {code}; its log is at {}",
@@ -1076,7 +1076,7 @@ pub(crate) fn run_administrator_script(script: &str) -> Prompted {
         Ok(output) => output,
         Err(error) => {
             return Prompted::Failed(Problem::with(
-                "OpenBot could not start the installer for the software it needs.",
+                "AwakenBot could not start the installer for the software it needs.",
                 format!("osascript: {error}"),
             ))
         }
@@ -1090,7 +1090,7 @@ pub(crate) fn run_administrator_script(script: &str) -> Prompted {
         return Prompted::Declined;
     }
     Prompted::Failed(Problem::with(
-        "Installing the software OpenBot needs did not finish. Try again.",
+        "Installing the software AwakenBot needs did not finish. Try again.",
         said,
     ))
 }
@@ -1114,7 +1114,7 @@ fn install_podman(
 ) -> Result<(), Problem> {
     progress(podman_install_said("linux"));
     let result = install_podman_with_pkexec();
-    // pkexec's prompt was in front of OpenBot's window.
+    // pkexec's prompt was in front of AwakenBot's window.
     back();
     result
 }
@@ -1123,8 +1123,8 @@ fn install_podman(
 fn install_podman_with_pkexec() -> Result<(), Problem> {
     let (manager, args) = linux_package_manager().ok_or_else(|| {
         Problem::with(
-            "OpenBot can't install the software it needs on this system. Install the podman \
-             package with your system's package manager, then start OpenBot again.",
+            "AwakenBot can't install the software it needs on this system. Install the podman \
+             package with your system's package manager, then start AwakenBot again.",
             "no apt-get, dnf, zypper or pacman in /usr/bin",
         )
     })?;
@@ -1138,7 +1138,7 @@ fn install_podman_with_pkexec() -> Result<(), Problem> {
         .output()
         .map_err(|error| {
             Problem::with(
-                "OpenBot could not start the installer for the software it needs.",
+                "AwakenBot could not start the installer for the software it needs.",
                 format!("pkexec {manager}: {error}"),
             )
         })?;
@@ -1150,12 +1150,12 @@ fn install_podman_with_pkexec() -> Result<(), Problem> {
     // package manager that failed.
     if matches!(output.status.code(), Some(126) | Some(127)) {
         return Err(Problem::plain(
-            "The install was not allowed, so OpenBot does not have the software it needs yet. \
+            "The install was not allowed, so AwakenBot does not have the software it needs yet. \
              Press Start to try again.",
         ));
     }
     Err(Problem::with(
-        "Installing the software OpenBot needs did not finish. Try again.",
+        "Installing the software AwakenBot needs did not finish. Try again.",
         crate::quiet::said(&output.stderr),
     ))
 }
@@ -1706,7 +1706,7 @@ mod tests {
         );
         assert_eq!(
             problem.said,
-            "Windows policy blocks installing Podman, which OpenBot needs to run. Ask an \
+            "Windows policy blocks installing Podman, which AwakenBot needs to run. Ask an \
              administrator to allow the installation or install Podman for your account, then \
              try again."
         );
@@ -1825,19 +1825,19 @@ esac
     /// The prompt is named where there is one, and none is promised where there is not.
     #[test]
     fn the_podman_install_line_names_the_prompt_each_platform_raises() {
-        // A prompt is the system's own window in front of OpenBot's: the line says so wherever
-        // the person is, and OpenBot comes back once the installer is done.
+        // A prompt is the system's own window in front of AwakenBot's: the line says so wherever
+        // the person is, and AwakenBot comes back once the installer is done.
         for os in ["macos", "linux"] {
             let line = podman_install_said(os);
             assert!(line.said.contains("password"), "{os}");
             assert!(line.elsewhere, "{os}");
         }
         let windows = podman_install_said("windows");
-        assert_eq!(windows.said, "Installing the software OpenBot runs on.");
+        assert_eq!(windows.said, "Installing the software AwakenBot runs on.");
         assert!(!windows.elsewhere);
     }
 
-    /// Words a person setting OpenBot up doesn't know. The screen never says them; the log does.
+    /// Words a person setting AwakenBot up doesn't know. The screen never says them; the log does.
     const TECHNICAL: &[&str] = &[
         "Podman",
         "WSL",
@@ -1906,7 +1906,7 @@ esac
     /// Where Podman's package lands: the app's cache, which has a space in its path on macOS.
     const PACKAGE: &str = "/Users/a b/Library/Caches/OpenBot/podman-installer-macos-arm64.pkg";
 
-    /// What happened, in order: the step's lines, the download, the prompt and OpenBot coming back.
+    /// What happened, in order: the step's lines, the download, the prompt and AwakenBot coming back.
     #[derive(Clone, Default)]
     struct Seen(std::sync::Arc<Mutex<Vec<String>>>);
 
@@ -1937,7 +1937,7 @@ esac
     }
 
     const SAY_FIRST: &str =
-        "elsewhere: Your Mac will ask for your password so OpenBot can install what it needs to run.";
+        "elsewhere: Your Mac will ask for your password so AwakenBot can install what it needs to run.";
 
     /// David's direction for 1.0.1: no Continue before the password prompt. The person is told what
     /// is coming and why, has a moment to read it, and the prompt comes up by itself. Here nothing
@@ -1976,7 +1976,7 @@ esac
         assert_eq!(
             seen.all(),
             [
-                "here: Downloading the software OpenBot runs on.",
+                "here: Downloading the software AwakenBot runs on.",
                 "downloaded",
                 SAY_FIRST,
                 "prompt",
@@ -1990,13 +1990,13 @@ esac
             [concat!(
                 r#"do shell script "/usr/sbin/installer -pkg '/Users/a b/Library/Caches/OpenBot/"#,
                 r#"podman-installer-macos-arm64.pkg' -target /" with administrator privileges "#,
-                r#"with prompt "OpenBot needs your password to install the software it runs on.""#
+                r#"with prompt "AwakenBot needs your password to install the software it runs on.""#
             )]
         );
     }
 
     /// Closing the prompt without a password is a decision, and recoverable: no failure, the step
-    /// says plainly that OpenBot needs it, and asks again by itself after a short wait.
+    /// says plainly that AwakenBot needs it, and asks again by itself after a short wait.
     #[test]
     fn a_closed_password_prompt_asks_again_by_itself_without_an_error() {
         let gate = GoAhead::new();
@@ -2019,11 +2019,11 @@ esac
         assert_eq!(
             seen.all(),
             [
-                "here: Downloading the software OpenBot runs on.",
+                "here: Downloading the software AwakenBot runs on.",
                 SAY_FIRST,
                 "prompt",
                 "back",
-                "asks: OpenBot needs your password to install what it needs to run. It asks again \
+                "asks: AwakenBot needs your password to install what it needs to run. It asks again \
                  in a moment, or choose Try again.",
                 SAY_FIRST,
                 "prompt",
@@ -2093,7 +2093,7 @@ esac
         .unwrap_err();
         assert_eq!(
             failed.said,
-            "OpenBot stopped before installing the software it runs on. Start again when you're \
+            "AwakenBot stopped before installing the software it runs on. Start again when you're \
              ready."
         );
         assert_eq!(seen.prompts(), 0, "{:?}", seen.all());
@@ -2120,7 +2120,7 @@ esac
     /*
      * The person's own Podman machine through a Podman update, on a fake that does what the real
      * platform did on a live Windows run (Podman 5.8.9 with `podman-machine-default` running, the
-     * person's container and volume in it, updated to 6.1.1 by OpenBot's MSI):
+     * person's container and volume in it, updated to 6.1.1 by AwakenBot's MSI):
      *
      * - `podman machine list --format json` lists it by its name with "Running": true (the
      *   listing below is the shape Podman 6.1.1 prints on a Mac, `Running` and all).
@@ -2269,7 +2269,7 @@ esac
                 installer.installer_ran();
                 if fails {
                     return Err(Problem::with(
-                        "Installing the software OpenBot needs did not finish. Try again.",
+                        "Installing the software AwakenBot needs did not finish. Try again.",
                         "msiexec /i stopped with exit code 1603",
                     ));
                 }
@@ -2280,7 +2280,7 @@ esac
     }
 
     /// On Windows the person's own running machine is stopped before the MSI and started after
-    /// it, so its API answers when the update is done. Only OpenBot's own machine used to be.
+    /// it, so its API answers when the update is done. Only AwakenBot's own machine used to be.
     #[test]
     fn a_persons_own_running_machine_survives_the_podman_update_with_its_api_answering() {
         let machines = FakeMachines::running_default();
@@ -2304,7 +2304,8 @@ esac
             }
         );
         // The row says why, the whole time: what the installer says goes to the log.
-        let why = "The Podman on this computer is too old for OpenBot, so OpenBot is updating it.";
+        let why =
+            "The Podman on this computer is too old for AwakenBot, so AwakenBot is updating it.";
         assert!(!said.is_empty());
         assert!(said.iter().all(|line| line.said == why), "{said:?}");
         assert!(said
@@ -2313,14 +2314,14 @@ esac
     }
 
     /// During an update the Mac's password prompt is said after why, short enough for the row:
-    /// "...so OpenBot is updating it. Your Mac will ask for your password." The installer's own
+    /// "...so AwakenBot is updating it. Your Mac will ask for your password." The installer's own
     /// words go to the log, and the line stays one about the engine being updated.
     #[test]
     fn the_password_prompt_during_an_update_says_why_first_and_fits() {
         let line = while_updating(podman_install_said("macos"));
         assert_eq!(
             line.said,
-            "The Podman on this computer is too old for OpenBot, so OpenBot is updating it. Your \
+            "The Podman on this computer is too old for AwakenBot, so AwakenBot is updating it. Your \
              Mac will ask for your password."
         );
         assert!(line.elsewhere && line.updating);
@@ -2328,7 +2329,7 @@ esac
             line.detail.as_deref(),
             Some("Installing Podman's package; macOS asks for the password.")
         );
-        // A go-ahead the person gives in OpenBot's own window is said as it is.
+        // A go-ahead the person gives in AwakenBot's own window is said as it is.
         assert_eq!(while_updating(podman_declined()), podman_declined());
     }
 

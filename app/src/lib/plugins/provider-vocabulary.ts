@@ -40,7 +40,7 @@ export function brokeredProvenance(provenance: string): boolean {
 }
 
 /*
- * NO VENDOR NAME IN ANY OF IT. A person connects their work apps through OpenBot, and the broker
+ * NO VENDOR NAME IN ANY OF IT. A person connects their work apps through AwakenBot, and the broker
  * behind it (Composio or Arcade) is never named on a screen, the admin's included. The one vendor
  * word left is the environment variable an admin sets, because that name is the whole remedy.
  */
@@ -108,7 +108,7 @@ export function directoryDescriptions(edition: Edition = "team"): {
   return edition === "personal"
     ? {
         page: "Add an app and connect your account so your Bots can use it.",
-        search: "Search by name. OpenBot hasn't reviewed these apps.",
+        search: "Search by name. AwakenBot hasn't reviewed these apps.",
       }
     : {
         page: "Add an app to make its tools available to Bots. Each person still connects their own account before a Bot reads anything.",
@@ -121,7 +121,7 @@ export function directoryDescriptions(edition: Edition = "team"): {
  * apps under Connections, with the directory as one more tile ({@link moreAppsRow}).
  */
 export function moreAppsSectionDescription(_provider: PluginsProvider): string {
-  return "More apps people can connect through OpenBot. Nobody here has reviewed them.";
+  return "More apps people can connect through AwakenBot. Nobody here has reviewed them.";
 }
 
 /**
@@ -188,10 +188,10 @@ export function brokeredConnectionDescription(
   personal?: BrokeredApp,
 ): string {
   if (!personal)
-    return "Each person connects their own account through OpenBot.";
+    return "Each person connects their own account through AwakenBot.";
   if (personal.kind === "no-auth")
-    return `${capitalised(personal.title)} works through OpenBot without an account.`;
-  return `Connect your ${personal.title} account through OpenBot.`;
+    return `${capitalised(personal.title)} works through AwakenBot without an account.`;
+  return `Connect your ${personal.title} account through AwakenBot.`;
 }
 
 /**
@@ -199,7 +199,7 @@ export function brokeredConnectionDescription(
  *
  * `personal` as above. What it says is what happens at sign-in: a consent app sends you to the
  * app's own sign-in page in your browser (`useBrokeredAccount` leaves for the broker's
- * authorization URL), so OpenBot never holds the password; a key app takes a key you paste, so
+ * authorization URL), so AwakenBot never holds the password; a key app takes a key you paste, so
  * that sentence promises nothing about passwords; and an app with no account has nothing to sign
  * in to.
  *
@@ -214,7 +214,7 @@ export function brokeredReach(
   description: string;
   badge: string;
 } {
-  const badge = "Through OpenBot";
+  const badge = "Through AwakenBot";
   if (!personal) {
     return {
       description: takesKey
@@ -227,7 +227,7 @@ export function brokeredReach(
   return {
     description:
       kind === "consent"
-        ? `You sign in to ${title} in your browser. OpenBot never sees your password.`
+        ? `You sign in to ${title} in your browser. AwakenBot never sees your password.`
         : kind === "fields"
           ? `You connect with a key from your ${title} account. Your Bots use it as you.`
           : "There's nothing to sign in to.",
@@ -237,7 +237,7 @@ export function brokeredReach(
 
 /** What disconnecting a brokered account does, said where the button is. */
 export function brokeredDisconnectNote(_provider: PluginsProvider): string {
-  return "Disconnecting also removes OpenBot's access to your account.";
+  return "Disconnecting also removes AwakenBot's access to your account.";
 }
 
 /**

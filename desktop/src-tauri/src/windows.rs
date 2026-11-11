@@ -69,21 +69,21 @@ impl Blocker {
                 "Virtual Machine Platform is switched off. Open Windows Terminal or PowerShell \
                  as an administrator, run `dism.exe /online /enable-feature \
                  /featurename:VirtualMachinePlatform /all /norestart`, restart Windows, and \
-                 start OpenBot again."
+                 start AwakenBot again."
             }
-            // Says what to run, because OpenBot does not do it. The screen used to say "OpenBot
+            // Says what to run, because AwakenBot does not do it. The screen used to say "AwakenBot
             // can install it", and nothing in this application installs anything: there is no
             // button under the sentence and no code behind one. Somebody read that, waited, and
             // had been told to wait for something that was never going to happen.
             Blocker::WslAbsent => {
                 "Windows Subsystem for Linux is not installed. Open Windows Terminal or PowerShell \
-                 as an administrator, run `wsl --install`, restart Windows, and start OpenBot \
+                 as an administrator, run `wsl --install`, restart Windows, and start AwakenBot \
                  again."
             }
             Blocker::WslOne => {
                 "Windows Subsystem for Linux is at version 1. Open Windows Terminal or PowerShell \
                  as an administrator, run `wsl --set-default-version 2`, restart Windows, and \
-                 start OpenBot again."
+                 start AwakenBot again."
             }
             // Measured on Windows Server 2022. `wsl --install` enabled both features and stopped
             // there, leaving the inbox WSL with no kernel, and `Get-WindowsOptionalFeature` says
@@ -93,17 +93,17 @@ impl Blocker {
             Blocker::WslNoKernel => {
                 "Windows Subsystem for Linux is switched on but its Linux kernel is missing, so \
                  nothing can run inside it yet. Open Windows Terminal or PowerShell as an \
-                 administrator, run `wsl --update`, restart Windows, and start OpenBot again."
+                 administrator, run `wsl --update`, restart Windows, and start AwakenBot again."
             }
             Blocker::VirtualizationDisabled => {
                 "Virtualization is switched off in this machine's firmware. It has to be turned on \
-                 there, which OpenBot cannot do: restart, open the firmware settings, and enable \
+                 there, which AwakenBot cannot do: restart, open the firmware settings, and enable \
                  Intel VT-x or AMD-V."
             }
             Blocker::NestedVirtualizationUnavailable => {
                 "This Windows runs in a virtual machine whose host does not pass virtualization \
                  through to it, so Windows Subsystem for Linux cannot start. Turn on nested \
-                 virtualization for this virtual machine in its host, then start it and OpenBot \
+                 virtualization for this virtual machine in its host, then start it and AwakenBot \
                  again."
             }
             Blocker::NotAdministrator => {
@@ -112,7 +112,7 @@ impl Blocker {
                  `dism.exe /online /enable-feature \
                  /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart`, \
                  `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`, \
-                 and `wsl --install`. Restart Windows, then start OpenBot again in your own account."
+                 and `wsl --install`. Restart Windows, then start AwakenBot again in your own account."
             }
         }
     }
@@ -286,7 +286,7 @@ pub fn blocker() -> Result<Option<Blocker>, Problem> {
 #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
 fn detection_failed(operation: &str, detail: impl Into<String>) -> Problem {
     Problem::with(
-        format!("OpenBot could not check {operation}. Close and reopen OpenBot to try again."),
+        format!("AwakenBot could not check {operation}. Close and reopen AwakenBot to try again."),
         detail,
     )
 }
@@ -448,7 +448,7 @@ fn blocker_with(
      * Whether this account can approve an administrator prompt, not whether this process already
      * runs elevated. Under UAC an administrator's apps run with a filtered token in which
      * Administrators (S-1-5-32-544) is a deny-only group, so `IsInRole(Administrator)` answered
-     * false for every administrator who opened OpenBot normally, and they were all told to go and
+     * false for every administrator who opened AwakenBot normally, and they were all told to go and
      * find one. The group is in the token's claims either way: as a group SID once elevated, as a
      * deny-only SID before. A standard account has neither. Matched by SID, so it is the same in
      * every language.
@@ -575,7 +575,7 @@ Whether WSL 2 can start a virtual machine here, asked of WSL itself.
 Every other check reads the same on a PC running Hyper-V and in a virtual machine whose host passes
 no virtualization through: a hypervisor is present and the firmware flag reads off. Measured in
 Windows 11 on ARM under VMware Fusion: every check passed, Docker Desktop was installed, and it
-then stopped on "Nested virtualization is not available" while OpenBot waited for it. So this
+then stopped on "Nested virtualization is not available" while AwakenBot waited for it. So this
 starts WSL's own system distribution, which exists with no Linux distribution installed, and asks
 whether Hyper-V refused to create its VM.
 
@@ -611,7 +611,7 @@ fn hyper_v_refused(said: &str) -> bool {
 /// The machine's own architecture, in `std::env::consts::ARCH`'s words, for choosing what to
 /// download and run.
 ///
-/// Not this program's: Windows on ARM runs an x64 OpenBot under emulation, where `ARCH` says
+/// Not this program's: Windows on ARM runs an x64 AwakenBot under emulation, where `ARCH` says
 /// `x86_64` on an ARM64 machine. Docker's x64 installer refuses that machine, and an x64 Bun or
 /// Compose would run emulated when a native one exists. Windows says what the machine is through
 /// `IsWow64Process2` (Windows 10 1709 and later); anything it cannot answer falls back to `ARCH`.
@@ -653,7 +653,7 @@ fn machine_name(machine: u16) -> Option<&'static str> {
     }
 }
 
-/// What OpenBot runs to clear a blocker: a PowerShell script, behind one administrator prompt when
+/// What AwakenBot runs to clear a blocker: a PowerShell script, behind one administrator prompt when
 /// it changes the machine, and whether Windows has to restart before the change is real.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Fix {
@@ -697,7 +697,7 @@ if ($LASTEXITCODE -ne 0) { throw "wsl.exe --set-default-version 2 failed (exit $
 exit 0"#;
 
 impl Blocker {
-    /// How OpenBot clears this itself, or None when it cannot: firmware is not Windows's to change.
+    /// How AwakenBot clears this itself, or None when it cannot: firmware is not Windows's to change.
     ///
     /// A standard account gets the same fix as an administrator. Windows asks for an
     /// administrator's password instead of a yes, and the features it turns on are the machine's,
@@ -787,10 +787,10 @@ fn fixed(
         } else {
             Fixed::Done
         }),
-        // A decision, not a failure: the window says OpenBot needs it, and asks again.
+        // A decision, not a failure: the window says AwakenBot needs it, and asks again.
         Some(DECLINED) => Ok(Fixed::Declined),
         status => Err(Problem::with(
-            "OpenBot could not set up Windows Subsystem for Linux. Try again, or run the commands \
+            "AwakenBot could not set up Windows Subsystem for Linux. Try again, or run the commands \
              yourself.",
             log.filter(|log| !log.trim().is_empty())
                 .unwrap_or_else(|| format!("exit {status:?}: {}", stderr.trim())),
@@ -803,7 +803,7 @@ fn fixed(
 pub fn run_fix(fix: Fix, scratch: &Path) -> Result<Fixed, Problem> {
     std::fs::create_dir_all(scratch).map_err(|error| {
         Problem::with(
-            "OpenBot could not set up Windows Subsystem for Linux.",
+            "AwakenBot could not set up Windows Subsystem for Linux.",
             error.to_string(),
         )
     })?;
@@ -826,7 +826,7 @@ pub fn run_fix(fix: Fix, scratch: &Path) -> Result<Fixed, Problem> {
         .output()
         .map_err(|error| {
             Problem::with(
-                "OpenBot could not set up Windows Subsystem for Linux.",
+                "AwakenBot could not set up Windows Subsystem for Linux.",
                 error.to_string(),
             )
         })?;
@@ -910,23 +910,23 @@ pub fn boot() -> Result<String, Problem> {
     Ok(String::new())
 }
 
-/// Restart Windows now, with OpenBot set to open once when the person signs back in.
+/// Restart Windows now, with AwakenBot set to open once when the person signs back in.
 #[cfg(target_os = "windows")]
 pub fn restart() -> Result<(), Problem> {
     let failed = |detail: String| {
         Problem::with(
-            "OpenBot could not restart Windows. Restart it from the Start menu.",
+            "AwakenBot could not restart Windows. Restart it from the Start menu.",
             detail,
         )
     };
     let program = std::env::current_exe().map_err(|error| failed(error.to_string()))?;
-    // Best effort: without it the person opens OpenBot themselves, as the screen already says.
+    // Best effort: without it the person opens AwakenBot themselves, as the screen already says.
     let _ = crate::quiet::command("reg.exe")
         .args([
             "add",
             r"HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce",
             "/v",
-            "OpenBot",
+            "AwakenBot",
             "/t",
             "REG_SZ",
             "/d",
@@ -1011,13 +1011,13 @@ const WSL_WELCOME_SHOWN: &str = "OOBEComplete";
 
 /**
 Keep WSL's own "Welcome to Windows Subsystem for Linux" window from opening when Podman makes
-OpenBot's machine.
+AwakenBot's machine.
 
 WSL's service opens that window (`wslsettings.exe`, `wsl-settings://oobe`) when a person registers
 a distribution, unless `OOBEComplete` under their own `HKCU\...\Lxss` key is set or they already
 had another distribution (`LxssUserSessionImpl::_LaunchOOBEIfNeeded` in microsoft/WSL).
 `podman machine init` registers one through `wsl --import`, so on a computer that has never had a
-distribution the window opens in the middle of OpenBot's setup. Nothing on the command line stops
+distribution the window opens in the middle of AwakenBot's setup. Nothing on the command line stops
 it: `--import` turns off only the distribution's own first run, `wsl --install --no-launch` is about
 starting a distribution after installing one, and `.wslconfig` has no such key. Setting the value
 is what the WSL team gives as the way to stop the window (microsoft/WSL#13223), and Microsoft's
@@ -1224,7 +1224,7 @@ mod tests {
     #[cfg(target_os = "windows")]
     #[test]
     fn a_podman_machines_drive_is_read_from_the_folder_wsl_recorded() {
-        let registry = format!(r"Software\OpenBot\Tests\Lxss-{}", std::process::id());
+        let registry = format!(r"Software\AwakenBot\Tests\Lxss-{}", std::process::id());
         let folder = temp_root("wsl-distribution");
         std::fs::create_dir_all(&folder).unwrap();
         let entry = |id: &str, name: &str, base: &str| {
@@ -1264,7 +1264,10 @@ mod tests {
         assert_eq!(LXSS, r"Software\Microsoft\Windows\CurrentVersion\Lxss");
         assert_eq!(WSL_WELCOME_SHOWN, "OOBEComplete");
 
-        let registry = format!(r"Software\OpenBot\Tests\LxssWelcome-{}", std::process::id());
+        let registry = format!(
+            r"Software\AwakenBot\Tests\LxssWelcome-{}",
+            std::process::id()
+        );
         let fresh = skip_wsl_welcome_in(&registry);
         let after_fresh = windows_registry::CURRENT_USER
             .open(&registry)
@@ -1751,7 +1754,7 @@ mod tests {
         assert_eq!(blocker.instruction(), "Virtual Machine Platform is switched off. \
             Open Windows Terminal or PowerShell as an administrator, run \
             `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`, \
-            restart Windows, and start OpenBot again.");
+            restart Windows, and start AwakenBot again.");
         assert!(blocker.ours_to_fix());
     }
 
@@ -2173,7 +2176,7 @@ mod tests {
 
     #[test]
     fn no_blocker_screen_offers_to_do_something_this_application_does_not_do() {
-        // The screen said "OpenBot can install it" while nothing installed anything and there was
+        // The screen said "AwakenBot can install it" while nothing installed anything and there was
         // no button to press. Seen on Windows Server 2022 with WSL genuinely disabled.
         for blocker in [
             Blocker::WslAbsent,
@@ -2183,9 +2186,9 @@ mod tests {
             Blocker::NotAdministrator,
         ] {
             let said = blocker.instruction();
-            // "OpenBot cannot" is the honest half of this and must survive the check.
+            // "AwakenBot cannot" is the honest half of this and must survive the check.
             assert!(
-                !said.contains("OpenBot can install") && !said.contains("OpenBot can convert"),
+                !said.contains("AwakenBot can install") && !said.contains("AwakenBot can convert"),
                 "promises what nothing does: {said}"
             );
         }
@@ -2228,7 +2231,7 @@ mod tests {
         assert!(instruction.contains("Windows Terminal or PowerShell as an administrator and run"));
         assert!(instruction.to_ascii_lowercase().contains("restart"));
         assert!(instruction.contains("your own account"));
-        assert!(!instruction.contains("run OpenBot once"));
+        assert!(!instruction.contains("run AwakenBot once"));
         assert!(!instruction.contains("account does not have"));
     }
 
@@ -2276,7 +2279,7 @@ mod tests {
         assert_eq!(
             machine_name(0x014C),
             None,
-            "32-bit x86 is not a machine OpenBot runs on"
+            "32-bit x86 is not a machine AwakenBot runs on"
         );
         if !cfg!(target_os = "windows") {
             assert_eq!(machine_arch(), std::env::consts::ARCH);

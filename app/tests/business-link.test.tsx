@@ -13,7 +13,7 @@ import { BusinessLink } from "@/components/edition/business-link";
 import { deploymentKeys } from "@/lib/deployment/queries";
 
 /**
- * The home page's link to OpenBot for Business: personal edition only, and closing it lasts for
+ * The home page's link to AwakenBot for Business: personal edition only, and closing it lasts for
  * the session, so it is back the next time the app starts.
  */
 
@@ -43,29 +43,33 @@ function draw(edition: "personal" | "team") {
   );
 }
 
-test("the personal edition links to OpenBot for Business in a new tab", () => {
+test("the personal edition links to AwakenBot for Business in a new tab", () => {
   const view = draw("personal");
-  const link = view.getByRole("link", { name: "Meet OpenBot for Business" });
+  const link = view.getByRole("link", { name: "Meet AwakenBot for Business" });
   expect(link.getAttribute("href")).toBe("https://open.bot/business");
   expect(link.getAttribute("target")).toBe("_blank");
 });
 
 test("the team edition shows nothing", () => {
   const view = draw("team");
-  expect(view.queryByText("Meet OpenBot for Business")).toBeNull();
+  expect(view.queryByText("Meet AwakenBot for Business")).toBeNull();
 });
 
 test("closing it lasts for the session", () => {
   const first = draw("personal");
   fireEvent.click(first.getByRole("button", { name: "Close" }));
-  expect(first.queryByText("Meet OpenBot for Business")).toBeNull();
+  expect(first.queryByText("Meet AwakenBot for Business")).toBeNull();
   first.unmount();
 
   // Back on the home page in the same session: still closed.
-  expect(draw("personal").queryByText("Meet OpenBot for Business")).toBeNull();
+  expect(
+    draw("personal").queryByText("Meet AwakenBot for Business"),
+  ).toBeNull();
   cleanup();
 
   // A new session: back again.
   sessionStorage.clear();
-  expect(draw("personal").getByText("Meet OpenBot for Business")).toBeTruthy();
+  expect(
+    draw("personal").getByText("Meet AwakenBot for Business"),
+  ).toBeTruthy();
 });

@@ -15,7 +15,7 @@ import { queryClient } from "@/query-client";
 
 /**
  * How this composer dictates:
- * - `recording`: OpenBot has a transcription provider. The composer records, then the server
+ * - `recording`: AwakenBot has a transcription provider. The composer records, then the server
  *   transcribes. This wins whenever a provider is configured.
  * - `live`: no provider, but this computer or browser recognises speech. Words stream into the box.
  * - null: neither, and there is no microphone button.

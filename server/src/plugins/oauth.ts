@@ -159,12 +159,12 @@ export function connectedAccountsUrlFor(
 }
 
 /**
- * Where an app's sign-in started from OpenBot Desktop comes back to: the app's page that confirms the
+ * Where an app's sign-in started from AwakenBot Desktop comes back to: the app's page that confirms the
  * account and hands the person back to the Desktop window (`/desktop-return` in the app).
  *
- * THE SIGN-IN RUNS IN THE PERSON'S OWN BROWSER. The Desktop window sends every site outside OpenBot
+ * THE SIGN-IN RUNS IN THE PERSON'S OWN BROWSER. The Desktop window sends every site outside AwakenBot
  * there, so the vendor's redirect lands in that browser too. Sent to the account's page, as a
- * browser's sign-in is, the person was left on OpenBot in a browser tab while the window they started
+ * browser's sign-in is, the person was left on AwakenBot in a browser tab while the window they started
  * from sat behind it, still showing the app as not connected.
  *
  * On the app's origin, as {@link connectedAccountsUrlFor} is, and naming the app by its key only:
@@ -499,7 +499,7 @@ export async function registerDynamicClient(input: {
         grant_types: ["authorization_code", "refresh_token"],
         response_types: ["code"],
         token_endpoint_auth_method: "none",
-        client_name: "OpenBot",
+        client_name: "AwakenBot",
       }),
       // The registration endpoint is pinned in the catalogue, so a redirect is somebody else deciding
       // where this deployment introduces itself. Left as the response, which is not `ok`.

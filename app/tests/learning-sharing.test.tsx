@@ -150,7 +150,7 @@ test("three choices, each with one plain line saying who sees what", async () =>
     view.getByText("Only the Bots you use draw on your skills."),
   ).toBeTruthy();
   expect(
-    view.getByText("Every Bot on OpenBot draws on all of your skills."),
+    view.getByText("Every Bot on AwakenBot draws on all of your skills."),
   ).toBeTruthy();
 });
 
@@ -544,7 +544,9 @@ test("while an admin has sharing off, Your skills says only your Bots use them, 
     expect(
       view.getByText("Only the Bots you use draw on these skills."),
     ).toBeTruthy();
-    expect(view.queryByText(/Every Bot on OpenBot draws on these/)).toBeNull();
+    expect(
+      view.queryByText(/Every Bot on AwakenBot draws on these/),
+    ).toBeNull();
     expect(view.queryByText(/Open a skill to let every Bot/)).toBeNull();
     expect(view.queryByText(/Every Bot may use it/)).toBeNull();
     if (mode === "choose")

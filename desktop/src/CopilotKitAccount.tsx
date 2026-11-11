@@ -44,36 +44,36 @@ type Seen =
   /** The CLI refused the container engine. Trying again by itself would not change it. */
   | { at: "unsupported-engine"; said: string; switchEngine: boolean };
 
-const COULD_NOT_CHECK = "Couldn’t check your OpenBot account. Try again.";
+const COULD_NOT_CHECK = "Couldn’t check your AwakenBot account. Try again.";
 
 /**
- * The signed-out step's footnote: what signing in does, and where OpenBot keeps what you make.
+ * The signed-out step's footnote: what signing in does, and where AwakenBot keeps what you make.
  * One string so a change of wording is one line.
  *
  * Every part is what the code does. Signing in gets the license key (`onboard local-terms`, then
  * `local setup`) and sets up apps (`connect_copilotkit_apps`). It also links usage data to the
  * account (`telemetry link`), which Finishing setup's checkbox turns off, so the line never says
- * "only". Conversations and files are kept in OpenBot's database and Bot computers on this
+ * "only". Conversations and files are kept in AwakenBot's database and Bot computers on this
  * computer. It never says they stay here: a conversation goes to the AI provider the person
  * chose, and connected apps get what a Bot sends them.
  */
 const WHAT_SIGNING_IN_SENDS =
-  "Signing in gets your free license key and sets up your apps. OpenBot keeps your conversations and files on this computer.";
+  "Signing in gets your free license key and sets up your apps. AwakenBot keeps your conversations and files on this computer.";
 /**
- * The signed-out step's lede. The first screen says this OpenBot is self-contained, so this one says
+ * The signed-out step's lede. The first screen says this AwakenBot is self-contained, so this one says
  * only what the step is for: the license key, and that signing in gets it.
  */
-const LICENSE_KEY = "OpenBot needs a free license key. Sign in to get one.";
+const LICENSE_KEY = "AwakenBot needs a free license key. Sign in to get one.";
 const SIGN_IN_DID_NOT_FINISH = "Sign-in didn’t finish. Try again.";
 const SETTING_UP_ENGINE =
-  "You're signed in. OpenBot is setting up the software it runs on. The license agreement comes next.";
+  "You're signed in. AwakenBot is setting up the software it runs on. The license agreement comes next.";
 /*
- * OpenBot's own sentences, not the CLI's: its words name rootful Podman and engines, which go to
+ * AwakenBot's own sentences, not the CLI's: its words name rootful Podman and engines, which go to
  * the log (`terms_said`). The steps under them name the apps the person switches in.
  */
 const ENGINE_REFUSED =
-  "OpenBot can't run with the app this computer uses to run its software. It works with Docker Desktop or Podman.";
-const BLOCKED = "OpenBot can't run on this computer as it's set up.";
+  "AwakenBot can't run with the app this computer uses to run its software. It works with Docker Desktop or Podman.";
+const BLOCKED = "AwakenBot can't run on this computer as it's set up.";
 
 /**
  * How long the account check waits for a container engine, and how often it asks again. A new
@@ -122,10 +122,10 @@ export function CopilotKitAccount({
   /** The installation folder the apps are connected for. */
   root: string;
   /**
-   * Install has the software OpenBot runs on answering and new enough, or is done. Until then a
+   * Install has the software AwakenBot runs on answering and new enough, or is done. Until then a
    * refusal of the engine is not this step's to say: Install may be updating it. Docker Desktop
    * 4.31 calls itself "Docker Desktop (containerized)", which the CLI refuses, and a Windows tester
-   * was told to switch to Docker Desktop while OpenBot was updating it. The step waits instead, and
+   * was told to switch to Docker Desktop while AwakenBot was updating it. The step waits instead, and
    * says what Install is doing.
    */
   engineSettled?: boolean;
@@ -157,14 +157,14 @@ export function CopilotKitAccount({
    */
   goAhead?: string | null;
   /**
-   * On a Mac whose own Podman OpenBot can't use, Install behind this step waits for the person's
+   * On a Mac whose own Podman AwakenBot can't use, Install behind this step waits for the person's
    * yes before it pauses theirs: its line, from `pauseOfferNow`, said with the button that says yes.
    */
   pauseOffer?: string | null;
   /**
    * What is installing behind this step, as one row: what it is doing, how far along, and for how
    * long (`installingBehind`). Shown under every part of the step, so the person always knows
-   * OpenBot is still installing. It carries the engine's line and any hand-off, so those are not
+   * AwakenBot is still installing. It carries the engine's line and any hand-off, so those are not
    * said twice. Its slot is held even while it is null; without it, there is none. Given what the
    * rest of the install waits on here, which this step knows: signing in only while the person is
    * not signed in.
@@ -227,7 +227,7 @@ export function CopilotKitAccount({
      * Not asked at all until Install has the engine answering and new enough. The check reaches the
      * engine, and one being updated is refused: on a Windows tester's old Docker Desktop it answered
      * "blocked (UnsupportedEngine) ... (containerized)" fourteen times in forty seconds while
-     * OpenBot updated it. The step waits, saying what Install is doing, and asks once it has.
+     * AwakenBot updated it. The step waits, saying what Install is doing, and asks once it has.
      */
     if (updating.current) {
       checkWhenSettled.current = true;
@@ -418,7 +418,7 @@ export function CopilotKitAccount({
   );
   return (
     <div className="sheet">
-      {/* OpenBot is what is being set up, so its mark heads this step as it heads every other,
+      {/* AwakenBot is what is being set up, so its mark heads this step as it heads every other,
           and here it says "by CopilotKit" beside the name. CopilotKit's logotype here made the step
           read as signing up for a CopilotKit product. */}
       <Sections at="Account" byCopilotKit />
@@ -436,7 +436,7 @@ export function CopilotKitAccount({
                 : waitingForEngine
                   ? "Setting up this computer"
                   : checkingAccount
-                    ? "Your OpenBot account"
+                    ? "Your AwakenBot account"
                     : "Get your free license key"}
       </h1>
       {!checkingAccount && (
@@ -444,9 +444,9 @@ export function CopilotKitAccount({
           {agreement
             ? // The organization and the agreement's version are the log's: on Windows F the
               // lede ended "for CopilotKit🪁." and the link read "(developer-edition-2026-10-01-web)".
-              "To run OpenBot on this computer, accept the OpenBot by CopilotKit license agreement."
+              "To run AwakenBot on this computer, accept the AwakenBot by CopilotKit license agreement."
             : connecting || appsFailed
-              ? "OpenBot uses your account to set up apps like Gmail and Slack."
+              ? "AwakenBot uses your account to set up apps like Gmail and Slack."
               : refused
                 ? refused.said
                 : waitingForEngine
@@ -502,13 +502,13 @@ export function CopilotKitAccount({
           )
         : handOff && !behind && <StatusLine>{handOff}</StatusLine>}
       {seen.at === "checking" && !handOff && !asking && (
-        <StatusLine>Checking your OpenBot account…</StatusLine>
+        <StatusLine>Checking your AwakenBot account…</StatusLine>
       )}
       {seen.at === "signing-in" && (
         <CopilotKitSignInWait
           attempt={seen.attempt}
-          before="Checking your OpenBot account…"
-          waiting="Finish signing in to OpenBot in your browser…"
+          before="Checking your AwakenBot account…"
+          waiting="Finish signing in to AwakenBot in your browser…"
           onPage={() => setSignInPage(true)}
           onCancel={cancelSignIn}
         />
@@ -518,7 +518,7 @@ export function CopilotKitAccount({
         <>
           <InlineFailure problem={seen.problem} />
           <p className="footnote">
-            You can continue without them. OpenBot tries again each time it
+            You can continue without them. AwakenBot tries again each time it
             starts.
           </p>
         </>
@@ -580,7 +580,7 @@ export function CopilotKitAccount({
             </button>
           )}
         </div>
-        {/* Last, under whatever the step asks: OpenBot is still installing meanwhile. */}
+        {/* Last, under whatever the step asks: AwakenBot is still installing meanwhile. */}
         {behind !== undefined && (
           <BehindSlot>
             {behindRow && (

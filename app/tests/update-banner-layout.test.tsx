@@ -7,7 +7,7 @@ import { compile } from "tailwindcss";
 /**
  * The page under the update banner holds still while the new version gets ready.
  *
- * Seen on Windows at OpenBot Desktop's default window width: "OpenBot 1.0.1 is available." with
+ * Seen on Windows at AwakenBot Desktop's default window width: "AwakenBot 1.0.1 is available." with
  * Update and restart sat on one line, and when the background download started the banner wrapped
  * to two lines and pushed the page down; it moved again when the version was ready. The banner is
  * now one line in every state: a sentence short enough for the column at the default width, cut
@@ -221,7 +221,7 @@ async function show(page: Page, offer: Offer, says: string) {
   await page.waitForFunction(
     (words) =>
       document
-        .querySelector('[aria-label="OpenBot update"]')
+        .querySelector('[aria-label="AwakenBot update"]')
         ?.textContent?.includes(words) ?? false,
     says,
   );
@@ -235,7 +235,7 @@ async function measured(page: Page) {
     ),
     banner: Math.round(
       document
-        .querySelector('[aria-label="OpenBot update"]')
+        .querySelector('[aria-label="AwakenBot update"]')
         ?.getBoundingClientRect().height ?? -1,
     ),
   }));
@@ -276,7 +276,7 @@ describe.skipIf(!asked)("the update banner's height", () => {
         await show(page, state.offer, state.says);
         const cut = await page.evaluate(() => {
           const said = document.querySelector(
-            '[aria-label="OpenBot update"] p',
+            '[aria-label="AwakenBot update"] p',
           ) as HTMLElement | null;
           return said ? said.scrollWidth > said.clientWidth : true;
         });

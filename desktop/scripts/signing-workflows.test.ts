@@ -245,5 +245,8 @@ test("every release and internal build that bundles on Windows or Linux fetches 
     "desktop-shell-updates.yml:signed-artifacts",
     "desktop-signing.yml:sign",
   ]);
-  expect(macOnly).toEqual(["desktop-macos-signing.yml:sign"]);
+  expect(macOnly).toEqual([
+    "awaken-release.yml:mac",
+    "desktop-macos-signing.yml:sign",
+  ]);
 });

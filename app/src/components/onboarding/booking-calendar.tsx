@@ -57,7 +57,7 @@ type CalendlyMessage = {
 };
 
 /**
- * The OpenBot for Business calendar, inline, where somebody books a call without leaving the app.
+ * The AwakenBot for Business calendar, inline, where somebody books a call without leaving the app.
  *
  * A REAL CONTROL, SO A CARD, NOT THE ILLUSTRATION'S PANEL. It has the illustrations' rounded
  * corners and border, but the cards' fill: the muted fill is what says "this is only a picture" on

@@ -23,11 +23,11 @@ import { createPluginStore } from "../src/plugins/store";
 import { TEST_POOL, testDatabaseUrl } from "./support/database";
 
 /**
- * An upgrade brings the saved tools of OpenBot's own apps up to date with the build that starts.
+ * An upgrade brings the saved tools of AwakenBot's own apps up to date with the build that starts.
  *
  * Routines' and Drive's tools are this code, but a deployment keeps the list the build that added the
  * app saved, and only an admin's Refresh used to replace it. So a release that reworded a tool never
- * reached an existing install: on OpenBot Desktop, which has no Admin page, a goal's trigger tools
+ * reached an existing install: on AwakenBot Desktop, which has no Admin page, a goal's trigger tools
  * kept telling the model about a page that had been renamed. These start the deployment the way
  * `index.ts` does (`ensureAlwaysOnApp` on the real plugin store, wrapped as boot wraps it), over the
  * rows an older build left.

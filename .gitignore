@@ -57,3 +57,7 @@ venv/
 
 # The Recorder extension's signing key never enters the repository (Decision 9).
 extension/**/*.pem
+.DS_Store
+
+# AwakenBot: drafts and unused logo files
+brand/no used/

@@ -1,11 +1,11 @@
 /**
- * The update banner in OpenBot's own page. OpenBot Desktop reads its update feed itself and the
+ * The update banner in AwakenBot's own page. AwakenBot Desktop reads its update feed itself and the
  * page asks it, through the IPC Tauri injects into the Desktop window (`window.__TAURI_INTERNALS__`,
  * read by `desktopShell`). These tests stand in for exactly that object, answering the way the
  * shell's `openbot-desktop` plugin answers (desktop/src-tauri/src/desktop_page.rs), and nothing
  * else: the component, its query and its mutations are the real ones.
  *
- * Off Desktop (a self-hosted OpenBot in any browser) there is no such object, and the banner must
+ * Off Desktop (a self-hosted AwakenBot in any browser) there is no such object, and the banner must
  * neither draw nor ask anything, of the shell or of the network.
  */
 import {
@@ -97,7 +97,7 @@ afterAll(async () => {
   await GlobalRegistrator.unregister();
 });
 
-const banner = { name: "OpenBot update" } as const;
+const banner = { name: "AwakenBot update" } as const;
 
 function show() {
   return render(
@@ -111,7 +111,7 @@ test("inside Desktop, a newer version is offered with Update and restart and a w
   inDesktop();
   const view = show();
   const bar = await view.findByRole("complementary", banner);
-  expect(bar.textContent).toContain("OpenBot 0.3.2 is available.");
+  expect(bar.textContent).toContain("AwakenBot 0.3.2 is available.");
   expect(view.getByRole("button", { name: "Update and restart" })).toBeTruthy();
   expect(view.getByRole("button", { name: "Dismiss" })).toBeTruthy();
   // The page asked the shell; it reached nothing on the network.
@@ -132,7 +132,7 @@ test("while the new version downloads in the background it says how far, then th
   const view = show();
   const bar = await view.findByRole("complementary", banner);
   expect(bar.textContent).toContain(
-    "OpenBot 0.3.2 is downloading in the background (45%).",
+    "AwakenBot 0.3.2 is downloading in the background (45%).",
   );
   // It never holds the update back: Update and restart is there all along.
   expect(view.getByRole("button", { name: "Update and restart" })).toBeTruthy();
@@ -140,7 +140,7 @@ test("while the new version downloads in the background it says how far, then th
   await queryClient.invalidateQueries({ queryKey: desktopKeys.appUpdate });
   await waitFor(() =>
     expect(bar.textContent).toContain(
-      "OpenBot 0.3.2 is ready to install. It takes a few minutes.",
+      "AwakenBot 0.3.2 is ready to install. It takes a few minutes.",
     ),
   );
   expect(fetches).toEqual([]);
@@ -180,7 +180,7 @@ test("a reload after closing it asks the shell again and still draws nothing, un
   const later = show();
   expect(
     (await later.findByRole("complementary", banner)).textContent,
-  ).toContain("OpenBot 0.3.3 is available.");
+  ).toContain("AwakenBot 0.3.3 is available.");
 });
 
 test("Update and restart asks the shell, then shows its progress in place of the buttons", async () => {
@@ -238,7 +238,7 @@ test("an older Desktop app without the command draws nothing, and is asked once"
   expect(view.queryByRole("complementary", banner)).toBeNull();
 });
 
-test("a self-hosted OpenBot, in a browser with no Desktop around it, draws nothing and asks nothing", async () => {
+test("a self-hosted AwakenBot, in a browser with no Desktop around it, draws nothing and asks nothing", async () => {
   const view = show();
   await new Promise((resolve) => setTimeout(resolve, 50));
   expect(view.queryByRole("complementary", banner)).toBeNull();
@@ -247,8 +247,8 @@ test("a self-hosted OpenBot, in a browser with no Desktop around it, draws nothi
 });
 
 /**
- * Nothing a Helm or Compose deployment runs knows the Desktop update feed: only OpenBot Desktop's
- * own shell reads it. A server, worker or page that named it would be a self-hosted OpenBot
+ * Nothing a Helm or Compose deployment runs knows the Desktop update feed: only AwakenBot Desktop's
+ * own shell reads it. A server, worker or page that named it would be a self-hosted AwakenBot
  * reaching downloads.copilotkit.ai, which is never wanted.
  */
 test("no code a self-hosted deployment runs names the Desktop update feed", () => {

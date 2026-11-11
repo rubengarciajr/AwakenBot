@@ -234,7 +234,7 @@ export function replayWords(
   asksMore: boolean,
 ): string {
   return [
-    `Replayed over the last ${plural(report.scanned, "action")} OpenBot checked.`,
+    `Replayed over the last ${plural(report.scanned, "action")} AwakenBot checked.`,
     report.matched === 0
       ? "These rules are about none of them."
       : `These rules are about ${report.matched} of them.`,

@@ -33,12 +33,12 @@ export function requestFailure(error: unknown): {
   };
 }
 
-/** Why Learning has no model on this machine, as OpenBot Desktop recorded it. */
+/** Why Learning has no model on this machine, as AwakenBot Desktop recorded it. */
 export type LearningModelUnavailable = "unsupported";
 
 /**
  * Desktop's reason, from `OPENBOT_LEARNING_MODEL_UNAVAILABLE`, or undefined. Only Desktop writes the
- * setting, so an OpenBot whose Learning runs on an organization's Intelligence keeps the message for
+ * setting, so an AwakenBot whose Learning runs on an organization's Intelligence keeps the message for
  * whoever runs that back end.
  */
 export function learningModelUnavailable(
@@ -55,7 +55,7 @@ export function noLearningModel(
   unavailable: LearningModelUnavailable | undefined,
 ): string {
   return unavailable === "unsupported"
-    ? "Learning can't run on the model you signed in with. To use it, sign OpenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan."
+    ? "Learning can't run on the model you signed in with. To use it, sign AwakenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan."
     : "The backend has no Learning model yet. Give its Learning agent a model and key, then try again.";
 }
 
@@ -131,7 +131,7 @@ const BACK_END_FAILURES = new Set([
  * Intelligence records a code, never the Learning agent's own error (`learning-agent-client.ts` wraps
  * it "without exposing response text"). Where Learning thinks on the person's plan through this
  * server (`calls`), what reached the endpoint while the run went says the rest: nothing at all is a
- * Learning agent that could not reach OpenBot, which is what "Connection error." was on every call.
+ * Learning agent that could not reach AwakenBot, which is what "Connection error." was on every call.
  */
 export function runFailure(
   run: Pick<
@@ -144,18 +144,18 @@ export function runFailure(
   if (run.status !== "failed") return null;
   const code = run.failureCode ?? "";
   if (code === "LEARNING_MODEL_NOT_CONFIGURED")
-    return "Learning has no model to think with. Sign OpenBot in to a model, then choose Learn now.";
+    return "Learning has no model to think with. Sign AwakenBot in to a model, then choose Learn now.";
   if (AGENT_FAILURES.has(code)) {
     if (calls) {
       const from = Date.parse(run.startedAt ?? run.createdAt);
       const to = run.completedAt ? Date.parse(run.completedAt) : now();
       const seen = calls.between(from, to);
       if (seen.includes("sign-in"))
-        return "Your model plan needs signing in again. Sign in to it in OpenBot, then choose Learn now.";
+        return "Your model plan needs signing in again. Sign in to it in AwakenBot, then choose Learn now.";
       if (seen.includes("refused"))
-        return "Learning couldn't sign in to OpenBot. Quit OpenBot and open it again, then choose Learn now.";
+        return "Learning couldn't sign in to AwakenBot. Quit AwakenBot and open it again, then choose Learn now.";
       if (seen.length === 0)
-        return "Learning couldn't reach OpenBot to use your model plan. Quit OpenBot and open it again, then choose Learn now.";
+        return "Learning couldn't reach AwakenBot to use your model plan. Quit AwakenBot and open it again, then choose Learn now.";
       if (!seen.includes("answered") || seen.includes("unanswered"))
         return "Your model plan didn't answer Learning. Try Learn now again in a few minutes.";
     }
@@ -365,7 +365,7 @@ export async function readSkillRecordings(
   return [...recordings].map(([id, available]) => ({ id, available }));
 }
 
-/** Logs a failure while taking OpenBot's own record back, or while finishing it. */
+/** Logs a failure while taking AwakenBot's own record back, or while finishing it. */
 function logRecordFailure(type: string, candidateId: string, error: unknown) {
   console.error(
     JSON.stringify({
@@ -388,7 +388,7 @@ function surelyRefused(error: unknown): boolean {
 }
 
 /**
- * What a `before` step hands `reviewProposal`: OpenBot's own record of the review, in two halves. A bare function is
+ * What a `before` step hands `reviewProposal`: AwakenBot's own record of the review, in two halves. A bare function is
  * the `undo` alone.
  */
 export type ReviewSteps = {
@@ -399,7 +399,7 @@ export type ReviewSteps = {
 };
 
 /**
- * Approves or rejects a proposal. `before` runs once the proposal is read and before Intelligence is asked, so OpenBot
+ * Approves or rejects a proposal. `before` runs once the proposal is read and before Intelligence is asked, so AwakenBot
  * can write its own record first (callers pass it only on approve). Its `undo` takes that record back only when
  * Intelligence surely refused, with a 4xx; on any other failure the record stays, since the skill may be published
  * after all, and a record of a skill that never appears only holds it back. Its `after` runs once Intelligence has

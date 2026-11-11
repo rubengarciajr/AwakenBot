@@ -48,7 +48,7 @@ describe("this machine's own addresses", () => {
 });
 
 describe("a deployment reached from beyond this machine", () => {
-  test("is not what .env.example or OpenBot Desktop write", () => {
+  test("is not what .env.example or AwakenBot Desktop write", () => {
     // .env.example
     expect(
       addressesBeyondThisMachine({

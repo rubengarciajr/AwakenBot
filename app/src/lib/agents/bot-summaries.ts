@@ -38,8 +38,8 @@ export function sharingSummary(
 }
 
 /**
- * Where it runs. The personal edition names what runs it when OpenBot knows: its one person
- * picked that harness at setup, and the address is the container OpenBot started for it, which
+ * Where it runs. The personal edition names what runs it when AwakenBot knows: its one person
+ * picked that harness at setup, and the address is the container AwakenBot started for it, which
  * means nothing to them. A team deployment shows the address, which an admin or owner gave it.
  */
 export function setupSummary(
@@ -66,12 +66,12 @@ const TRANSPORT_LABEL: Record<string, string> = {
   sms: "SMS",
 };
 
-/** Where this Bot's conversations continue outside OpenBot, each place once. */
+/** Where this Bot's conversations continue outside AwakenBot, each place once. */
 export function reachSummary(transports: readonly string[]): string {
   const places = [...new Set(transports)]
     .map((transport) => TRANSPORT_LABEL[transport] ?? transport)
     .sort((a, b) => a.localeCompare(b));
-  return places.length ? places.join(", ") : "Only in OpenBot";
+  return places.length ? places.join(", ") : "Only in AwakenBot";
 }
 
 /** The apps feeding this Bot facts, and whether it checks in on them. */

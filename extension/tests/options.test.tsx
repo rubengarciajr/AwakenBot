@@ -72,7 +72,7 @@ test("shows the address, the person and how it connected", async () => {
   const { findByText, getByText } = setup(stateResponse());
   await findByText("https://openbot.example.test");
   expect(getByText("Ada Lovelace")).toBeTruthy();
-  expect(getByText(/Connected from OpenBot in your browser/)).toBeTruthy();
+  expect(getByText(/Connected from AwakenBot in your browser/)).toBeTruthy();
 });
 
 test("shows the pinned address as set by the organization", async () => {
@@ -127,7 +127,7 @@ test("the dialog says a recording in progress stops and what it has not sent is 
   fireEvent.click(await findByRole("button", { name: "Disconnect" }));
   expect(
     getByText(
-      "The recording in progress stops, and what it has not sent to OpenBot's backend yet is discarded.",
+      "The recording in progress stops, and what it has not sent to AwakenBot's backend yet is discarded.",
     ),
   ).toBeTruthy();
 });
@@ -144,7 +144,7 @@ test("the dialog names the stopped recordings still sending apart from the kept 
   fireEvent.click(await findByRole("button", { name: "Disconnect" }));
   expect(
     getByText(
-      "2 recordings still sending to OpenBot's backend stop, and what they have not sent yet is discarded.",
+      "2 recordings still sending to AwakenBot's backend stop, and what they have not sent yet is discarded.",
     ),
   ).toBeTruthy();
   expect(
@@ -162,7 +162,7 @@ test("the dialog says one recording still sending stops", async () => {
   fireEvent.click(await findByRole("button", { name: "Disconnect" }));
   expect(
     getByText(
-      "1 recording still sending to OpenBot's backend stops, and what it has not sent yet is discarded.",
+      "1 recording still sending to AwakenBot's backend stops, and what it has not sent yet is discarded.",
     ),
   ).toBeTruthy();
 });
@@ -191,28 +191,28 @@ test("confirming sends page.disconnect and shows the not-connected copy", async 
   await waitFor(() =>
     expect(sent.some((m) => m.type === "page.disconnect")).toBe(true),
   );
-  await findByText(/This browser is not connected to OpenBot/);
+  await findByText(/This browser is not connected to AwakenBot/);
 });
 
 test("a refused disconnect shows the server's sentence and stays connected", async () => {
   const ask = async (message: PageToBackground): Promise<PageResponse> =>
     message.type === "page.state"
       ? stateResponse()
-      : { ok: false, error: "OpenBot did not answer." };
+      : { ok: false, error: "AwakenBot did not answer." };
   const { findAllByRole, findByText } = render(
     <Options deps={{ ask: ask as never }} />,
   );
   fireEvent.click((await findAllByRole("button", { name: "Disconnect" }))[0]);
   const buttons = await findAllByRole("button", { name: "Disconnect" });
   fireEvent.click(buttons[buttons.length - 1]);
-  await findByText("OpenBot did not answer.");
+  await findByText("AwakenBot did not answer.");
 });
 
 test("not connected shows the not-connected copy and no Disconnect", async () => {
   const { findByText, queryByRole } = setup(
     stateResponse({ connection: null }),
   );
-  await findByText(/This browser is not connected to OpenBot/);
+  await findByText(/This browser is not connected to AwakenBot/);
   expect(queryByRole("button", { name: "Disconnect" })).toBeNull();
 });
 

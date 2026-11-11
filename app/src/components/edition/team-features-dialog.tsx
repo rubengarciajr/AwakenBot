@@ -123,14 +123,14 @@ export function TeamFeaturesDialog() {
       >
         <div className="grid min-h-0 sm:grid-cols-[2fr_3fr]">
           {/*
-           * OpenBot's mark over the orb and its field, which fill the panel. Only where there is room
+           * AwakenBot's mark over the orb and its field, which fill the panel. Only where there is room
            * beside the list.
            */}
           <div className="relative hidden min-h-96 border-border border-r bg-muted/50 p-6 sm:block">
             <BusinessOrb />
             <div className="relative flex items-center gap-2 font-medium">
               <OpenBotLogo className="size-7" />
-              <BrandName>OpenBot</BrandName>
+              <BrandName>AwakenBot</BrandName>
             </div>
           </div>
           <div
@@ -140,7 +140,7 @@ export function TeamFeaturesDialog() {
           >
             <DialogHeader>
               <DialogTitle className="text-xl">
-                <BrandName>OpenBot for Business</BrandName>
+                <BrandName>AwakenBot for Business</BrandName>
               </DialogTitle>
               <DialogDescription>
                 Everything you have here, on prem and for a whole team.
@@ -255,7 +255,7 @@ export function BusinessComputerLink() {
       rel="noopener noreferrer"
       target="_blank"
     >
-      Give each Bot its own computer with OpenBot for Business.
+      Give each Bot its own computer with AwakenBot for Business.
     </a>
   );
 }

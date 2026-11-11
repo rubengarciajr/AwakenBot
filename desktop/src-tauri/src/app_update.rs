@@ -1,9 +1,9 @@
-//! Whether a newer OpenBot Desktop is out, read from the feed its updater installs from.
+//! Whether a newer AwakenBot Desktop is out, read from the feed its updater installs from.
 //!
 //! The shell reads that feed at launch and every six hours while it runs, and keeps the last good
-//! answer. OpenBot's own page (the banner) and the setup window (its update offer) both ask the
+//! answer. AwakenBot's own page (the banner) and the setup window (its update offer) both ask the
 //! shell what to offer; neither reaches the network itself. A browser showing a self-hosted
-//! OpenBot has no shell to ask, so it never asks the feed anything.
+//! AwakenBot has no shell to ask, so it never asks the feed anything.
 //!
 //! Offered only where the updater can install it: a stable, unpinned build whose configuration
 //! carries `plugins.updater` (the signed Mac and Windows releases). The feed is that block's own
@@ -264,7 +264,7 @@ pub enum Asked {
     Available {
         version: String,
         current: String,
-        /// How far it is from installing quickly (`Readiness`), when OpenBot has started on it.
+        /// How far it is from installing quickly (`Readiness`), when AwakenBot has started on it.
         ready: Option<Readiness>,
     },
     UpToDate {
@@ -313,7 +313,7 @@ pub fn ask(feed: Option<&Feed>, current: &Version, known: &Known) -> Result<Aske
     })
 }
 
-/// The menu item that asks, in the tray and in the OpenBot menu.
+/// The menu item that asks, in the tray and in the AwakenBot menu.
 pub const MENU_ID: &str = "check-updates";
 pub const MENU_LABEL: &str = "Check for Updates…";
 pub const UPDATE: &str = "Update and restart";
@@ -338,26 +338,26 @@ pub fn prompt(asked: &Result<Asked, String>) -> Prompt {
         Ok(Asked::Available {
             version, current, ..
         }) => Prompt {
-            title: format!("OpenBot {version} is available"),
+            title: format!("AwakenBot {version} is available"),
             message: format!(
-                "You are running {current}. Updating downloads the new version and restarts OpenBot."
+                "You are running {current}. Updating downloads the new version and restarts AwakenBot."
             ),
             buttons: Some((UPDATE, NOT_NOW)),
         },
         Ok(Asked::UpToDate { current }) => say(
-            "OpenBot is up to date".into(),
-            format!("OpenBot {current} is up to date."),
+            "AwakenBot is up to date".into(),
+            format!("AwakenBot {current} is up to date."),
         ),
         Ok(Asked::Installing { version, .. }) => say(
-            "OpenBot is updating".into(),
-            format!("OpenBot is downloading {version} and restarts when it's done."),
+            "AwakenBot is updating".into(),
+            format!("AwakenBot is downloading {version} and restarts when it's done."),
         ),
         Ok(Asked::NotOffered { .. }) => say(
-            "This version of OpenBot doesn't update itself".into(),
-            "Install a released version of OpenBot to get updates.".into(),
+            "This version of AwakenBot doesn't update itself".into(),
+            "Install a released version of AwakenBot to get updates.".into(),
         ),
         Err(_) => say(
-            "OpenBot couldn't check for updates".into(),
+            "AwakenBot couldn't check for updates".into(),
             "Check your internet connection and try again.".into(),
         ),
     }
@@ -366,7 +366,7 @@ pub fn prompt(asked: &Result<Asked, String>) -> Prompt {
 /// An install somebody asked for that did not happen. By then they are waiting, so it is said.
 pub fn install_failed(said: &str) -> Prompt {
     Prompt {
-        title: "OpenBot couldn't install the update".into(),
+        title: "AwakenBot couldn't install the update".into(),
         message: format!("{said}\n\nTry again with {MENU_LABEL}"),
         buttons: None,
     }
@@ -523,7 +523,7 @@ pub struct Status {
     /// Whether this build updates itself (`Feed::of` finds it a feed). An internal or candidate
     /// build, or one without the updater, never does, and a window says so up front.
     pub updates_itself: bool,
-    /// How ready the offered version is to install (`Readiness`), when OpenBot has started on it.
+    /// How ready the offered version is to install (`Readiness`), when AwakenBot has started on it.
     pub ready: Option<Readiness>,
 }
 
@@ -1275,7 +1275,7 @@ mod tests {
         assert!(asked.is_err());
         server.join().unwrap();
         assert_eq!(known.newer(), Some(v("0.3.3")));
-        assert_eq!(prompt(&asked).title, "OpenBot couldn't check for updates");
+        assert_eq!(prompt(&asked).title, "AwakenBot couldn't check for updates");
     }
 
     #[test]
@@ -1330,9 +1330,9 @@ mod tests {
                 ready: None,
             })),
             Prompt {
-                title: "OpenBot 0.3.3 is available".into(),
+                title: "AwakenBot 0.3.3 is available".into(),
                 message:
-                    "You are running 0.3.2. Updating downloads the new version and restarts OpenBot."
+                    "You are running 0.3.2. Updating downloads the new version and restarts AwakenBot."
                         .into(),
                 buttons: Some(("Update and restart", "Not now")),
             }
@@ -1340,8 +1340,8 @@ mod tests {
         let up_to_date = prompt(&Ok(Asked::UpToDate {
             current: "0.3.2".into(),
         }));
-        assert_eq!(up_to_date.title, "OpenBot is up to date");
-        assert_eq!(up_to_date.message, "OpenBot 0.3.2 is up to date.");
+        assert_eq!(up_to_date.title, "AwakenBot is up to date");
+        assert_eq!(up_to_date.message, "AwakenBot 0.3.2 is up to date.");
         assert_eq!(up_to_date.buttons, None);
         let not_offered = prompt(&Ok(Asked::NotOffered {
             current: "0.3.2-internal.1.gabc".into(),

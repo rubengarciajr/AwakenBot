@@ -31,11 +31,11 @@ import { SKINS } from "@/skins/registry";
 import { settleReactWork } from "./settle-react-work";
 
 /*
- * OpenDuet's frame replaces OpenBot's sidebar, so everything the sidebar reached has to be reachable
+ * OpenDuet's frame replaces AwakenBot's sidebar, so everything the sidebar reached has to be reachable
  * from it, and Settings above all, because the skin picker is there. And its Tasks screen draws only
- * OpenBot's own data, decided with OpenBot's own mutations. These render the skin exactly as
+ * AwakenBot's own data, decided with AwakenBot's own mutations. These render the skin exactly as
  * `_authed/_app` does (the registered skin's Frame around the page, its screen at `/s/tasks`)
- * against a fake of OpenBot's API that answers in the shapes the real endpoints return.
+ * against a fake of AwakenBot's API that answers in the shapes the real endpoints return.
  */
 
 beforeAll(() => GlobalRegistrator.register());
@@ -52,7 +52,7 @@ afterEach(() => {
   globalThis.WebSocket = originalSocket;
 });
 
-/** The frame keeps OpenBot's live socket open; here it never connects. */
+/** The frame keeps AwakenBot's live socket open; here it never connects. */
 class QuietSocket {
   onopen: unknown = null;
   onclose: unknown = null;
@@ -339,8 +339,8 @@ async function openMenu(view: ReturnType<typeof render>) {
   return menu;
 }
 
-describe("the frame reaches every OpenBot surface", () => {
-  test("Chat, each conversation, and every page OpenBot's sidebar reached are one menu away", async () => {
+describe("the frame reaches every AwakenBot surface", () => {
+  test("Chat, each conversation, and every page AwakenBot's sidebar reached are one menu away", async () => {
     api("admin");
     const view = renderApp("/");
     await openMenu(view);
@@ -361,10 +361,10 @@ describe("the frame reaches every OpenBot surface", () => {
   });
 
   /*
-   * Found in review: the menu kept its own list of destinations beside OpenBot's sidebar. It draws
-   * OpenBot's one navigation list now, so a destination added there reaches this menu too.
+   * Found in review: the menu kept its own list of destinations beside AwakenBot's sidebar. It draws
+   * AwakenBot's one navigation list now, so a destination added there reaches this menu too.
    */
-  test("the menu's destinations are exactly OpenBot's navigation list, for admins and for everyone else", async () => {
+  test("the menu's destinations are exactly AwakenBot's navigation list, for admins and for everyone else", async () => {
     for (const role of ["admin", "user"] as const) {
       api(role);
       const view = renderApp("/");
@@ -427,7 +427,7 @@ describe("the frame reaches every OpenBot surface", () => {
     await view.findByRole("heading", { name: "Start a conversation" });
   });
 
-  test("Chat and Tasks are phone-shaped, other pages keep OpenBot's width, and an open computer gets OpenBot's pane", async () => {
+  test("Chat and Tasks are phone-shaped, other pages keep AwakenBot's width, and an open computer gets AwakenBot's pane", async () => {
     api("user");
     const column = () =>
       document
@@ -455,11 +455,11 @@ describe("the frame reaches every OpenBot surface", () => {
 });
 
 /*
- * Found in review: Tasks re-implemented OpenBot's approvals, suggestions and routines, and the copies
- * had drifted. It now draws OpenBot's own lists, so these drive those lists through Tasks.
+ * Found in review: Tasks re-implemented AwakenBot's approvals, suggestions and routines, and the copies
+ * had drifted. It now draws AwakenBot's own lists, so these drive those lists through Tasks.
  */
-describe("Tasks is OpenBot's own lists under OpenDuet's headings", () => {
-  test("Active shows OpenBot's waiting list, responsibilities and routines, and every region has its own name", async () => {
+describe("Tasks is AwakenBot's own lists under OpenDuet's headings", () => {
+  test("Active shows AwakenBot's waiting list, responsibilities and routines, and every region has its own name", async () => {
     api("user");
     const view = renderApp("/s/tasks");
     fireEvent.click(await view.findByRole("tab", { name: "Active" }));
@@ -470,7 +470,7 @@ describe("Tasks is OpenBot's own lists under OpenDuet's headings", () => {
     expect(
       within(needs).getByText(/Which kiln should I book the repair for\?/),
     ).toBeTruthy();
-    // OpenBot's list always shows what the action would send.
+    // AwakenBot's list always shows what the action would send.
     expect(within(needs).getByText(/Thursday at 10 works\./)).toBeTruthy();
     expect(
       await view.findByText("Keep the support inbox at zero"),
@@ -485,7 +485,7 @@ describe("Tasks is OpenBot's own lists under OpenDuet's headings", () => {
     expect(new Set(names).size).toBe(names.length);
   });
 
-  test("an approval is decided in OpenBot's own row", async () => {
+  test("an approval is decided in AwakenBot's own row", async () => {
     const sent = api("user");
     const view = renderApp("/s/tasks");
     fireEvent.click(await view.findByRole("tab", { name: "Active" }));
@@ -502,7 +502,7 @@ describe("Tasks is OpenBot's own lists under OpenDuet's headings", () => {
     );
   });
 
-  test("a Bot's question is answered in OpenBot's own row", async () => {
+  test("a Bot's question is answered in AwakenBot's own row", async () => {
     const sent = api("user");
     const view = renderApp("/s/tasks");
     fireEvent.click(await view.findByRole("tab", { name: "Active" }));
@@ -522,7 +522,7 @@ describe("Tasks is OpenBot's own lists under OpenDuet's headings", () => {
     );
   });
 
-  test("Up next starts or hides a suggestion with OpenBot's own suggestion list", async () => {
+  test("Up next starts or hides a suggestion with AwakenBot's own suggestion list", async () => {
     const sent = api("user");
     const view = renderApp("/s/tasks");
     fireEvent.click(await view.findByRole("tab", { name: "Up next" }));
@@ -550,7 +550,7 @@ describe("Tasks is OpenBot's own lists under OpenDuet's headings", () => {
 
 /*
  * A skin takes OpenDuet's look and the deployment's identity: the name a person reads is the one in
- * brand.yaml, and the orb is OpenBot's own, never OpenDuet's name or its robot face.
+ * brand.yaml, and the orb is AwakenBot's own, never OpenDuet's name or its robot face.
  */
 describe("the frame carries the deployment's brand, not OpenDuet's", () => {
   /** Every word a person can read or hear: the text, and the names and titles on controls. */
@@ -575,7 +575,7 @@ describe("the frame carries the deployment's brand, not OpenDuet's", () => {
     const menu = view.getByRole("dialog");
     expect(within(menu).getByText(appConfig.brand.productName)).toBeTruthy();
     expect(readable()).not.toContain("OpenDuet");
-    // OpenBot's own orb, as sign-in and onboarding draw it, and no drawing of OpenDuet's.
+    // AwakenBot's own orb, as sign-in and onboarding draw it, and no drawing of OpenDuet's.
     expect(orb.querySelector(".agent-orb")).not.toBeNull();
     expect(orb.querySelector("canvas")).toBeNull();
   });

@@ -2,18 +2,18 @@ import { z } from "zod";
 
 /**
  * WHAT OPENBOT'S OWN PAGE MAY ASK THE RECORDER IN THE SAME BROWSER, over `externally_connectable` (`openbot.ping` and
- * `openbot.connect` are older and unchanged). When OpenBot is open in a browser that holds the Recorder, its Browser
- * button works with that browser: Record and Stop from OpenBot, and the red dot read straight from the Recorder.
+ * `openbot.connect` are older and unchanged). When AwakenBot is open in a browser that holds the Recorder, its Browser
+ * button works with that browser: Record and Stop from AwakenBot, and the red dot read straight from the Recorder.
  *
- * Only the OpenBot the Recorder is connected to may use these: the Recorder compares the origin Chrome reports for the
+ * Only the AwakenBot the Recorder is connected to may use these: the Recorder compares the origin Chrome reports for the
  * sender with its stored connection's, and answers any other page as not connected, telling it nothing about the
- * person or what they record. Design: Notion "OpenBot Browser: BUILD (2026-10-21)".
+ * person or what they record. Design: Notion "AwakenBot Browser: BUILD (2026-10-21)".
  */
 export const RECORDER_PAGE_MESSAGES = {
-  /** What the Recorder is doing, for this OpenBot: `RecorderPageState`. */
+  /** What the Recorder is doing, for this AwakenBot: `RecorderPageState`. */
   state: "openbot.state",
   /** Start recording `title`, from the tab that asked; the recording follows every tab the person uses. `narrate` is the
-   * person's narration choice as OpenBot keeps it on their account; absent, the choice they made in the Recorder. */
+   * person's narration choice as AwakenBot keeps it on their account; absent, the choice they made in the Recorder. */
   record: "openbot.record",
   /** Stop the live recording. */
   stop: "openbot.stop",
@@ -32,7 +32,7 @@ export const recorderPageMessageSchema = z.discriminatedUnion("type", [
 ]);
 export type RecorderPageMessage = z.infer<typeof recorderPageMessageSchema>;
 
-/** `connected: false` for any page that is not the connected OpenBot, with nothing else in it. */
+/** `connected: false` for any page that is not the connected AwakenBot, with nothing else in it. */
 export type RecorderPageState =
   | { connected: false }
   | {
@@ -71,8 +71,8 @@ export type RecorderConnectWait = "waiting" | "cancelled" | "closed" | "none";
 
 /**
  * Which `openbot.connect` requests the Recorder accepts with no Connect page (David, 2026-10-22: "only for trusted
- * OpenBots"): an origin the organization's policy pins (`OpenBotUrl`), or OpenBot Desktop's own loopback address on this
- * computer, exactly as OpenBot Desktop's native host confirms it (any program can serve a page on a loopback port), and
+ * OpenBots"): an origin the organization's policy pins (`OpenBotUrl`), or AwakenBot Desktop's own loopback address on this
+ * computer, exactly as AwakenBot Desktop's native host confirms it (any program can serve a page on a loopback port), and
  * either only while the Recorder is connected to nothing: replacing a connection always goes through the Connect page.
  * Every other site still gets the one Connect click, so no site can quietly take the Recorder for itself.
  */

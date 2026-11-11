@@ -60,7 +60,7 @@ function rowId(computer: ComputerProfile): string {
 }
 
 /**
- * A person's own OpenBot browser, the one Teach a Bot records in. It is listed beside the Bots' browsers, under an id
+ * A person's own AwakenBot browser, the one Teach a Bot records in. It is listed beside the Bots' browsers, under an id
  * that is no Bot's, so it read "A Bot no longer here" until it was named for what it is.
  */
 function isOwnBrowser(computer: ComputerProfile): boolean {
@@ -90,7 +90,7 @@ export function ComputersPage({ children }: { children?: ReactNode } = {}) {
   const queryClient = useQueryClient();
   const nameFor = useBotNames();
   /*
-   * The person's own OpenBot browser is cleared the way Teach a Bot clears it: a recording in it ends first, and its
+   * The person's own AwakenBot browser is cleared the way Teach a Bot clears it: a recording in it ends first, and its
    * Recorder connection ends with the profile. A Bot's Reset does neither.
    */
   const clearOwnBrowser = useMutation(clearBrowserMutationOptions(queryClient));
@@ -154,11 +154,11 @@ export function ComputersPage({ children }: { children?: ReactNode } = {}) {
    */
   const titleOf = (computer: ComputerProfile): string => {
     if (isOwnBrowser(computer)) {
-      if (personal) return "Your OpenBot browser";
+      if (personal) return "Your AwakenBot browser";
       const owner = computer.person?.name ?? computer.person?.email;
       return owner
-        ? `${owner}'s OpenBot browser`
-        : "A person's OpenBot browser";
+        ? `${owner}'s AwakenBot browser`
+        : "A person's AwakenBot browser";
     }
     // One person, so a row is one of their Bots.
     if (personal) return computer.botId ? nameFor(computer.botId) : "Computer";
@@ -471,8 +471,8 @@ export function ComputersPage({ children }: { children?: ReactNode } = {}) {
           deletes a Bot's browser profile and signs it out of everything.{" "}
           {computers?.some(isOwnBrowser) ? (
             <>
-              <strong>Clear browser data</strong> does the same for your OpenBot
-              browser.{" "}
+              <strong>Clear browser data</strong> does the same for your
+              AwakenBot browser.{" "}
             </>
           ) : null}
           Each shows in{" "}
@@ -503,7 +503,7 @@ export function ComputersPage({ children }: { children?: ReactNode } = {}) {
 type HostFoldersSectionProps = {
   botIds: string[];
   connected: boolean;
-  /** This OpenBot runs in OpenBot Desktop. Without it no folder can ever be chosen here. */
+  /** This AwakenBot runs in AwakenBot Desktop. Without it no folder can ever be chosen here. */
   desktop: boolean;
   grants: HostFolderGrant[];
   loading: boolean;
@@ -513,7 +513,7 @@ type HostFoldersSectionProps = {
   onStop: () => void;
   pending: HostAccessPendingOperation[];
   /**
-   * The personal edition, where the person reading is the one OpenBot Desktop asks. In the team
+   * The personal edition, where the person reading is the one AwakenBot Desktop asks. In the team
    * edition the desktop's owner may be somebody else, so a waiting request names them instead.
    */
   personal: boolean;
@@ -552,7 +552,7 @@ function HostFoldersSection({
 
   return (
     <PageSection
-      description="Choose folders a Bot can read on this computer. The desktop app asks before each edit or command. Access ends when you stop OpenBot."
+      description="Choose folders a Bot can read on this computer. The desktop app asks before each edit or command. Access ends when you stop AwakenBot."
       title="Folders on this computer"
     >
       {problem ? (
@@ -572,9 +572,9 @@ function HostFoldersSection({
       ) : null}
 
       {loading ? null : !desktop ? (
-        <PageEmpty icon={IconDeviceDesktop} title="Needs OpenBot Desktop">
-          This OpenBot isn't running in the desktop app. Use OpenBot Desktop to
-          let Bots read folders on this computer.
+        <PageEmpty icon={IconDeviceDesktop} title="Needs AwakenBot Desktop">
+          This AwakenBot isn't running in the desktop app. Use AwakenBot Desktop
+          to let Bots read folders on this computer.
         </PageEmpty>
       ) : botIds.length === 0 ? (
         <PageEmpty icon={IconBolt} title="No Bots yet">
@@ -729,7 +729,7 @@ function ownerLabel(grant: { ownerName?: string; ownerEmail?: string }) {
  *
  * Reading and listing need nobody's answer, so they say only what is happening. A folder, a file
  * change or a command waits for the person at the computer: in the personal edition that is the
- * person reading, so it says OpenBot Desktop is asking them, in a window. It used to say "waiting for
+ * person reading, so it says AwakenBot Desktop is asking them, in a window. It used to say "waiting for
  * approval from the desktop owner" to the desktop's owner, and "Listing files from the desktop owner".
  */
 function pendingSentence(
@@ -748,11 +748,11 @@ function pendingSentence(
   if (personal) {
     switch (request.kind) {
       case "write_file":
-        return "A file change is waiting for you. OpenBot Desktop is asking you in a window.";
+        return "A file change is waiting for you. AwakenBot Desktop is asking you in a window.";
       case "run_command":
-        return "A command is waiting for you or still running. OpenBot Desktop asks you in a window.";
+        return "A command is waiting for you or still running. AwakenBot Desktop asks you in a window.";
       default:
-        return "Folder access is waiting for you. OpenBot Desktop is asking you in a window.";
+        return "Folder access is waiting for you. AwakenBot Desktop is asking you in a window.";
     }
   }
   const owner = ownerLabel(request);

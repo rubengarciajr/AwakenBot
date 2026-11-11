@@ -514,7 +514,7 @@ describe("using the bearer", () => {
 
   test("the connections list says which browser is recording now, from its Recorder's own recent report", async () => {
     // End-to-end run: a browser recording right now read "last used 49 seconds ago", since a recording streams to the
-    // gateway and reaches OpenBot only with its activity reports.
+    // gateway and reaches AwakenBot only with its activity reports.
     const h = build();
     const made = await connect(h, "5".repeat(32));
     const recordingNow = async () => {
@@ -616,7 +616,7 @@ describe("using the bearer", () => {
     expect(transcribed).toBe(0);
   });
 
-  test("OpenBot takes no recording from the Recorder, not even with its bearer", async () => {
+  test("AwakenBot takes no recording from the Recorder, not even with its bearer", async () => {
     const h = build();
     const made = await connect(h, "6".repeat(32));
     for (const [method, path] of [

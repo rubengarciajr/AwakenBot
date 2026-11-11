@@ -70,7 +70,7 @@ const CLAUDE_CODE_REFUSED = JSON.stringify({
 const BROWSER_REFUSED = `Error: Unexpected token ',', ..."s":"Event","When","... is not valid JSON`;
 
 const UNREADABLE =
-  "The Bot sent data OpenBot couldn't read. Ask it to try again.";
+  "The Bot sent data AwakenBot couldn't read. Ask it to try again.";
 
 const SHOWN: GalleryComponent[] = [
   ...TABLES,

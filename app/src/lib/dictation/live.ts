@@ -6,7 +6,7 @@
  * recognition the person's own computer or browser already has, and they stream into the message
  * box while the person talks:
  *
- * - In the OpenBot Desktop window: the desktop app's recognizer, on the device
+ * - In the AwakenBot Desktop window: the desktop app's recognizer, on the device
  *   (desktop/src-tauri/src/speech.rs: Apple's Speech framework with on-device recognition required on
  *   macOS, the in-process SAPI recognizer on Windows), through the same bridge narration uses
  *   (@/lib/desktop/speech). The window's own Web Speech API is not used: WKWebView exposes it but it
@@ -99,12 +99,12 @@ export function liveProblem(
       return null;
     case "not-allowed":
       return platform === "mac"
-        ? "OpenBot can't use the microphone or speech recognition. Turn both on for OpenBot in System Settings, under Privacy & Security, then try again."
+        ? "AwakenBot can't use the microphone or speech recognition. Turn both on for AwakenBot in System Settings, under Privacy & Security, then try again."
         : platform === "windows"
-          ? "OpenBot can't use the microphone. Turn on microphone access for apps in Windows Settings, under Privacy & security, then try again."
+          ? "AwakenBot can't use the microphone. Turn on microphone access for apps in Windows Settings, under Privacy & security, then try again."
           : "Microphone access is blocked. Allow it for this site in your browser, then try again.";
     case "audio-capture":
-      return "OpenBot couldn't find a microphone. Connect one, then try again.";
+      return "AwakenBot couldn't find a microphone. Connect one, then try again.";
     case "network":
       return "Dictation in this browser needs an internet connection. Check your connection, then try again.";
     case "language-not-supported":
@@ -113,7 +113,7 @@ export function liveProblem(
         : "This computer can't take dictation in your language.";
     case "service-not-allowed":
       return platform === "browser"
-        ? "This browser won't run speech recognition for OpenBot. Try Chrome or Edge."
+        ? "This browser won't run speech recognition for AwakenBot. Try Chrome or Edge."
         : "Speech recognition isn't available on this computer right now. Try again in a moment.";
     default:
       return "Dictation stopped unexpectedly. Try again.";
@@ -287,7 +287,7 @@ export class LiveDictation {
         this.update({
           phase: "error",
           error:
-            "OpenBot is still waiting for permission. Answer the system's question, then try again.",
+            "AwakenBot is still waiting for permission. Answer the system's question, then try again.",
         });
         return false;
       }

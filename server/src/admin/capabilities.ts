@@ -206,6 +206,6 @@ export function resolveAllCapabilities(
 export function capabilityRefusal(capability: Capability): string {
   // The person is the admin here, and nothing they can switch turns this on.
   if (currentEdition() === "personal")
-    return `"${CAPABILITY_LABELS[capability].title}" isn't part of OpenBot Personal, so that wasn't done.`;
+    return `"${CAPABILITY_LABELS[capability].title}" isn't part of AwakenBot Personal, so that wasn't done.`;
   return `An admin has turned off "${CAPABILITY_LABELS[capability].title}" for you, so that wasn't done.`;
 }

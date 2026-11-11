@@ -10,7 +10,7 @@ import type { Database } from "../src/db/client";
 
 describe("roleForEmail", () => {
   test("assigns an admin role to allowlisted addresses without case sensitivity", () => {
-    expect(roleForEmail("Admin@OpenBot.test", ["admin@openbot.test"])).toBe(
+    expect(roleForEmail("Admin@AwakenBot.test", ["admin@openbot.test"])).toBe(
       "admin",
     );
   });
@@ -276,7 +276,7 @@ describe("seedRole", () => {
 describe("isConfiguredAdmin", () => {
   test("ignores case and surrounding space, on both sides", () => {
     expect(
-      isConfiguredAdmin("  Admin@OpenBot.test ", [" admin@openbot.TEST "]),
+      isConfiguredAdmin("  Admin@AwakenBot.test ", [" admin@openbot.TEST "]),
     ).toBe(true);
   });
 });

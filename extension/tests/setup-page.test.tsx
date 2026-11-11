@@ -96,10 +96,10 @@ test("says what the Recorder collects and where it goes, first, whatever the bro
     const title = getByText("What the Recorder collects");
     const disclosure = getByText(DISCLOSURE);
     expect(disclosure.textContent).toContain("When you press Record");
-    // Where it goes: straight to the learning part of OpenBot's back end, with a pass from the part that runs the Bots,
+    // Where it goes: straight to the learning part of AwakenBot's back end, with a pass from the part that runs the Bots,
     // never through that part.
     expect(disclosure.textContent).toContain(
-      "What you record goes straight from your browser to the learning part of your organization's OpenBot backend, with a pass from the part of OpenBot that runs your Bots. That part is told that you are recording, the task's name, when it started and how many steps it has, and when you record in a browser shown inside OpenBot, your narration passes through it to the Recorder without being stored. Your recordings are used only for your organization's Skills, evaluations and insights.",
+      "What you record goes straight from your browser to the learning part of your organization's AwakenBot backend, with a pass from the part of AwakenBot that runs your Bots. That part is told that you are recording, the task's name, when it started and how many steps it has, and when you record in a browser shown inside AwakenBot, your narration passes through it to the Recorder without being stored. Your recordings are used only for your organization's Skills, evaluations and insights.",
     );
     // Then everything a recording holds, the saves and AI assistant conversations among them, before the microphone.
     for (const { title: held, description } of RECORDER_COLLECTS) {
@@ -298,7 +298,7 @@ test("blocked: names the browser's own settings page, Chrome's or Edge's", async
       edge,
     });
     await findByText(
-      `Blocked. Open ${scheme}://settings/content/microphone, allow OpenBot Recorder, then choose Allow microphone.`,
+      `Blocked. Open ${scheme}://settings/content/microphone, allow AwakenBot Recorder, then choose Allow microphone.`,
     );
     // A blocked microphone shows no prompt, so the page does not ask on its own, nor says how to answer one.
     expect(calls).toEqual([]);

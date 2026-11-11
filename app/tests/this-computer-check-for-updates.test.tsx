@@ -1,5 +1,5 @@
 /**
- * Settings → This computer: Check for updates on the Version row. OpenBot Desktop reads its update
+ * Settings → This computer: Check for updates on the Version row. AwakenBot Desktop reads its update
  * feed when asked and says what it found. These tests stand in for the IPC Tauri injects into the
  * Desktop window, answering as the shell's `openbot-desktop` plugin does
  * (desktop/src-tauri/src/desktop_page.rs); the page, its queries and its mutations are the real ones.
@@ -39,7 +39,7 @@ const STATUS: DesktopStatus = {
   intelligenceStack: null,
   intelligenceContainers: [],
   engine: "docker",
-  root: "C:\\Users\\Administrator\\OpenBot",
+  root: "C:\\Users\\Administrator\\AwakenBot",
   appPort: 3010,
   version: "0.3.2",
   build: "v0.3.2 (b214c97e)",
@@ -122,7 +122,7 @@ test("on the newest release it says this version is up to date", async () => {
   found = { found: "upToDate", current: "0.3.2" };
   const view = await checkForUpdates();
   expect((await view.findByRole("status")).textContent).toBe(
-    "OpenBot 0.3.2 is up to date.",
+    "AwakenBot 0.3.2 is up to date.",
   );
   expect(commands).toContain("plugin:openbot-desktop|check_update");
 });
@@ -131,7 +131,7 @@ test("a newer version is offered with Update and restart, which installs it", as
   found = { found: "available", version: "0.3.3", current: "0.3.2" };
   const view = await checkForUpdates();
   expect((await view.findByRole("status")).textContent).toBe(
-    "OpenBot 0.3.3 is available.",
+    "AwakenBot 0.3.3 is available.",
   );
   fireEvent.click(view.getByRole("button", { name: "Update and restart" }));
   await waitFor(() =>
@@ -149,10 +149,10 @@ test("a newer version is offered with Update and restart, which installs it", as
 
 test("a check that fails says what to do", async () => {
   found =
-    "OpenBot couldn't check for updates. Check your internet connection and try again.";
+    "AwakenBot couldn't check for updates. Check your internet connection and try again.";
   const view = await checkForUpdates();
   expect((await view.findByRole("alert")).textContent).toBe(
-    "OpenBot couldn't check for updates. Check your internet connection and try again.",
+    "AwakenBot couldn't check for updates. Check your internet connection and try again.",
   );
   expect(view.getByRole("button", { name: "Check for updates" })).toBeTruthy();
 });
@@ -166,7 +166,7 @@ test("a build that doesn't update itself says so up front, with no button", asyn
   };
   const view = renderPage();
   await view.findByText(
-    "This version of OpenBot doesn't update itself. Install a released version of OpenBot to get updates.",
+    "This version of AwakenBot doesn't update itself. Install a released version of AwakenBot to get updates.",
   );
   await view.findByText("Version 0.3.2");
   // Nothing to click: the setup window, the tray and the menus offer no check on this build either.
@@ -206,7 +206,7 @@ test("a newer version says it is downloading in the background, then that it is 
   const view = await checkForUpdates();
   await waitFor(async () =>
     expect((await view.findByRole("status")).textContent).toBe(
-      "OpenBot 0.3.3 is downloading in the background (30%).",
+      "AwakenBot 0.3.3 is downloading in the background (30%).",
     ),
   );
   // Nothing waits for it: Update and restart works now.
@@ -216,7 +216,7 @@ test("a newer version says it is downloading in the background, then that it is 
   await queryClient.invalidateQueries({ queryKey: desktopKeys.appUpdate });
   await waitFor(() =>
     expect(view.getByRole("status").textContent).toBe(
-      "OpenBot 0.3.3 is ready to install. It takes a few minutes.",
+      "AwakenBot 0.3.3 is ready to install. It takes a few minutes.",
     ),
   );
 });

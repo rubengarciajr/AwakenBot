@@ -2,7 +2,7 @@
 //!
 //! Podman keeps one default connection, the engine every `podman` command reaches when it names
 //! none, in `podman-connections.json` (`%APPDATA%\containers` on Windows, `~/.config/containers`
-//! elsewhere: `connectionsConfigFile` in go.podman.io/common's `pkg/config/connections.go`). OpenBot
+//! elsewhere: `connectionsConfigFile` in go.podman.io/common's `pkg/config/connections.go`). AwakenBot
 //! reaches its own machine by name and never needs the default (see `acquire::address`). Yet three
 //! of the commands it runs can move it, in Podman 6.1.1:
 //!
@@ -20,13 +20,13 @@
 //! - **`podman machine start`** makes the machine's connection the default with
 //!   `--update-connection`, or when the person answers yes to "Set the default Podman connection to
 //!   this machine? [y/N]", which is asked only when stdin is a terminal (`startLocked` and
-//!   `promptUpdateSystemConn` in `pkg/machine/shim/host.go`). OpenBot's commands have no terminal.
+//!   `promptUpdateSystemConn` in `pkg/machine/shim/host.go`). AwakenBot's commands have no terminal.
 //!
-//! So every `machine init`, `machine start` and `machine rm` OpenBot runs goes through `keeping`.
+//! So every `machine init`, `machine start` and `machine rm` AwakenBot runs goes through `keeping`.
 //! Init and start are told to leave the default alone wherever Podman takes the flag
 //! (`--update-connection=false`, Podman 6.0 and later; 5.8 answers "unknown flag"). After each of
-//! the three, a default that moved is put back by its exact name. Removing OpenBot's own machine
-//! while one of its connections is the default leaves the default the person had before OpenBot
+//! the three, a default that moved is put back by its exact name. Removing AwakenBot's own machine
+//! while one of its connections is the default leaves the default the person had before AwakenBot
 //! made its machine (`Before`), or none: never one of the person's connections picked for them.
 
 use std::path::{Path, PathBuf};
@@ -78,12 +78,12 @@ pub fn connections_in(listing: &str) -> Result<Connections, String> {
     })
 }
 
-/// One of OpenBot's own machine's connections: `openbot`, or `openbot-root` (`acquire::connection_for`).
+/// One of AwakenBot's own machine's connections: `openbot`, or `openbot-root` (`acquire::connection_for`).
 pub fn is_ours(connection: &str) -> bool {
     crate::acquire::machine_of(connection) == MACHINE
 }
 
-/// The default connection before OpenBot made its machine, kept until the machine is removed.
+/// The default connection before AwakenBot made its machine, kept until the machine is removed.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Before {
     pub default: Option<String>,
@@ -114,7 +114,7 @@ fn moves(args: &[&str]) -> Option<Moves> {
     let ["machine", verb, rest @ ..] = args else {
         return None;
     };
-    // The machine is the first word that is not a flag, as OpenBot writes its commands.
+    // The machine is the first word that is not a flag, as AwakenBot writes its commands.
     let ours = rest.iter().find(|word| !word.starts_with('-')).copied() == Some(MACHINE);
     match *verb {
         "init" => Some(Moves::Init { ours }),
@@ -129,9 +129,9 @@ fn moves(args: &[&str]) -> Option<Moves> {
 /// Anything but `machine init`, `start` and `rm` runs as it is. Those three are run with the default
 /// read before and after, and a default that moved is put back (`put_back`). What it goes back to:
 /// - the default from before the command, by its exact name;
-/// - when the command removes OpenBot's machine and one of its connections was the default: the
-///   default from before OpenBot made the machine (`Before`), or none;
-/// - none when there was none, unless the default Podman set is OpenBot's own: Podman makes the
+/// - when the command removes AwakenBot's machine and one of its connections was the default: the
+///   default from before AwakenBot made the machine (`Before`), or none;
+/// - none when there was none, unless the default Podman set is AwakenBot's own: Podman makes the
 ///   first connection there is the default, and that is not one of the person's.
 pub fn keeping(podman: &mut dyn Podman, args: &[&str]) -> Result<String, String> {
     let Some(moves) = moves(args) else {
@@ -157,7 +157,7 @@ pub fn keeping(podman: &mut dyn Podman, args: &[&str]) -> Result<String, String>
     };
     let done = podman.run(&told);
     match moves {
-        // A default that is OpenBot's own already is no default of the person's to keep.
+        // A default that is AwakenBot's own already is no default of the person's to keep.
         Moves::Init { ours: true }
             if done.is_ok() && !before.default.as_deref().is_some_and(is_ours) =>
         {
@@ -246,7 +246,7 @@ fn put_back(podman: &mut dyn Podman, wanted: Option<String>, command: &[&str]) {
                  could not be set back to none: {error}"
             ),
         },
-        // OpenBot's own, made the default because it was the first connection there was.
+        // AwakenBot's own, made the default because it was the first connection there was.
         (None, _) => {}
     }
 }
@@ -288,7 +288,7 @@ impl Podman for ThisComputer {
     }
 }
 
-/// Where `Before` is kept: beside the engine files OpenBot downloads, as `own_machine::record_path`.
+/// Where `Before` is kept: beside the engine files AwakenBot downloads, as `own_machine::record_path`.
 pub fn record_path() -> PathBuf {
     crate::acquire::download_dir(&crate::stack::default_root()).join("podman-default-before.json")
 }
@@ -590,14 +590,14 @@ mod tests {
         connections_in(&podman.list()).unwrap().default
     }
 
-    /// OpenBot's create, as `acquire::create_machine` runs it on Windows from a downloaded image.
+    /// AwakenBot's create, as `acquire::create_machine` runs it on Windows from a downloaded image.
     fn create(podman: &mut Fake) {
         let created = crate::acquire::create_machine_with(
             4,
             6144,
             60,
             Some(Path::new(
-                r"C:\Users\Administrator\OpenBot\openbot-engine\machine.tar.zst",
+                r"C:\Users\Administrator\AwakenBot\openbot-engine\machine.tar.zst",
             )),
             || Ok(false),
             || {},
@@ -610,7 +610,7 @@ mod tests {
         keeping(podman, &["machine", "start", MACHINE]).unwrap();
     }
 
-    /// Box I: the person's own `mine`, the default, beside OpenBot's `openbot`. A ticked uninstall
+    /// Box I: the person's own `mine`, the default, beside AwakenBot's `openbot`. A ticked uninstall
     /// removed `openbot` and a fresh install created it again; afterwards `mine-root` was the
     /// default. Podman's removal picked it (see the module comment). Through `keeping`, the same
     /// draw changes nothing the person sees.
@@ -659,8 +659,8 @@ mod tests {
         }
     }
 
-    /// OpenBot's own machine was the default when it was removed: the default goes back to the one
-    /// the person had before OpenBot made its machine, or to none. Never to a connection Podman
+    /// AwakenBot's own machine was the default when it was removed: the default goes back to the one
+    /// the person had before AwakenBot made its machine, or to none. Never to a connection Podman
     /// picked for them, `podman-machine-default` included.
     #[test]
     fn removing_openbots_machine_while_it_is_the_default_never_picks_one_of_the_persons() {
@@ -686,8 +686,8 @@ mod tests {
         assert_eq!(default_of(&mut podman).as_deref(), Some("mine"));
         assert_eq!(podman.kept, None, "the record goes with the machine");
 
-        // Made when there were no connections at all: Podman made OpenBot's the default, and the
-        // person's machines came later. Nothing was the default before OpenBot's, so none is.
+        // Made when there were no connections at all: Podman made AwakenBot's the default, and the
+        // person's machines came later. Nothing was the default before AwakenBot's, so none is.
         for theirs in ["mine", "podman-machine-default"] {
             let mut podman = Fake::from_listing("[]", None);
             create(&mut podman);
@@ -768,7 +768,7 @@ mod tests {
         );
         assert_eq!(default_of(&mut podman).as_deref(), Some("mine-root"));
 
-        // The person's own machine, started again by OpenBot after a pause on a Mac.
+        // The person's own machine, started again by AwakenBot after a pause on a Mac.
         let mut podman = Fake::from_listing(listing, Some("mine-root"));
         podman.start_takes_default = true;
         keeping(&mut podman, &["machine", "start", "mine"]).unwrap();

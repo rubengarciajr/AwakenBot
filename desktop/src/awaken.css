@@ -1,0 +1,89 @@
+/*
+ * AwakenBot theme for the desktop setup window: the same two brand colors as the web app
+ * (app/src/awaken/palette.css), mapped onto the tokens desktop/src/styles.css defines.
+ * Imported after styles.css in main.tsx, so these win over OpenBot's lavender palette.
+ *
+ * To change colors, edit app/src/awaken/palette.css (and the two title-bar constants it names).
+ *
+ * The setup window follows the system's light/dark setting through `prefers-color-scheme`, unlike
+ * the web app's `.dark` class. `--sidebar` is the window's ground (`.backdrop`), and it is the plain
+ * brand color so it meets the natively painted macOS title bar without a seam.
+ */
+@import "../../app/src/awaken/palette.css";
+
+:root {
+  --background: var(--awaken-paper);
+  --foreground: var(--awaken-ink);
+  --card: color-mix(in oklab, var(--awaken-paper) 45%, white);
+  --primary: var(--awaken-ink);
+  --primary-foreground: var(--awaken-paper);
+  --secondary: color-mix(in oklab, var(--awaken-ink) 6%, var(--awaken-paper));
+  --muted: color-mix(in oklab, var(--awaken-ink) 6%, var(--awaken-paper));
+  --muted-foreground: color-mix(
+    in oklab,
+    var(--awaken-ink) 60%,
+    var(--awaken-paper)
+  );
+  --border: color-mix(in oklab, var(--awaken-ink) 13%, var(--awaken-paper));
+  --input: color-mix(in oklab, var(--awaken-ink) 13%, var(--awaken-paper));
+  --ring: color-mix(in oklab, var(--awaken-ink) 45%, var(--awaken-paper));
+  --sidebar: var(--awaken-paper);
+  --sidebar-accent: color-mix(
+    in oklab,
+    var(--awaken-ink) 9%,
+    var(--awaken-paper)
+  );
+  --mark-ground: var(--awaken-paper);
+  --mark-ink: var(--awaken-ink);
+}
+
+/*
+ * The setup window draws OpenBot's orb in CSS (`.orb` in styles.css). AwakenBot shows its own logo
+ * there instead: the same picture the app uses, made by scripts/awaken-brand-icons.sh from
+ * brand/logo.png.
+ */
+.orb {
+  background:
+    url("../../app/src/assets/openbot-logo.png") center / cover no-repeat;
+  filter: none;
+}
+
+.orb::before,
+.orb::after {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--awaken-ink);
+    --foreground: var(--awaken-paper);
+    --card: color-mix(in oklab, var(--awaken-paper) 5%, var(--awaken-ink));
+    --primary: var(--awaken-paper);
+    --primary-foreground: var(--awaken-ink);
+    --secondary: color-mix(
+      in oklab,
+      var(--awaken-paper) 10%,
+      var(--awaken-ink)
+    );
+    --muted: color-mix(in oklab, var(--awaken-paper) 10%, var(--awaken-ink));
+    --muted-foreground: color-mix(
+      in oklab,
+      var(--awaken-paper) 62%,
+      var(--awaken-ink)
+    );
+    --border: color-mix(in oklab, var(--awaken-paper) 14%, var(--awaken-ink));
+    --input: color-mix(in oklab, var(--awaken-paper) 14%, var(--awaken-ink));
+    --ring: color-mix(in oklab, var(--awaken-paper) 50%, var(--awaken-ink));
+    --sidebar: var(--awaken-ink);
+    --sidebar-accent: color-mix(
+      in oklab,
+      var(--awaken-paper) 10%,
+      var(--awaken-ink)
+    );
+  }
+}
+
+/* The setup window's lockup carries the upstream trademark sign; AwakenBot is not a registered mark. */
+.trademark {
+  display: none;
+}

@@ -144,7 +144,7 @@ export function parseAgentInput(
 
   /*
    * The framework a person named for an agent they run themselves, by its id in the harness list.
-   * Kept only with an address: a Bot with none runs here, on OpenBot. See `frameworkOf`.
+   * Kept only with an address: a Bot with none runs here, on AwakenBot. See `frameworkOf`.
    */
   let harness: string | undefined;
   if (input.harness !== undefined && input.harness !== "") {
@@ -152,7 +152,7 @@ export function parseAgentInput(
     if (!named)
       return {
         ok: false,
-        error: "OpenBot doesn't know that framework. Pick one from the list.",
+        error: "AwakenBot doesn't know that framework. Pick one from the list.",
       };
     if (endpoint) harness = named.id;
   }
@@ -388,12 +388,12 @@ export function createAgentRoutes(
     /*
      * Whether it runs on this deployment's model, so a person can pick the model and effort per
      * conversation: a `built_in` Bot (no endpoint), or the harness picked in setup when it is one of
-     * OpenBot's own that takes the choice. A Bot on any other framework picks its own model.
+     * AwakenBot's own that takes the choice. A Bot on any other framework picks its own model.
      */
     runsOnOpenBotModel:
       agent.endpoint === null || takesModelChoice(agent.endpoint),
     /*
-     * Whether OpenBot gives it a key on every run, as it does at every address it runs itself: the
+     * Whether AwakenBot gives it a key on every run, as it does at every address it runs itself: the
      * Bot in the box and the harness picked in setup (see runtime-agents.ts). Such a Bot uses its
      * tools with no key of its own, so its Setup page must not say it can't.
      */
@@ -669,7 +669,7 @@ export function createAgentRoutes(
   };
   /** Said where a deployment's computers cannot make one more. */
   const NO_ISOLATION =
-    "This OpenBot can't give a Bot a computer of its own, so it runs on yours.";
+    "This AwakenBot can't give a Bot a computer of its own, so it runs on yours.";
 
   routes.post("/", requireUser, async (context) => {
     // Malformed JSON is a recoverable client-input error and is validated by the same parser.

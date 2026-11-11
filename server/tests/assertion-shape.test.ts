@@ -1005,7 +1005,7 @@ const ALLOW: Allowed[] = [
     shape: "b",
     context: [
       '"a remote Mastra Bot"',
-      '"keeps only authoritative OpenBot governance through the runtime clone and native Mastra request"',
+      '"keeps only authoritative AwakenBot governance through the runtime clone and native Mastra request"',
     ],
     expression: "expect(run?.forwardedProps?.openbotRun).toBeUndefined()",
     finding: "NEW (round 2 did not find this)",

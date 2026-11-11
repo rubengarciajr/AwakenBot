@@ -55,7 +55,7 @@ afterAll(async () => {
   await GlobalRegistrator.unregister();
 });
 
-const banner = { name: "Self-host OpenBot" } as const;
+const banner = { name: "Self-host AwakenBot" } as const;
 
 function setup({
   enabled = true,
@@ -99,10 +99,10 @@ function setup({
   return { client, view };
 }
 
-test("offers self-hosting with a link to book an OpenBot for Business call", () => {
+test("offers self-hosting with a link to book an AwakenBot for Business call", () => {
   const { view } = setup();
   expect(
-    view.getByText("Self-host OpenBot for your organization."),
+    view.getByText("Self-host AwakenBot for your organization."),
   ).toBeTruthy();
   const link = view.getByRole("link", { name: "Book a call" });
   expect(link.getAttribute("href")).toBe("https://open.bot/business");

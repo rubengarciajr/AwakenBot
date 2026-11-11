@@ -1,7 +1,7 @@
 """Google ADK as a Bot, through `ag_ui_adk`, which AG-UI maintains.
 
 ADK is Gemini-first and model-agnostic after that, so the provider stays the person's choice: ADK
-reads LiteLLM model strings, and OpenBot writes the one it was told.
+reads LiteLLM model strings, and AwakenBot writes the one it was told.
 """
 
 from contextlib import aclosing

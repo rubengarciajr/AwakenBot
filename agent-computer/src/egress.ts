@@ -446,7 +446,7 @@ const REFUSALS = {
     person: (host: string) =>
       `This browser never opens ${host}: it is a cloud metadata or link-local address, not a website.`,
     anyone: (host: string) =>
-      `${host} is a cloud metadata or link-local address, which OpenBot never opens.`,
+      `${host} is a cloud metadata or link-local address, which AwakenBot never opens.`,
   },
   off: {
     bot: "Network access is turned off for this Bot's computer.",
@@ -841,7 +841,7 @@ function refuse(socket: Socket, reason: string) {
  * https://www.rfc-editor.org/rfc/rfc9110#name-407-proxy-authentication-re
  */
 const PROXY_CHALLENGE =
-  'HTTP/1.1 407 Proxy Authentication Required\r\nproxy-authenticate: Basic realm="OpenBot"\r\ncontent-type: text/plain\r\nconnection: close\r\ncontent-length: 0\r\n\r\n';
+  'HTTP/1.1 407 Proxy Authentication Required\r\nproxy-authenticate: Basic realm="AwakenBot"\r\ncontent-type: text/plain\r\nconnection: close\r\ncontent-length: 0\r\n\r\n';
 
 /**
  * The host a browser asks the filter for once as it starts, so that it holds the filter's credentials
@@ -996,7 +996,7 @@ export async function startEgressFilter(
     if (asks && !botId) {
       response
         .writeHead(407, {
-          "proxy-authenticate": 'Basic realm="OpenBot"',
+          "proxy-authenticate": 'Basic realm="AwakenBot"',
           "content-type": "text/plain",
           connection: "close",
         })

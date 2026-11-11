@@ -140,7 +140,7 @@ const STARTED_BY: Record<string, string> = {
   handoff: "Another Bot",
   responsibility: "A goal",
   memory: "A memory source",
-  deployment: "OpenBot",
+  deployment: "AwakenBot",
 };
 
 /** Groups of event types an admin adds by name, from the lists the saved views are built from. */

@@ -30,7 +30,7 @@ import { Route as SettingsMemoryRoute } from "@/routes/_authed/settings/memory";
 import { settleReactWork } from "./settle-react-work";
 
 /*
- * The personal edition offers no memory: OpenBot Desktop's local Intelligence is not licensed for
+ * The personal edition offers no memory: AwakenBot Desktop's local Intelligence is not licensed for
  * it. So no screen, row or link there leads to memory, and an address that used to open one opens
  * the nearest page that is there. The team edition keeps every one of them.
  */

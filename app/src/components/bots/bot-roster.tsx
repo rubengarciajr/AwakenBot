@@ -113,7 +113,7 @@ export function BotRoster() {
       </PageSection>
       {shared.length > 0 || !personal ? (
         <PageSection
-          title={personal ? "Included with OpenBot" : "Shared with you"}
+          title={personal ? "Included with AwakenBot" : "Shared with you"}
         >
           {shared.length ? (
             <RosterRows agents={shared} byId={byId} />

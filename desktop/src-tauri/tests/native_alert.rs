@@ -1,5 +1,5 @@
 //! The alert the shell shows its own messages in on macOS, built on the main thread the way the
-//! app builds it: OpenBot's icon, the informational style, and the buttons the message asks for.
+//! app builds it: AwakenBot's icon, the informational style, and the buttons the message asks for.
 //! AppKit only works on the main thread, and the test harness runs each test on a thread of its
 //! own, so this file runs without it (`harness = false` in Cargo.toml).
 
@@ -15,7 +15,7 @@ fn main() {
     let mtm = MainThreadMarker::new().expect("runs on the main thread");
     let app = NSApplication::sharedApplication(mtm);
 
-    // Check for Updates… when this is the newest OpenBot: the message in the report.
+    // Check for Updates… when this is the newest AwakenBot: the message in the report.
     let up_to_date = app_update::prompt(&Ok(app_update::Asked::UpToDate {
         current: "1.0.0".into(),
     }));
@@ -25,12 +25,12 @@ fn main() {
         &up_to_date.message,
         up_to_date.buttons,
     );
-    assert_eq!(shown.messageText().to_string(), "OpenBot is up to date");
+    assert_eq!(shown.messageText().to_string(), "AwakenBot is up to date");
     assert_eq!(
         shown.informativeText().to_string(),
-        "OpenBot 1.0.0 is up to date."
+        "AwakenBot 1.0.0 is up to date."
     );
-    // OpenBot's own icon, not the system's note icon, and no badge over it.
+    // AwakenBot's own icon, not the system's note icon, and no badge over it.
     let icon = shown.icon().expect("the alert has an icon");
     let own = app.applicationIconImage().expect("the app has an icon");
     assert!(
@@ -70,7 +70,7 @@ fn main() {
     assert!(went_ahead(NSAlertFirstButtonReturn));
     assert!(!went_ahead(NSAlertSecondButtonReturn));
 
-    // Failed to install: still OpenBot's icon, a single OK.
+    // Failed to install: still AwakenBot's icon, a single OK.
     let failed = app_update::install_failed("The download didn't finish.");
     let shown = alert(mtm, &failed.title, &failed.message, failed.buttons);
     assert!(std::ptr::eq(&*shown.icon().expect("an icon"), &*own));

@@ -522,7 +522,7 @@ const opens = () =>
 
 /**
  * Starts a recording of the task already named: Start recording in Record's popover above a browser in the page; on
- * OpenBot Desktop, Continue past the name, then Open browser and record.
+ * AwakenBot Desktop, Continue past the name, then Open browser and record.
  */
 async function pressRecord(
   view: ReturnType<typeof draw>,
@@ -567,7 +567,7 @@ async function behindRecord(
   return view.findByRole(role, { name });
 }
 
-/** The task's name, on the page on OpenBot Desktop and in Record's popover above a browser in the page. */
+/** The task's name, on the page on AwakenBot Desktop and in Record's popover above a browser in the page. */
 const taskField = (
   view: ReturnType<typeof draw>,
   user: ReturnType<typeof userEvent.setup>,
@@ -579,7 +579,7 @@ const narrationSwitch = (
   user: ReturnType<typeof userEvent.setup>,
 ) => behindRecord(view, user, "switch", "Narration");
 
-test("your recordings show even when OpenBot can't run a browser", async () => {
+test("your recordings show even when AwakenBot can't run a browser", async () => {
   state = { available: false, note: "No browser here." } as BrowserApiState;
   recordingRows = [recording("Refund an order")];
   const view = draw(<BrowserPage />);
@@ -725,7 +725,7 @@ test("a recording that stops refreshes the list under the page", async () => {
 });
 
 test("a stopped recording the Recorder held lands later, and the list under the page shows it then", async () => {
-  // OpenBot Desktop, 2026-11-07: three held recordings reached the back end minutes after Stop, and the list showed
+  // AwakenBot Desktop, 2026-11-07: three held recordings reached the back end minutes after Stop, and the list showed
   // none of them until the person left Teach a Bot and came back.
   const held = {
     recordingId: "rec-1",
@@ -771,7 +771,7 @@ test("a stopped recording the Recorder held lands later, and the list under the 
   expect(await view.findByText(recordedAt.toLocaleString())).toBeTruthy();
 });
 
-test("on OpenBot Desktop arriving opens nothing: the page offers the task's name and narration", async () => {
+test("on AwakenBot Desktop arriving opens nothing: the page offers the task's name and narration", async () => {
   state = { ...nativeState(), open: false, recorder: undefined };
   delete state.browser;
   const view = draw(<BrowserPage />);
@@ -790,7 +790,7 @@ test("on OpenBot Desktop arriving opens nothing: the page offers the task's name
   expect(QuietSocket.urls).toEqual([]);
 });
 
-test("on OpenBot Desktop Open browser and record opens the browser, then starts a recording named for the task, which shows its time and actions until Stop", async () => {
+test("on AwakenBot Desktop Open browser and record opens the browser, then starts a recording named for the task, which shows its time and actions until Stop", async () => {
   state = { ...nativeState(), open: false };
   const view = draw(<BrowserPage />);
   const user = userEvent.setup({ document });
@@ -850,7 +850,7 @@ test("on OpenBot Desktop Open browser and record opens the browser, then starts 
   expect((again as HTMLInputElement).value).toBe("");
 });
 
-test("on OpenBot Desktop the introduction shows until a recording is saved, Continue leaves it, and Back returns to it", async () => {
+test("on AwakenBot Desktop the introduction shows until a recording is saved, Continue leaves it, and Back returns to it", async () => {
   localStorage.removeItem(INTRODUCED_KEY);
   state = { ...nativeState(), open: false };
   const view = draw(<BrowserPage />);
@@ -887,7 +887,7 @@ test("on OpenBot Desktop the introduction shows until a recording is saved, Cont
   expect(localStorage.getItem(INTRODUCED_KEY)).toBe("1");
 });
 
-/** OpenBot Desktop, after Stop saved "Find my meeting": the Recorder's own report, as a reload reads it. */
+/** AwakenBot Desktop, after Stop saved "Find my meeting": the Recorder's own report, as a reload reads it. */
 function savedMeeting(): BrowserApiState {
   const base = nativeState();
   return {
@@ -912,9 +912,9 @@ function linkNamed(view: ReturnType<typeof draw>, name: string) {
   return link;
 }
 
-// A teammate on OpenBot Desktop 0.3.3, after Stop: "I'm not sure what to do next. It doesn't tell me to go back."
+// A teammate on AwakenBot Desktop 0.3.3, after Stop: "I'm not sure what to do next. It doesn't tell me to go back."
 // The page said only "Saved to your Learning space: 6 actions and 6 narrated phrases."
-test("on OpenBot Desktop a saved recording says what happens next, Learn now starts Learning on the person's recordings, and See your skills opens Settings, Learning", async () => {
+test("on AwakenBot Desktop a saved recording says what happens next, Learn now starts Learning on the person's recordings, and See your skills opens Settings, Learning", async () => {
   state = savedMeeting();
   const view = draw(<BrowserPage />);
   const user = userEvent.setup({ document });
@@ -923,7 +923,7 @@ test("on OpenBot Desktop a saved recording says what happens next, Learn now sta
   ).toBeTruthy();
   expect(
     view.getByText(
-      "OpenBot learns a skill from it, and you'll find it in Settings, Learning. Once it's learned, ask any Bot to do it.",
+      "AwakenBot learns a skill from it, and you'll find it in Settings, Learning. Once it's learned, ask any Bot to do it.",
     ),
   ).toBeTruthy();
   expect(await view.findByText("Learning runs on its own")).toBeTruthy();
@@ -950,7 +950,7 @@ test("on OpenBot Desktop a saved recording says what happens next, Learn now sta
   );
 });
 
-test("on OpenBot Desktop a skill learned from the saved recording says so, with Try it opening a new conversation with the task", async () => {
+test("on AwakenBot Desktop a skill learned from the saved recording says so, with Try it opening a new conversation with the task", async () => {
   state = savedMeeting();
   review.sources[0] = {
     ...(review.sources[0] as PersonalReview["sources"][number]),
@@ -990,9 +990,9 @@ test("on OpenBot Desktop a skill learned from the saved recording says so, with 
   );
 });
 
-test("on OpenBot Desktop a saved recording says why Learning can't run, didn't finish, or didn't start", async () => {
+test("on AwakenBot Desktop a saved recording says why Learning can't run, didn't finish, or didn't start", async () => {
   const noModel =
-    "Learning can't run on the model you signed in with. To use it, sign OpenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan.";
+    "Learning can't run on the model you signed in with. To use it, sign AwakenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan.";
   state = savedMeeting();
   review.modelProblem = noModel;
   let view = draw(<BrowserPage />);
@@ -1001,7 +1001,7 @@ test("on OpenBot Desktop a saved recording says why Learning can't run, didn't f
   expect(view.queryByRole("button", { name: "Learn now" })).toBeNull();
   expect(
     view.getByText(
-      "Your recording is kept. OpenBot learns a skill from it once Learning can run.",
+      "Your recording is kept. AwakenBot learns a skill from it once Learning can run.",
     ),
   ).toBeTruthy();
 
@@ -1026,7 +1026,7 @@ test("on OpenBot Desktop a saved recording says why Learning can't run, didn't f
   expect(view.getByText(noModel)).toBeTruthy();
 });
 
-/** The same saved recording where the browser is drawn in the page (OpenBot Desktop since #1306, and hosted OpenBot). */
+/** The same saved recording where the browser is drawn in the page (AwakenBot Desktop since #1306, and hosted AwakenBot). */
 function savedMeetingOnScreen(): BrowserApiState {
   const base = screenState();
   return {
@@ -1050,7 +1050,7 @@ test("with the browser in the page, a saved recording says what happens next und
   );
   expect(
     await view.findByText(
-      "OpenBot learns a skill from it, and you'll find it in Settings, Learning. Once it's learned, ask any Bot to do it.",
+      "AwakenBot learns a skill from it, and you'll find it in Settings, Learning. Once it's learned, ask any Bot to do it.",
     ),
   ).toBeTruthy();
   expect(await view.findByText("Learning runs on its own")).toBeTruthy();
@@ -1110,7 +1110,7 @@ test("with the browser in the page, a recording still on its way has no next ste
   expect(view.queryByText("Learning runs on its own")).toBeNull();
 });
 
-test("on OpenBot Desktop a recording discarded from the Recorder's mark in the browser is said to be discarded, never saved", async () => {
+test("on AwakenBot Desktop a recording discarded from the Recorder's mark in the browser is said to be discarded, never saved", async () => {
   state = {
     ...nativeState(),
     recorder: {
@@ -1256,7 +1256,7 @@ test("after a reload the page says what the last recording held as the Recorder 
 });
 
 test("a recording Intelligence refused, or one still on its way, is never said to be saved, on both shapes", async () => {
-  // OpenBot Desktop, 2026-11-06: its local Intelligence has Trajectories turned off and refused the recording's capture
+  // AwakenBot Desktop, 2026-11-06: its local Intelligence has Trajectories turned off and refused the recording's capture
   // pass (TRAJECTORIES_UNAVAILABLE), and the page said “Saved … to your Learning space: 1 action.”
   for (const shape of ["native", "screen"] as const) {
     for (const [delivery, says] of [
@@ -1269,8 +1269,8 @@ test("a recording Intelligence refused, or one still on its way, is never said t
       [
         { kept: "signed-out" },
         shape === "native"
-          ? "Check example.com headingNot saved to your Learning space. It's kept in this browser until you connect it to OpenBot again."
-          : "“Check example.com heading” wasn't saved to your Learning space. It's kept in this browser until you connect it to OpenBot again.",
+          ? "Check example.com headingNot saved to your Learning space. It's kept in this browser until you connect it to AwakenBot again."
+          : "“Check example.com heading” wasn't saved to your Learning space. It's kept in this browser until you connect it to AwakenBot again.",
       ],
       [
         { sending: true },
@@ -1278,17 +1278,17 @@ test("a recording Intelligence refused, or one still on its way, is never said t
           ? "Check example.com headingSaving to your Learning space: 1 action."
           : "Saving “Check example.com heading” to your Learning space: 1 action.",
       ],
-      // OpenBot Desktop, 2026-11-07: the capture pass could not reach OpenBot and the Recorder retried it for half an
+      // AwakenBot Desktop, 2026-11-07: the capture pass could not reach AwakenBot and the Recorder retried it for half an
       // hour, while the page said "Saving" the whole time.
       [
         {
           sending: true,
           retrying:
-            "OpenBot's backend is busy or unreachable. Retrying; nothing is lost.",
+            "AwakenBot's backend is busy or unreachable. Retrying; nothing is lost.",
         },
         shape === "native"
-          ? "Check example.com headingNot saved to your Learning space yet. OpenBot's backend is busy or unreachable. Retrying; nothing is lost."
-          : "“Check example.com heading” wasn't saved to your Learning space yet. OpenBot's backend is busy or unreachable. Retrying; nothing is lost.",
+          ? "Check example.com headingNot saved to your Learning space yet. AwakenBot's backend is busy or unreachable. Retrying; nothing is lost."
+          : "“Check example.com heading” wasn't saved to your Learning space yet. AwakenBot's backend is busy or unreachable. Retrying; nothing is lost.",
       ],
     ] as const) {
       cleanup();
@@ -1344,7 +1344,7 @@ test("an action the page has not read yet when Stop is pressed still counts: the
 });
 
 test("Record is offered while the Recorder is disconnected: the server connects it first", async () => {
-  // Disconnecting the OpenBot browser in Settings leaves the Recorder signed out until something asks again; Record is
+  // Disconnecting the AwakenBot browser in Settings leaves the Recorder signed out until something asks again; Record is
   // that ask, and the server reconnects the browser before it starts.
   state = {
     ...nativeState(),
@@ -1384,7 +1384,7 @@ test("while the browser opens, the page's description names the button the page 
   expect(await view.findByRole("button", { name: "Record" })).toBeTruthy();
 });
 
-test("on hosted OpenBot Record's (i) beside Narration says what narration is for, and pressing it records nothing", async () => {
+test("on hosted AwakenBot Record's (i) beside Narration says what narration is for, and pressing it records nothing", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   installChrome();
@@ -1406,7 +1406,7 @@ test("on hosted OpenBot Record's (i) beside Narration says what narration is for
   expect(view.getByRole("textbox", { name: "Task name" })).toBeTruthy();
 });
 
-test("on hosted OpenBot the toolbar holds one Record button, which asks for the task's name in a popover", async () => {
+test("on hosted AwakenBot the toolbar holds one Record button, which asks for the task's name in a popover", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   installChrome();
@@ -1443,7 +1443,7 @@ test("on hosted OpenBot the toolbar holds one Record button, which asks for the 
   expect(await view.findByRole("button", { name: "Stop" })).toBeTruthy();
 });
 
-test("on hosted OpenBot the page is the browser: its tabs, its address and its live screen, driven at once", async () => {
+test("on hosted AwakenBot the page is the browser: its tabs, its address and its live screen, driven at once", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   const view = draw(<BrowserPage />);
@@ -1520,7 +1520,7 @@ test("on hosted OpenBot the page is the browser: its tabs, its address and its l
   );
 });
 
-test("on hosted OpenBot the page narrates a recording, and Stop sends the phrase being said before the recording ends", async () => {
+test("on hosted AwakenBot the page narrates a recording, and Stop sends the phrase being said before the recording ends", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   const recognitions = installChrome();
@@ -1590,7 +1590,7 @@ test("on hosted OpenBot the page narrates a recording, and Stop sends the phrase
   ).toBeTruthy();
 });
 
-test("in the OpenBot Desktop window the page narrates through the desktop app's on-device recognition, where the web view has none", async () => {
+test("in the AwakenBot Desktop window the page narrates through the desktop app's on-device recognition, where the web view has none", async () => {
   // Seen on the Mac: narration said it was on, then "Narration is off." a few seconds into the recording, because the
   // window's web view has no speech recognition that stays on the computer.
   state = screenState();
@@ -1677,7 +1677,7 @@ test("in the OpenBot Desktop window the page narrates through the desktop app's 
   expect(view.queryByText("Narration is off.")).toBeNull();
 });
 
-test("in the OpenBot Desktop window on a computer with no microphone, narration that failed stays off after Stop until the person turns it on", async () => {
+test("in the AwakenBot Desktop window on a computer with no microphone, narration that failed stays off after Stop until the person turns it on", async () => {
   // Windows with no microphone: the desktop answered the start with audio-capture, then its end. Narration read off
   // while recording, then after Stop its switch turned itself back on and the page said "We're capturing your voice"
   // with nothing recording and no microphone to capture with.
@@ -1776,8 +1776,8 @@ function installDevices(kinds: MediaDeviceKind[]) {
   return devices;
 }
 
-test("in the OpenBot Desktop window on a computer with no microphone, narration says so and reads off after a relaunch, and the choice is kept", async () => {
-  // Windows with no microphone, OpenBot relaunched after a recording fell back to off: the page read "Narration is on."
+test("in the AwakenBot Desktop window on a computer with no microphone, narration says so and reads off after a relaunch, and the choice is kept", async () => {
+  // Windows with no microphone, AwakenBot relaunched after a recording fell back to off: the page read "Narration is on."
   // with its switch on, and nothing said there was no microphone.
   state = screenState();
   openAnswer = answerFor("screen");
@@ -1815,7 +1815,7 @@ test("in the OpenBot Desktop window on a computer with no microphone, narration 
   }
 });
 
-test("on hosted OpenBot a narration the Recorder refused says why, beside the narration switch", async () => {
+test("on hosted AwakenBot a narration the Recorder refused says why, beside the narration switch", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   refusals = {
@@ -1832,7 +1832,7 @@ test("on hosted OpenBot a narration the Recorder refused says why, beside the na
   ).toBeTruthy();
 });
 
-test("on hosted OpenBot narration that cannot hear the person shows its switch off, and turning it on tries again", async () => {
+test("on hosted AwakenBot narration that cannot hear the person shows its switch off, and turning it on tries again", async () => {
   // The fourth end-to-end run: in a browser with no microphone the page said narration was off while its switch read on.
   for (const [error, sentence] of [
     ["not-allowed", "Narration is off."],
@@ -1875,7 +1875,7 @@ test("on hosted OpenBot narration that cannot hear the person shows its switch o
   }
 });
 
-test("on hosted OpenBot narration whose speech service cannot be reached stays on: it tries again by itself", async () => {
+test("on hosted AwakenBot narration whose speech service cannot be reached stays on: it tries again by itself", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   const chrome = installRefusingChrome();
@@ -1901,14 +1901,14 @@ test("Record and Stop the server refused say the server's sentence where the per
     openAnswer = answerFor(shape);
     refusals = {
       [browserApiPaths.recording]:
-        "This browser is no longer connected to OpenBot. Open it from OpenBot again.",
+        "This browser is no longer connected to AwakenBot. Open it from AwakenBot again.",
     };
     const view = draw(<BrowserPage />);
     const user = userEvent.setup({ document });
     await user.type(await taskField(view, user), "Refund an order");
     await pressRecord(view, user);
     expect((await view.findByRole("alert")).textContent).toBe(
-      "This browser is no longer connected to OpenBot. Open it from OpenBot again.",
+      "This browser is no longer connected to AwakenBot. Open it from AwakenBot again.",
     );
 
     // A recording the Recorder will not stop.
@@ -1936,7 +1936,7 @@ test("Record and Stop the server refused say the server's sentence where the per
   }
 });
 
-test("on hosted OpenBot a refused Record is shown even after a tab that would not close", async () => {
+test("on hosted AwakenBot a refused Record is shown even after a tab that would not close", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   refusals = { [browserApiPaths.tabs]: "There is no such tab." };
@@ -1960,7 +1960,7 @@ test("on hosted OpenBot a refused Record is shown even after a tab that would no
   );
 });
 
-test("on OpenBot Desktop the narration row says what the Recorder hears, as it reports it", async () => {
+test("on AwakenBot Desktop the narration row says what the Recorder hears, as it reports it", async () => {
   const recorder = (voice: NonNullable<BrowserApiState["recorder"]>["voice"]) =>
     ({
       connected: true,
@@ -1991,7 +1991,7 @@ test("on OpenBot Desktop the narration row says what the Recorder hears, as it r
   }
 });
 
-test("on hosted OpenBot in a browser with no speech recognition, the page says narration is unavailable and Record still works", async () => {
+test("on hosted AwakenBot in a browser with no speech recognition, the page says narration is unavailable and Record still works", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   const view = draw(<BrowserPage />);
@@ -2024,7 +2024,7 @@ const starts = () =>
       (write.body as { action?: string }).action === "start",
   );
 
-test("Record asks whether to narrate before the first recording, keeps the answer, and tells the Recorder, on OpenBot Desktop", async () => {
+test("Record asks whether to narrate before the first recording, keeps the answer, and tells the Recorder, on AwakenBot Desktop", async () => {
   narrationChoice = null;
   const view = draw(<BrowserPage />);
   const user = userEvent.setup({ document });
@@ -2054,7 +2054,7 @@ test("Record asks whether to narrate before the first recording, keeps the answe
   expect(view.queryByRole("dialog")).toBeNull();
 });
 
-test("in the OpenBot Desktop window on a computer with no microphone, Record asks nothing about narration and records without it; with a microphone it still asks", async () => {
+test("in the AwakenBot Desktop window on a computer with no microphone, Record asks nothing about narration and records without it; with a microphone it still asks", async () => {
   // Windows with no microphone: the page said "No microphone found. Narration is off." with its switch off, yet Start
   // recording still asked "Narrate while you record?", offering Record with narration first.
   narrationChoice = null;
@@ -2142,7 +2142,7 @@ test("a choice that cannot be read records without narration and asks nothing", 
   expect(preferenceWrites()).toEqual([]);
 });
 
-test("on hosted OpenBot a yes to the narration question listens, on the person's computer, and the bar says it is listening", async () => {
+test("on hosted AwakenBot a yes to the narration question listens, on the person's computer, and the bar says it is listening", async () => {
   narrationChoice = null;
   state = screenState();
   openAnswer = answerFor("screen");
@@ -2173,7 +2173,7 @@ test("on hosted OpenBot a yes to the narration question listens, on the person's
   );
 });
 
-test("on hosted OpenBot a person who chose not to narrate is never listened to, and turning the switch on keeps the new choice", async () => {
+test("on hosted AwakenBot a person who chose not to narrate is never listened to, and turning the switch on keeps the new choice", async () => {
   narrationChoice = "off";
   state = screenState();
   openAnswer = answerFor("screen");
@@ -2197,7 +2197,7 @@ test("on hosted OpenBot a person who chose not to narrate is never listened to, 
   ]);
 });
 
-test("on hosted OpenBot a language still to be downloaded is asked for on the switch's click, and narration waits for it", async () => {
+test("on hosted AwakenBot a language still to be downloaded is asked for on the switch's click, and narration waits for it", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   // Chrome answers downloadable for a language this page has not asked for yet, and downloads only on a click.
@@ -2228,7 +2228,7 @@ test("on hosted OpenBot a language still to be downloaded is asked for on the sw
   });
 }, 15_000);
 
-test("on hosted OpenBot a browser that cannot keep speech on the computer never listens, and says why", async () => {
+test("on hosted AwakenBot a browser that cannot keep speech on the computer never listens, and says why", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   const recognitions = installChrome(null);
@@ -2411,7 +2411,7 @@ test("with the live screen connected, the page's controls keep their keys, and t
   expect(document.activeElement).toBe(screen);
 });
 
-/** What the server says of a person's browser that is there and not answering, on an OpenBot with sign-in. */
+/** What the server says of a person's browser that is there and not answering, on an AwakenBot with sign-in. */
 const NOT_ANSWERING =
   "Your browser isn't answering. If it doesn't come back soon, ask an admin for help.";
 
@@ -2501,7 +2501,7 @@ test("arriving while the browser is not answering, the page says so rather than 
   expect(view.getByRole("button", { name: "Try again" })).toBeTruthy();
 });
 
-test("on OpenBot Desktop a window that is not answering says so", async () => {
+test("on AwakenBot Desktop a window that is not answering says so", async () => {
   state = { ...nativeState(), problem: NOT_ANSWERING };
   const view = draw(<BrowserPage />);
   expect((await view.findByRole("alert")).textContent).toBe(NOT_ANSWERING);
@@ -2551,18 +2551,18 @@ test("while the browser's state is first read, the page draws nothing, so a brow
   expect(opens()).toBe(0);
 });
 
-test("where OpenBot cannot run a browser for the person, the page says so and opens nothing", async () => {
+test("where AwakenBot cannot run a browser for the person, the page says so and opens nothing", async () => {
   state = { ...nativeState(), available: false, open: false };
   const view = draw(<BrowserPage />);
   expect(
     await view.findByText(
-      "OpenBot isn't set up to run a browser for you. Ask an admin.",
+      "AwakenBot isn't set up to run a browser for you. Ask an admin.",
     ),
   ).toBeTruthy();
   expect(opens()).toBe(0);
 });
 
-test("on hosted OpenBot a new tab takes the focus into its address bar, as Chrome does", async () => {
+test("on hosted AwakenBot a new tab takes the focus into its address bar, as Chrome does", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   tabsOpen = true;
@@ -2581,7 +2581,7 @@ test("on hosted OpenBot a new tab takes the focus into its address bar, as Chrom
   );
 });
 
-test("on hosted OpenBot narration the person turned off stays off after a reload, kept on their account", async () => {
+test("on hosted AwakenBot narration the person turned off stays off after a reload, kept on their account", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   installChrome();
@@ -2591,7 +2591,7 @@ test("on hosted OpenBot narration the person turned off stays off after a reload
   await waitFor(() => expect(toggle.getAttribute("aria-checked")).toBe("true"));
   await user.click(toggle);
   expect(toggle.getAttribute("aria-checked")).toBe("false");
-  // Kept as the person's own preference, which every browser they open OpenBot in reads, not in this browser alone.
+  // Kept as the person's own preference, which every browser they open AwakenBot in reads, not in this browser alone.
   await waitFor(() =>
     expect(preferenceWrites().map((write) => write.body)).toEqual([
       { narration: "off" },
@@ -2624,7 +2624,7 @@ test("where the server says why there is no browser of the person's own, the pag
   // Every Bot shares one computer here, which is no place for a person's browser: a Bot's shell there could read the
   // cookies in its profile (server/src/browser/host.ts).
   const why =
-    "This OpenBot can't open a browser of your own, because its Bots share one computer.";
+    "This AwakenBot can't open a browser of your own, because its Bots share one computer.";
   state = { ...screenState(), available: false, open: false, note: why };
   const view = draw(<BrowserPage />);
   expect(await view.findByText(why)).toBeTruthy();
@@ -2678,7 +2678,7 @@ function installRefusingChrome(onDevice: OnDeviceModel = everyLanguage()) {
   return chrome;
 }
 
-test("on hosted OpenBot Clear browser data asks first in one sentence, Cancel does nothing, and Clear shows the browser fresh", async () => {
+test("on hosted AwakenBot Clear browser data asks first in one sentence, Cancel does nothing, and Clear shows the browser fresh", async () => {
   state = screenState();
   openAnswer = answerFor("screen");
   const view = draw(<BrowserPage />);

@@ -126,9 +126,9 @@ test("in the team edition an administrator's skill for everybody is still the de
 test("a start in the personal edition gives the person the skills they wrote before this", async () => {
   // Written on Settings > Skills by a build before this fix: nobody's, and installed by the person.
   await seed("harbour-log", { origin: "yours", installedBy: person.email });
-  // Shipped with OpenBot, as the package seeds it.
+  // Shipped with AwakenBot, as the package seeds it.
   await seed("find-a-document", { origin: "catalogue", installedBy: null });
-  // Shipped, then edited here: an edit keeps the owner it had, so it stays OpenBot's.
+  // Shipped, then edited here: an edit keeps the owner it had, so it stays AwakenBot's.
   await seed("find-a-page", { origin: "yours", installedBy: null });
 
   setEdition("personal");

@@ -724,7 +724,7 @@ export function mountConnectionRoutes({
       if (kind === "unreadable") {
         return context.json(
           {
-            error: `OpenBot can't tell how ${row.title} connects, so no account was made. ${askAdminTo(`remove it under ${appsPage()} and add it again`)}.`,
+            error: `AwakenBot can't tell how ${row.title} connects, so no account was made. ${askAdminTo(`remove it under ${appsPage()} and add it again`)}.`,
           },
           400,
         );
@@ -848,7 +848,7 @@ export function mountConnectionRoutes({
         if (confirmed.connected) return context.json(confirmed);
         return context.json(
           {
-            error: `OpenBot was told an account for ${row.title} is already connected, but found none when it checked. Nothing was connected. Press Connect again, or ask an admin if it keeps happening.`,
+            error: `AwakenBot was told an account for ${row.title} is already connected, but found none when it checked. Nothing was connected. Press Connect again, or ask an admin if it keeps happening.`,
           },
           409,
         );
@@ -1642,10 +1642,10 @@ export function mountConnectionRoutes({
   );
 
   /*
-   * `fromDesktop` is the press's own `?from=desktop`: the sign-in was started in OpenBot Desktop's
+   * `fromDesktop` is the press's own `?from=desktop`: the sign-in was started in AwakenBot Desktop's
    * window and runs in the person's browser, so it comes back to the page that hands them back to the
    * window ({@link desktopReturnUrlFor}). Anybody can send it, and all it changes is which of this
-   * OpenBot's own pages the browser lands on.
+   * AwakenBot's own pages the browser lands on.
    */
   const consentReturnUrl = (
     appUrl: string,
@@ -1984,8 +1984,8 @@ export function mountConnectionRoutes({
       return context.json(
         {
           error: freed
-            ? "The app started that authorization, but OpenBot couldn't record it, so nothing was connected. Press Authorize again. It's safe to start over."
-            : "The app started that authorization, but OpenBot couldn't record it, so nothing was connected. This attempt expires within fifteen minutes. You can start over after that.",
+            ? "The app started that authorization, but AwakenBot couldn't record it, so nothing was connected. Press Authorize again. It's safe to start over."
+            : "The app started that authorization, but AwakenBot couldn't record it, so nothing was connected. This attempt expires within fifteen minutes. You can start over after that.",
         },
         500,
       );
@@ -2240,7 +2240,7 @@ export function mountConnectionRoutes({
    *
    * THIS ROUTE BREAKS THIS FILE'S JSON/401 CONVENTION DELIBERATELY, AND THE REASON IS WRITTEN HERE
    * SO NOBODY "FIXES" IT TO MATCH ITS NEIGHBOURS. Every other route in this file answers `fetch`
-   * from OpenBot's own pages, so JSON is what the caller can read and 401 is what an unauthenticated
+   * from AwakenBot's own pages, so JSON is what the caller can read and 401 is what an unauthenticated
    * one deserves. Here the caller is a PERSON'S BROWSER, arriving on a top-level navigation from the
    * broker's own screen with a just-completed consent behind it — so an unauthenticated arrival is
    * sent to sign-in with a 303 and a `Location` CARRYING ITS `flow_id`, never answered 401. A 401
@@ -2345,7 +2345,7 @@ export function mountConnectionRoutes({
         return context.json(
           {
             error:
-              "OpenBot doesn't recognise you anymore, so nothing was recorded. Ask an admin to restore your access, then authorize again from the app's page.",
+              "AwakenBot doesn't recognise you anymore, so nothing was recorded. Ask an admin to restore your access, then authorize again from the app's page.",
           },
           403,
         );
@@ -2406,7 +2406,7 @@ export function mountConnectionRoutes({
        * A person's name at the broker changes in one way only: a single-user deployment that was
        * filed under `dev-local-user` is given its own name at a start after an upgrade (see
        * `ensureSingleUserIdentity`). A consent begun before that restart comes back holding the old
-       * name, and `dev-local-user` at Arcade is shared by every other single-user OpenBot on the
+       * name, and `dev-local-user` at Arcade is shared by every other single-user AwakenBot on the
        * key. Finished, `confirm_user` would complete a grant under that shared name, and the
        * freshness check below would read the new name as an account that moved and WITHDRAW the
        * old one's connection, which is other installs' grants. So it is refused before the vendor

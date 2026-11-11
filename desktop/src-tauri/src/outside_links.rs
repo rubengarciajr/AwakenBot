@@ -1,25 +1,25 @@
-//! A site outside OpenBot opens in the person's own browser, never in the desktop window.
+//! A site outside AwakenBot opens in the person's own browser, never in the desktop window.
 //!
-//! OpenBot's pages are shown in this app's webview, which is not a browser: it refuses
+//! AwakenBot's pages are shown in this app's webview, which is not a browser: it refuses
 //! `window.open`, so an app's sign-in claimed in a new tab was blocked ("This browser blocked the
-//! tab"), and a link to another site took the window itself there, leaving OpenBot. The person's
+//! tab"), and a link to another site took the window itself there, leaving AwakenBot. The person's
 //! accounts (HubSpot, Google and the rest) are signed in to in their own browser, so that is where
 //! a consent has to open. The page's shim (`outside-links.js`) turns every way out into a
 //! navigation, and the window's guard hands each one that leaves to the default browser while the
 //! page stays.
 //!
-//! A FRAME IN THE PAGE IS NOT THE WINDOW LEAVING. OpenBot embeds one site: the booking calendar on
+//! A FRAME IN THE PAGE IS NOT THE WINDOW LEAVING. AwakenBot embeds one site: the booking calendar on
 //! onboarding's Book a demo step (Calendly), which itself frames reCAPTCHA and Stripe. On macOS
 //! the window's guard is asked about every frame's navigation, not only the page's, so it would
 //! have sent the calendar and its parts to the browser and left an empty frame. Those hosts load
-//! in their frames (`loads_in_a_frame`); OpenBot never sends the window itself to any of them.
+//! in their frames (`loads_in_a_frame`); AwakenBot never sends the window itself to any of them.
 //! Links in the calendar open new windows, and a new window from this one opens in the browser
 //! (`new_window`).
 
-/// Injected into OpenBot's pages in the desktop window. See the module documentation.
+/// Injected into AwakenBot's pages in the desktop window. See the module documentation.
 pub const PAGE: &str = include_str!("outside-links.js");
 
-/// Whether `destination` is a site outside OpenBot: the web, not this machine.
+/// Whether `destination` is a site outside AwakenBot: the web, not this machine.
 pub fn leaves(destination: &tauri::Url) -> bool {
     matches!(destination.scheme(), "http" | "https")
         && destination.host_str().is_some_and(|host| {
@@ -27,19 +27,19 @@ pub fn leaves(destination: &tauri::Url) -> bool {
         })
 }
 
-/// Whether `destination` is a file on this computer, which the window never shows in place of OpenBot.
+/// Whether `destination` is a file on this computer, which the window never shows in place of AwakenBot.
 ///
 /// The page handles a dropped file itself (the composer attaches it), so Tauri's own drag-and-drop
 /// handler is off (`dragDropEnabled` in `tauri.conf.json`). With it off, a file let go over a page
 /// that does not take it is the webview's to handle. WebView2 on Windows is Chromium, whose default
-/// is to open the file in place, leaving OpenBot or the setup screen (WKWebView on macOS refuses the
-/// drop instead). OpenBot's own page refuses such a drop (`useUnclaimedDropGuard`), but the setup
-/// screens and older OpenBot releases do not, so the window refuses the navigation and stays put.
+/// is to open the file in place, leaving AwakenBot or the setup screen (WKWebView on macOS refuses the
+/// drop instead). AwakenBot's own page refuses such a drop (`useUnclaimedDropGuard`), but the setup
+/// screens and older AwakenBot releases do not, so the window refuses the navigation and stays put.
 pub fn opens_a_file(destination: &tauri::Url) -> bool {
     destination.scheme() == "file"
 }
 
-/// Whether `destination` is the booking calendar OpenBot embeds, or a frame that calendar embeds:
+/// Whether `destination` is the booking calendar AwakenBot embeds, or a frame that calendar embeds:
 /// Calendly, its reCAPTCHA (served from recaptcha.net) and its Stripe frames. Over https only.
 pub fn loads_in_a_frame(destination: &tauri::Url) -> bool {
     let within = |host: &str, domain: &str| {
@@ -57,7 +57,7 @@ pub fn loads_in_a_frame(destination: &tauri::Url) -> bool {
 }
 
 /// A new window asked for from the desktop window (a link meant for a new tab, or `window.open`,
-/// from the page or a frame in it). A site outside OpenBot is handed to `open`, the person's
+/// from the page or a frame in it). A site outside AwakenBot is handed to `open`, the person's
 /// browser; the webview opens no window of its own either way, as it never has on macOS.
 pub fn new_window(destination: &tauri::Url, open: impl FnOnce(&str)) {
     if leaves(destination) {

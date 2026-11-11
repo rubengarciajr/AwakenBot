@@ -206,7 +206,7 @@ test("the probe refuses on Arcade rather than dialling Composio", async () => {
     probe: null,
     attempted: "GMAIL_GET_ME",
     sentence:
-      "OpenBot can't check this kind of connection yet. Nothing was asked about it, so nothing is recorded about it.",
+      "AwakenBot can't check this kind of connection yet. Nothing was asked about it, so nothing is recorded about it.",
   });
 });
 
@@ -234,7 +234,7 @@ for (const id of ["composio", "arcade"] as const) {
         }),
       ).rejects.toThrow(
         new CustomServerRefusedError(
-          `${id} is the name of one of OpenBot's own screens, so a server added there could never be opened. Choose another.`,
+          `${id} is the name of one of AwakenBot's own screens, so a server added there could never be opened. Choose another.`,
         ).message,
       );
       const [found] = await database
@@ -256,7 +256,7 @@ test("the brokered id-prefix refusal is untouched by the screen-name one", async
       by: "admin@example.com",
     }),
   ).rejects.toThrow(
-    "Names beginning arcade- are kept for the apps people connect through OpenBot",
+    "Names beginning arcade- are kept for the apps people connect through AwakenBot",
   );
 });
 

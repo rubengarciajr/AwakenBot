@@ -23,39 +23,40 @@ export class GrantError extends Error {
 }
 
 const BUSY =
-  "OpenBot's backend is busy or unreachable. Retrying; nothing is lost.";
+  "AwakenBot's backend is busy or unreachable. Retrying; nothing is lost.";
 const AUTHORITY =
-  "OpenBot could not reach your organization's sign-in. Retrying; nothing is lost.";
+  "AwakenBot could not reach your organization's sign-in. Retrying; nothing is lost.";
 const MARKETPLACE =
-  "OpenBot's backend needs its marketplace licence before it can capture. Retrying; nothing is lost.";
+  "AwakenBot's backend needs its marketplace licence before it can capture. Retrying; nothing is lost.";
 
 /** Fixed sentences per code, never the server's text. `<status>` is replaced with the HTTP status. */
 export const PASS_HINTS: Record<string, string> = {
   INVALID_REQUEST:
-    "Learning capture is off: the Recorder sent OpenBot's backend a request it could not read.",
+    "Learning capture is off: the Recorder sent AwakenBot's backend a request it could not read.",
   FORBIDDEN:
-    "Learning capture is off: your OpenBot account has no role that may record.",
+    "Learning capture is off: your AwakenBot account has no role that may record.",
   NOT_FOUND:
-    "Learning capture is off: OpenBot says this recording belongs to another person.",
+    "Learning capture is off: AwakenBot says this recording belongs to another person.",
   IDENTITY_REQUIRED:
-    "Learning capture is paused: OpenBot could not tell its backend who you are.",
+    "Learning capture is paused: AwakenBot could not tell its backend who you are.",
   INTELLIGENCE_RUNTIME_REQUIRED:
-    "Learning capture is off: this OpenBot is not connected to its backend.",
+    "Learning capture is off: this AwakenBot is not connected to its backend.",
   INVALID_GRANT:
-    "Learning capture is paused: OpenBot's backend answered the capture pass in a form the Recorder cannot use.",
+    "Learning capture is paused: AwakenBot's backend answered the capture pass in a form the Recorder cannot use.",
   REFUSED:
-    "Learning capture is paused: OpenBot's backend refused the capture pass (<status>).",
+    "Learning capture is paused: AwakenBot's backend refused the capture pass (<status>).",
   TRAJECTORIES_UNAVAILABLE:
-    "Learning capture is off: Product Trajectories are turned off in OpenBot's backend (FF_LEARNING_TRAJECTORIES).",
+    "Learning capture is off: Product Trajectories are turned off in AwakenBot's backend (FF_LEARNING_TRAJECTORIES).",
   TRAJECTORIES_NOT_ENABLED:
-    "Learning capture is paused: OpenBot's backend says this organization's licence does not include Product Trajectories, that its billing is blocked, or that it could not check right now.",
+    "Learning capture is paused: AwakenBot's backend says this organization's licence does not include Product Trajectories, that its billing is blocked, or that it could not check right now.",
   VALIDATION_ERROR:
-    "Learning capture is off: OpenBot's backend refused the recording's request.",
+    "Learning capture is off: AwakenBot's backend refused the recording's request.",
   TRAJECTORY_APP_USER_CONFLICT:
-    "Learning capture is off: OpenBot's backend already holds this recording for someone else.",
+    "Learning capture is off: AwakenBot's backend already holds this recording for someone else.",
   LEARNING_CONTAINER_NOT_FOUND:
-    "Learning capture is paused: OpenBot's backend could not find your Learning space.",
-  UNAUTHORIZED: "Learning capture is paused: OpenBot refused the capture pass.",
+    "Learning capture is paused: AwakenBot's backend could not find your Learning space.",
+  UNAUTHORIZED:
+    "Learning capture is paused: AwakenBot refused the capture pass.",
   GATEWAY_NOT_ALLOWED:
     "Learning capture is off: the capture pass pointed at a backend address your organization does not allow.",
   PROXY_AUTHENTICATION:
@@ -131,7 +132,7 @@ export function classifyGrantError(
   }
   if (code === "CONNECTION_FAILED") {
     // Row 8.
-    if (message.includes("Could not connect to OpenBot's back end")) {
+    if (message.includes("Could not connect to AwakenBot's back end")) {
       return retry(BUSY);
     }
     // Row 9.
@@ -176,7 +177,7 @@ export function classifyGrantError(
   // Row 22: any other 401.
   if (status === 401) return stop("hold", "UNAUTHORIZED");
   /*
-   * Row 23b: the proxy this browser goes through asked for its credentials. On an OpenBot computer that is the egress
+   * Row 23b: the proxy this browser goes through asked for its credentials. On an AwakenBot computer that is the egress
    * filter, which answers 407 until the browser holds them, and the computer has the browser take them as it launches
    * (agent-computer's `holdFilterCredentials`). A pass sent in the moment before (one a browser start resends) gets the
    * 407, and the next, seconds later, goes with them: so a few quick passes rather than the five-minute hold of row 23a,
@@ -202,7 +203,7 @@ function isGrant(value: unknown): value is TrajectoryGrant {
   );
 }
 
-/** Where a pass is asked for: the connected OpenBot and the recorder bearer. No Bot: the recording is the person's. */
+/** Where a pass is asked for: the connected AwakenBot and the recorder bearer. No Bot: the recording is the person's. */
 type GrantTarget = { openbotUrl: string; token: string };
 
 /** Asks the runtime's `trajectory/connect` for a one-time capture pass, which joins the trajectory to the person's own
@@ -236,7 +237,7 @@ export async function fetchGrant(
     // A body that is not JSON carries no code.
     unparsable = true;
   }
-  // Row 21: a page that is not JSON on a 2xx is OpenBot or the network
+  // Row 21: a page that is not JSON on a 2xx is AwakenBot or the network
   // misbehaving, not an answer the Recorder does not know (row 23a).
   if (response.ok && unparsable) {
     throw new GrantError(classifyGrantError(null, null));

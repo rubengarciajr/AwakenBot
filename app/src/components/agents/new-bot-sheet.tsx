@@ -145,8 +145,8 @@ function frameworkName(runtime: Runtime): string {
 }
 
 /**
- * The subtitle under a new Bot's name: what runs it. OpenBot itself for a Bot that runs here, the
- * framework for one picked from the list. Nothing for an agent somebody already runs, since OpenBot
+ * The subtitle under a new Bot's name: what runs it. AwakenBot itself for a Bot that runs here, the
+ * framework for one picked from the list. Nothing for an agent somebody already runs, since AwakenBot
  * cannot know what is behind its address.
  */
 function poweredBy(runtime: Runtime): string {
@@ -1041,8 +1041,8 @@ function EndpointStep({
             />
           ) : (
             <FieldDescription>
-              Any agent that speaks AG-UI works. OpenBot connects to it, so it
-              has to be reachable from OpenBot's server.
+              Any agent that speaks AG-UI works. AwakenBot connects to it, so it
+              has to be reachable from AwakenBot's server.
             </FieldDescription>
           )}
         </Field>

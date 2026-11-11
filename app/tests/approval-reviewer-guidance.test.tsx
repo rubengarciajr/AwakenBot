@@ -288,7 +288,7 @@ test("words that try to switch safety off are refused, and an edit after a check
   await user.click(view.getByRole("button", { name: "Check guidance" }));
   expect(
     await view.findByText(
-      `OpenBot won't save this. ${(REFUSED.check as { error: string }).error}`,
+      `AwakenBot won't save this. ${(REFUSED.check as { error: string }).error}`,
     ),
   ).toBeTruthy();
   expect(view.getByText(REFUSED.explanation)).toBeTruthy();

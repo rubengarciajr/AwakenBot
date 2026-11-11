@@ -1,25 +1,25 @@
-//! Zoom In, Zoom Out and Actual Size for OpenBot's windows, as a browser has them, kept for the
+//! Zoom In, Zoom Out and Actual Size for AwakenBot's windows, as a browser has them, kept for the
 //! next launch.
 //!
 //! "The text is too small and you can't zoom in": the window answered none of a browser's zoom
 //! keys. One level for the whole app: every window's page is shown at it, from the setup screens to
-//! OpenBot itself, and it is kept in the app's configuration folder and applied again to each page
+//! AwakenBot itself, and it is kept in the app's configuration folder and applied again to each page
 //! as it loads. macOS and Linux reach it through the View menu, whose items carry Command or Ctrl
 //! with =, - and 0; Windows, which has no menu bar, through the page (`zoom-shortcut.js`), as macOS
 //! does for Command and +, which never reaches the menu.
 //!
 //! Not Tauri's `zoomHotkeysEnabled`. On Windows that turns on WebView2's own zoom keys, and WebView2
 //! keeps a zoom made with them for that one page: it is gone on the next navigation (the setup
-//! screens to OpenBot) and nothing can keep it for the next launch. On macOS and Linux it injects a
+//! screens to AwakenBot) and nothing can keep it for the next launch. On macOS and Linux it injects a
 //! script that keeps its level in the page, so it counts from 100% again on every load while the
 //! view keeps showing the last level (MEASURED: a WKWebView keeps its zoom across navigations), and
-//! that script asks the webview plugin, which OpenBot's own page is not granted.
+//! that script asks the webview plugin, which AwakenBot's own page is not granted.
 
 use std::path::Path;
 use std::sync::Mutex;
 
 /// The levels a step moves between, as a browser's are. From 90%: on macOS the window's buttons
-/// sit over the top-left corner of OpenBot's page, which makes room for them in its own pixels
+/// sit over the top-left corner of AwakenBot's page, which makes room for them in its own pixels
 /// (the sidebar's header, onboarding's Back), so a page zoomed much further out slides under them.
 /// To 200%: the narrowest window (720 points) is then 360 of the page's pixels wide, a phone's.
 pub const LEVELS: [f64; 7] = [0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0];
@@ -144,7 +144,7 @@ mod tests {
     /// fresh read finds it. No record, or one this app did not write, is Actual Size.
     #[test]
     fn the_level_is_kept_for_the_next_launch() {
-        let config = crate::test_support::temp_root("zoom").join("ai.copilotkit.openbot.desktop");
+        let config = crate::test_support::temp_root("zoom").join("org.awakenbot.desktop");
         assert_eq!(saved(&config), ACTUAL_SIZE);
 
         assert_eq!(step(&config, Step::In).unwrap(), 1.1);

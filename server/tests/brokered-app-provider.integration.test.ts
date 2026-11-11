@@ -227,7 +227,7 @@ for (const provider of ["composio", "arcade"] as const) {
         }),
       ).rejects.toThrow(
         new CustomServerRefusedError(
-          `Names beginning ${prefix} are kept for the apps people connect through OpenBot, so ${id} can't be used for a server added by URL. Choose another.`,
+          `Names beginning ${prefix} are kept for the apps people connect through AwakenBot, so ${id} can't be used for a server added by URL. Choose another.`,
         ).message,
       );
       expect(await row(id)).toBeUndefined();

@@ -20,21 +20,21 @@ type Fixed = "restart-needed" | "done" | "declined";
 
 /** How long the line saying Windows will ask stays on screen before its prompt covers it. */
 export const BEFORE_PROMPT_MS = 2500;
-/** How long after a declined prompt OpenBot asks again by itself. */
+/** How long after a declined prompt AwakenBot asks again by itself. */
 export const ASK_AGAIN_MS = 15_000;
 
 const DECLINED =
-  "OpenBot needs Windows' permission to turn on a feature it needs. It asks again in a moment, or choose Try again.";
+  "AwakenBot needs Windows' permission to turn on a feature it needs. It asks again in a moment, or choose Try again.";
 
 /*
  * Windows Subsystem for Linux is named here because it is the Windows feature the person turns on:
  * Windows calls it that in every window it shows about it.
  */
 const WHY_WSL =
-  "OpenBot needs a Windows feature called Windows Subsystem for Linux (WSL 2) to run.";
+  "AwakenBot needs a Windows feature called Windows Subsystem for Linux (WSL 2) to run.";
 
 /**
- * What each blocker is called, why it matters, and how OpenBot clears it.
+ * What each blocker is called, why it matters, and how AwakenBot clears it.
  *
  * `fix` is the button: what it says, and what Windows will ask on the way. Firmware has none,
  * because nothing running in Windows can change it.
@@ -52,21 +52,21 @@ const SCREENS: Record<
     title: "Turn on Windows Subsystem for Linux",
     why: `${WHY_WSL} It's a one-time setup.`,
     fix: {
-      asks: "Windows will ask for your permission so OpenBot can turn it on. Then Windows needs one restart.",
+      asks: "Windows will ask for your permission so AwakenBot can turn it on. Then Windows needs one restart.",
     },
     administrator: "you",
   },
   "wsl-one": {
     title: "Switch Windows Subsystem for Linux to version 2",
-    why: "WSL is installed but set to version 1. OpenBot needs version 2.",
-    fix: { asks: "OpenBot switches it now. This takes a few seconds." },
+    why: "WSL is installed but set to version 1. AwakenBot needs version 2.",
+    fix: { asks: "AwakenBot switches it now. This takes a few seconds." },
     administrator: "you",
   },
   "wsl-no-kernel": {
     title: "Finish installing Windows Subsystem for Linux",
-    why: "WSL is turned on, but part of it is missing, so OpenBot can't run yet.",
+    why: "WSL is turned on, but part of it is missing, so AwakenBot can't run yet.",
     fix: {
-      asks: "Windows will ask for your permission so OpenBot can finish setting it up. Then Windows needs one restart.",
+      asks: "Windows will ask for your permission so AwakenBot can finish setting it up. Then Windows needs one restart.",
     },
     administrator: "you",
   },
@@ -74,7 +74,7 @@ const SCREENS: Record<
     title: "Turn on Virtual Machine Platform",
     why: "WSL 2 needs this Windows feature, and it is turned off.",
     fix: {
-      asks: "Windows will ask for your permission so OpenBot can turn it on. Then Windows needs one restart.",
+      asks: "Windows will ask for your permission so AwakenBot can turn it on. Then Windows needs one restart.",
     },
     administrator: "you",
   },
@@ -82,13 +82,13 @@ const SCREENS: Record<
     title: "An administrator needs to turn on WSL",
     why: `${WHY_WSL} Turning it on needs administrator rights, which this account does not have.`,
     fix: {
-      asks: "Windows will ask for an administrator's name and password so OpenBot can turn it on. Then Windows needs one restart.",
+      asks: "Windows will ask for an administrator's name and password so AwakenBot can turn it on. Then Windows needs one restart.",
     },
     administrator: "someone-else",
   },
   "virtualization-disabled": {
     title: "Turn on virtualization",
-    why: "WSL 2 runs a small virtual machine, and virtualization is turned off in this computer's firmware. OpenBot cannot change that setting.",
+    why: "WSL 2 runs a small virtual machine, and virtualization is turned off in this computer's firmware. AwakenBot cannot change that setting.",
   },
   "nested-virtualization-unavailable": {
     title: "Turn on nested virtualization",
@@ -102,18 +102,18 @@ export function commandsIn(instruction: string): string[] {
 }
 
 /**
- * The screen for a Windows machine that cannot run OpenBot yet, and what to do about it.
+ * The screen for a Windows machine that cannot run AwakenBot yet, and what to do about it.
  *
  * No button first: the screen says what Windows will ask and why, leaves it a moment to be read,
- * and OpenBot runs the commands behind Windows's own administrator prompt by itself, then hands
+ * and AwakenBot runs the commands behind Windows's own administrator prompt by itself, then hands
  * over to the restart. An install step informs the person and moves forward (the product's call
  * for 1.0.1). A prompt the person says no to is said plainly and asked again by itself, with Try
  * again for now; only a failure asks for Try again alone. The commands are still here, for somebody
- * who would rather run them, or whose machine will not let OpenBot. They come from the native
+ * who would rather run them, or whose machine will not let AwakenBot. They come from the native
  * side's instruction, which is what its tests hold to, in a block that copies whole, because nobody
  * should have to retype `dism.exe /online /enable-feature …` from a sentence.
  *
- * The restart after it is the one step that waits for a click (`WindowsRestart`): OpenBot never
+ * The restart after it is the one step that waits for a click (`WindowsRestart`): AwakenBot never
  * restarts the computer on its own, because the person may have unsaved work open.
  */
 export function WindowsBlocker({
@@ -196,7 +196,7 @@ export function WindowsBlocker({
         </li>
       )}
       <li>
-        Restart Windows, then open OpenBot again
+        Restart Windows, then open AwakenBot again
         {screen.administrator === "someone-else"
           ? " from your own account."
           : "."}
@@ -216,7 +216,7 @@ export function WindowsBlocker({
         Parallels, <strong>Enable nested virtualization</strong>. In the cloud,
         choose a size that supports it.
       </li>
-      <li>Start the virtual machine, then open OpenBot again.</li>
+      <li>Start the virtual machine, then open AwakenBot again.</li>
     </ol>
   ) : (
     <ol className="blocker-steps">
@@ -228,14 +228,14 @@ export function WindowsBlocker({
         Turn on <strong>Intel VT-x</strong> (Intel Virtualization Technology) or{" "}
         <strong>AMD-V</strong> (SVM Mode), then save and restart.
       </li>
-      <li>Start OpenBot again.</li>
+      <li>Start AwakenBot again.</li>
     </ol>
   );
 
   return (
     <main>
       <div className="sheet blocker-sheet">
-        <p className="steps-of">Before OpenBot can start</p>
+        <p className="steps-of">Before AwakenBot can start</p>
         <h1>{screen.title}</h1>
         <p className="lede">{screen.why}</p>
         {screen.fix ? (
@@ -285,11 +285,11 @@ export function WindowsBlocker({
 /**
  * After a fix that only counts once Windows restarts: say so, and offer to do it.
  *
- * Also what OpenBot opens on while that restart is still owed, so a feature that reads as on but is
+ * Also what AwakenBot opens on while that restart is still owed, so a feature that reads as on but is
  * not running yet never lets setup carry on into a Docker that cannot start.
  */
 export function WindowsRestart({
-  lede = "Windows Subsystem for Linux is set up. Windows needs to restart before OpenBot can use it. OpenBot opens again after you sign back in.",
+  lede = "Windows Subsystem for Linux is set up. Windows needs to restart before AwakenBot can use it. AwakenBot opens again after you sign back in.",
 }: {
   lede?: string;
 }) {
@@ -298,7 +298,7 @@ export function WindowsRestart({
   return (
     <main>
       <div className="sheet blocker-sheet">
-        <p className="steps-of">Before OpenBot can start</p>
+        <p className="steps-of">Before AwakenBot can start</p>
         <h1>Restart Windows to finish</h1>
         <p className="lede">{lede}</p>
         {restarting && <StatusLine>Restarting Windows…</StatusLine>}
@@ -323,7 +323,7 @@ export function WindowsRestart({
         </div>
         <p className="footnote">
           Save your work in other apps first. To restart later, use the Start
-          menu, then open OpenBot.
+          menu, then open AwakenBot.
         </p>
       </div>
     </main>

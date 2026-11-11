@@ -67,7 +67,7 @@ function row(
 
 /** Newest first, as the table draws them. */
 const ROWS = [
-  // What a start writes now: one row per Bot, every tool it was given, started by OpenBot.
+  // What a start writes now: one row per Bot, every tool it was given, started by AwakenBot.
   row("given", 59, {
     eventType: "configuration.changed",
     targetType: "mcp_server",
@@ -141,7 +141,7 @@ async function renderAs(edition: "team" | "personal") {
     localEvaluation: edition === "personal",
     edition,
   });
-  // Activity asks without OpenBot's own working; Admin asks for everything.
+  // Activity asks without AwakenBot's own working; Admin asks for everything.
   seedAuditPage(
     queryClient,
     edition === "personal" ? withoutOpenBotWorking("") : "",
@@ -190,19 +190,19 @@ function drawn(container: HTMLElement) {
   });
 }
 
-test("Activity says what changed in words, and that OpenBot started what it did by itself", async () => {
+test("Activity says what changed in words, and that AwakenBot started what it did by itself", async () => {
   const view = await renderAs("personal");
   expect(drawn(view.container)).toEqual([
     {
       what: "Give a Bot tools",
       on: "Complete goal, create goal and 5 more on Routines",
-      startedBy: "Started by OpenBot",
+      startedBy: "Started by AwakenBot",
     },
     {
-      // Recorded as a person's before the fix. Its own actor says it was OpenBot's.
+      // Recorded as a person's before the fix. Its own actor says it was AwakenBot's.
       what: "Give a Bot a tool",
       on: "Complete goal on Routines",
-      startedBy: "Started by OpenBot",
+      startedBy: "Started by AwakenBot",
     },
     {
       what: "Give a Bot a tool",

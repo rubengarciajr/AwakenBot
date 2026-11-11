@@ -17,10 +17,10 @@ export const TEACH_A_BOT = "Teach a Bot";
  * The sidebar's Teach a Bot link, beside Bots, Capabilities and Connections. It takes the person to the page where they
  * open their own browser, with the Recorder in it, and record a task. The click opens nothing itself: the page has Open.
  *
- * While any of the person's Recorders records (`activity`: the OpenBot browser's, or one in their everyday browser), the
+ * While any of the person's Recorders records (`activity`: the AwakenBot browser's, or one in their everyday browser), the
  * link carries a red dot, named for the recording.
  *
- * Drawn only once the server has said OpenBot can run a browser for this person (`available`). While that is asked, and
+ * Drawn only once the server has said AwakenBot can run a browser for this person (`available`). While that is asked, and
  * when the server cannot be asked, there is no link, rather than one to a page saying there is nothing there.
  */
 export function BrowserNavItem() {
@@ -42,14 +42,14 @@ const STORE_NAMES: Record<RecorderStore, string> = {
 };
 
 /**
- * What the person is told when Settings, Browsers opened the Recorder's store page in a new tab of the browser OpenBot is
+ * What the person is told when Settings, Browsers opened the Recorder's store page in a new tab of the browser AwakenBot is
  * open in: adding it there is what lets them record from here.
  */
 export function storeTabSentence(store: RecorderStore): string {
-  return `The OpenBot Recorder's page is open in a new tab. Add it to ${STORE_NAMES[store]} to record from OpenBot.`;
+  return `The AwakenBot Recorder's page is open in a new tab. Add it to ${STORE_NAMES[store]} to record from AwakenBot.`;
 }
 
-/** The short note that waits in OpenBot for a person who opened the Recorder's store page in a new tab: one at a time,
+/** The short note that waits in AwakenBot for a person who opened the Recorder's store page in a new tab: one at a time,
  * so a second click replaces it rather than stacking another under it. */
 export function noteStoreTabOpened(store: RecorderStore): void {
   toast.add({ id: STORE_TOAST, title: storeTabSentence(store), type: "info" });

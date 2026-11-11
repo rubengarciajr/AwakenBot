@@ -214,7 +214,7 @@ test("saves the skin on the account without touching the other preferences", asy
   ).toBe("openbot");
 });
 
-test("a skin OpenBot does not ship is refused with the skins it does", async () => {
+test("a skin AwakenBot does not ship is refused with the skins it does", async () => {
   const { appFor } = fixture();
   const refused = await appFor("alice").request(
     path,

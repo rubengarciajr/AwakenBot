@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
   <key>NSAppleEventsUsageDescription</key>
-  <string>OpenBot asks Docker Desktop to quit while it updates it, then opens it again.</string>
+  <string>AwakenBot asks Docker Desktop to quit while it updates it, then opens it again.</string>
   <key>NSMicrophoneUsageDescription</key>
-  <string>OpenBot uses your microphone for dictation and voice conversations.</string>
+  <string>AwakenBot uses your microphone for dictation and voice conversations.</string>
   <key>NSSpeechRecognitionUsageDescription</key>
-  <string>OpenBot turns what you say into text on this Mac, when you dictate a message or teach a Bot. Your voice never leaves it.</string>
+  <string>AwakenBot turns what you say into text on this Mac, when you dictate a message or teach a Bot. Your voice never leaves it.</string>
 </dict>
 </plist>

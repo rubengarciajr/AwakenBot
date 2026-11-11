@@ -62,7 +62,7 @@ function bounded(
  * Helper 45" beside an Activity page listing 23 of its rows; the other 22 were choosing tools for a
  * run, which the page leaves out.
  *
- * The same rows the page asks for (`@openbot/shared/activity-rows`): none of OpenBot's own working,
+ * The same rows the page asks for (`@openbot/shared/activity-rows`): none of AwakenBot's own working,
  * each action once (the first row of an action that then failed, was stopped or was refused is not
  * counted, nor a Routines call whose routine change has its own row), and a Bot's rows as its Bot
  * column reads them: the Bot it names, the Bot a row was about (an `agent` target), the Bot an older
@@ -182,9 +182,9 @@ export const DATA_FUNCTIONS: DataFunction[] = [
  * What a component is told, and the person reads on its card, when it may not read a function.
  *
  * In the team edition an admin gives a component its data, so the refusal says so. The personal
- * edition has no admin: the person owns everything these read, and OpenBot gives its own components
+ * edition has no admin: the person owns everything these read, and AwakenBot gives its own components
  * what they read when they arrive (`PERSONAL_GRANTED_BY` in `routes.ts`). There a refusal is
- * OpenBot's fault, and it never sends the person to an admin they don't have.
+ * AwakenBot's fault, and it never sends the person to an admin they don't have.
  */
 export function functionRefusal(
   component: string,

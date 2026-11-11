@@ -145,7 +145,7 @@ export function WhoCell({
   event,
   nameFor,
 }: {
-  /** What OpenBot itself is called here; see {@link startedByText}. */
+  /** What AwakenBot itself is called here; see {@link startedByText}. */
   deployment?: string;
   event: AuditEvent;
   nameFor: NameFor;
@@ -303,7 +303,7 @@ function subjectWords(event: AuditEvent): string | undefined {
 
 /**
  * The data functions a component row names: one it read or was refused (`function`), or every one
- * OpenBot Personal gave it in one row (`functions`).
+ * AwakenBot Personal gave it in one row (`functions`).
  */
 function functionsOf(
   payload: Record<string, unknown>,
@@ -438,8 +438,8 @@ export function botText(event: AuditEvent, nameFor: NameFor): string {
 }
 
 /**
- * What started a row. Two kinds of row are OpenBot's own change: a configuration row that names
- * OpenBot as its actor (`openbot:always-on`), and a component a build brought, published on arrival
+ * What started a row. Two kinds of row are AwakenBot's own change: a configuration row that names
+ * AwakenBot as its actor (`openbot:always-on`), and a component a build brought, published on arrival
  * (the only publish row with a `note`). Rows written before the server recorded that say a person
  * started them, and the trail cannot be rewritten, so they are read that way here. A row the server
  * says something other than a person started keeps what it says.
@@ -457,8 +457,8 @@ function initiatorKindOf(event: AuditEvent): string | undefined {
 
 /**
  * Who started a row, as the row's Started by filter and its line under the Bot both say it.
- * `deployment` is what OpenBot itself is called on this screen: "this deployment" in Admin, and
- * "OpenBot" in the personal edition's Activity, which is anybody's page.
+ * `deployment` is what AwakenBot itself is called on this screen: "this deployment" in Admin, and
+ * "AwakenBot" in the personal edition's Activity, which is anybody's page.
  */
 export function startedByText(
   event: AuditEvent,
@@ -1008,7 +1008,7 @@ export function StartedByCell({
 
 /**
  * Under the Bot's name, so it says what it is: "Started by a routine", "Handed on by Scout",
- * "Started by OpenBot". Only a leading "A" or "This" is lowered; a name keeps its capitals.
+ * "Started by AwakenBot". Only a leading "A" or "This" is lowered; a name keeps its capitals.
  */
 export function startedByLine(text: string): string {
   return text.startsWith("Handed on")

@@ -106,7 +106,7 @@ export const saveSkinMutationKey = [
 ] as const;
 
 /**
- * Choose how OpenBot looks for this person, on every device they sign in from.
+ * Choose how AwakenBot looks for this person, on every device they sign in from.
  *
  * The skin is drawn the moment it is picked, and the cached preferences are patched to match, so
  * `SkinAccountSync` agrees with the picker while the save is out. A read already in flight is

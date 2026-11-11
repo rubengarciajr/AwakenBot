@@ -45,7 +45,7 @@ export class MemoryRefusedError extends Error {
 export class MemoryUnavailableError extends Error {
   constructor() {
     super(
-      "This memory is kept in OpenBot's backend, which cannot be reached right now. Try again.",
+      "This memory is kept in AwakenBot's backend, which cannot be reached right now. Try again.",
     );
     this.name = "MemoryUnavailableError";
   }
@@ -85,8 +85,8 @@ export type MemoryRecord = MemoryInput & {
   reviewState: "unreviewed" | "confirmed" | "edited";
   /**
    * Who formed it. `intelligence` is a memory CopilotKit Intelligence holds for this person that no
-   * OpenBot row describes, formed by another app on the same project or by Intelligence itself. It
-   * is never stored in OpenBot's table, only read back from Intelligence.
+   * AwakenBot row describes, formed by another app on the same project or by Intelligence itself. It
+   * is never stored in AwakenBot's table, only read back from Intelligence.
    */
   formedBy: "person" | "import" | "bot" | "intelligence";
   formedByAgentId: string | null;

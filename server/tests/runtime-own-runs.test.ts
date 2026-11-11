@@ -503,7 +503,7 @@ afterAll(async () => {
  * A NEW CONVERSATION'S FIRST MESSAGE IS ONE RUN. The runtime used to name a new thread by running
  * the conversation's Bot again on a title prompt, beside the person's run. On a harness this
  * deployment runs, that was a second run on the harness at the same moment, on every first message,
- * and the person's answer came back garbled where the two overlapped. OpenBot names conversations
+ * and the person's answer came back garbled where the two overlapped. AwakenBot names conversations
  * itself (`channels/summary.ts`), so the runtime's naming is off: no title run reaches any Bot.
  */
 test("a harness Bot's first message reaches the harness exactly once: no title run beside it", async () => {

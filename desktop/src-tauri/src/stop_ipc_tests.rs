@@ -464,7 +464,7 @@ mod stop_ipc {
             .expect("menu Stop failure should be retained for setup");
         assert_eq!(
             problem.said,
-            "OpenBot could not finish stopping. Try Stop OpenBot again."
+            "AwakenBot could not finish stopping. Try Stop AwakenBot again."
         );
         assert!(
             problem
@@ -539,8 +539,8 @@ mod stop_ipc {
         );
     }
 
-    /// Settings' Change on the AI model row: OpenBot stops, the window goes to setup, and setup
-    /// is told once to open at its AI screen. A Stop that failed tells it nothing: OpenBot may
+    /// Settings' Change on the AI model row: AwakenBot stops, the window goes to setup, and setup
+    /// is told once to open at its AI screen. A Stop that failed tells it nothing: AwakenBot may
     /// still be running, and setup shows the failure with Start, as after any failed Stop.
     #[test]
     fn change_ai_connection_from_settings_stops_then_opens_the_ai_screen_once() {
@@ -555,7 +555,7 @@ mod stop_ipc {
         let compose = fixture.compose_barrier();
 
         change_ai_connection_from_settings(fixture.app.handle().clone());
-        // Nothing to open at until OpenBot has stopped.
+        // Nothing to open at until AwakenBot has stopped.
         assert!(!take_ai_connection_change(fixture.app.handle().clone()));
         await_compose(&compose).write_all(&[0]).unwrap();
 

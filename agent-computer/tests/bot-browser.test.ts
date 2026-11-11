@@ -40,13 +40,13 @@ const HOSTED: BrowserRuntime = {
 };
 
 type FixtureCall = { method: string; input: unknown; sending: boolean };
-/** Every call the fixture Recorder received, as it reported it to the OpenBot it was connected to. */
+/** Every call the fixture Recorder received, as it reported it to the AwakenBot it was connected to. */
 const calls: FixtureCall[] = [];
-/** How long the last of a stopped recording takes to reach Intelligence, as this OpenBot tells the fixture Recorder. */
+/** How long the last of a stopped recording takes to reach Intelligence, as this AwakenBot tells the fixture Recorder. */
 let tailMs = 0;
 
 /**
- * The site both Bots browse, which says back what each browser sent it; and the OpenBot the fixture Recorder is
+ * The site both Bots browse, which says back what each browser sent it; and the AwakenBot the fixture Recorder is
  * connected to while a person records.
  */
 const site = asked

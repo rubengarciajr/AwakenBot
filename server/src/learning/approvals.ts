@@ -335,16 +335,16 @@ export type SkillApprovalStore = ReturnType<typeof createSkillApprovalStore>;
 export class UnnamedSkillError extends Error {
   constructor() {
     super(
-      "This skill has no name OpenBot can record, so it can't be approved here.",
+      "This skill has no name AwakenBot can record, so it can't be approved here.",
     );
     this.name = "UnnamedSkillError";
   }
 }
 
 /**
- * The approval hook: records who approved a proposal in OpenBot before Intelligence is asked to publish it, and hands
+ * The approval hook: records who approved a proposal in AwakenBot before Intelligence is asked to publish it, and hands
  * `reviewProposal` the undo to run when Intelligence refuses. A person can't approve a skill without a usable name, since
- * OpenBot could not record it; an admin's approval of one records nothing, since an admin's skill needs no row.
+ * AwakenBot could not record it; an admin's approval of one records nothing, since an admin's skill needs no row.
  *
  * A removal is the other way round: the row stays until Intelligence has removed the skill, and only `after` deletes
  * it. While the skill is published its row keeps it held back from other people's Bots, so deleting the row first

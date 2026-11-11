@@ -8,7 +8,7 @@ import {
 
 /**
  * Turn Share usage data on or off. The desktop app keeps the choice for the next launch, stops its
- * own events and the CLI's at once, and starts the server with it the next time OpenBot starts.
+ * own events and the CLI's at once, and starts the server with it the next time AwakenBot starts.
  * It answers with the setting as it now stands.
  */
 export function setUsageDataMutationOptions(queryClient: QueryClient) {
@@ -25,7 +25,7 @@ function invalidateDesktop(queryClient: QueryClient) {
 }
 
 /**
- * Restart OpenBot's processes. The desktop app ends each one and its supervisor starts it again;
+ * Restart AwakenBot's processes. The desktop app ends each one and its supervisor starts it again;
  * the containers, the database among them, keep running. This page's requests fail for the few
  * seconds that takes.
  */
@@ -37,7 +37,7 @@ export function restartOpenBotMutationOptions(queryClient: QueryClient) {
 }
 
 /**
- * Stop everything OpenBot started. This page goes with it: the window shows setup, where Start is.
+ * Stop everything AwakenBot started. This page goes with it: the window shows setup, where Start is.
  * Nothing to invalidate, since nothing here will be read again.
  */
 export function stopOpenBotMutationOptions() {
@@ -47,8 +47,8 @@ export function stopOpenBotMutationOptions() {
 }
 
 /**
- * Change the AI connection. The desktop app stops OpenBot and its window shows setup at the AI
- * screen, where the new choice starts OpenBot again. Like Stop, this page goes with it.
+ * Change the AI connection. The desktop app stops AwakenBot and its window shows setup at the AI
+ * screen, where the new choice starts AwakenBot again. Like Stop, this page goes with it.
  */
 export function changeAiConnectionMutationOptions() {
   return mutationOptions({
@@ -80,9 +80,9 @@ export function dismissAppUpdateMutationOptions(queryClient: QueryClient) {
 }
 
 /**
- * Update and restart. The desktop app downloads the update and checks its signature while OpenBot
- * keeps running, installs it, stops OpenBot and restarts. It answers only when that failed: on
- * success this page goes away with the app, and the next Start moves OpenBot to the new release.
+ * Update and restart. The desktop app downloads the update and checks its signature while AwakenBot
+ * keeps running, installs it, stops AwakenBot and restarts. It answers only when that failed: on
+ * success this page goes away with the app, and the next Start moves AwakenBot to the new release.
  */
 export function installAppUpdateMutationOptions(queryClient: QueryClient) {
   return mutationOptions({
@@ -112,8 +112,8 @@ export function intelligenceMutationOptions(queryClient: QueryClient) {
       if (report.outcome !== "completed")
         throw new Error(
           action === "start"
-            ? "OpenBot's services didn't start. Try again."
-            : "OpenBot's services didn't stop. Try again.",
+            ? "AwakenBot's services didn't start. Try again."
+            : "AwakenBot's services didn't stop. Try again.",
         );
     },
     onSettled: () => invalidateDesktop(queryClient),

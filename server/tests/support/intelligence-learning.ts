@@ -1,7 +1,7 @@
 /**
  * Intelligence's project-key Learning routes, answering as Intelligence answers, over real HTTP.
  *
- * Every body here is the one Intelligence's own code writes, so the runtime client and OpenBot read
+ * Every body here is the one Intelligence's own code writes, so the runtime client and AwakenBot read
  * them exactly as they would read the real thing:
  *  - errors: `createErrorResponseBody` (apps/app-api/src/errors/http-error-response.ts), with the
  *    code, status, message, category and retryable flag from apps/app-api/src/errors/registry.ts;
@@ -26,7 +26,7 @@
  * and `rollout-closed` (Learning on with `globalEnabled: false` and no rollout entry, where every
  * Learning route answers LEARNING_NOT_ENABLED: learning-availability-guard.ts).
  *
- * Any of them can be met still starting, as a first install of OpenBot's Helm bundle meets it
+ * Any of them can be met still starting, as a first install of AwakenBot's Helm bundle meets it
  * (`starting`): while the migrations Job runs every request fails on a table that is not there yet
  * (500 INTERNAL_SERVER_ERROR), and until the bootstrap Job stores the runtime key it is not found
  * (401 AUTH_UNAUTHENTICATED).
@@ -265,7 +265,7 @@ export const INSPECTOR_NO_DASHBOARD = {
     "8d9694e76b7274d4647e6bcbb96c6d7fd63dfa8d5c933e3c0a46b27623a1a90b",
   configuration: {
     state: "configured",
-    container: { id: "openbot", name: "OpenBot" },
+    container: { id: "openbot", name: "AwakenBot" },
   },
   pendingThreadCount: 1,
   run: {

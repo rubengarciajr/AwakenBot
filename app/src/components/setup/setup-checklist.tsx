@@ -45,7 +45,7 @@ const PRODUCT = appConfig.brand.productName;
  * Ready, Not checked or Needs setup.
  *
  * Drawn on Settings → Setup, where an admin checks it, and comes back to it after setting a
- * variable and restarting OpenBot. Onboarding leaves it out: none of it blocks the first task.
+ * variable and restarting AwakenBot. Onboarding leaves it out: none of it blocks the first task.
  *
  * The rows, their sentences and their fixes are the server's (see `lib/setup/queries.ts`): this
  * draws them, and holds the one thing only a browser can do, which is asking it to check again.
@@ -101,7 +101,7 @@ export function SetupChecklist({
           Couldn't check again. Try again.
         </p>
       ) : null}
-      {/* Nothing while the first answer is on its way: OpenBot has no loading placeholder. */}
+      {/* Nothing while the first answer is on its way: AwakenBot has no loading placeholder. */}
       {checklist.isPending ? null : checklist.error ? (
         <>
           <p className="text-sm text-destructive" role="alert">

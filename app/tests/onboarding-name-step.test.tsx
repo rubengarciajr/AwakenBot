@@ -57,7 +57,7 @@ function NameOnboarding({
       steps={[
         {
           id: "welcome",
-          title: "Welcome to OpenBot",
+          title: "Welcome to AwakenBot",
           intro: () => <StepIntro />,
         },
         name,
@@ -185,7 +185,7 @@ test("a completion that fails is said under the field too", async () => {
   expect(primary(view).textContent).toBe("Get started");
 });
 
-test("the orb is OpenBot's own, listening, and settles into done when onboarding ends", () => {
+test("the orb is AwakenBot's own, listening, and settles into done when onboarding ends", () => {
   const view = render(<NameOrb />);
   const orb = () =>
     view.container.querySelector<HTMLElement>("[data-orb]") as HTMLElement;

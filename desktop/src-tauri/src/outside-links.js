@@ -1,4 +1,4 @@
-// OpenBot's pages in the desktop window: a site outside OpenBot opens in the person's own browser.
+// AwakenBot's pages in the desktop window: a site outside AwakenBot opens in the person's own browser.
 //
 // The window is a webview, not a browser: it refuses `window.open`, so an app's sign-in claimed in a
 // new tab was "blocked", and a link to another site took the whole window there. Here every way out
@@ -73,7 +73,7 @@
     };
   };
 
-  // A link meant for a new tab, to a site outside OpenBot.
+  // A link meant for a new tab, to a site outside AwakenBot.
   document.addEventListener(
     "click",
     (event) => {

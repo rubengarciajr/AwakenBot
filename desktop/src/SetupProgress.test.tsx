@@ -52,7 +52,7 @@ test("install progress is the bytes and the parts after them, and disappears aft
     />,
   );
   const row = within(
-    view.getByRole("listitem", { name: "Downloading OpenBot" }),
+    view.getByRole("listitem", { name: "Downloading AwakenBot" }),
   );
   // Running, it says how far along the install is.
   expect(row.getByText("Step 2 of 4")).toBeTruthy();
@@ -97,9 +97,9 @@ test("install progress is the bytes and the parts after them, and disappears aft
   expect(row.queryByRole("progressbar")).toBeNull();
 });
 
-// The rest of OpenBot downloads alongside step 2. Said as its own row at the same time, the Install
+// The rest of AwakenBot downloads alongside step 2. Said as its own row at the same time, the Install
 // step read "Step 2 of 4" and "Step 3 of 4" in progress at once on a live Windows run.
-test("the rest of OpenBot is the Install list's third step, in progress only once the second is done", () => {
+test("the rest of AwakenBot is the Install list's third step, in progress only once the second is done", () => {
   const rest = { bytes: 400_000_000, size: 1_600_000_000 };
   const own = {
     step: "images",
@@ -114,7 +114,7 @@ test("the rest of OpenBot is the Install list's third step, in progress only onc
     );
   expect(
     said(plainInstallSteps([{ ...own, running: true }], true, null, rest)),
-  ).toEqual(["Downloading OpenBot | Step 2 of 4"]);
+  ).toEqual(["Downloading AwakenBot | Step 2 of 4"]);
   const done = plainInstallSteps(
     [{ ...own, running: false }],
     false,
@@ -122,8 +122,8 @@ test("the rest of OpenBot is the Install list's third step, in progress only onc
     rest,
   );
   expect(said(done)).toEqual([
-    "Downloading OpenBot | Complete",
-    "Downloading the rest of OpenBot | Step 3 of 4",
+    "Downloading AwakenBot | Complete",
+    "Downloading the rest of AwakenBot | Step 3 of 4",
   ]);
   expect(done[1]?.downloads).toEqual(rest);
   // A failed install says its failure: nothing after it is in progress.
@@ -136,7 +136,7 @@ test("the rest of OpenBot is the Install list's third step, in progress only onc
         rest,
       ),
     ),
-  ).toEqual(["Downloading OpenBot | Failed"]);
+  ).toEqual(["Downloading AwakenBot | Failed"]);
 });
 
 // Reported on 1.0.0-rc.1: a full bar read "1.1 GB of 1.1 GB · 1 of 5 parts left" while the
@@ -153,7 +153,7 @@ test("with every byte in and parts still unpacking, the bar is never full, keeps
   const windowsF = { done: 3, total: 5, bytes: 1_099_000_000, size };
   const view = render(<SetupProgress steps={installing(windowsF)} />);
   const row = within(
-    view.getByRole("listitem", { name: "Downloading OpenBot" }),
+    view.getByRole("listitem", { name: "Downloading AwakenBot" }),
   );
   const value = () =>
     Number(
@@ -163,7 +163,9 @@ test("with every byte in and parts still unpacking, the bar is never full, keeps
     );
   expect(row.getByText("1.1 GB downloaded")).toBeTruthy();
   expect(
-    row.getByText(/^Unpacking OpenBot \(4 of 5\)\. Less than a minute left\.$/),
+    row.getByText(
+      /^Unpacking AwakenBot \(4 of 5\)\. Less than a minute left\.$/,
+    ),
   ).toBeTruthy();
   expect(row.getByText(/elapsed/)).toBeTruthy();
   const first = value();
@@ -177,7 +179,7 @@ test("with every byte in and parts still unpacking, the bar is never full, keeps
   // A part finishes: on to the next, further along.
   at(14);
   view.rerender(<SetupProgress steps={installing({ ...windowsF, done: 4 })} />);
-  expect(row.getByText(/^Unpacking OpenBot \(5 of 5\)\./)).toBeTruthy();
+  expect(row.getByText(/^Unpacking AwakenBot \(5 of 5\)\./)).toBeTruthy();
   expect(value()).toBeGreaterThan(later);
   expect(value()).toBeLessThan(1);
   // Well past when the last part should have finished, it says so instead of a time.
@@ -185,14 +187,14 @@ test("with every byte in and parts still unpacking, the bar is never full, keeps
   view.rerender(<SetupProgress steps={installing({ ...windowsF, done: 4 })} />);
   expect(
     row.getByText(
-      "Unpacking OpenBot (5 of 5). Taking longer than usual, still working.",
+      "Unpacking AwakenBot (5 of 5). Taking longer than usual, still working.",
     ),
   ).toBeTruthy();
   expect(value()).toBeLessThan(1);
 
   // A report that counts its bytes short for a moment does not take it back to downloading: on
-  // Windows F the row read "Downloading OpenBot. About 2 minutes left." for a few seconds between
-  // "Unpacking OpenBot (3 of 5)" and "(5 of 5)".
+  // Windows F the row read "Downloading AwakenBot. About 2 minutes left." for a few seconds between
+  // "Unpacking AwakenBot (3 of 5)" and "(5 of 5)".
   const unpacked = value();
   view.rerender(
     <SetupProgress
@@ -205,8 +207,8 @@ test("with every byte in and parts still unpacking, the bar is never full, keeps
       })}
     />,
   );
-  expect(row.getByText(/^Unpacking OpenBot \(5 of 5\)\./)).toBeTruthy();
-  expect(row.queryByText(/^Downloading OpenBot\./)).toBeNull();
+  expect(row.getByText(/^Unpacking AwakenBot \(5 of 5\)\./)).toBeTruthy();
+  expect(row.queryByText(/^Downloading AwakenBot\./)).toBeNull();
   expect(row.queryByText(/minutes left/)).toBeNull();
   expect(value()).toBeGreaterThanOrEqual(unpacked);
 
@@ -244,7 +246,7 @@ test("a download says no time left until its speed is steady, and unpacks once n
   const first = { done: 0, total: 5, bytes: 538, size, bytesPerSecond: 1_076 };
   const view = render(<SetupProgress steps={installing(first)} />);
   const row = within(
-    view.getByRole("listitem", { name: "Downloading OpenBot" }),
+    view.getByRole("listitem", { name: "Downloading AwakenBot" }),
   );
   expect(row.queryByText(/minutes? left/)).toBeNull();
   // A second in, a burst: still not steady.
@@ -284,7 +286,9 @@ test("a download says no time left until its speed is steady, and unpacks once n
     />,
   );
   expect(
-    row.getByText(/^Unpacking OpenBot \(3 of 5\)\. Less than a minute left\.$/),
+    row.getByText(
+      /^Unpacking AwakenBot \(3 of 5\)\. Less than a minute left\.$/,
+    ),
   ).toBeTruthy();
   expect(row.getByText("1.1 GB downloaded")).toBeTruthy();
 });
@@ -297,7 +301,7 @@ test("a download whose size is not known yet says so, and its bar does not guess
     />,
   );
   const row = within(
-    view.getByRole("listitem", { name: "Downloading OpenBot" }),
+    view.getByRole("listitem", { name: "Downloading AwakenBot" }),
   );
   const said = "Total size not known yet · 5 of 5 parts left";
   let bar = row.getByRole("progressbar", { name: "Download progress" });
@@ -321,14 +325,14 @@ test("a download whose size is not known yet says so, and its bar does not guess
   ).toBeTruthy();
 });
 
-const UPDATING = "Updating OpenBot. Your Bots and data stay as they are.";
+const UPDATING = "Updating AwakenBot. Your Bots and data stay as they are.";
 
 test("a row with bytes and no items says only the bytes", () => {
   const view = render(
     <SetupProgress
       steps={[
         {
-          step: "Getting OpenBot ready",
+          step: "Getting AwakenBot ready",
           ok: true,
           running: true,
           detail: UPDATING,
@@ -339,7 +343,7 @@ test("a row with bytes and no items says only the bytes", () => {
     />,
   );
   const row = within(
-    view.getByRole("listitem", { name: "Getting OpenBot ready" }),
+    view.getByRole("listitem", { name: "Getting AwakenBot ready" }),
   );
   expect(row.getByText(UPDATING)).toBeTruthy();
   expect(row.getByText("207.0 MB of 315.0 MB")).toBeTruthy();
@@ -348,12 +352,12 @@ test("a row with bytes and no items says only the bytes", () => {
   expect(bar.getAttribute("max")).toBe("1");
 });
 
-test("the install blurb names the parts of OpenBot it installs, in two sentences at most", () => {
+test("the install blurb names the parts of AwakenBot it installs, in two sentences at most", () => {
   expect(INSTALL_BLURB).toContain(
-    "This installs OpenBot on this computer: the app, its database, your Bots, and the computers they work on.",
+    "This installs AwakenBot on this computer: the app, its database, your Bots, and the computers they work on.",
   );
   expect(INSTALL_BLURB.split(/(?<=\.)\s/).length).toBeLessThanOrEqual(2);
-  // A person installing OpenBot knows its parts, not the product names behind them, and how long
+  // A person installing AwakenBot knows its parts, not the product names behind them, and how long
   // the wait is.
   expect(INSTALL_BLURB).not.toMatch(
     /—|agent|Intelligence|back ?end|front ?end/i,
@@ -369,7 +373,7 @@ test("the install blurb names the parts of OpenBot it installs, in two sentences
 test("the background row says a setup paused for room calmly, with Try again", async () => {
   const { installingBehind } = await import("./SetupProgress");
   const said =
-    "This computer has 13.9 GB of free space on drive C:, and OpenBot needs 40 GB. Free up some space, then Try again.";
+    "This computer has 13.9 GB of free space on drive C:, and AwakenBot needs 40 GB. Free up some space, then Try again.";
   let looked = 0;
   const row = installingBehind({
     steps: [],
@@ -396,7 +400,7 @@ test("the background row says a setup paused for room calmly, with Try again", a
   );
   const item = within(
     view.getByRole("listitem", {
-      name: "Installing OpenBot in the background",
+      name: "Installing AwakenBot in the background",
     }),
   );
   expect(item.getByText("Step 3 of 4 · Paused")).toBeTruthy();

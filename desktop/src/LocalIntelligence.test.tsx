@@ -118,7 +118,7 @@ type Startable = { apiUrl: string; gatewayWsUrl: string; notice?: string };
 type Props = {
   stack?: string | null;
   connected?: boolean;
-  /** Gives the go-ahead on arrival. Without it, Start OpenBot does. */
+  /** Gives the go-ahead on arrival. Without it, Start AwakenBot does. */
   auto?: boolean;
   /** Runs up to ready on arrival, without the go-ahead, under its status line. */
   prepare?: boolean;
@@ -202,10 +202,10 @@ function journeyOf(screen: ReturnType<typeof view>) {
   return screen.getByRole("region", { name: "How far along" });
 }
 
-const SETUP = "Setting up OpenBot";
-const CONNECT = "Connecting OpenBot";
-const WAIT = "Getting OpenBot ready";
-const START = "Opening OpenBot";
+const SETUP = "Setting up AwakenBot";
+const CONNECT = "Connecting AwakenBot";
+const WAIT = "Getting AwakenBot ready";
+const START = "Opening AwakenBot";
 
 test("the whole sequence runs by itself: set up, connect, wait for ready and valid, start", async () => {
   invokeHandler = answers({
@@ -242,7 +242,7 @@ test("the whole sequence runs by itself: set up, connect, wait for ready and val
 });
 
 /**
- * The Windows fresh-install probe: "Setting up OpenBot · In progress" said nothing while ~690 MB of
+ * The Windows fresh-install probe: "Setting up AwakenBot · In progress" said nothing while ~690 MB of
  * back-end images came down, and the person waited behind the AI screen with nothing either. A
  * first setup's download now shows on the screen in front of it while it runs there, with the bar
  * Install shows, and on Start as the journey's own step: one bar, which the download moves, and
@@ -268,14 +268,16 @@ test("a first setup shows its download on the journey and on the screen in front
     { timeout: 3_000 },
   );
   const journey = within(journeyOf(screen));
-  expect(journey.getByText("Downloading the rest of OpenBot")).toBeTruthy();
+  expect(journey.getByText("Downloading the rest of AwakenBot")).toBeTruthy();
   // One bar on Start: the journey's. The row says only which step it is.
   expect(within(row(screen, SETUP)).queryByRole("progressbar")).toBeNull();
   expect(row(screen, SETUP).textContent).not.toContain("MB");
   // The screen in front (Install, or Connect your AI) shows the same download while it runs.
-  const behind = within(screen.getByRole("list", { name: "OpenBot download" }));
+  const behind = within(
+    screen.getByRole("list", { name: "AwakenBot download" }),
+  );
   expect(
-    behind.getByRole("listitem", { name: "Downloading the rest of OpenBot" })
+    behind.getByRole("listitem", { name: "Downloading the rest of AwakenBot" })
       .textContent,
   ).toContain("245.0 MB of 690.0 MB");
   expect(
@@ -303,7 +305,7 @@ test("a first setup shows its download on the journey and on the screen in front
   expect(
     screen.queryByRole("progressbar", { name: "Download progress" }),
   ).toBeNull();
-  expect(screen.queryByRole("list", { name: "OpenBot download" })).toBeNull();
+  expect(screen.queryByRole("list", { name: "AwakenBot download" })).toBeNull();
 });
 
 test("a recorded, connected stack skips straight to waiting", async () => {
@@ -328,7 +330,7 @@ function onRelease(installedRelease: string, updateTo: string | null) {
   return { ...base, stack: base.stack && { ...base.stack, installedRelease } };
 }
 
-test("a backend an older app installed is updated to this app's release before OpenBot starts on it", async () => {
+test("a backend an older app installed is updated to this app's release before AwakenBot starts on it", async () => {
   const updating = deferred<LocalReport>();
   let calls = 0;
   invokeHandler = async (command, args) => {
@@ -352,7 +354,7 @@ test("a backend an older app installed is updated to this app's release before O
   // One plain line while it runs, on the back end's own row.
   await waitFor(() =>
     expect(row(screen, WAIT).textContent).toContain(
-      "Updating OpenBot. Your Bots and data stay as they are.",
+      "Updating AwakenBot. Your Bots and data stay as they are.",
     ),
   );
   expect(started).toEqual([]);
@@ -369,7 +371,7 @@ test("a backend an older app installed is updated to this app's release before O
     )?.args,
   ).toMatchObject({ stack: "local-abc123" });
   expect(
-    screen.queryByRole("listitem", { name: "Updating OpenBot" }),
+    screen.queryByRole("listitem", { name: "Updating AwakenBot" }),
   ).toBeNull();
 });
 
@@ -431,7 +433,7 @@ test("a backend already on this app's release is not updated", async () => {
   expect(commands()).toEqual(["run_local_eval:status"]);
 });
 
-test("an update that fails says so and starts OpenBot on the release the backend still has", async () => {
+test("an update that fails says so and starts AwakenBot on the release the backend still has", async () => {
   for (const failed of [
     report({
       outcome: "failed",
@@ -468,8 +470,8 @@ test("an update that fails says so and starts OpenBot on the release the backend
       "run_local_eval:update",
       "run_local_eval:status",
     ]);
-    expect(row(screen, "Updating OpenBot").textContent).toContain(
-      "OpenBot couldn't finish updating, so it runs the version it had. Your data is kept, and OpenBot tries again the next time it starts.",
+    expect(row(screen, "Updating AwakenBot").textContent).toContain(
+      "AwakenBot couldn't finish updating, so it runs the version it had. Your data is kept, and AwakenBot tries again the next time it starts.",
     );
     expect(calls).toBe(2);
     cleanup();
@@ -478,7 +480,7 @@ test("an update that fails says so and starts OpenBot on the release the backend
 });
 
 /**
- * Found on OpenBot Desktop, 0.16.0-rc.9 to rc.10: every Start after an interrupted update failed
+ * Found on AwakenBot Desktop, 0.16.0-rc.9 to rc.10: every Start after an interrupted update failed
  * with the same generic line, while the CLI had recorded exactly where it stopped. The row now
  * says where it stopped from the record, in plain words, and that the data is kept. The step's own
  * name is the log's.
@@ -517,20 +519,21 @@ test("an update that fails says the step it stopped at and that the data is kept
   };
   const screen = view({ stack: "local-abc123", connected: true });
   await waitFor(() =>
-    expect(row(screen, "Updating OpenBot").textContent).toContain(
-      "OpenBot couldn't finish updating, so it runs the version it had. It stopped while pausing OpenBot's services. Your data is kept, and OpenBot tries again the next time it starts.",
+    expect(row(screen, "Updating AwakenBot").textContent).toContain(
+      "AwakenBot couldn't finish updating, so it runs the version it had. It stopped while pausing AwakenBot's services. Your data is kept, and AwakenBot tries again the next time it starts.",
     ),
   );
 });
 
 /**
- * Found on OpenBot Desktop: an update sat on "Updating the back end" for minutes with nothing
+ * Found on AwakenBot Desktop: an update sat on "Updating the back end" for minutes with nothing
  * else on the row, while the CLI waited on its databases and Jobs (up to ten minutes each) and
  * logged nothing until each ended. The journey now says which step it is in, from the steps the
  * CLI has finished, and how long is left; the row keeps what this part is, and a part that failed
  * is said on it at once, not ten minutes later.
  */
-const UPDATING_SAID = "Updating OpenBot. Your Bots and data stay as they are.";
+const UPDATING_SAID =
+  "Updating AwakenBot. Your Bots and data stay as they are.";
 
 test("a running update says what it is doing on the journey, and a failed part at once on its row", async () => {
   const updating = deferred<LocalReport>();
@@ -577,13 +580,13 @@ test("a running update says what it is doing on the journey, and a failed part a
   await waitFor(
     () =>
       expect(journeyOf(screen).textContent).toContain(
-        "Updating where OpenBot keeps your data",
+        "Updating where AwakenBot keeps your data",
       ),
     { timeout: 3_000 },
   );
   // Said once: the row does not repeat the step or its time.
   expect(row(screen, WAIT).textContent).not.toContain("so far");
-  expect(row(screen, WAIT).textContent).not.toContain("where OpenBot keeps");
+  expect(row(screen, WAIT).textContent).not.toContain("where AwakenBot keeps");
   // In the chart's Jobs: a failed one at once, not ten minutes later. Its name is the log's.
   updateStep = {
     step: "jobs",
@@ -594,7 +597,7 @@ test("a running update says what it is doing on the journey, and a failed part a
   await waitFor(
     () =>
       expect(row(screen, WAIT).textContent).toContain(
-        `${UPDATING_SAID} Part of the update didn't work, so it will stop. OpenBot waits up to 10 minutes for it first. Your data is kept.`,
+        `${UPDATING_SAID} Part of the update didn't work, so it will stop. AwakenBot waits up to 10 minutes for it first. Your data is kept.`,
       ),
     { timeout: 3_000 },
   );
@@ -658,7 +661,7 @@ test("after Quit, the unfinished update starts the stack, and the release it had
         apiUrl: "http://localhost:18082",
         gatewayWsUrl: "ws://localhost:14401",
         notice:
-          "The OpenBot update didn't finish downloading, so OpenBot is running the version it had. It tries again the next time it starts.",
+          "The AwakenBot update didn't finish downloading, so AwakenBot is running the version it had. It tries again the next time it starts.",
       },
     ]),
   );
@@ -672,7 +675,7 @@ test("after Quit, the unfinished update starts the stack, and the release it had
 
 /**
  * The next Start's retry of an update that did not finish: its download shows on the journey while
- * it runs, and when it stalls OpenBot opens on the release the back end has, with the
+ * it runs, and when it stalls AwakenBot opens on the release the back end has, with the
  * running screen's "did not finish" line.
  */
 test("a retried update shows its download, and a stall keeps the line that it did not finish", async () => {
@@ -708,7 +711,7 @@ test("a retried update shows its download, and a stall keeps the line that it di
         apiUrl: "http://localhost:18082",
         gatewayWsUrl: "ws://localhost:14401",
         notice:
-          "The OpenBot update didn't finish downloading, so OpenBot is running the version it had. It tries again the next time it starts.",
+          "The AwakenBot update didn't finish downloading, so AwakenBot is running the version it had. It tries again the next time it starts.",
       },
     ]),
   );
@@ -744,7 +747,7 @@ test("an update says how much of its download has arrived, so a slow line reads 
   });
   await waitFor(() =>
     expect(row(screen, WAIT).textContent).toContain(
-      "Updating OpenBot. Your Bots and data stay as they are.",
+      "Updating AwakenBot. Your Bots and data stay as they are.",
     ),
   );
   arrived = { done: 48_200_000, total: 147_000_000 };
@@ -762,7 +765,7 @@ test("an update says how much of its download has arrived, so a slow line reads 
   ]);
   const waiting = within(row(screen, WAIT));
   expect(row(screen, WAIT).textContent).toContain(
-    "Updating OpenBot. Your Bots and data stay as they are.",
+    "Updating AwakenBot. Your Bots and data stay as they are.",
   );
   expect(row(screen, WAIT).textContent).not.toContain("MB");
   // Downloaded: the CLI's update runs, the measure goes, and the row says the same.
@@ -772,7 +775,7 @@ test("an update says how much of its download has arrived, so a slow line reads 
     { timeout: 3_000 },
   );
   expect(row(screen, WAIT).textContent).toContain(
-    "Updating OpenBot. Your Bots and data stay as they are.",
+    "Updating AwakenBot. Your Bots and data stay as they are.",
   );
   expect(waiting.queryByRole("progressbar")).toBeNull();
   updating.resolve(onRelease("0.16.0-rc.9", null));
@@ -809,8 +812,8 @@ test("an update whose download stopped says so, and that the next start continue
     },
   });
   await waitFor(() => expect(started).toEqual([startableUrls]));
-  expect(row(screen, "Updating OpenBot").textContent).toContain(
-    "The update stopped downloading, so OpenBot runs the version it had. It picks up the download the next time it starts.",
+  expect(row(screen, "Updating AwakenBot").textContent).toContain(
+    "The update stopped downloading, so AwakenBot runs the version it had. It picks up the download the next time it starts.",
   );
   expect(calls).toBe(2);
 });
@@ -836,7 +839,7 @@ test("a setup whose download stopped offers Retry, which continues where it left
     },
   });
   await waitFor(() =>
-    expect(row(screen, "Setting up OpenBot").textContent).toContain(
+    expect(row(screen, "Setting up AwakenBot").textContent).toContain(
       "The download stopped. Retry continues where it left off.",
     ),
   );
@@ -846,14 +849,14 @@ test("a setup whose download stopped offers Retry, which continues where it left
 });
 
 /**
- * Box I: OpenBot's machine was made again, and the backend went with the old one. Every status
+ * Box I: AwakenBot's machine was made again, and the backend went with the old one. Every status
  * failed, the card said "Setup stopped partway through with an error. Retry.", and Retry did the
  * same. The native side now says the backend is lost (`stack-lost`, from the CLI's
  * "local-command-failed, no stack" with the backend's cluster gone). The card says so in plain
- * words, offers Start fresh in place of Retry, and Start fresh sets OpenBot up again, connects it,
+ * words, offers Start fresh in place of Retry, and Start fresh sets AwakenBot up again, connects it,
  * waits for it and opens it.
  */
-test("a lost backend offers Start fresh, which sets OpenBot up again and opens it", async () => {
+test("a lost backend offers Start fresh, which sets AwakenBot up again and opens it", async () => {
   const lost = report({ outcome: "failed", stack: null, reason: "stack-lost" });
   invokeHandler = answers({
     run_local_eval: [lost, ready],
@@ -874,7 +877,7 @@ test("a lost backend offers Start fresh, which sets OpenBot up again and opens i
     },
   });
   await screen.findByText(
-    "OpenBot's saved data on this computer is gone, with your Bots and conversations. Start fresh to set OpenBot up again. Your sign-in and AI connection stay.",
+    "AwakenBot's saved data on this computer is gone, with your Bots and conversations. Start fresh to set AwakenBot up again. Your sign-in and AI connection stay.",
   );
   // Retry would only ask again about what is gone.
   expect(screen.queryByRole("button", { name: "Retry" })).toBeNull();
@@ -906,7 +909,7 @@ test("a lost backend is said on the status card too, with Start fresh", async ()
   const card = await screen.findByRole("alert", { name: "Setup" });
   await waitFor(() =>
     expect(card.textContent).toContain(
-      "OpenBot's saved data on this computer is gone, with your Bots and conversations.",
+      "AwakenBot's saved data on this computer is gone, with your Bots and conversations.",
     ),
   );
   expect(within(card).getByRole("heading").textContent).toBe("Setup needs you");
@@ -941,7 +944,7 @@ test("setup that needs a sign-in offers it in the window, then carries on by its
   });
   const screen = view();
   await userEvent.click(
-    await screen.findByRole("button", { name: "Sign in to OpenBot" }),
+    await screen.findByRole("button", { name: "Sign in to AwakenBot" }),
   );
   await waitFor(() =>
     expect(row(screen, START).textContent).toContain("Complete"),
@@ -985,7 +988,7 @@ test("a setup refused for a full Docker disk says so, with Retry", async () => {
   await screen.findByRole("button", { name: "Retry" });
   const setup = row(screen, SETUP).textContent;
   expect(setup).toContain(
-    "Docker Desktop has 0 GB of free disk space. OpenBot needs 40 GB. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
+    "Docker Desktop has 0 GB of free disk space. AwakenBot needs 40 GB. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
   );
   expect(setup).not.toContain("partway through");
 });
@@ -1010,7 +1013,7 @@ const notStartedOnC = report({
 });
 const shortOnC = notStartedOnC.shortfall;
 const ACCOUNT_STEP_SAYS =
-  "This computer has 13.9 GB of free space on drive C:, and OpenBot needs 40 GB. Free up some space, then Try again.";
+  "This computer has 13.9 GB of free space on drive C:, and AwakenBot needs 40 GB. Free up some space, then Try again.";
 
 /**
  * On Windows G that setup was a red "Setup stopped" card with Retry and the troubleshooting logs,
@@ -1090,11 +1093,11 @@ test("a sign-in that does not finish says so and can be tried again", async () =
   });
   const screen = view();
   await userEvent.click(
-    await screen.findByRole("button", { name: "Sign in to OpenBot" }),
+    await screen.findByRole("button", { name: "Sign in to AwakenBot" }),
   );
   await screen.findByText("Sign-in did not finish. Try again.");
   expect(
-    screen.getByRole("button", { name: "Sign in to OpenBot" }),
+    screen.getByRole("button", { name: "Sign in to AwakenBot" }),
   ).toBeTruthy();
   expect(commands().filter((c) => c === "set_up_local_eval")).toHaveLength(1);
 });
@@ -1113,11 +1116,11 @@ test("a sign-in waiting on the browser shows its code and page, and Cancel stops
   });
   const screen = view();
   await userEvent.click(
-    await screen.findByRole("button", { name: "Sign in to OpenBot" }),
+    await screen.findByRole("button", { name: "Sign in to AwakenBot" }),
   );
   await screen.findByText("WXYZ-2345");
   expect(
-    screen.getByText("Finish signing in to OpenBot in your browser…"),
+    screen.getByText("Finish signing in to AwakenBot in your browser…"),
   ).toBeTruthy();
   expect(
     screen
@@ -1137,16 +1140,16 @@ test("a sign-in waiting on the browser shows its code and page, and Cancel stops
     },
   });
   expect(
-    await screen.findByRole("button", { name: "Sign in to OpenBot" }),
+    await screen.findByRole("button", { name: "Sign in to AwakenBot" }),
   ).toBeTruthy();
   expect(screen.queryByText("WXYZ-2345")).toBeNull();
 });
 
 /*
- * The sign-in setup stops for leads with OpenBot by CopilotKit, before and while it waits on the
+ * The sign-in setup stops for leads with AwakenBot by CopilotKit, before and while it waits on the
  * browser, as the Account step does. It showed none, then CopilotKit's logotype alone.
  */
-test("a sign-in setup stops for leads with OpenBot by CopilotKit, before and while it waits", async () => {
+test("a sign-in setup stops for leads with AwakenBot by CopilotKit, before and while it waits", async () => {
   invokeHandler = answers({
     set_up_local_eval: [blockedOnSignIn],
     sign_in_to_copilotkit: [new Promise(() => {})],
@@ -1160,20 +1163,20 @@ test("a sign-in setup stops for leads with OpenBot by CopilotKit, before and whi
   });
   const screen = view();
   const leads = () => {
-    const card = screen.getByText("Sign in to finish setting up OpenBot.")
+    const card = screen.getByText("Sign in to finish setting up AwakenBot.")
       .parentElement as HTMLElement;
     expect(card.querySelector(".lockup")?.textContent).toBe(
-      "OpenBot™by CopilotKit",
+      "AwakenBot™by CopilotKit",
     );
     expect(screen.queryByRole("img", { name: "CopilotKit" })).toBeNull();
   };
   await userEvent.click(
-    await screen.findByRole("button", { name: "Sign in to OpenBot" }),
+    await screen.findByRole("button", { name: "Sign in to AwakenBot" }),
   );
   await screen.findByText("WXYZ-2345");
   leads();
   await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
-  await screen.findByRole("button", { name: "Sign in to OpenBot" });
+  await screen.findByRole("button", { name: "Sign in to AwakenBot" });
   leads();
 });
 
@@ -1187,7 +1190,7 @@ test("setup that needs the agreement shows it, and only Accept sets up again wit
   });
   const screen = view();
   await screen.findByText(
-    "To run OpenBot on this computer, accept the OpenBot by CopilotKit license agreement.",
+    "To run AwakenBot on this computer, accept the AwakenBot by CopilotKit license agreement.",
   );
   expect(
     screen.getByRole("link", { name: "Read the license agreement" }),
@@ -1227,7 +1230,7 @@ test("an acceptance setup does not take is said once, not offered again", async 
   });
   const screen = view();
   await userEvent.click(await screen.findByRole("button", { name: "Accept" }));
-  await screen.findByText(/OpenBot couldn't record your acceptance/);
+  await screen.findByText(/AwakenBot couldn't record your acceptance/);
   expect(screen.queryByRole("button", { name: "Accept" })).toBeNull();
   expect(
     invokeCalls.filter((call) => call.command === "set_up_local_eval"),
@@ -1246,7 +1249,7 @@ test("no build sends the person to a terminal", async () => {
     });
     const screen = view();
     await screen.findByRole("button", {
-      name: blocked === blockedOnTerms ? "Accept" : "Sign in to OpenBot",
+      name: blocked === blockedOnTerms ? "Accept" : "Sign in to AwakenBot",
     });
     expect(screen.queryByText(/copilotkit |Terminal/)).toBeNull();
     cleanup();
@@ -1258,11 +1261,11 @@ test("a blocked or conflicted connection stops at its row, and Retry resumes at 
   for (const [answer, said] of [
     [
       connection({ outcome: "blocked", reason: "confirmation-required" }),
-      "Setup stopped to ask something OpenBot can't answer. Copy the logs below and ask for help.",
+      "Setup stopped to ask something AwakenBot can't answer. Copy the logs below and ask for help.",
     ],
     [
       connection({ outcome: "blocked", conflicted: true }),
-      "Settings OpenBot saved were changed since, so it didn't connect. Retry, or repair the installation.",
+      "Settings AwakenBot saved were changed since, so it didn't connect. Retry, or repair the installation.",
     ],
   ] as const) {
     invokeHandler = answers({
@@ -1294,14 +1297,14 @@ test("a blocked or conflicted connection stops at its row, and Retry resumes at 
 
 test("readiness or a licence that is not exactly ready and valid never starts", async () => {
   for (const [answer, said] of [
-    [report(), "OpenBot started, and hasn't said yet whether it's ready."],
+    [report(), "AwakenBot started, and hasn't said yet whether it's ready."],
     [
       report({ readiness: "ready", licence: "expired" }),
       "The evaluation licence has expired.",
     ],
     [
       report({ readiness: "degraded", licence: "valid" }),
-      "OpenBot is running but not working properly. Retry to start it again.",
+      "AwakenBot is running but not working properly. Retry to start it again.",
     ],
   ] as const) {
     invokeHandler = answers({ run_local_eval: [answer] });
@@ -1339,7 +1342,7 @@ test("polling is bounded, and says so when Intelligence never became ready", asy
     pollDelays: [0, 0],
   });
   await screen.findByText(
-    "OpenBot didn't get ready in time. Retry to check again.",
+    "AwakenBot didn't get ready in time. Retry to check again.",
   );
   expect(statusCalls()).toHaveLength(3);
   expect(screen.getByRole("button", { name: "Retry" })).toBeTruthy();
@@ -1350,7 +1353,9 @@ test("polling is bounded, and says so when Intelligence never became ready", asy
   ).toEqual([
     {
       command: "back_end_wait_ended",
-      args: { why: "OpenBot didn't get ready in time. Retry to check again." },
+      args: {
+        why: "AwakenBot didn't get ready in time. Retry to check again.",
+      },
     },
   ]);
 });
@@ -1494,7 +1499,7 @@ test("a relaunch whose start fails on a nearly full disk names the disk on its r
   await screen.findByRole("button", { name: "Retry" });
   const waiting = row(screen, WAIT).textContent;
   expect(waiting).toContain(
-    "OpenBot is nearly out of disk space. It has 30.5 GB free of 1006.8 GB. It needs 40 GB. Free up space on drive C:, then Retry.",
+    "AwakenBot is nearly out of disk space. It has 30.5 GB free of 1006.8 GB. It needs 40 GB. Free up space on drive C:, then Retry.",
   );
   expect(waiting).not.toContain("partway through");
   expect(commands()).toEqual(["run_local_eval:status", "run_local_eval:start"]);
@@ -1502,7 +1507,7 @@ test("a relaunch whose start fails on a nearly full disk names the disk on its r
 
 /**
  * Windows, after space was freed: Retry reads the status of the back end the failed start left
- * running, which says `degraded`, and the row said only "OpenBot is running but not working properly. Retry to start it again."
+ * running, which says `degraded`, and the row said only "AwakenBot is running but not working properly. Retry to start it again."
  * while k3s still reported low disk. `local_eval::checked_when_unhealthy` now says why.
  */
 test("a backend running but not healthy after low disk says it is recovering, and Retry asks again", async () => {
@@ -1532,7 +1537,7 @@ test("a backend running but not healthy after low disk says it is recovering, an
   const retry = await screen.findByRole("button", { name: "Retry" });
   const waiting = row(screen, WAIT).textContent;
   expect(waiting).toContain(
-    "OpenBot is recovering from low disk space. Wait a few minutes, then Retry.",
+    "AwakenBot is recovering from low disk space. Wait a few minutes, then Retry.",
   );
   expect(waiting).not.toContain("running but not healthy");
   await userEvent.click(retry);
@@ -1552,7 +1557,9 @@ test("a start that fails stops at its row, and Retry starts again without asking
     onStart: async () => (++starts > 1 ? "started" : "failed"),
   });
   await waitFor(() =>
-    expect(row(screen, START).textContent).toContain("OpenBot did not start."),
+    expect(row(screen, START).textContent).toContain(
+      "AwakenBot did not start.",
+    ),
   );
   await userEvent.click(screen.getByRole("button", { name: "Retry" }));
   await waitFor(() => expect(starts).toBe(2));
@@ -1560,10 +1567,10 @@ test("a start that fails stops at its row, and Retry starts again without asking
 });
 
 /**
- * OpenBot itself failing to start is not Intelligence stopping. After a refused Start the AI screen
+ * AwakenBot itself failing to start is not Intelligence stopping. After a refused Start the AI screen
  * said "Intelligence stopped" over a stack the CLI reported ready and licensed.
  */
-test("a start that fails says OpenBot did not start, not that Intelligence stopped", async () => {
+test("a start that fails says AwakenBot did not start, not that Intelligence stopped", async () => {
   invokeHandler = answers({ run_local_eval: [ready] });
   const screen = view({
     stack: "local-abc123",
@@ -1571,15 +1578,15 @@ test("a start that fails says OpenBot did not start, not that Intelligence stopp
     status: true,
     onStart: async () => "failed",
   });
-  const card = await screen.findByRole("alert", { name: "OpenBot" });
-  expect(card.textContent).toContain("OpenBot did not start");
+  const card = await screen.findByRole("alert", { name: "AwakenBot" });
+  expect(card.textContent).toContain("AwakenBot did not start");
   expect(card.textContent).toContain("Everything else is ready");
   expect(card.textContent).not.toContain("Setup stopped");
   expect(within(card).getByRole("button", { name: "Retry" })).toBeTruthy();
 });
 
 /**
- * A Start the window put off until OpenBot is installed again is not one that failed. Saying "OpenBot
+ * A Start the window put off until AwakenBot is installed again is not one that failed. Saying "AwakenBot
  * did not start" over it sent a person who had changed nothing to look for a problem.
  */
 test("a start that is put off says nothing, and starts on the next go-ahead", async () => {
@@ -1613,7 +1620,7 @@ test("a start that is put off says nothing, and starts on the next go-ahead", as
   expect(screen.queryByRole("alert")).toBeNull();
 });
 
-test("without auto, nothing runs until Start OpenBot is chosen", async () => {
+test("without auto, nothing runs until Start AwakenBot is chosen", async () => {
   invokeHandler = answers({ run_local_eval: [ready] });
   const started: Startable[] = [];
   const screen = view({
@@ -1627,7 +1634,9 @@ test("without auto, nothing runs until Start OpenBot is chosen", async () => {
   });
   await new Promise((resolve) => setTimeout(resolve, 10));
   expect(invokeCalls).toEqual([]);
-  await userEvent.click(screen.getByRole("button", { name: "Start OpenBot" }));
+  await userEvent.click(
+    screen.getByRole("button", { name: "Start AwakenBot" }),
+  );
   await waitFor(() => expect(started).toEqual([startableUrls]));
 });
 
@@ -1651,7 +1660,7 @@ test("prepare runs to ready and waits for the go-ahead, which starts at once", a
   expect(screen.queryByRole("alert", { name: "Setup" })).toBeNull();
   expect(screen.queryByRole("listitem", { name: START })).toBeNull();
   expect(started).toEqual([]);
-  // No Start OpenBot once it has run: the go-ahead comes from the screen in front.
+  // No Start AwakenBot once it has run: the go-ahead comes from the screen in front.
   expect(screen.queryByRole("button")).toBeNull();
   cleanup();
   invokeCalls = [];
@@ -1680,7 +1689,7 @@ test("the screen in front hears nothing while Intelligence works, and a stop int
   const stopped = await failed.findByRole("alert", { name: "Setup" });
   expect(stopped.textContent).toContain("Setup stopped");
   expect(stopped.textContent).toContain(
-    "Another app is using a network port OpenBot needs. Quit that app, then Retry.",
+    "Another app is using a network port AwakenBot needs. Quit that app, then Retry.",
   );
   expect(within(stopped).getByRole("button", { name: "Retry" })).toBeTruthy();
   // The logs to paste into an AI assistant, beside the card that says it stopped.
@@ -1720,22 +1729,22 @@ test("failures arrive as categories, and a stack that could not be recorded as a
   const screen = view();
   await waitFor(() =>
     expect(row(screen, SETUP).textContent).toContain(
-      "OpenBot took too long to set up",
+      "AwakenBot took too long to set up",
     ),
   );
   invokeHandler = async () => {
     throw {
-      said: "OpenBot could not save its local evaluation progress.",
+      said: "AwakenBot could not save its local evaluation progress.",
       detail: "synthetic",
     };
   };
   await userEvent.click(screen.getByRole("button", { name: "Retry" }));
   expect((await screen.findByRole("alert")).textContent).toContain(
-    "OpenBot could not save its local evaluation progress.",
+    "AwakenBot could not save its local evaluation progress.",
   );
 });
 
-test("an answer OpenBot does not recognise is never echoed", async () => {
+test("an answer AwakenBot does not recognise is never echoed", async () => {
   invokeHandler = async () => {
     throw "synthetic-secret-marker";
   };

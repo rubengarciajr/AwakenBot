@@ -28,9 +28,9 @@ use openbot_desktop_lib::{
 };
 
 const QUIT_CLEANUP_NOTICE_FILE: &str = ".openbot-quit-cleanup-notice";
-/// Kept apart from the quit cleanup notice, whose presence alone means OpenBot needs recovery.
+/// Kept apart from the quit cleanup notice, whose presence alone means AwakenBot needs recovery.
 const LOCAL_EVAL_STOP_NOTICE_FILE: &str = ".openbot-local-eval-stop-notice";
-/// How an Intelligence failure starts, so Stop and Quit can tell it from OpenBot's own.
+/// How an Intelligence failure starts, so Stop and Quit can tell it from AwakenBot's own.
 const INTELLIGENCE_STOP_FAILED: &str = "Backend stop failed: ";
 const QUIT_MENU_ACCELERATOR: &str = "CmdOrCtrl+KeyQ";
 const QUIT_CLEANUP_NOTICE_LIMIT: usize = 16 * 1024;
@@ -105,10 +105,10 @@ struct Shell {
     intelligence_opening: std::sync::Arc<std::sync::atomic::AtomicBool>,
     /// Dashboard addresses and this session's sign-ins, so a later opening needs no CLI call.
     dashboards: Dashboards,
-    /// The OpenBot app page's sidebar row, and the app origins allowed to reach it.
+    /// The AwakenBot app page's sidebar row, and the app origins allowed to reach it.
     intelligence_bridge: intelligence_bridge::Bridge,
-    /// The origins of the OpenBot app this shell verified it owns (`trust_owned_app`). Only a page
-    /// from one of these is treated as OpenBot and gets the window's controls; any other page on
+    /// The origins of the AwakenBot app this shell verified it owns (`trust_owned_app`). Only a page
+    /// from one of these is treated as AwakenBot and gets the window's controls; any other page on
     /// a loopback port is someone else's.
     owned_app_origins: Mutex<Vec<String>>,
     /// The origins already given the window's controls (`allow_app_page`).
@@ -117,9 +117,9 @@ struct Shell {
     /// so `trust_owned_app` can grant them ahead of the page. Tauri panics on a grant of a
     /// permission it does not know, as in a test app built from a mock context.
     app_page_grants_known: std::sync::atomic::AtomicBool,
-    /// The page a click on a notification asked for while OpenBot's page was not there yet.
+    /// The page a click on a notification asked for while AwakenBot's page was not there yet.
     waiting_notice_page: Mutex<Option<String>>,
-    /// A newer OpenBot Desktop, as the feed last said, and an install of it under way.
+    /// A newer AwakenBot Desktop, as the feed last said, and an install of it under way.
     app_update: app_update::Known,
     /// Wakes the thread that gets a newer version ready when the feed names one.
     update_ready: update_ready::Nudge,
@@ -200,7 +200,7 @@ impl<'a> StartAttempt<'a> {
             return Err(Self::cancelled());
         }
         shell.starting.compare_exchange(false, true, SeqCst, SeqCst).map_err(|_| {
-            Problem::plain("OpenBot is already starting or finishing a cancelled startup. Wait for it to finish, then try again.")
+            Problem::plain("AwakenBot is already starting or finishing a cancelled startup. Wait for it to finish, then try again.")
         })?;
         Ok(Self {
             shell,
@@ -228,7 +228,7 @@ impl<'a> StartAttempt<'a> {
     }
 
     fn cancelled() -> Problem {
-        Problem::plain("OpenBot startup was cancelled by Stop. Start again when you are ready.")
+        Problem::plain("AwakenBot startup was cancelled by Stop. Start again when you are ready.")
     }
 }
 
@@ -343,7 +343,7 @@ struct ReadyRespondingEngine {
 /// answering", which nobody this app is for can act on. Now the saved engine is brought up:
 ///
 /// - Docker: a stopped Docker Desktop is opened. It answered for this installation before.
-/// - Podman, or an installation from before engines were saved: OpenBot's own machine is
+/// - Podman, or an installation from before engines were saved: AwakenBot's own machine is
 ///   started, when it exists. A machine is never created here, and nobody else's is started.
 ///
 /// An engine that still does not answer is reported by the check after this one. An older
@@ -373,12 +373,12 @@ fn wake_saved_engine(
 }
 
 /// What Start does to the engine before Compose reads the project, in this order: bring the
-/// installation's engine up (`wake_saved_engine`), then make sure it is new enough to run OpenBot,
+/// installation's engine up (`wake_saved_engine`), then make sure it is new enough to run AwakenBot,
 /// updating it for the person when it is not (`engine_new_enough`).
 ///
 /// Before Compose, because an old Compose stops at its first look at the project ("Compose config
-/// exited with exit status: 15"). Not while OpenBot's own containers are up: the caller skips this,
-/// so Docker Desktop is never quit from under a running OpenBot. An engine still not answering is
+/// exited with exit status: 15"). Not while AwakenBot's own containers are up: the caller skips this,
+/// so Docker Desktop is never quit from under a running AwakenBot. An engine still not answering is
 /// left to the check after this one, which says so.
 async fn engine_before_compose(
     wake: impl AsyncFnOnce() -> Result<(), Problem>,
@@ -393,7 +393,7 @@ async fn engine_before_compose(
 }
 
 /// `wake_saved_engine` on this machine, each line said on the setup window's rows. Opening Docker
-/// Desktop says the hand-off and brings OpenBot back once Docker answers: see
+/// Desktop says the hand-off and brings AwakenBot back once Docker answers: see
 /// `docker_desktop::start`.
 async fn wake_installation_engine<R: tauri::Runtime>(
     app: &tauri::AppHandle<R>,
@@ -462,7 +462,7 @@ async fn wake_installation_engine<R: tauri::Runtime>(
     .await
     .map_err(|error| {
         Problem::with(
-            "OpenBot could not start the software it runs on. Try again.",
+            "AwakenBot could not start the software it runs on. Try again.",
             error.to_string(),
         )
     })?
@@ -471,10 +471,10 @@ async fn wake_installation_engine<R: tauri::Runtime>(
 /**
 The installation's engine, brought up before the back end is set up, connected or waited on.
 
-A relaunch after a restart finds Docker Desktop quit, or OpenBot's Podman machine stopped, and every
+A relaunch after a restart finds Docker Desktop quit, or AwakenBot's Podman machine stopped, and every
 Intelligence CLI call needs the engine. The window's relaunch sequence starts with the CLI, so
 before this, the CLI answered "docker-unavailable" and setup stopped at "Waiting for the back end",
-never reaching Start, which is where the engine used to be woken. Nothing is done while OpenBot's
+never reaching Start, which is where the engine used to be woken. Nothing is done while AwakenBot's
 own containers are up, or when the engine already answers.
 */
 #[tauri::command]
@@ -496,7 +496,9 @@ async fn wake_engine(app: tauri::AppHandle, root: String) -> Result<(), Problem>
     .await
     .unwrap_or(false);
     let woken = if gone {
-        log::info!("[wake engine] OpenBot's Podman machine is gone; making it again as setup does");
+        log::info!(
+            "[wake engine] AwakenBot's Podman machine is gone; making it again as setup does"
+        );
         match engine_ready(&app, saved).await {
             Ok(_) => machine_before_back_end(&app, saved).await,
             Err(problem) => Err(problem),
@@ -513,7 +515,7 @@ async fn wake_engine(app: tauri::AppHandle, root: String) -> Result<(), Problem>
     woken
 }
 
-/// The engine woken, then healed, then OpenBot's own machine made ready for the back end, in that
+/// The engine woken, then healed, then AwakenBot's own machine made ready for the back end, in that
 /// order: the machine has to be up before it can be prepared, and the window asks the CLI to set up,
 /// update or start the back end only after all three.
 async fn engine_then_machine(
@@ -527,14 +529,14 @@ async fn engine_then_machine(
 }
 
 /**
-OpenBot's own Podman machine on Windows, made ready before the back end starts in it. The one place
+AwakenBot's own Podman machine on Windows, made ready before the back end starts in it. The one place
 for that: the window wakes the engine (`wake_engine`) before every run that sets up, updates or
 starts the back end, so whatever runs here runs before the back end does.
 
 First its network, checked and set up again when it is down (`acquire::machine_before_back_end`),
 said on the machine's row while it waits. Setting it up again restarts the machine, which stops
 whatever runs in it: run only at Start, after the back end had started, it stopped the back end's
-cluster on a live Windows run, and OpenBot then couldn't reach its backend. Anything else the
+cluster on a live Windows run, and AwakenBot then couldn't reach its backend. Anything else the
 machine needs before the back end goes after the network, which it may need.
 */
 async fn machine_before_back_end<R: tauri::Runtime>(
@@ -563,7 +565,7 @@ async fn machine_before_back_end<R: tauri::Runtime>(
     .await
     .map_err(|error| {
         Problem::with(
-            "OpenBot could not start the software it runs on. Try again.",
+            "AwakenBot could not start the software it runs on. Try again.",
             error.to_string(),
         )
     })?
@@ -587,11 +589,11 @@ fn remember_own_ports(ports: &openbot_env::Ports) {
     );
 }
 
-/// Start's network check, then the back end started again when that check restarted OpenBot's
+/// Start's network check, then the back end started again when that check restarted AwakenBot's
 /// machine under it. In this order, before Compose: a restart stops the back end's cluster, and
-/// OpenBot's services connect to the back end as they start.
+/// AwakenBot's services connect to the back end as they start.
 ///
-/// The window makes OpenBot's machine ready before it starts the back end (`machine_before_back_end`), so a
+/// The window makes AwakenBot's machine ready before it starts the back end (`machine_before_back_end`), so a
 /// restart here is rare: a network that went down after that, or a back end that was already
 /// running when Start was asked.
 fn network_then_back_end(
@@ -605,13 +607,13 @@ fn network_then_back_end(
     Ok(())
 }
 
-/// How often, and how many times, Start asks whether the back end is ready again after OpenBot's
+/// How often, and how many times, Start asks whether the back end is ready again after AwakenBot's
 /// machine restarted under it: five minutes, as the window waits for it.
 const BACK_END_AGAIN_EVERY: std::time::Duration = std::time::Duration::from_secs(3);
 const BACK_END_AGAIN_POLLS: usize = 100;
 
-/// The back end OpenBot set up, started again and waited for. Nothing for a back end that is not
-/// OpenBot's: OpenBot never starts one it didn't set up.
+/// The back end AwakenBot set up, started again and waited for. Nothing for a back end that is not
+/// AwakenBot's: AwakenBot never starts one it didn't set up.
 fn back_end_after_machine_restart(root: &Path) -> Result<(), Problem> {
     let Some(stack) = local_eval_state::read(root, None)
         .filter(|state| state.tied_to_openbot())
@@ -636,7 +638,7 @@ fn back_end_started_again(
 ) -> Result<(), Problem> {
     let failed = |detail: String| {
         Problem::with(
-            "OpenBot couldn't start again after reconnecting to the internet. Try Start again.",
+            "AwakenBot couldn't start again after reconnecting to the internet. Try Start again.",
             detail,
         )
     };
@@ -669,10 +671,10 @@ fn back_end_started_again(
 /**
 Whether this installation's own Podman machine is gone, so a relaunch makes it again (`wake_engine`).
 
-On Windows OpenBot's engine is only ever its own machine (`engine::own_machine_only`). Uninstalled
-with OpenBot's data, or removed by hand, the machine goes while the installation folder may stay.
+On Windows AwakenBot's engine is only ever its own machine (`engine::own_machine_only`). Uninstalled
+with AwakenBot's data, or removed by hand, the machine goes while the installation folder may stay.
 Nothing then answered, the relaunch went on to the backend's check, and the CLI, told no engine,
-took Podman's default connection: on box I that was the person's rootless machine, and OpenBot
+took Podman's default connection: on box I that was the person's rootless machine, and AwakenBot
 said it couldn't run on this computer, with no way on. Now the machine is made again through
 setup's own engine step, with setup's rows. Never on a Mac, where the installation may have run on
 a rootful machine of the person's.
@@ -746,7 +748,7 @@ async fn heal_installation_engine<R: tauri::Runtime>(
     .await
     .map_err(|error| {
         Problem::with(
-            "OpenBot could not start the software it runs on. Try again.",
+            "AwakenBot could not start the software it runs on. Try again.",
             error.to_string(),
         )
     })?
@@ -777,9 +779,9 @@ fn ready_responding_engine_after_compose_repair(
     let Some(address) = ready.address.clone().filter(|_| ready.responding) else {
         return Err(Problem::with(
             if install_missing_native {
-                "OpenBot installed the software it runs on, but it isn't answering yet. Try again."
+                "AwakenBot installed the software it runs on, but it isn't answering yet. Try again."
             } else {
-                "OpenBot installed a piece it needs, but the software it runs on isn't answering yet. \
+                "AwakenBot installed a piece it needs, but the software it runs on isn't answering yet. \
                  Try again."
             },
             ready.detail,
@@ -824,7 +826,7 @@ const ROW_STEPS: [&str; 17] = [
 What a row says in the window when its step gives no plain line of its own: by the step, and
 whether it is running, done or stopped. The text it was given goes to the log only.
 
-Found on Windows F: "Downloading OpenBot internal-d2df1b062ac0." reached the Account step's
+Found on Windows F: "Downloading AwakenBot internal-d2df1b062ac0." reached the Account step's
 background row, because the deployment step's line was sent as it was, a release name and all. A
 row's raw text can be a release, an engine's output or an error, so it is never what the window
 says unless it comes as a plain line (`report_line`, `report_running_line`).
@@ -836,32 +838,32 @@ fn plain_row(step: &str, ok: bool, running: bool) -> &'static str {
     if running {
         return match step {
             "engine" | "install-engine" | "create-machine" | "start-machine" | "health-gate" => {
-                "Preparing this computer to run OpenBot."
+                "Preparing this computer to run AwakenBot."
             }
-            "deployment" | "images" => "Downloading OpenBot.",
+            "deployment" | "images" => "Downloading AwakenBot.",
             "installation" => "Finishing the installation.",
             "env" => "Saving your settings.",
-            "services" => "Starting OpenBot's services.",
+            "services" => "Starting AwakenBot's services.",
             "carry-over" => "Bringing your Bots' files and sign-ins across.",
-            "answering" => "Waiting for OpenBot to respond.",
-            "release" => "Updating OpenBot.",
-            "cleanup" | "stopped" | "quit" => "Stopping OpenBot.",
-            "open" => "Opening OpenBot.",
+            "answering" => "Waiting for AwakenBot to respond.",
+            "release" => "Updating AwakenBot.",
+            "cleanup" | "stopped" | "quit" => "Stopping AwakenBot.",
+            "open" => "Opening AwakenBot.",
             _ => "Working on it.",
         };
     }
     match step {
         "engine" | "install-engine" | "create-machine" | "start-machine" | "health-gate" => {
-            "This computer is ready to run OpenBot."
+            "This computer is ready to run AwakenBot."
         }
-        "deployment" | "images" => "OpenBot is downloaded.",
-        "installation" => "OpenBot is installed.",
+        "deployment" | "images" => "AwakenBot is downloaded.",
+        "installation" => "AwakenBot is installed.",
         "env" => "Your settings are saved.",
-        "services" => "OpenBot's services are running.",
+        "services" => "AwakenBot's services are running.",
         "carry-over" => "Your Bots' files and sign-ins are in place.",
-        "answering" | "open" => "OpenBot is ready.",
-        "release" => "OpenBot is updated.",
-        "cleanup" | "stopped" | "quit" => "OpenBot has stopped.",
+        "answering" | "open" => "AwakenBot is ready.",
+        "release" => "AwakenBot is updated.",
+        "cleanup" | "stopped" | "quit" => "AwakenBot has stopped.",
         _ => "Done.",
     }
 }
@@ -978,8 +980,8 @@ fn current_setup_phase() -> telemetry::FailingStep {
 /// update in progress. None of them is recorded as `setup_failed`.
 fn refused_not_failed(problem: &Problem) -> bool {
     problem.said == StartAttempt::cancelled().said
-        || problem.said.starts_with("OpenBot is already starting")
-        || problem.said.starts_with("OpenBot is updating.")
+        || problem.said.starts_with("AwakenBot is already starting")
+        || problem.said.starts_with("AwakenBot is updating.")
 }
 
 fn forget_running_logged() {
@@ -1097,9 +1099,9 @@ fn report_running_row<R: tauri::Runtime>(
     );
 }
 
-/// OpenBot's window in front of whatever is there, at a moment setup needs the person: Docker
+/// AwakenBot's window in front of whatever is there, at a moment setup needs the person: Docker
 /// Desktop has answered, the system's password prompt has closed, the installation failed or is
-/// done, OpenBot has started, a launch the installer started first shows (`forward_at_first_show`).
+/// done, AwakenBot has started, a launch the installer started first shows (`forward_at_first_show`).
 /// `why` goes in the log.
 ///
 /// On macOS that means activating the app, not only ordering its window to the front. A window an
@@ -1166,10 +1168,10 @@ fn bring_to_front<R: tauri::Runtime>(app: &tauri::AppHandle<R>, why: &str) {
 static SIGN_IN_OPEN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 /**
-Whether `bring_to_front` holds OpenBot back, and says so in the log: while the browser sign-in is
+Whether `bring_to_front` holds AwakenBot back, and says so in the log: while the browser sign-in is
 open, nothing setup does is the person's next step. On Windows F, "[front] the engine machine is
-prepared" brought OpenBot in front of the browser while the person typed their email to sign in.
-When the sign-in ends, OpenBot comes forward once (`while_signing_in`): the license agreement is
+prepared" brought AwakenBot in front of the browser while the person typed their email to sign in.
+When the sign-in ends, AwakenBot comes forward once (`while_signing_in`): the license agreement is
 the person's next step then.
 */
 fn held_back(why: &str) -> bool {
@@ -1197,7 +1199,7 @@ impl Drop for SignInOpen {
     }
 }
 
-/// Run the browser sign-in, with OpenBot held back from the front meanwhile, then bring it forward
+/// Run the browser sign-in, with AwakenBot held back from the front meanwhile, then bring it forward
 /// once, whatever the sign-in's outcome: what comes next is the person's.
 fn while_signing_in<T>(sign_in: impl FnOnce() -> T, come_forward: impl FnOnce()) -> T {
     let open = SignInOpen::begin();
@@ -1207,7 +1209,7 @@ fn while_signing_in<T>(sign_in: impl FnOnce() -> T, come_forward: impl FnOnce())
     ended
 }
 
-/// How OpenBot's window came forward on Windows (`bring_to_front`).
+/// How AwakenBot's window came forward on Windows (`bring_to_front`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[cfg_attr(not(windows), allow(dead_code))]
 enum Front {
@@ -1236,23 +1238,23 @@ fn bring_setup_to_front(app: tauri::AppHandle, why: String) {
     bring_to_front(&app, &why);
 }
 
-/// The argument OpenBot's installer starts it with, after an in-app update and from the installer's
+/// The argument AwakenBot's installer starts it with, after an in-app update and from the installer's
 /// last page (`OPENBOT_RUN_AFTER_INSTALL` in `windows/hooks.nsh`).
 const STARTED_BY_INSTALLER: &str = "--started-by-installer";
 
-/// Whether OpenBot's installer started this launch, from the program's arguments (the program
+/// Whether AwakenBot's installer started this launch, from the program's arguments (the program
 /// first).
 fn started_by_installer(args: &[std::ffi::OsString]) -> bool {
     args.iter().skip(1).any(|arg| arg == STARTED_BY_INSTALLER)
 }
 
 /**
-The window's first show, for a launch OpenBot's installer started (`started_by_installer`): after an
-in-app update, or from the installer's last page. OpenBot comes in front once (`come_forward`, which
-is `bring_to_front`), so the person sees Starting OpenBot and its progress. On box H (Windows Server
+The window's first show, for a launch AwakenBot's installer started (`started_by_installer`): after an
+in-app update, or from the installer's last page. AwakenBot comes in front once (`come_forward`, which
+is `bring_to_front`), so the person sees Starting AwakenBot and its progress. On box H (Windows Server
 2022, an in-app update from 1.0.1 to 1.0.2) Windows put the maximised Edge in front as 1.0.1 closed,
-1.0.2 opened behind it, and the person saw only Edge for the four minutes of Starting OpenBot, until
-"[front] OpenBot is showing" at home. That one came forward because it came four and a half minutes
+1.0.2 opened behind it, and the person saw only Edge for the four minutes of Starting AwakenBot, until
+"[front] AwakenBot is showing" at home. That one came forward because it came four and a half minutes
 after the person's last input, the click on Update and restart: past the foreground lock time-out,
 the time after input during which Windows keeps apps from coming forward
 (`SPI_GETFOREGROUNDLOCKTIMEOUT`, 200 seconds by default).
@@ -1260,7 +1262,7 @@ the time after input during which Windows keeps apps from coming forward
 Windows lets a window come to the front only from a process it allows ("SetForegroundWindow
 function", Remarks, Microsoft Learn). The right comes from the updating version, which passes it on
 while its window is still up (`pass_the_foreground_on`), and the installer, which passes it on again
-before it starts OpenBot. Where Windows still refuses, as after an update from a version before
+before it starts AwakenBot. Where Windows still refuses, as after an update from a version before
 this or once the person has typed or clicked elsewhere, `bring_to_front` flashes the taskbar button.
 
 Any other launch is left to Windows: from the Start menu or the taskbar it is in front already. Held
@@ -1268,15 +1270,15 @@ back, as every moment is, while the browser sign-in is open (`held_back`).
 */
 fn forward_at_first_show(started_by_installer: bool, come_forward: impl FnOnce(&str)) {
     if started_by_installer {
-        come_forward("the installer started OpenBot");
+        come_forward("the installer started AwakenBot");
     }
 }
 
 /**
-Windows, as the updater is about to start the installer: pass OpenBot's right to set the foreground
+Windows, as the updater is about to start the installer: pass AwakenBot's right to set the foreground
 window on to every process, so the installer and the new version it starts may come to the front
-(`forward_at_first_show`). Called while OpenBot's window is still up, just before the updater's
-cleanup takes it down: until then OpenBot holds the foreground, from the person's click on Update and
+(`forward_at_first_show`). Called while AwakenBot's window is still up, just before the updater's
+cleanup takes it down: until then AwakenBot holds the foreground, from the person's click on Update and
 restart. Once the window is gone, Windows activates the one behind it, and nothing started after that
 may take the foreground from it by itself.
 
@@ -1295,12 +1297,12 @@ fn pass_the_foreground_on() {
             "[app update] passed the foreground on, for the installer and the new version"
         ),
         Err(error) => log::info!(
-            "[app update] could not pass the foreground on ({error}); OpenBot was no longer in front"
+            "[app update] could not pass the foreground on ({error}); AwakenBot was no longer in front"
         ),
     }
 }
 
-/// The person said yes to pausing their Podman while OpenBot runs. See `own_machine`. False when
+/// The person said yes to pausing their Podman while AwakenBot runs. See `own_machine`. False when
 /// nothing was waiting for it.
 #[tauri::command]
 fn allow_pause_podman() -> bool {
@@ -1317,7 +1319,7 @@ fn allow_pause_podman() -> bool {
 }
 
 /**
-OpenBot's own machine started, as setup and a relaunch start it, each line said on the window's rows.
+AwakenBot's own machine started, as setup and a relaunch start it, each line said on the window's rows.
 
 On a Mac, where Podman runs one machine at a time, a machine of the person's that is running keeps
 it from starting. The window then says why on its `own_machine::PAUSE_STEP` row and waits for the
@@ -1339,7 +1341,7 @@ fn start_own_machine<R: tauri::Runtime>(
             let given = own_machine::PAUSE_GATE.wait(
                 || {
                     report_running_line(app, own_machine::PAUSE_STEP, offer, None);
-                    bring_to_front(app, "OpenBot asks to pause the person's Podman");
+                    bring_to_front(app, "AwakenBot asks to pause the person's Podman");
                 },
                 cancelled,
             );
@@ -1369,9 +1371,9 @@ fn start_own_machine<R: tauri::Runtime>(
     started
 }
 
-/// Quit's last part on a Mac whose Podman OpenBot paused: OpenBot's machine stopped, and the
+/// Quit's last part on a Mac whose Podman AwakenBot paused: AwakenBot's machine stopped, and the
 /// person's started again with its containers. See `own_machine::give_back_with`. Nothing at all
-/// when OpenBot paused nothing.
+/// when AwakenBot paused nothing.
 fn give_back_paused_podman(progress: &mut dyn FnMut(QuitStep, QuitStepState)) {
     let record = own_machine::record_path();
     if !own_machine::has_paused(&record) {
@@ -1459,7 +1461,7 @@ fn report_downloads<R: tauri::Runtime>(
         Progress {
             step: "images".into(),
             ok: true,
-            detail: "Downloading OpenBot.".into(),
+            detail: "Downloading AwakenBot.".into(),
             running: true,
             download_bytes: (downloads.bytes > 0).then_some(downloads.bytes),
             downloads: Some(downloads),
@@ -1565,13 +1567,13 @@ fn windows_blocker_instruction(blocker: win::Blocker) -> String {
 async fn windows_fix(app: tauri::AppHandle, blocker: win::Blocker) -> Result<win::Fixed, Problem> {
     let failed = |detail: String| {
         Problem::with(
-            "OpenBot could not set up Windows Subsystem for Linux. Try again, or run the commands \
+            "AwakenBot could not set up Windows Subsystem for Linux. Try again, or run the commands \
              yourself.",
             detail,
         )
     };
     let fix = blocker.fix().ok_or_else(|| {
-        Problem::plain("OpenBot cannot change this setting. Follow the steps on this screen.")
+        Problem::plain("AwakenBot cannot change this setting. Follow the steps on this screen.")
     })?;
     let data = app
         .path()
@@ -1601,11 +1603,14 @@ async fn windows_restart_pending(app: tauri::AppHandle) -> Result<bool, Problem>
     tauri::async_runtime::spawn_blocking(move || Ok(win::restart_pending(&data, &win::boot()?)))
         .await
         .map_err(|error| {
-            Problem::with("OpenBot could not check Windows setup.", error.to_string())
+            Problem::with(
+                "AwakenBot could not check Windows setup.",
+                error.to_string(),
+            )
         })?
 }
 
-/// Restart Windows to finish a fix, with OpenBot set to open again afterwards.
+/// Restart Windows to finish a fix, with AwakenBot set to open again afterwards.
 #[tauri::command]
 fn windows_restart() -> Result<(), Problem> {
     win::restart()
@@ -1635,7 +1640,7 @@ impl<R: tauri::Runtime> RuntimeUpdateGuard<R> {
                 std::sync::atomic::Ordering::SeqCst,
                 std::sync::atomic::Ordering::SeqCst,
             )
-            .map_err(|_| Problem::plain("OpenBot is already updating."))?;
+            .map_err(|_| Problem::plain("AwakenBot is already updating."))?;
         shell
             .update_cancelled
             .store(false, std::sync::atomic::Ordering::SeqCst);
@@ -1677,16 +1682,16 @@ fn require_update_root(shell: &Shell, root: &Path) -> Result<(), Problem> {
 /// the screen a failed Start leaves, whose Retry runs Start again: `upgrade_due` sends it to
 /// `upgrade_and_start`, which puts the previous version back first.
 const UPGRADE_INTERRUPTED: &str =
-    "OpenBot's last update did not finish. Choose Retry to put the previous version back.";
+    "AwakenBot's last update did not finish. Choose Retry to put the previous version back.";
 
 /// The same, on the installation screen a failed Install or Repair leaves, whose button installs
 /// again, which puts the previous version back first (`put_back_interrupted_upgrade`).
 const UPGRADE_INTERRUPTED_INSTALL: &str =
-    "OpenBot's last update did not finish. Choose Retry installation to put the previous version back.";
+    "AwakenBot's last update did not finish. Choose Retry installation to put the previous version back.";
 
-/// The same, on the running screen, where Show OpenBot is refused and Stop OpenBot leads to Start.
+/// The same, on the running screen, where Show AwakenBot is refused and Stop AwakenBot leads to Start.
 const UPGRADE_INTERRUPTED_SHOWING: &str =
-    "OpenBot's last update did not finish. Choose Stop OpenBot, then Start OpenBot, to put the previous version back.";
+    "AwakenBot's last update did not finish. Choose Stop AwakenBot, then Start AwakenBot, to put the previous version back.";
 
 /// What Start is given, for an upgrade to start the version it leaves in place.
 struct StartWith {
@@ -1759,7 +1764,7 @@ impl upgrade::Steps for DesktopSteps {
     fn stop(&mut self) -> Result<(), Problem> {
         self.own_containers();
         stop_for_update(&self.app, &self.root)
-            .map_err(|error| Problem::with("OpenBot could not stop to update.", error))
+            .map_err(|error| Problem::with("AwakenBot could not stop to update.", error))
     }
 
     fn has_database(&mut self) -> Result<bool, Problem> {
@@ -1777,7 +1782,7 @@ impl upgrade::Steps for DesktopSteps {
         })
         .map_err(|error| {
             Problem::with(
-                "OpenBot could not back up its database, so it did not update.",
+                "AwakenBot could not back up its database, so it did not update.",
                 error,
             )
         })
@@ -1792,7 +1797,7 @@ impl upgrade::Steps for DesktopSteps {
         .map_err(|error| {
             report(&self.app, "deployment", false, error.clone());
             Problem::with(
-                "OpenBot could not download its new version. Check the internet connection and \
+                "AwakenBot could not download its new version. Check the internet connection and \
                  try again.",
                 error,
             )
@@ -1826,7 +1831,7 @@ impl upgrade::Steps for DesktopSteps {
             stack::start_runtime_database(engine, root, secrets)?;
             stack::restore_runtime_database(engine, root, secrets, from)
         })
-        .map_err(|error| Problem::with("OpenBot could not put its database back.", error))
+        .map_err(|error| Problem::with("AwakenBot could not put its database back.", error))
     }
 }
 
@@ -1894,7 +1899,7 @@ async fn upgrade_and_start_now(
         .load(std::sync::atomic::Ordering::SeqCst)
     {
         return Err(Problem::plain(
-            "OpenBot is already updating. Wait for it to finish before starting.",
+            "AwakenBot is already updating. Wait for it to finish before starting.",
         ));
     }
     let ran = {
@@ -1923,7 +1928,7 @@ async fn upgrade_and_start_now(
                 report_running_plain(
                     &handle,
                     "release",
-                    "Putting back the version OpenBot was updating from.",
+                    "Putting back the version AwakenBot was updating from.",
                 );
                 upgrade::recover(&target, &mut steps).map_err(|problem| {
                     Problem::with(UPGRADE_INTERRUPTED, upgrade::detail(&problem))
@@ -1965,8 +1970,8 @@ async fn upgrade_and_start_now(
                 &app,
                 "release",
                 true,
-                engine::StepLine::here("OpenBot is updated.")
-                    .logged(format!("OpenBot is on {}.", planned.to)),
+                engine::StepLine::here("AwakenBot is updated.")
+                    .logged(format!("AwakenBot is on {}.", planned.to)),
             );
             desktop_telemetry::record(&app, telemetry::EventData::Activated);
             Ok(upgrade::Outcome::moved(&planned))
@@ -1983,7 +1988,7 @@ async fn upgrade_and_start_now(
             Ok(upgrade::Outcome::kept(&planned, &failed))
         }
         upgrade::Ran::Back { failed, .. } if cancelled => Err(Problem::with(
-            "OpenBot stopped before it finished updating, and the version it had is back in place.",
+            "AwakenBot stopped before it finished updating, and the version it had is back in place.",
             format!(
                 "{}: {}",
                 upgrade::moved_log(&planned),
@@ -2109,7 +2114,7 @@ fn watch_for_app_updates<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
 /**
 Get the newer version the feed names ready while this one runs (`update_ready`), on a thread of its
 own: a try as soon as the feed names one, and every `app_update::TICK` after, until it is ready. A
-try waits while OpenBot is not running, or while something the person started needs the engine
+try waits while AwakenBot is not running, or while something the person started needs the engine
 (`update_ready_paused`), so the first one after a launch comes once Start is done. Once ready, each
 try only checks that it still is. A build that is offered no updates makes no such try.
 
@@ -2145,7 +2150,7 @@ fn get_updates_ready<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
     }
 }
 
-/// Whether a try at getting an update ready waits, or stops before its next image: OpenBot is not
+/// Whether a try at getting an update ready waits, or stops before its next image: AwakenBot is not
 /// running, or is starting, stopping, updating or quitting.
 fn update_ready_paused<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> bool {
     use std::sync::atomic::Ordering::SeqCst;
@@ -2168,8 +2173,8 @@ const BEHIND_TICK: std::time::Duration = std::time::Duration::from_secs(15);
 const BEHIND_RETRY: std::time::Duration = std::time::Duration::from_secs(60);
 
 /// Whether a try at getting this app's own release ready waits, or stops before its next image:
-/// OpenBot is starting, updating (the update pulls the rest itself), or quitting, or the app is
-/// installing its own update. Unlike `update_ready_paused`, it goes on while OpenBot is not
+/// AwakenBot is starting, updating (the update pulls the rest itself), or quitting, or the app is
+/// installing its own update. Unlike `update_ready_paused`, it goes on while AwakenBot is not
 /// running: that is when it is needed.
 fn own_release_paused<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> bool {
     use std::sync::atomic::Ordering::SeqCst;
@@ -2182,7 +2187,7 @@ fn own_release_paused<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> bool {
 
 /**
 One try at getting this app's own release ready for the installation in the selected folder when it
-is behind the app (`update_ready::behind`): OpenBot's images for it, into the engine the
+is behind the app (`update_ready::behind`): AwakenBot's images for it, into the engine the
 installation was set up on, once that engine answers, so the Start that moves it finds them there.
 Never started by itself: an engine that does not answer is left alone. The download keeps the back
 end's 40 GiB free (`update_ready::keeps_free`). Said in the log once per change of outcome. When the
@@ -2360,10 +2365,10 @@ fn try_getting_update_ready<R: tauri::Runtime>(
         disk: &|| local_eval::engine_disk(&address),
         computer_free: &|| update_ready::computer_free(&address),
         limits: openbot_desktop_lib::local_images::Limits::standard(),
-        // OpenBot runs, so its back end is set up already.
+        // AwakenBot runs, so its back end is set up already.
         keep_free: 0,
     };
-    // Stopped when OpenBot needs the engine, or the feed names another version meanwhile.
+    // Stopped when AwakenBot needs the engine, or the feed names another version meanwhile.
     let stop = || update_ready_paused(app) || shell.app_update.newer().as_ref() != Some(&version);
     let outcome = update_ready::get_ready(&ahead, &stop, &mut |done, total| {
         shell
@@ -2495,13 +2500,13 @@ async fn check_app_update_for_page<R: tauri::Runtime>(
     check_app_update_now(app).await.map_err(|error| {
         log::warn!("[app update] could not read the update feed: {error}");
         Problem::with(
-            "OpenBot couldn't check for updates. Check your internet connection and try again.",
+            "AwakenBot couldn't check for updates. Check your internet connection and try again.",
             error,
         )
     })
 }
 
-/// Check for Updates… in the tray or the OpenBot menu. Always answers, in a native dialog: the
+/// Check for Updates… in the tray or the AwakenBot menu. Always answers, in a native dialog: the
 /// offer with Update and restart, up to date, or couldn't check. Not now closes the offer on that
 /// version, as it does in the windows.
 fn check_for_updates_from_menu(app: tauri::AppHandle) {
@@ -2542,7 +2547,7 @@ fn check_for_updates_from_menu(app: tauri::AppHandle) {
 /// A Check for Updates… answer, in a native alert. `answered` hears whether the first button was
 /// chosen, off the main thread.
 ///
-/// On macOS, OpenBot's own alert, with OpenBot's icon (`native_alert`): the dialog plugin shows a
+/// On macOS, AwakenBot's own alert, with AwakenBot's icon (`native_alert`): the dialog plugin shows a
 /// message with no parent window in an alert the system draws, with its grey note icon. Elsewhere,
 /// the dialog plugin's message, which on Windows carries the information icon a message box should.
 fn show_prompt(
@@ -2600,28 +2605,28 @@ fn dismiss_app_update_for<R: tauri::Runtime>(
     version: &str,
 ) -> Result<(), Problem> {
     let version = semver::Version::parse(version)
-        .map_err(|_| Problem::plain("That isn't a version of OpenBot."))?;
+        .map_err(|_| Problem::plain("That isn't a version of AwakenBot."))?;
     let config = app
         .path()
         .app_config_dir()
         .map_err(|e| Problem::from(e.to_string()))?;
     app_update::dismiss(&config, &version)
-        .map_err(|e| Problem::from(format!("OpenBot couldn't remember that: {e}")))
+        .map_err(|e| Problem::from(format!("AwakenBot couldn't remember that: {e}")))
 }
 
 /**
-Install the newer OpenBot that the banner or the setup window offered, then restart into it.
+Install the newer AwakenBot that the banner or the setup window offered, then restart into it.
 
-The archive is downloaded, and its signature verified by the updater, while OpenBot keeps running,
-then installed over this app. Only then is OpenBot stopped, as for an upgrade (the local
+The archive is downloaded, and its signature verified by the updater, while AwakenBot keeps running,
+then installed over this app. Only then is AwakenBot stopped, as for an upgrade (the local
 Intelligence keeps running), so a download or install that fails leaves everything as it was. The
-restart starts OpenBot again, and that Start upgrades the installation to the new app's release
+restart starts AwakenBot again, and that Start upgrades the installation to the new app's release
 (`upgrade_due`, then `upgrade_and_start`: `upgrade::run`, with its backup and its way back). Not
 while an upgrade or a Start is under way (`RuntimeUpdateGuard`).
 
 On Windows the order differs, because Windows will not replace a running app: the updater starts
 the downloaded NSIS installer in update mode and exits this process at once, and the installer
-starts the new version when it is done. Nothing after `install` runs there, so OpenBot is stopped
+starts the new version when it is done. Nothing after `install` runs there, so AwakenBot is stopped
 just before the installer starts (`stop_before_installer`), once the download is verified and
 written out. A download that fails still leaves everything as it was.
 
@@ -2649,7 +2654,9 @@ async fn install_app_update_steps<R: tauri::Runtime>(
     use tauri_plugin_updater::UpdaterExt;
     // The one condition the updater plugin is registered on (see `setup`).
     if !app.config().plugins.0.contains_key("updater") {
-        return Err(Problem::plain("This build of OpenBot can't update itself."));
+        return Err(Problem::plain(
+            "This build of AwakenBot can't update itself.",
+        ));
     }
     let _update = RuntimeUpdateGuard::begin(&app)?;
     let stopped = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
@@ -2683,7 +2690,7 @@ async fn install_app_update_steps<R: tauri::Runtime>(
             .load(std::sync::atomic::Ordering::SeqCst)
         {
             return Err(Problem::plain(
-                "OpenBot was stopped before the update was installed.",
+                "AwakenBot was stopped before the update was installed.",
             ));
         }
         app.state::<Shell>().app_update.restarting();
@@ -2695,9 +2702,9 @@ async fn install_app_update_steps<R: tauri::Runtime>(
     .await;
     if let Err(problem) = installed {
         if stopped.load(std::sync::atomic::Ordering::SeqCst) {
-            // Windows could not start the installer after OpenBot was stopped and the app's
+            // Windows could not start the installer after AwakenBot was stopped and the app's
             // windows and tray were taken down for the exit. Tauri allows nothing after that but
-            // an exit, so start this same version again; its Start brings OpenBot back, and the
+            // an exit, so start this same version again; its Start brings AwakenBot back, and the
             // offer stays.
             log::error!(
                 "[app update] the installer did not start: {}",
@@ -2717,15 +2724,15 @@ async fn install_app_update_steps<R: tauri::Runtime>(
         Ok(Ok(())) => {}
         // The new version is already installed, and restarting into it is still right: its Start
         // finds whatever is left running.
-        Ok(Err(error)) => log::warn!("[app update] stopping OpenBot before the restart: {error}"),
-        Err(error) => log::warn!("[app update] stopping OpenBot before the restart: {error}"),
+        Ok(Err(error)) => log::warn!("[app update] stopping AwakenBot before the restart: {error}"),
+        Err(error) => log::warn!("[app update] stopping AwakenBot before the restart: {error}"),
     }
     log::info!("[app update] installed; restarting into it");
     restart_into_update(&app)
 }
 
 /**
-Check for the newer OpenBot and download it, verified, from the feeds `updater(None)` reads; then,
+Check for the newer AwakenBot and download it, verified, from the feeds `updater(None)` reads; then,
 when that download fails and a later feed in `feeds` is on another host (`app_update::feed_after`),
 once more from that feed alone, built by `updater(Some(feed))`.
 
@@ -2754,7 +2761,7 @@ async fn download_app_update(
                 .check()
                 .await
                 .map_err(failed)?
-                .ok_or_else(|| Problem::plain("OpenBot is already up to date."))
+                .ok_or_else(|| Problem::plain("AwakenBot is already up to date."))
         }
     };
     let downloaded = |update: &tauri_plugin_updater::Update| {
@@ -2798,7 +2805,7 @@ async fn download_app_update(
 }
 
 /**
-What Windows needs done before the updater starts the installer and exits the process: OpenBot
+What Windows needs done before the updater starts the installer and exits the process: AwakenBot
 stopped, as on a Mac after the install (the local Intelligence keeps running), then the cleanup the
 updater does by default, which takes down the windows and the tray icon so none is left behind.
 
@@ -2809,7 +2816,7 @@ starts the new version, whose Start moves the installation to its release (`foll
 fn stop_before_installer<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
     if let Err(error) = stop_for_update(app, &stack::default_root()) {
         // The installer runs either way: the new version's Start finds whatever is left running.
-        log::warn!("[app update] stopping OpenBot before the installer: {error}");
+        log::warn!("[app update] stopping AwakenBot before the installer: {error}");
     }
     // While the window is still up and in front: the new version comes forward as it first shows.
     #[cfg(windows)]
@@ -2820,7 +2827,7 @@ fn stop_before_installer<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
 /**
 Restart into the version just installed, without Quit's cleanup.
 
-OpenBot was already stopped for the update, and the local Intelligence is meant to keep running
+AwakenBot was already stopped for the update, and the local Intelligence is meant to keep running
 (`stop_for_update`). Tauri ignores `prevent_exit` for a restart, so a cleanup started by the exit it
 sends would be cut off halfway, possibly in the middle of stopping Intelligence. Marking Quit done
 for the restart's exit code makes the exit handler let it through untouched.
@@ -2834,7 +2841,7 @@ fn quit_done_for_restart(quit: &QuitState) {
     *quit.phase.lock().unwrap() = QuitPhase::Complete(tauri::RESTART_EXIT_CODE);
 }
 
-/// The setup window's update offer: the same answer the banner in OpenBot's page reads.
+/// The setup window's update offer: the same answer the banner in AwakenBot's page reads.
 #[tauri::command]
 async fn app_update_offer(app: tauri::AppHandle) -> app_update::Status {
     app_update_status(&app)
@@ -2896,7 +2903,7 @@ fn early_downloads_now() -> early_downloads::Summary {
 }
 
 /// Where the early downloads are once they have looked at the free disk, for Install: nothing is
-/// built on a disk too full for OpenBot, even by an Install clicked before they had looked.
+/// built on a disk too full for AwakenBot, even by an Install clicked before they had looked.
 #[tauri::command]
 async fn early_downloads_measured() -> early_downloads::Summary {
     tauri::async_runtime::spawn_blocking(|| {
@@ -2923,7 +2930,7 @@ async fn prepare_installation(
         .load(std::sync::atomic::Ordering::SeqCst)
     {
         return Err(Problem::plain(
-            "OpenBot is updating. Wait for it to finish before repairing.",
+            "AwakenBot is updating. Wait for it to finish before repairing.",
         ));
     }
     let asked = std::time::Instant::now();
@@ -2968,7 +2975,7 @@ async fn prepare_installation_inner(
             let _startup = attempt.lock_current()?;
             if shell.containers.lock().unwrap().is_some() || shell.root.lock().unwrap().is_some() {
                 return Err(Problem::plain(
-                    "Stop OpenBot before changing its local installation.",
+                    "Stop AwakenBot before changing its local installation.",
                 ));
             }
             remember_selected_root(&shell, &root);
@@ -3002,7 +3009,7 @@ async fn prepare_installation_inner(
                 &handle,
                 "installation",
                 true,
-                "OpenBot is already installed.",
+                "AwakenBot is already installed.",
             );
             return Ok(());
         }
@@ -3014,7 +3021,7 @@ async fn prepare_installation_inner(
          * NO BUN, NO `bun install`, NO APP BUILD.
          *
          * The server, the app and the worker run from the published server image, so installing
-         * OpenBot is pulling images and nothing else. This step used to download Bun and install
+         * AwakenBot is pulling images and nothing else. This step used to download Bun and install
          * the app's packages here, on every machine, and on a fresh Windows machine that took longer
          * than everything else in the install together: Defender scans each of the thousands of
          * small files it writes. Nothing on the host needs them now: the person's own browser runs
@@ -3023,9 +3030,9 @@ async fn prepare_installation_inner(
         report_running_plain(
             &handle,
             "images",
-            "Checking what OpenBot needs to download.",
+            "Checking what AwakenBot needs to download.",
         );
-        // On OpenBot's own machine on Windows the downloads go through the machine's network, which
+        // On AwakenBot's own machine on Windows the downloads go through the machine's network, which
         // a Retry reaches without starting the machine again: checked, and set up again, first.
         acquire::prepare_for_compose(&address)?;
         // The first screen may have started pulling these already: wait for it, showing its
@@ -3083,7 +3090,7 @@ async fn prepare_installation_inner(
             &handle,
             "images",
             true,
-            engine::StepLine::here("OpenBot is downloaded.").logged(format!(
+            engine::StepLine::here("AwakenBot is downloaded.").logged(format!(
                 "Local software is downloaded ({}/{}).",
                 images.len(),
                 images.len()
@@ -3098,7 +3105,7 @@ async fn prepare_installation_inner(
                 .map_err(|e| Problem::from(e.to_string()))?,
             &root,
         )?;
-        report_plain(&handle, "installation", true, "OpenBot is installed.");
+        report_plain(&handle, "installation", true, "AwakenBot is installed.");
         Ok::<(), Problem>(())
     })
     .await
@@ -3120,7 +3127,7 @@ async fn prepare_installation_inner(
 /// `saved` is the engine the installation was set up on: only that one is looked at, started or
 /// installed. With none saved, `install::install_engine_with` chooses.
 ///
-/// Answering is not enough: the engine is then checked for versions new enough to run OpenBot,
+/// Answering is not enough: the engine is then checked for versions new enough to run AwakenBot,
 /// and updated for the person when it is not (`engine_new_enough`).
 async fn engine_ready(
     app: &tauri::AppHandle,
@@ -3131,7 +3138,7 @@ async fn engine_ready(
     // window starts the account's licence check and Intelligence's setup on it, and an engine about
     // to be updated refuses both: Docker Desktop 4.31 calls itself "Docker Desktop (containerized)",
     // which the CLI does not run on, and a Windows tester was told to switch to Docker Desktop
-    // while OpenBot was updating it.
+    // while AwakenBot was updating it.
     if !engine_new_enough(app, address.clone()).await? {
         report_line(app, "engine", true, answering);
     }
@@ -3139,10 +3146,10 @@ async fn engine_ready(
 }
 
 /**
-The engine at `address` new enough to run OpenBot, updated for the person when it is not.
+The engine at `address` new enough to run AwakenBot, updated for the person when it is not.
 
 At setup and at every Start, before Compose reads the project: an older Compose stops there with
-"Compose config exited with exit status: 15", which nobody can act on. Docker Desktop and OpenBot's
+"Compose config exited with exit status: 15", which nobody can act on. Docker Desktop and AwakenBot's
 Podman are updated here; only what cannot be updated for them is one plain step on the row. Said on
 the `engine` row, and nothing is said when nothing needed doing: whether the row was said, which
 `engine_ready` needs to know. See `engine_versions`.
@@ -3191,7 +3198,7 @@ async fn engine_new_enough<R: tauri::Runtime>(
     .await
     .map_err(|error| {
         Problem::with(
-            "OpenBot could not check the software it runs on. Try again.",
+            "AwakenBot could not check the software it runs on. Try again.",
             format!("the engine version check did not run: {error}"),
         )
     })?;
@@ -3226,7 +3233,7 @@ async fn engine_answering(
     app: &tauri::AppHandle,
     saved: Option<engine::Engine>,
 ) -> Result<(engine::Address, engine::StepLine), Problem> {
-    report_running_plain(app, "engine", "Checking the software OpenBot needs.");
+    report_running_plain(app, "engine", "Checking the software AwakenBot needs.");
     let found = engine::detect_saved(saved);
     desktop_telemetry::observe_engine(app, &found);
     let root = stack::default_root();
@@ -3242,7 +3249,7 @@ async fn engine_answering(
     .await
     .map_err(|error| {
         Problem::with(
-            "OpenBot could not check the software it runs on. Try again.",
+            "AwakenBot could not check the software it runs on. Try again.",
             format!("the engine check did not run: {error}"),
         )
     })?;
@@ -3263,7 +3270,7 @@ async fn engine_answering(
                 .await
                 .map_err(|error| {
                     Problem::with(
-                        "OpenBot couldn't start the software it runs on. Try again.",
+                        "AwakenBot couldn't start the software it runs on. Try again.",
                         error.to_string(),
                     )
                 })??;
@@ -3288,7 +3295,7 @@ async fn engine_answering(
     report_running(
         app,
         "install-engine",
-        "Looking for the software OpenBot runs on.",
+        "Looking for the software AwakenBot runs on.",
         None,
     );
     let telemetry_app = app.clone();
@@ -3322,7 +3329,7 @@ async fn engine_answering(
             },
             // Installing Podman or starting Docker Desktop can take minutes; each line says where it is.
             &mut |line| report_running_line(&progress_app, "install-engine", line, None),
-            // Docker Desktop's window, or the password prompt, came to the front over OpenBot's.
+            // Docker Desktop's window, or the password prompt, came to the front over AwakenBot's.
             &|| bring_to_front(&back_app, "the engine no longer needs another app's window"),
             &|| {
                 watching
@@ -3336,7 +3343,7 @@ async fn engine_answering(
     .await
     .map_err(|error| {
         Problem::with(
-            "OpenBot could not install the software it needs. Try again.",
+            "AwakenBot could not install the software it needs. Try again.",
             format!("the install task did not run: {error}"),
         )
     })?;
@@ -3432,7 +3439,7 @@ async fn engine_answering(
     .await
     .map_err(|error| {
         Problem::with(
-            "OpenBot couldn't start the software it runs on. Try again.",
+            "AwakenBot couldn't start the software it runs on. Try again.",
             format!("the machine start did not run: {error}"),
         )
     })??;
@@ -3456,7 +3463,7 @@ async fn engine_answering(
         .filter(|_| ready.responding)
         .ok_or_else(|| {
             Problem::with(
-                "OpenBot set up the software it runs on, but it is still not answering. Try again.",
+                "AwakenBot set up the software it runs on, but it is still not answering. Try again.",
                 ready.detail,
             )
         })?;
@@ -3469,7 +3476,7 @@ async fn engine_answering(
 fn ensure_linux_podman_api(shell: &Shell, address: &engine::Address) -> Result<(), Problem> {
     if !matches!(*shell.quit.phase.lock().unwrap(), QuitPhase::Idle) {
         return Err(Problem::plain(
-            "OpenBot is quitting. Start it again to continue.",
+            "AwakenBot is quitting. Start it again to continue.",
         ));
     }
     shell
@@ -3520,8 +3527,8 @@ async fn deployment_ready<R: tauri::Runtime>(
     report_running_line(
         app,
         "deployment",
-        engine::StepLine::here("Checking which version of OpenBot to download.")
-            .logged("Checking the OpenBot release."),
+        engine::StepLine::here("Checking which version of AwakenBot to download.")
+            .logged("Checking the AwakenBot release."),
         None,
     );
     // Both release discovery and downloading use blocking HTTP. Keeping them in a blocking task
@@ -3536,8 +3543,8 @@ async fn deployment_ready<R: tauri::Runtime>(
             report_running_line(
                 &handle,
                 "deployment",
-                engine::StepLine::here("Downloading OpenBot.")
-                    .logged(format!("Downloading OpenBot {version}.")),
+                engine::StepLine::here("Downloading AwakenBot.")
+                    .logged(format!("Downloading AwakenBot {version}.")),
                 None,
             );
             // A pinned build lays out the commit it was cut from; any other release is a tag.
@@ -3554,7 +3561,7 @@ async fn deployment_ready<R: tauri::Runtime>(
     .map_err(|error| {
         report(app, "deployment", false, error.clone());
         Problem::with(
-            "OpenBot could not download what it needs to run. Check the internet \
+            "AwakenBot could not download what it needs to run. Check the internet \
              connection and try again.",
             error,
         )
@@ -3563,11 +3570,11 @@ async fn deployment_ready<R: tauri::Runtime>(
     // app published ahead of the release it needs. Saying so beats the Compose error that follows.
     if deployment::predates_containers(root) {
         let detail = format!(
-            "OpenBot {version} runs its server on the host; this app runs it in a container."
+            "AwakenBot {version} runs its server on the host; this app runs it in a container."
         );
         report(app, "deployment", false, detail.clone());
         return Err(Problem::with(
-            "This OpenBot app needs a newer OpenBot release than the latest one. Try again \
+            "This AwakenBot app needs a newer AwakenBot release than the latest one. Try again \
              once it is published.",
             detail,
         ));
@@ -3604,8 +3611,8 @@ fn sign_in_reference(
 ) -> Result<String, Problem> {
     reference(root, published).map_err(|error| {
         Problem::with(
-            "This version of OpenBot cannot sign in to that plan. Use an API key instead, or \
-             update OpenBot.",
+            "This version of AwakenBot cannot sign in to that plan. Use an API key instead, or \
+             update AwakenBot.",
             error,
         )
     })
@@ -3701,7 +3708,7 @@ impl ChosenModel {
                     openbot_env::read_plan_store(root)
                         .map_err(|error| {
                             Problem::with(
-                                "OpenBot could not read the saved ChatGPT sign-in.",
+                                "AwakenBot could not read the saved ChatGPT sign-in.",
                                 format!("{}: {error}", root.join(openbot_env::CHATGPT_STORE_FILE).display()),
                             )
                         })?
@@ -3789,7 +3796,7 @@ fn saved_secret(root: &Path, key: &str) -> Result<String, Problem> {
         .map(|found| found.get(key).cloned().unwrap_or_default())
 }
 
-/// The key `local connect` gave OpenBot for its local Intelligence stack, from the credential store.
+/// The key `local connect` gave AwakenBot for its local Intelligence stack, from the credential store.
 fn intelligence_key_for_start(
     root: &Path,
     mut resolve: impl FnMut(&Path, &str) -> Result<String, Problem>,
@@ -3799,7 +3806,7 @@ fn intelligence_key_for_start(
     })?;
     if key.trim().is_empty() {
         return Err(Problem::plain(
-            "OpenBot's connection to its services on this computer is missing. Start OpenBot to set \
+            "AwakenBot's connection to its services on this computer is missing. Start AwakenBot to set \
              it up again.",
         )
         .connection(openbot_desktop_lib::problem::Connection::Intelligence));
@@ -3827,7 +3834,7 @@ fn require_existing_encryption_key(
     // Only a verified fresh database may receive a newly minted encryption key.
     if configured || existing_postgres_volume()? {
         return Err(Problem::plain(
-            "This installation's saved encryption key is missing, invalid, or public. Restore its original private key from backup, or get help preserving its saved data. OpenBot will not replace the key automatically.",
+            "This installation's saved encryption key is missing, invalid, or public. Restore its original private key from backup, or get help preserving its saved data. AwakenBot will not replace the key automatically.",
         ));
     }
     Ok(())
@@ -3868,7 +3875,7 @@ fn require_existing_encryption_key_with_recovery(
             if found.volumes.is_empty() {
                 return Ok(());
             }
-            let mut problem = Problem::plain("OpenBot found data from a previous installation, such as Bots' files and browser sign-ins. OpenBot will not reuse it in a new installation. Restore the previous installation's folder to keep it, or choose Start fresh to delete it.");
+            let mut problem = Problem::plain("AwakenBot found data from a previous installation, such as Bots' files and browser sign-ins. AwakenBot will not reuse it in a new installation. Restore the previous installation's folder to keep it, or choose Start fresh to delete it.");
             match fresh_root_without_encryption_key(root, secrets) {
                 Ok(true) if found.resettable() => {
                     problem.leftover = Some(Box::new(LeftoverReset {
@@ -3897,9 +3904,9 @@ fn require_existing_encryption_key_with_recovery(
     match recovery {
         Ok(Some(found)) if found.database.is_some() && found.resettable() => {
             problem.said = if found.volumes.len() > 1 {
-                "OpenBot found a database and other data from a previous installation, but its encryption key is unavailable. Restore the original key to keep its saved data, or choose Start fresh to delete it."
+                "AwakenBot found a database and other data from a previous installation, but its encryption key is unavailable. Restore the original key to keep its saved data, or choose Start fresh to delete it."
             } else {
-                "OpenBot found a database from a previous installation, but its encryption key is unavailable. Restore the original key to keep its saved data, or choose Start fresh to delete it."
+                "AwakenBot found a database from a previous installation, but its encryption key is unavailable. Restore the original key to keep its saved data, or choose Start fresh to delete it."
             }
             .into();
             problem.leftover = Some(Box::new(LeftoverReset {
@@ -3953,7 +3960,7 @@ fn fresh_root_without_encryption_key(
         return Ok(false);
     }
     let unknown = || {
-        Problem::plain("OpenBot could not verify that this is an unconfigured installation. Its leftover data cannot be reset here.")
+        Problem::plain("AwakenBot could not verify that this is an unconfigured installation. Its leftover data cannot be reset here.")
     };
     let settings = openbot_env::read_already_set(&root.join(".env"), &["DATABASE_URL"])
         .map_err(|_| unknown())?;
@@ -3993,7 +4000,7 @@ fn reset_leftover_database_with(
     let attempt = StartAttempt::begin(shell)?;
     let _startup = attempt.lock_current()?;
     if shell.containers.lock().unwrap().is_some() || shell.root.lock().unwrap().is_some() {
-        return Err(Problem::plain("OpenBot still owns running services. Choose Stop OpenBot before resetting leftover data."));
+        return Err(Problem::plain("AwakenBot still owns running services. Choose Stop AwakenBot before resetting leftover data."));
     }
     if shell
         .selected_root
@@ -4069,7 +4076,7 @@ async fn reset_leftover_database<R: tauri::Runtime>(
 /// Write the `.env`, raise the containers, migrate, then wait for the server container to answer.
 ///
 /// `api_url` and `gateway_ws_url` are the local Intelligence stack's addresses; its key is the one
-/// `local connect` gave OpenBot, read from the credential store.
+/// `local connect` gave AwakenBot, read from the credential store.
 #[tauri::command]
 async fn start_stack<R: tauri::Runtime>(
     app: tauri::AppHandle<R>,
@@ -4123,7 +4130,7 @@ async fn start_stack_now<R: tauri::Runtime>(
         .load(std::sync::atomic::Ordering::SeqCst)
     {
         return Err(Problem::plain(
-            "OpenBot is updating. Wait for it to finish before starting.",
+            "AwakenBot is updating. Wait for it to finish before starting.",
         ));
     }
     let root = stack::root_from(&root);
@@ -4133,12 +4140,12 @@ async fn start_stack_now<R: tauri::Runtime>(
     }
     let menus = app.clone();
     let started = start_stack_inner(app, root, api_url, gateway_ws_url, model, harness).await;
-    // The menu bar says whether OpenBot is running.
+    // The menu bar says whether AwakenBot is running.
     refresh_menus(&menus);
-    // Setup is done once OpenBot starts: the window hands over to it at once. Recorded once.
+    // Setup is done once AwakenBot starts: the window hands over to it at once. Recorded once.
     if started.is_ok() {
         desktop_telemetry::record(&menus, telemetry::EventData::Activated);
-        // Attribution after Start, in the background: OpenBot is already open.
+        // Attribution after Start, in the background: AwakenBot is already open.
         desktop_telemetry::link_account_after_start(&menus);
     }
     started
@@ -4165,7 +4172,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
             .is_some_and(|owned| owned.root != root)
         {
             return Err(Problem::plain(
-                "OpenBot still has services from another installation to stop. Choose Stop OpenBot before starting in a different folder.",
+                "AwakenBot still has services from another installation to stop. Choose Stop AwakenBot before starting in a different folder.",
             ));
         }
         // A rejected concurrent Start must not replace the accepted attempt's selection.
@@ -4217,12 +4224,12 @@ async fn start_stack_inner<R: tauri::Runtime>(
         };
     let picked = harness::picked(harness.as_ref(), &root).map_err(|error| {
         // Two registers, because one of these refusals is about a release and the other is
-        // about a pick. "OpenBot v0.0.8 does not include agent-langgraph-agui" is the
+        // about a pick. "AwakenBot v0.0.8 does not include agent-langgraph-agui" is the
         // evidence, not the sentence: it names a published image, which is not a thing the
         // person chose or can change.
         Problem::with(
-            "This version of OpenBot does not include the Bot you picked. Go back and choose \
-                 another, or update OpenBot.",
+            "This version of AwakenBot does not include the Bot you picked. Go back and choose \
+                 another, or update AwakenBot.",
             error,
         )
     })?;
@@ -4289,13 +4296,13 @@ async fn start_stack_inner<R: tauri::Runtime>(
         // stops Start with the reason instead of starting under a name. Never the folder's name
         // alone: a source checkout called `openbot` runs as that too. See `stack::project`.
         stack::project(&found, &root)?;
-        // Intelligence runs on the engine OpenBot is about to run on. See `local_eval::use_engine`.
+        // Intelligence runs on the engine AwakenBot is about to run on. See `local_eval::use_engine`.
         local_eval::use_engine(&found);
         #[cfg(target_os = "linux")]
         ensure_linux_podman_api(&shell, &found)?;
         /*
          * A rootless network namespace that predates the host loopback configuration keeps the old
-         * options for as long as any container holds it, and an OpenBot left running by an earlier
+         * options for as long as any container holds it, and an AwakenBot left running by an earlier
          * version does. Taken down once, here, so the containers about to start build a new one,
          * and acknowledged only once that worked, so "Try Start again" tries the teardown again.
          * See `engine::local_api::Service::host_loopback_reset_pending`.
@@ -4309,7 +4316,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
         {
             stack::down(&found, &root).map_err(|error| {
                 Problem::with(
-                    "OpenBot couldn't restart with its new network settings. Try Start again.",
+                    "AwakenBot couldn't restart with its new network settings. Try Start again.",
                     error,
                 )
             })?;
@@ -4322,7 +4329,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
         #[cfg(target_os = "linux")]
         let status = found.status();
         // The installation's own ports, as its last run recorded them or as they start out, for
-        // the port rules a removed machine of OpenBot's left (`netavark_rules::orphan_rules`).
+        // the port rules a removed machine of AwakenBot's left (`netavark_rules::orphan_rules`).
         if let Ok(ports) = openbot_env::Ports::read(&root) {
             remember_own_ports(&ports);
         }
@@ -4387,7 +4394,10 @@ async fn start_stack_inner<R: tauri::Runtime>(
          * for their sockets to close, is what lets that `up` bind them.
          */
         let previous_ports = openbot_env::Ports::read(&root).map_err(|error| {
-            Problem::with("OpenBot could not read its local ports.", error.to_string())
+            Problem::with(
+                "AwakenBot could not read its local ports.",
+                error.to_string(),
+            )
         })?;
         setup_phase("cleanup");
         let reclaimed = cleanup_before_start(&app, &attempt, &root, stack::stop_processes_under)?;
@@ -4401,7 +4411,10 @@ async fn start_stack_inner<R: tauri::Runtime>(
         let ours = stack::ports_we_already_publish(&found, &root);
         // The last run's own ports are waited for before anything moves off them (`for_start`).
         let own = openbot_env::Ports::recorded(&root).map_err(|error| {
-            Problem::with("OpenBot could not read its local ports.", error.to_string())
+            Problem::with(
+                "AwakenBot could not read its local ports.",
+                error.to_string(),
+            )
         })?;
         let ports = previous_ports
             .for_start(
@@ -4412,7 +4425,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
             )
             .map_err(|error| {
                 Problem::with(
-                    "OpenBot could not find available local ports. Try Start again.",
+                    "AwakenBot could not find available local ports. Try Start again.",
                     error.to_string(),
                 )
             })?;
@@ -4475,7 +4488,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
             use std::os::unix::fs::MetadataExt as _;
             let owner = std::fs::metadata(&root).map_err(|error| {
                 Problem::with(
-                    "OpenBot could not read its installation folder.",
+                    "AwakenBot could not read its installation folder.",
                     format!("{}: {error}", root.display()),
                 )
             })?;
@@ -4511,7 +4524,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
 
         // Installation already verified these images. Start only raises the local containers;
         // its no-pull policy sends missing assets back to the installation step.
-        report_running_plain(&app, "services", "Starting OpenBot's services.");
+        report_running_plain(&app, "services", "Starting AwakenBot's services.");
 
         // Only an installed harness needs the local service; a BYO endpoint is already running elsewhere.
         let installed_harness = picked
@@ -4524,14 +4537,14 @@ async fn start_stack_inner<R: tauri::Runtime>(
             root: root.clone(),
             address: found.clone(),
         });
-        // The ports this run publishes are known now: rules a removed machine of OpenBot's left on
+        // The ports this run publishes are known now: rules a removed machine of AwakenBot's left on
         // them go before Compose publishes them again.
         remember_own_ports(&ports);
         acquire::readied_for_backend(Some(&found), || ());
         let requested_services = stack::up(&found, &root, installed_harness, &secrets)?;
         // The migrations ran with that: `migrate` is the dependency Compose completes before it
         // starts `server`, once, and a failed one fails the `up`.
-        report_plain(&app, "services", true, "OpenBot's services are running.");
+        report_plain(&app, "services", true, "AwakenBot's services are running.");
 
         // `compose up` succeeds once it has asked for everything. A service that then exits is not its
         // problem, and both Bots exit immediately without a model key. Reported and made fatal here;
@@ -4544,7 +4557,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
          * The personal edition shares one computer, so a Bot's files and logins from the computer
          * the supervisor made for its person are brought into it, once (`stack::
          * carry_over_person_computers`). On every Start, the first one after an upgrade included,
-         * and cheap once done. Not fatal: OpenBot runs, the old volumes keep everything, and the next
+         * and cheap once done. Not fatal: AwakenBot runs, the old volumes keep everything, and the next
          * Start tries again.
          */
         let carried = deployment::reference(&root, "agent-computer")
@@ -4566,7 +4579,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
                     &app,
                     "carry-over",
                     false,
-                    "Your Bots' files and sign-ins from before are not in place yet. OpenBot tries \
+                    "Your Bots' files and sign-ins from before are not in place yet. AwakenBot tries \
                      again the next time it starts.",
                 );
             }
@@ -4586,7 +4599,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
     report_running_plain(
         &app,
         "answering",
-        "Starting OpenBot. This can take a few minutes the first time.",
+        "Starting AwakenBot. This can take a few minutes the first time.",
     );
     let ticket = attempt.generation;
     let waiting = app.clone();
@@ -4633,7 +4646,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
         .map(|owned| owned.address.clone())
         .ok_or_else(|| {
             Problem::with(
-                "The software OpenBot runs on isn't running. Try Start again.",
+                "The software AwakenBot runs on isn't running. Try Start again.",
                 "the local container runtime is unavailable",
             )
         })?;
@@ -4642,7 +4655,7 @@ async fn start_stack_inner<R: tauri::Runtime>(
     preparation::record_launch(&root, requested_harness.as_ref())?;
     let config = app.path().app_config_dir().map_err(|error| {
         Problem::with(
-            "OpenBot could not remember this installation for next time.",
+            "AwakenBot could not remember this installation for next time.",
             error.to_string(),
         )
     })?;
@@ -4660,16 +4673,16 @@ async fn start_stack_inner<R: tauri::Runtime>(
     );
     watch_connections(app.clone(), root, host_token, generation, ports.server);
 
-    report_plain(&app, "answering", true, "OpenBot is ready.");
+    report_plain(&app, "answering", true, "AwakenBot is ready.");
     Ok(())
 }
 
 /**
-Give local Intelligence's Learning agent the model the person signed in to, once OpenBot answers.
+Give local Intelligence's Learning agent the model the person signed in to, once AwakenBot answers.
 See `learning_model`.
 
 In the background, on its own thread. Learning is not what Start waits on, and a CLI call that
-fails here leaves OpenBot running, Settings saying why Learning can't run, and the next Start trying
+fails here leaves AwakenBot running, Settings saying why Learning can't run, and the next Start trying
 again. The CLI takes its turn with the window's own calls (`local_eval::one_at_a_time`).
 */
 fn give_learning_its_model<R: tauri::Runtime>(
@@ -4789,10 +4802,10 @@ async fn stop_stack<R: tauri::Runtime>(
 enum AskedFrom {
     /// The setup window's Stop.
     SetupWindow,
-    /// Settings > This computer, in OpenBot's own page.
+    /// Settings > This computer, in AwakenBot's own page.
     Settings,
     StatusWindow,
-    /// Stop OpenBot in the tray or the window menu.
+    /// Stop AwakenBot in the tray or the window menu.
     Menu,
     Quit,
 }
@@ -4828,7 +4841,7 @@ fn shutdown_root(shell: &Shell, fallback_root: &Path) -> PathBuf {
 }
 
 /// Take the whole stack down: any host processes an installation from before the server was a
-/// container left running, the containers, and the local Intelligence stack if OpenBot created it.
+/// container left running, the containers, and the local Intelligence stack if AwakenBot created it.
 ///
 /// One implementation, because there are three ways to ask for it (the button, the menu bar, and
 /// quitting) and a person who used one of them and got a different amount of stopping would be
@@ -4842,7 +4855,7 @@ fn stop_everything<R: tauri::Runtime>(app: &tauri::AppHandle<R>, fallback_root: 
     stop_everything_for(&shell, fallback_root)
 }
 
-/// Stop OpenBot's own processes and containers so an update can replace their files, without
+/// Stop AwakenBot's own processes and containers so an update can replace their files, without
 /// cancelling that update. The local Intelligence stack is left running: an update does
 /// not touch it, and the restart that follows finds it already up.
 fn stop_for_update<R: tauri::Runtime>(
@@ -4906,7 +4919,7 @@ where
         intelligence,
         &mut progress,
     );
-    // Last, once nothing of OpenBot's runs in its machine: the person's Podman OpenBot paused.
+    // Last, once nothing of AwakenBot's runs in its machine: the person's Podman AwakenBot paused.
     give_back_paused_podman(&mut progress);
     stopped
 }
@@ -4949,10 +4962,10 @@ enum QuitStep {
     /// (`local_eval::close_for_quit_reporting`).
     FinishUpdate,
     /// Host processes, Compose down, and on Linux the Podman API.
-    OpenBot,
-    /// The local Intelligence stack OpenBot created.
+    AwakenBot,
+    /// The local Intelligence stack AwakenBot created.
     Intelligence,
-    /// On a Mac, the person's Podman that OpenBot paused while it ran, started again. See
+    /// On a Mac, the person's Podman that AwakenBot paused while it ran, started again. See
     /// `own_machine`.
     GiveBackPodman,
 }
@@ -4961,7 +4974,7 @@ impl QuitStep {
     fn id(self) -> &'static str {
         match self {
             QuitStep::FinishUpdate => "finish-update",
-            QuitStep::OpenBot => "stop-openbot",
+            QuitStep::AwakenBot => "stop-openbot",
             QuitStep::Intelligence => "stop-intelligence",
             QuitStep::GiveBackPodman => "start-your-podman",
         }
@@ -4972,7 +4985,7 @@ impl QuitStep {
     fn running_detail(self) -> &'static str {
         match self {
             QuitStep::FinishUpdate
-            | QuitStep::OpenBot
+            | QuitStep::AwakenBot
             | QuitStep::Intelligence
             | QuitStep::GiveBackPodman => "",
         }
@@ -5040,7 +5053,7 @@ impl QuitStatus {
 /// Bring the window back on the Shutting down screen.
 ///
 /// The setup page already open listens for `quit:progress` and switches by itself; reloading it
-/// would only run its launch checks again. Anything else, OpenBot itself or a page that never
+/// would only run its launch checks again. Anything else, AwakenBot itself or a page that never
 /// loaded, is sent to the setup page's Shutting down screen, which asks `quit_status` for what it
 /// missed.
 fn show_shutting_down<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
@@ -5080,9 +5093,9 @@ fn quit_status<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Option<QuitStatus
     (status.seq > 0).then_some(status)
 }
 
-/// What a Stop or Quit could not do, kept apart: only OpenBot's own failures mean OpenBot needs
-/// recovery. A local Intelligence stack that would not stop is said, but it is not OpenBot's
-/// processes or containers left behind, and must not hold OpenBot's next start.
+/// What a Stop or Quit could not do, kept apart: only AwakenBot's own failures mean AwakenBot needs
+/// recovery. A local Intelligence stack that would not stop is said, but it is not AwakenBot's
+/// processes or containers left behind, and must not hold AwakenBot's next start.
 #[derive(Debug, Default, PartialEq, Eq)]
 struct Stopped {
     openbot: Vec<String>,
@@ -5091,7 +5104,7 @@ struct Stopped {
 }
 
 impl Stopped {
-    /// Every failure, OpenBot's first.
+    /// Every failure, AwakenBot's first.
     fn lines(self) -> Vec<String> {
         self.openbot.into_iter().chain(self.intelligence).collect()
     }
@@ -5148,7 +5161,7 @@ where
 }
 
 /**
-Stop, then `intelligence` last, once OpenBot's own processes and containers have had their turn,
+Stop, then `intelligence` last, once AwakenBot's own processes and containers have had their turn,
 and whether or not they stopped. Its failure is kept beside theirs, never instead of them.
 
 Local evaluation closes first, before any lock: calls in flight are cancelled and new ones refused
@@ -5189,7 +5202,7 @@ where
         failures.push(format!("Compose down failed: {problem}"));
     }
 
-    // Recovery is about what OpenBot runs, so only OpenBot's own failures keep it.
+    // Recovery is about what AwakenBot runs, so only AwakenBot's own failures keep it.
     if failures.is_empty() {
         clear_recovery_required(shell, &root);
     }
@@ -5226,10 +5239,10 @@ fn last_intelligence_timeout() -> Option<std::time::Duration> {
 }
 
 /**
-Ask the CLI to stop the local Intelligence stack, if and only if OpenBot created it.
+Ask the CLI to stop the local Intelligence stack, if and only if AwakenBot created it.
 
-No record, or a stack that was already there when OpenBot found it, is left exactly as it is: it
-may be serving other apps, and stopping OpenBot is not a reason to stop them. Docker and the
+No record, or a stack that was already there when AwakenBot found it, is left exactly as it is: it
+may be serving other apps, and stopping AwakenBot is not a reason to stop them. Docker and the
 stack's containers are never touched here; only the CLI stops what the CLI started.
 
 Calls already in flight are cancelled first, whoever owns the stack: cancelling ends only this
@@ -5260,20 +5273,20 @@ where
             })),
         },
         Err(local_eval::Failure::Unavailable) => {
-            Err("this build has no command-line tool to stop the backend OpenBot created".into())
+            Err("this build has no command-line tool to stop the backend AwakenBot created".into())
         }
         Err(failure) => Err(not_stopped(wire_name(failure))),
     }
 }
 
 /**
-The Windows uninstaller's stop (`uninstall`, run from `windows/hooks.nsh`): what OpenBot runs for the
-installation it last launched is stopped, and OpenBot's machine removed when the person chose to
-delete OpenBot's data. Each line goes to stdout, which the uninstaller shows in its details. Answers
+The Windows uninstaller's stop (`uninstall`, run from `windows/hooks.nsh`): what AwakenBot runs for the
+installation it last launched is stopped, and AwakenBot's machine removed when the person chose to
+delete AwakenBot's data. Each line goes to stdout, which the uninstaller shows in its details. Answers
 0 when everything stopped, 1 otherwise; the uninstaller goes on either way.
 */
 fn stop_for_uninstall(asked: uninstall::Asked) -> i32 {
-    // The details go to OpenBot's own log, as the app's would; the uninstaller shows plain words.
+    // The details go to AwakenBot's own log, as the app's would; the uninstaller shows plain words.
     if let Some(folder) = headless_log_dir() {
         logging::append_without_app(&folder);
     }
@@ -5282,7 +5295,7 @@ fn stop_for_uninstall(asked: uninstall::Asked) -> i32 {
     std::thread::spawn(|| {
         std::thread::sleep(uninstall::LIMIT);
         log::warn!("[uninstall] gave up after {:?}", uninstall::LIMIT);
-        println!("OpenBot didn't finish stopping in time. Uninstalling anyway.");
+        println!("AwakenBot didn't finish stopping in time. Uninstalling anyway.");
         std::process::exit(1);
     });
     let root = last_launched_root().unwrap_or_else(stack::default_root);
@@ -5296,7 +5309,7 @@ fn stop_for_uninstall(asked: uninstall::Asked) -> i32 {
 }
 
 /// The app's identifier, the name of each folder Tauri keeps for it.
-const APP_IDENTIFIER: &str = "ai.copilotkit.openbot.desktop";
+const APP_IDENTIFIER: &str = "org.awakenbot.desktop";
 
 /// Tauri's `app_local_data_dir`, for a process with no app around it: the same folder, found the
 /// way Tauri 2 finds it (`dirs::data_local_dir`, then the identifier).
@@ -5316,10 +5329,10 @@ fn headless_log_dir() -> Option<PathBuf> {
 
 /**
 What the app's setup gives every engine command, set once per process: the folder of the Compose
-provider OpenBot installed, first on each engine command's PATH (`engine::command_at`), OpenBot's own
+provider AwakenBot installed, first on each engine command's PATH (`engine::command_at`), AwakenBot's own
 Docker configuration (`docker_config`) and the registry file a new backend node reads
 (`local_images::Mirror`). The app's setup and the uninstaller's stop both set them here, so both run
-Compose the same way. Without the first, `podman compose` finds no provider: OpenBot's
+Compose the same way. Without the first, `podman compose` finds no provider: AwakenBot's
 `docker-compose` is only in that folder.
 */
 fn use_engine_folders(root: &Path, local_data: Option<&Path>) {
@@ -5355,8 +5368,8 @@ impl uninstall::Computer for ThisComputerAtUninstall {
         stop_local_eval(root, local_eval::Limits::for_quit())
     }
 
-    /// The CLI's `local delete` for the stack OpenBot created, found as the stop finds it. A stack
-    /// that was there before OpenBot may serve other apps, and stays.
+    /// The CLI's `local delete` for the stack AwakenBot created, found as the stop finds it. A stack
+    /// that was there before AwakenBot may serve other apps, and stays.
     fn delete_backend(&mut self, engine: &engine::Address, root: &Path) -> Result<(), String> {
         local_eval::use_engine(engine);
         let Some(state) =
@@ -5438,7 +5451,7 @@ fn down_owned_containers(shell: &Shell, root: &Path) -> Result<(), String> {
         Some(owned) => stack::down(&owned.address, root),
         None if shell.stopped_container_root.lock().unwrap().as_deref() == Some(root) => Ok(()),
         None if root.join("docker-compose.yml").exists() => Err(
-            "OpenBot has no runtime ownership for this installation. Stop its containers using the original engine and context before starting OpenBot again.".into(),
+            "AwakenBot has no runtime ownership for this installation. Stop its containers using the original engine and context before starting AwakenBot again.".into(),
         ),
         None => Ok(()),
     }
@@ -5451,12 +5464,12 @@ fn down_owned_containers(shell: &Shell, root: &Path) -> Result<(), String> {
 /**
 A Podman machine whose Docker API has gone, stopped and started once before Stop or Quit stops
 anything (`engine_versions::answering_now`). Both stops reach the engine through that API:
-OpenBot's `compose down`, and the back end's `local stop`, which the CLI refuses as
-"docker_unavailable" without it. The containers that were running in the machine, OpenBot's and the
+AwakenBot's `compose down`, and the back end's `local stop`, which the CLI refuses as
+"docker_unavailable" without it. The containers that were running in the machine, AwakenBot's and the
 back end's among them, are started with it, and the two stops then stop them as they always do.
 
 On a live Windows run, with the machine's `win-sshproxy` gone, Quit failed both, and the next launch
-opened on "When OpenBot last quit, some of its services didn't stop". What still fails after this
+opened on "When AwakenBot last quit, some of its services didn't stop". What still fails after this
 is reported as before.
 */
 fn answering_before_stop(address: &engine::Address) {
@@ -5488,7 +5501,7 @@ fn answering_before_stop(address: &engine::Address) {
     }
 }
 
-/// The engine Stop and Quit stop things on: OpenBot's own containers' while they run, otherwise
+/// The engine Stop and Quit stop things on: AwakenBot's own containers' while they run, otherwise
 /// the one the installation at `root` was set up on, when it answers.
 fn engine_for_stop(shell: &Shell, root: &Path) -> Option<engine::Address> {
     // Only a Podman machine on a Mac or a PC has an API of its own to lose.
@@ -5501,7 +5514,7 @@ fn engine_for_stop(shell: &Shell, root: &Path) -> Option<engine::Address> {
         .unwrap()
         .as_ref()
         .map(|owned| owned.address.clone());
-    // Without OpenBot's own containers, only an installation on Podman is asked about: nothing else
+    // Without AwakenBot's own containers, only an installation on Podman is asked about: nothing else
     // has a machine to restart, and a Stop with nothing to stop runs no engine command.
     owned.or_else(|| {
         if preparation::saved_engine(root) != Some(engine::Engine::Podman) {
@@ -5587,11 +5600,11 @@ where
     let result = match (host_access_result, result) {
         (Ok(()), result) => result,
         (Err(error), Ok(_)) => Err(Problem::with(
-            "OpenBot could not stop a folder operation.",
+            "AwakenBot could not stop a folder operation.",
             error,
         )),
         (Err(error), Err(problem)) => Err(Problem::with(
-            "OpenBot could not finish stopping its work.",
+            "AwakenBot could not finish stopping its work.",
             format!("{error}\n{}", problem_detail(problem)),
         )),
     };
@@ -5626,7 +5639,7 @@ fn require_no_exited_compose_services(
         report_failure(line.to_string());
     }
     Err(Problem::with(
-        "Part of OpenBot stopped during startup.",
+        "Part of AwakenBot stopped during startup.",
         detail,
     ))
 }
@@ -5685,7 +5698,7 @@ fn persist_start_environment(
      * None of them is written, moved or purged. A Composio key in `.env` stays in `.env` and wins;
      * a provisioned one stays in the protected store. Pinning them here also beats a blank value
      * inherited from this app's own environment, which Bun would otherwise prefer to `.env`.
-     * Never fatal: without them, OpenBot starts with apps unavailable.
+     * Never fatal: without them, AwakenBot starts with apps unavailable.
      */
     match openbot_desktop_lib::composio::resolve(root) {
         Ok(brokers) => secrets.extend(brokers.runtime()),
@@ -5751,8 +5764,10 @@ fn known_safe_quit_cleanup_failure(line: &str) -> QuitCleanupFailure {
 
 fn quit_cleanup_failure_summary(failure: QuitCleanupFailure) -> &'static str {
     match failure {
-        QuitCleanupFailure::HostProcesses => "OpenBot could not confirm all app processes stopped.",
-        QuitCleanupFailure::Containers => "OpenBot could not confirm all containers stopped.",
+        QuitCleanupFailure::HostProcesses => {
+            "AwakenBot could not confirm all app processes stopped."
+        }
+        QuitCleanupFailure::Containers => "AwakenBot could not confirm all containers stopped.",
     }
 }
 
@@ -5761,7 +5776,7 @@ fn is_intelligence_quit_failure(line: &str) -> bool {
         .is_some_and(|failure| failure.starts_with(INTELLIGENCE_STOP_FAILED))
 }
 
-/// OpenBot's own failures go to the notice that means recovery; an Intelligence one goes to its
+/// AwakenBot's own failures go to the notice that means recovery; an Intelligence one goes to its
 /// own, which only says so.
 fn write_quit_cleanup_notice(root: &Path, lines: &[String]) -> Result<(), String> {
     let (intelligence, openbot): (Vec<&String>, Vec<&String>) = lines
@@ -5786,15 +5801,15 @@ fn write_quit_cleanup_notice(root: &Path, lines: &[String]) -> Result<(), String
 That the last Quit could not stop the local Intelligence stack, said once.
 
 Apart from `last_failure` on purpose. The window treats that as an interrupted run and holds its
-automatic start, and OpenBot's own processes are not what was left running. Fixed words: the
+automatic start, and AwakenBot's own processes are not what was left running. Fixed words: the
 notice records only that it happened.
 */
 fn take_local_eval_stop_notice(root: &Path) -> Option<Problem> {
     std::fs::remove_file(root.join(LOCAL_EVAL_STOP_NOTICE_FILE)).ok()?;
     Some(Problem::with(
-        "When OpenBot last quit, some of its services didn't stop. They may still be running. \
-         Stopping OpenBot again asks them to stop.",
-        "the backend stack did not stop when OpenBot last quit",
+        "When AwakenBot last quit, some of its services didn't stop. They may still be running. \
+         Stopping AwakenBot again asks them to stop.",
+        "the backend stack did not stop when AwakenBot last quit",
     ))
 }
 
@@ -5847,7 +5862,7 @@ fn read_quit_cleanup_notice(root: &Path) -> Result<Option<Problem>, Problem> {
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
         Err(error) => {
             return Err(Problem::with(
-                "OpenBot could not read its previous shutdown notice.",
+                "AwakenBot could not read its previous shutdown notice.",
                 format!("{}: {error}", path.display()),
             ))
         }
@@ -5856,14 +5871,14 @@ fn read_quit_cleanup_notice(root: &Path) -> Result<Option<Problem>, Problem> {
         .metadata()
         .map_err(|error| {
             Problem::with(
-                "OpenBot could not read its previous shutdown notice.",
+                "AwakenBot could not read its previous shutdown notice.",
                 format!("{}: {error}", path.display()),
             )
         })?
         .len();
     if size > QUIT_CLEANUP_NOTICE_LIMIT as u64 {
         return Err(Problem::with(
-            "OpenBot could not read its previous shutdown notice.",
+            "AwakenBot could not read its previous shutdown notice.",
             format!(
                 "{}: shutdown notice exceeded its size limit",
                 path.display()
@@ -5872,13 +5887,13 @@ fn read_quit_cleanup_notice(root: &Path) -> Result<Option<Problem>, Problem> {
     }
     let notice: QuitCleanupNotice = serde_json::from_reader(file).map_err(|error| {
         Problem::with(
-            "OpenBot could not read its previous shutdown notice.",
+            "AwakenBot could not read its previous shutdown notice.",
             format!("{}: {error}", path.display()),
         )
     })?;
     std::fs::remove_file(&path).map_err(|error| {
         Problem::with(
-            "OpenBot could not clear its previous shutdown notice.",
+            "AwakenBot could not clear its previous shutdown notice.",
             format!("{}: {error}", path.display()),
         )
     })?;
@@ -5892,7 +5907,7 @@ fn read_quit_cleanup_notice(root: &Path) -> Result<Option<Problem>, Problem> {
         return Ok(None);
     }
     Ok(Some(Problem::with(
-        "OpenBot had trouble shutting down last time.",
+        "AwakenBot had trouble shutting down last time.",
         detail,
     )))
 }
@@ -5944,8 +5959,8 @@ started, and only then Intelligence, with no lock held. So Quit's Intelligence c
 of that: 120 seconds for the CLI, its turn included, plus up to five seconds of grace to stop the
 CLI's process tree if it overruns.
 
-`progress` hears OpenBot's part start and end, then Intelligence's. Intelligence has a row only
-when a stack OpenBot created is recorded, which is when its step stops anything; it is asked either
+`progress` hears AwakenBot's part start and end, then Intelligence's. Intelligence has a row only
+when a stack AwakenBot created is recorded, which is when its step stops anything; it is asked either
 way, as before. A failure always gets its row, so the screen never says everything stopped when
 something did not.
 */
@@ -5970,7 +5985,7 @@ where
     }) {
         progress(QuitStep::FinishUpdate, QuitStepState::Complete);
     }
-    progress(QuitStep::OpenBot, QuitStepState::Running);
+    progress(QuitStep::AwakenBot, QuitStepState::Running);
     shell
         .start_generation
         .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
@@ -5998,7 +6013,7 @@ where
     }
     drop(startup);
     progress(
-        QuitStep::OpenBot,
+        QuitStep::AwakenBot,
         if failures.is_empty() {
             QuitStepState::Complete
         } else {
@@ -6021,7 +6036,7 @@ where
     }
 }
 
-/// A local Intelligence stack OpenBot created is recorded under `root`, so Stop and Quit stop it.
+/// A local Intelligence stack AwakenBot created is recorded under `root`, so Stop and Quit stop it.
 fn created_stack_recorded(root: &Path) -> bool {
     local_eval_state::read(root, None).is_some_and(|state| state.tied_to_openbot())
 }
@@ -6117,11 +6132,11 @@ where
     Ok(())
 }
 
-/// Show OpenBot itself in this window.
+/// Show AwakenBot itself in this window.
 ///
 /// The point of a desktop application is that it is the application. A window that sets things up
 /// and then sends somebody to a browser tab is a launcher, and nobody wanted a launcher: they
-/// double-clicked OpenBot to get OpenBot.
+/// double-clicked AwakenBot to get AwakenBot.
 ///
 /// So the window navigates to the running app, and the tray keeps the controls that would otherwise
 /// have nowhere to live. The connection screen comes back if the stack is stopped.
@@ -6139,7 +6154,7 @@ async fn show_openbot<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Result<(),
         show_openbot_on(app, &ports)
     })
     .await
-    .map_err(|error| Problem::with("OpenBot could not open its window.", error.to_string()))
+    .map_err(|error| Problem::with("AwakenBot could not open its window.", error.to_string()))
     .and_then(|shown| shown);
     logging::outcome("show", asked, &shown);
     shown
@@ -6150,7 +6165,10 @@ fn ports_for_shell<R: tauri::Runtime>(
 ) -> Result<openbot_env::Ports, Problem> {
     let root = cleanup_root(&app.state::<Shell>(), &stack::default_root());
     openbot_env::Ports::read(&root).map_err(|error| {
-        Problem::with("OpenBot could not read its local ports.", error.to_string())
+        Problem::with(
+            "AwakenBot could not read its local ports.",
+            error.to_string(),
+        )
     })
 }
 
@@ -6169,10 +6187,10 @@ fn show_openbot_on<R: tauri::Runtime>(
         return Err(Problem::plain(UPGRADE_INTERRUPTED_SHOWING));
     }
     if recovery_required_or_pending_quit_notice(&shell, &root) {
-        return Err("Part of OpenBot needs recovery. Try starting OpenBot once more.".into());
+        return Err("Part of AwakenBot needs recovery. Try starting AwakenBot once more.".into());
     }
     let (url, address) = owned_app(&shell, &root, ports).ok_or_else(|| {
-        format!("OpenBot could not verify its app on port {port} belongs to this installation. Try starting OpenBot again.")
+        format!("AwakenBot could not verify its app on port {port} belongs to this installation. Try starting AwakenBot again.")
     })?;
     hold_shown_deployment(&app, &shell, &root, address, ports.server);
     refresh_menus(&app);
@@ -6189,22 +6207,22 @@ fn show_openbot_on<R: tauri::Runtime>(
         }
         None => url,
     };
-    log::info!("[show] navigating to the owned OpenBot app");
+    log::info!("[show] navigating to the owned AwakenBot app");
     let window = app
         .get_webview_window("main")
-        .ok_or("the OpenBot window is not there to show it in")?;
+        .ok_or("the AwakenBot window is not there to show it in")?;
     let outcome = window
         .navigate(
             destination
                 .parse()
-                .map_err(|_| "OpenBot returned an invalid app destination.".to_string())?,
+                .map_err(|_| "AwakenBot returned an invalid app destination.".to_string())?,
         )
-        .map_err(|_| Problem::plain("OpenBot could not navigate to its app."));
+        .map_err(|_| Problem::plain("AwakenBot could not navigate to its app."));
     log::info!("[show] navigate returned {outcome:?}");
-    // Setup is over and OpenBot is what the person uses now: in front, wherever they had gone
+    // Setup is over and AwakenBot is what the person uses now: in front, wherever they had gone
     // while it started.
     if outcome.is_ok() {
-        bring_to_front(&app, "OpenBot is showing");
+        bring_to_front(&app, "AwakenBot is showing");
     }
     outcome
 }
@@ -6223,7 +6241,7 @@ fn configured_setup_url(
         .windows
         .iter()
         .find(|window| window.label == "main")
-        .ok_or("the OpenBot setup window is not configured")?;
+        .ok_or("the AwakenBot setup window is not configured")?;
     match &window.url {
         tauri::WebviewUrl::External(url) | tauri::WebviewUrl::CustomProtocol(url) => {
             Ok(url.clone())
@@ -6262,7 +6280,7 @@ fn configured_setup_url(
                     .map_err(|error| format!("invalid setup page path: {error}"))
             }
         }
-        _ => Err("the OpenBot setup window URL is not supported".into()),
+        _ => Err("the AwakenBot setup window URL is not supported".into()),
     }
 }
 
@@ -6288,20 +6306,20 @@ fn setup_destination<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> Result<tau
 fn show_setup<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Result<(), String> {
     let window = app
         .get_webview_window("main")
-        .ok_or("the OpenBot window is not there")?;
+        .ok_or("the AwakenBot window is not there")?;
     window
         .navigate(setup_destination(&app)?)
         .map_err(|error| format!("could not go back to setup: {error}"))
 }
 
 /// The setup screens' background in light and in dark, which the macOS title bar takes while they
-/// show. The same values as `--surface-main` in styles.css (OpenBot's `--sidebar`, in sRGB).
+/// show. The same values as `--surface-main` in styles.css (AwakenBot's `--sidebar`, in sRGB).
 #[cfg(any(target_os = "macos", target_os = "windows"))]
-const SETUP_BACKGROUND: tauri::window::Color = tauri::window::Color(0xed, 0xed, 0xf5, 0xff);
+const SETUP_BACKGROUND: tauri::window::Color = tauri::window::Color(0xf6, 0xf4, 0xef, 0xff);
 #[cfg(any(target_os = "macos", target_os = "windows"))]
-const SETUP_BACKGROUND_DARK: tauri::window::Color = tauri::window::Color(0x0d, 0x0b, 0x13, 0xff);
+const SETUP_BACKGROUND_DARK: tauri::window::Color = tauri::window::Color(0x1b, 0x1a, 0x18, 0xff);
 
-/// Whether `url` is the setup page rather than OpenBot.
+/// Whether `url` is the setup page rather than AwakenBot.
 fn on_setup_page<R: tauri::Runtime>(app: &tauri::AppHandle<R>, url: &tauri::Url) -> bool {
     let setup = app.state::<Shell>().setup_url.lock().unwrap().clone();
     setup
@@ -6310,19 +6328,19 @@ fn on_setup_page<R: tauri::Runtime>(app: &tauri::AppHandle<R>, url: &tauri::Url)
 }
 
 /**
-The appearance the setup screens use: OpenBot's own light or dark, the last time its page reported
+The appearance the setup screens use: AwakenBot's own light or dark, the last time its page reported
 one (`page_appearance`), and the system's until then. Both themes exist; the page follows the
 window's appearance through `prefers-color-scheme`, so `Some(Dark)` or `Some(Light)` pins one.
 
-OpenBot's, not the system's: somebody who set OpenBot to light on a Mac in dark mode saw setup in
-dark, then OpenBot in light, as if they were two apps.
+AwakenBot's, not the system's: somebody who set AwakenBot to light on a Mac in dark mode saw setup in
+dark, then AwakenBot in light, as if they were two apps.
 */
 fn setup_theme<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> Option<tauri::Theme> {
     let record = app.path().app_config_dir().ok()?.join(APPEARANCE_FILE);
     theme_from_record(std::fs::read_to_string(record).ok().as_deref())
 }
 
-/// Where OpenBot's last light or dark is kept, in the app's own configuration folder.
+/// Where AwakenBot's last light or dark is kept, in the app's own configuration folder.
 const APPEARANCE_FILE: &str = "appearance.json";
 
 /// The theme a saved record names, or None for no record or one that cannot be read.
@@ -6334,7 +6352,7 @@ fn theme_from_record(record: Option<&str>) -> Option<tauri::Theme> {
     }
 }
 
-/// Keep OpenBot's light or dark for the next setup screen. Best effort: a record that cannot be
+/// Keep AwakenBot's light or dark for the next setup screen. Best effort: a record that cannot be
 /// written only means setup follows the system next time.
 fn remember_appearance<R: tauri::Runtime>(app: &tauri::AppHandle<R>, dark: bool) {
     let Ok(directory) = app.path().app_config_dir() else {
@@ -6352,17 +6370,17 @@ fn remember_appearance<R: tauri::Runtime>(app: &tauri::AppHandle<R>, dark: bool)
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum WindowPage {
     Setup,
-    /// The OpenBot this shell verified it owns, served from this machine: its sidebar takes the
+    /// The AwakenBot this shell verified it owns, served from this machine: its sidebar takes the
     /// title bar's place. A page on another loopback origin is `Other`.
     OwnedApp,
-    /// OpenBot served from this machine, from a release whose styles make no room for the window
+    /// AwakenBot served from this machine, from a release whose styles make no room for the window
     /// buttons: the system's title bar, still in the app's own light or dark.
     LocalApp,
     /// Anything else: the system's title bar.
     Other,
 }
 
-/// The main window's guard: from OpenBot's own pages, a site outside OpenBot opens in the person's
+/// The main window's guard: from AwakenBot's own pages, a site outside AwakenBot opens in the person's
 /// default browser and the window stays where it is. The booking calendar a page embeds loads in
 /// its frame. See `outside_links`.
 fn outside_links_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
@@ -6402,12 +6420,12 @@ fn outside_links_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
 The main window, as `tauri.conf.json` describes it, built here rather than from the configuration so
 it gets a new-window handler, which only a builder can attach: a new window asked for from it (a
 link in the booking calendar's frame, which the page's shim can't reach) opens in the person's
-browser for a site outside OpenBot, and nowhere otherwise. Without one, macOS opened nothing and
+browser for a site outside AwakenBot, and nowhere otherwise. Without one, macOS opened nothing and
 Windows opened a bare browser window of its own. The configuration says `"create": false`.
 */
 /**
 Where the main window's buttons sit on macOS: 20pt in from the left, and low enough that their middle
-lines up with the first row of OpenBot's sidebar header (its name and +), which the page
+lines up with the first row of AwakenBot's sidebar header (its name and +), which the page
 moves right to clear them (app/src/styles.css, `data-desktop-titlebar`). That row's middle is 32pt
 down (the inset sidebar's 8pt, the header's 8pt, then half its 32pt row), and on macOS 26 the
 circles' middle lands about 1.5pt below `y`, so `y` is 31.
@@ -6432,7 +6450,7 @@ fn build_main_window<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> tauri::Res
     };
     let opener = app.clone();
     let builder = tauri::WebviewWindowBuilder::from_config(app, &config)?;
-    // The window's buttons on the same row as the OpenBot name and + in the sidebar's header, rather
+    // The window's buttons on the same row as the AwakenBot name and + in the sidebar's header, rather
     // than above them (`TRAFFIC_LIGHTS`, and the page's styles that make room beside them).
     #[cfg(target_os = "macos")]
     let builder = builder.traffic_light_position(TRAFFIC_LIGHTS);
@@ -6610,7 +6628,7 @@ fn window_page<R: tauri::Runtime>(app: &tauri::AppHandle<R>, url: &tauri::Url) -
 }
 
 /**
-Whether the OpenBot installed under `root` pads its sidebar for the window's buttons.
+Whether the AwakenBot installed under `root` pads its sidebar for the window's buttons.
 
 The overlay title bar needs the page's help: without the room its styles make, the buttons sit on
 the sidebar's name. Releases before that change (v0.2.0 among them) do not have it, so they keep the
@@ -6628,14 +6646,14 @@ The window's appearance and title bar for the page it shows.
 Setup: the setup screens' theme, a transparent title bar over their ground, the title shown. The
 window starts this way (in `setup`), so the first paint already matches.
 
-OpenBot from this machine: one surface, as Mac apps with a sidebar have it. The title bar becomes an
+AwakenBot from this machine: one surface, as Mac apps with a sidebar have it. The title bar becomes an
 overlay, its title text is hidden (the sidebar carries the name), and the page is marked so its
 sidebar makes room for the window buttons and works as the drag handle (`OVERLAY_TITLE_BAR_PAGE`).
 
 Anything else gets the system's bar back, since a page this app did not style cannot make room.
 */
 fn match_title_bar<R: tauri::Runtime>(window: &tauri::Window<R>, page: WindowPage) {
-    // OpenBot's own page sets the window's appearance to its own light or dark (`APP_THEME_PAGE`);
+    // AwakenBot's own page sets the window's appearance to its own light or dark (`APP_THEME_PAGE`);
     // setting it here as well would undo that on every theme event.
     match page {
         WindowPage::Setup => {
@@ -6660,7 +6678,7 @@ fn match_title_bar<R: tauri::Runtime>(window: &tauri::Window<R>, page: WindowPag
         let _ = window.set_background_color((page == WindowPage::Setup).then_some(ground));
         show_window_title(window, page != WindowPage::OwnedApp);
     }
-    // OpenBot's own page tints the bar to its own light or dark through `appearance`.
+    // AwakenBot's own page tints the bar to its own light or dark through `appearance`.
     #[cfg(target_os = "windows")]
     match page {
         WindowPage::Setup => {
@@ -6673,8 +6691,8 @@ fn match_title_bar<R: tauri::Runtime>(window: &tauri::Window<R>, page: WindowPag
     }
 }
 
-/// OpenBot's own page reporting its light or dark (`APP_THEME_PAGE`). On Windows the title bar
-/// takes the page's ground, when the page is one whose ground that is: an OpenBot from before the
+/// AwakenBot's own page reporting its light or dark (`APP_THEME_PAGE`). On Windows the title bar
+/// takes the page's ground, when the page is one whose ground that is: an AwakenBot from before the
 /// reskin keeps Windows's own bar, in the page's light or dark.
 pub(crate) fn page_appearance<R: tauri::Runtime>(window: &tauri::Window<R>, dark: bool) {
     remember_appearance(window.app_handle(), dark);
@@ -6696,7 +6714,7 @@ pub(crate) fn page_appearance<R: tauri::Runtime>(window: &tauri::Window<R>, dark
 /**
 Windows 11's title bar in the ground of the page under it, or Windows's own colours for `None`.
 
-`Some(dark)` is the setup screens' ground, which OpenBot's own pages share (`--background` in the
+`Some(dark)` is the setup screens' ground, which AwakenBot's own pages share (`--background` in the
 app's styles): the bar, its text and the window's border become one surface with the page instead
 of a white band across its top. Windows 10 has no such attributes and keeps its bar; the calls fail
 there and are ignored.
@@ -6767,7 +6785,7 @@ fn show_window_title<R: tauri::Runtime>(window: &tauri::Window<R>, shown: bool) 
 }
 
 /**
-Marks OpenBot's page for the overlay title bar: its styles pad the sidebar's header for the window
+Marks AwakenBot's page for the overlay title bar: its styles pad the sidebar's header for the window
 buttons, and the header becomes the drag handle, as does the strip the main column keeps above
 itself while the sidebar is hidden, and onboarding's header, which has no sidebar beside it. The
 sidebar renders after the page loads and again on navigation, so new headers are marked as they
@@ -6811,10 +6829,10 @@ const OVERLAY_TITLE_BAR_PAGE: &str = r#"(() => {
 })();"#;
 
 /**
-Keeps the window's appearance on OpenBot's own light or dark, which it chooses itself (Settings)
+Keeps the window's appearance on AwakenBot's own light or dark, which it chooses itself (Settings)
 rather than following the system.
 
-MEASURED: with the Mac in dark and OpenBot set to light, the window kept the dark appearance, and
+MEASURED: with the Mac in dark and AwakenBot set to light, the window kept the dark appearance, and
 macOS drew its dark-window outline, a black line, around a light window. The page sets the window's
 theme to its own whenever its `dark` class changes, through `desktop_page::appearance`.
 */
@@ -6838,10 +6856,10 @@ const APP_THEME_PAGE: &str = r#"(() => {
 })();"#;
 
 /**
-Record `address` as the OpenBot app this shell verified it owns, and let it use the Intelligence row.
+Record `address` as the AwakenBot app this shell verified it owns, and let it use the Intelligence row.
 
 Called with an address `owned_app_url` verified, before the window navigates there. Its origin is
-then the only loopback origin the window treats as OpenBot (`window_page`) and gives the window's
+then the only loopback origin the window treats as AwakenBot (`window_page`) and gives the window's
 controls to (`allow_app_page`).
 
 They are granted here, before the page exists, and not only once it has loaded: the notification
@@ -6868,7 +6886,7 @@ fn trust_owned_app<R: tauri::Runtime>(app: &tauri::AppHandle<R>, address: &str) 
     intelligence_bridge::allow(app, address);
 }
 
-/// Lets `trust_owned_app` grant OpenBot's page its permissions before the page loads. Only for an
+/// Lets `trust_owned_app` grant AwakenBot's page its permissions before the page loads. Only for an
 /// app built by `generate_context!`, which compiles them in.
 fn know_app_page_grants<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
     app.state::<Shell>()
@@ -6876,7 +6894,7 @@ fn know_app_page_grants<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
         .store(true, std::sync::atomic::Ordering::SeqCst);
 }
 
-/// Whether `url` is on the origin of the OpenBot app this shell verified it owns.
+/// Whether `url` is on the origin of the AwakenBot app this shell verified it owns.
 fn is_owned_app_origin<R: tauri::Runtime>(app: &tauri::AppHandle<R>, url: &tauri::Url) -> bool {
     let origin = url.origin().ascii_serialization();
     app.state::<Shell>()
@@ -6903,13 +6921,13 @@ const APP_PAGE_NOTIFICATIONS: [&str; 3] = [
 ];
 
 /**
-Lets OpenBot's own page move and zoom the window from its drag handle, set the window's appearance
+Lets AwakenBot's own page move and zoom the window from its drag handle, set the window's appearance
 to its own theme, use Settings → This computer (`desktop_page`), and show a Bot's notifications
 (`APP_PAGE_NOTIFICATIONS`), and nothing more.
 
-Only the origin this shell verified as its own OpenBot (`trust_owned_app`). A page on any other
+Only the origin this shell verified as its own AwakenBot (`trust_owned_app`). A page on any other
 loopback port, which a link in a reply can open in this window, gets none of it: Settings → This
-computer can stop OpenBot and the local Intelligence.
+computer can stop AwakenBot and the local Intelligence.
 */
 fn allow_app_page<R: tauri::Runtime>(app: &tauri::AppHandle<R>, url: &tauri::Url) {
     if !is_owned_app_origin(app, url) {
@@ -6996,9 +7014,9 @@ mod app_page_tests {
 
     const STOP: &str = "plugin:openbot-desktop|stop";
 
-    /// Settings → This computer can stop OpenBot and the local Intelligence. A page on another
+    /// Settings → This computer can stop AwakenBot and the local Intelligence. A page on another
     /// loopback port that this window loads, from a link in a reply for instance, used to get the
-    /// same controls as OpenBot's own page.
+    /// same controls as AwakenBot's own page.
     #[test]
     fn only_the_owned_app_origin_can_stop_openbot_from_its_page() {
         let (app, window) = app();
@@ -7007,7 +7025,7 @@ mod app_page_tests {
             .parse()
             .unwrap();
 
-        // Loaded before any OpenBot was verified: not OpenBot, and granted nothing.
+        // Loaded before any AwakenBot was verified: not AwakenBot, and granted nothing.
         assert_eq!(window_page(app.handle(), &foreign), WindowPage::Other);
         allow_app_page(app.handle(), &foreign);
         assert!(ask(&window, foreign.as_str(), STOP).is_err());
@@ -7042,7 +7060,7 @@ mod app_page_tests {
 
     /// On Windows the tray said "Quit  Ctrl+Q" and Ctrl+Q in the window did nothing: a tray menu's
     /// shortcut is only a label there, and the window has no menu bar. The window's pages now ask
-    /// to quit themselves (`quit-shortcut.js`), so the setup screens and OpenBot's own page must be
+    /// to quit themselves (`quit-shortcut.js`), so the setup screens and AwakenBot's own page must be
     /// able to, and a page on another loopback port must not.
     #[test]
     fn ctrl_q_on_windows_can_quit_from_setup_and_openbot_but_not_another_page() {
@@ -7074,7 +7092,7 @@ mod app_page_tests {
     /// "The text is too small and you can't zoom in." The window now zooms as a browser does: the
     /// View menu on macOS and Linux, and the page's own shortcut (`zoom-shortcut.js`) for what no
     /// menu carries, every key on Windows and Command and + on macOS, which the setup screens and
-    /// OpenBot's own page may ask and a page on another loopback port may not. Every window's page
+    /// AwakenBot's own page may ask and a page on another loopback port may not. Every window's page
     /// starts at the level kept from the last launch.
     #[test]
     fn the_window_zooms_from_the_view_menu_or_the_page_and_starts_at_the_kept_level() {
@@ -7140,8 +7158,8 @@ mod app_page_tests {
         assert!(build.contains("let _ = window.set_zoom(saved_zoom(app));"));
     }
 
-    /// Every command OpenBot's page may ask, the update banner's among them (installing an update
-    /// stops OpenBot and restarts the app), answers only the OpenBot this shell owns.
+    /// Every command AwakenBot's page may ask, the update banner's among them (installing an update
+    /// stops AwakenBot and restarts the app), answers only the AwakenBot this shell owns.
     #[test]
     fn every_page_command_answers_only_the_owned_app_origin() {
         let (app, window) = app();
@@ -7160,7 +7178,7 @@ mod app_page_tests {
             "check_update",
             "dismiss_update",
             "install_update",
-            // Open log folder opens the shell's own folder, but only for its own OpenBot.
+            // Open log folder opens the shell's own folder, but only for its own AwakenBot.
             "open_logs",
         ] {
             assert!(commands.contains(&format!("plugin:openbot-desktop|{update}")));
@@ -7189,7 +7207,7 @@ mod app_page_tests {
         let folder = logging::folder(app.handle()).unwrap();
         assert_eq!(folder, app.path().app_log_dir().unwrap());
         let identifier = app.config().identifier.clone();
-        assert_eq!(identifier, "ai.copilotkit.openbot.desktop");
+        assert_eq!(identifier, "org.awakenbot.desktop");
         let home = PathBuf::from(
             std::env::var_os(if cfg!(windows) { "USERPROFILE" } else { "HOME" }).unwrap(),
         );
@@ -7207,10 +7225,10 @@ mod app_page_tests {
         }
     }
 
-    /// OpenBot's own page turns notifications on and shows them through the notification plugin,
+    /// AwakenBot's own page turns notifications on and shows them through the notification plugin,
     /// whose script stands in for the page's Notification API. It answers that they are on, as the
     /// plugin does on every desktop, so the page's offer to turn them on does not come back. A page
-    /// on another port gets none of it: it could post notices in OpenBot's name.
+    /// on another port gets none of it: it could post notices in AwakenBot's name.
     #[test]
     fn only_the_owned_app_origin_can_turn_on_and_show_notifications() {
         let (app, window) = app();
@@ -7252,7 +7270,7 @@ mod app_page_tests {
         );
     }
 
-    /// The notification plugin's script asks whether notifications are on as OpenBot's page
+    /// The notification plugin's script asks whether notifications are on as AwakenBot's page
     /// starts, before it has loaded. Its origin is granted when the shell trusts it, ahead of the
     /// window going there, so that first question is answered. It used to be granted only once the
     /// page had loaded: the question was refused, and the page never showed a notification.
@@ -7278,7 +7296,7 @@ mod app_page_tests {
         .is_err());
     }
 
-    /// A click on a Bot's notification opens the page it names, on the OpenBot the window shows,
+    /// A click on a Bot's notification opens the page it names, on the AwakenBot the window shows,
     /// and nowhere else: not another site, not another port, and not while the window shows setup.
     #[test]
     fn a_click_on_a_notification_opens_only_a_page_of_the_shown_openbot() {
@@ -7309,7 +7327,7 @@ mod app_page_tests {
     }
 
     /// The uninstaller's stop (`stop_for_uninstall`) runs with no app around it, so it works out the
-    /// app's folders itself. They are Tauri's own: the local data folder that holds OpenBot's Docker
+    /// app's folders itself. They are Tauri's own: the local data folder that holds AwakenBot's Docker
     /// configuration, and the log folder.
     #[test]
     fn the_uninstallers_stop_finds_the_folders_the_app_uses() {
@@ -7324,10 +7342,10 @@ mod app_page_tests {
 
     /// Box I: the uninstaller's stop ran `podman compose` with none of what the app sets up when it
     /// starts. Podman found no Compose provider ("looking up compose provider failed", exit 125),
-    /// since OpenBot's `docker-compose.exe` is only in `~\OpenBot\openbot-engine\bin`, and OpenBot's
+    /// since AwakenBot's `docker-compose.exe` is only in `~\AwakenBot\openbot-engine\bin`, and AwakenBot's
     /// containers were left to the machine's stop. Run in a process of its own, with a home of its
     /// own, since what the app sets up is set once per process: after the stop's preparation every
-    /// engine command has that folder first on its PATH, and OpenBot's own Docker configuration, as
+    /// engine command has that folder first on its PATH, and AwakenBot's own Docker configuration, as
     /// in the running app.
     #[test]
     fn the_uninstallers_stop_runs_engine_commands_as_the_app_does() {
@@ -7369,7 +7387,7 @@ mod app_page_tests {
             .expect("engine commands get a PATH");
         assert_eq!(
             std::env::split_paths(path).next(),
-            Some(home.join("OpenBot").join("openbot-engine").join("bin"))
+            Some(home.join("AwakenBot").join("openbot-engine").join("bin"))
         );
         let data = headless_local_data_dir().expect("a local data folder");
         assert_eq!(
@@ -7383,16 +7401,16 @@ mod app_page_tests {
     /// notification plugin names the bundle identifier in an installed app (`desktop.rs`,
     /// `notification.app_id(&self.identifier)`), and Tauri's own NSIS template stamps the same
     /// `${BUNDLEID}` on the Start menu shortcut it names after the product (`installer.nsi`,
-    /// `SetLnkAppUserModelId`). OpenBot's template, `windows/installer.nsi`, is that template with
-    /// OpenBot's lines added (`desktop/scripts/installer-update.test.ts`). So a toast reads "OpenBot"
+    /// `SetLnkAppUserModelId`). AwakenBot's template, `windows/installer.nsi`, is that template with
+    /// AwakenBot's lines added (`desktop/scripts/installer-update.test.ts`). So a toast reads "AwakenBot"
     /// as long as the installer keeps those lines and the identifier and product name stay what
     /// they are.
     #[test]
     fn windows_toasts_name_the_app_the_start_menu_shortcut_carries() {
         let (app, _) = app();
         let config = app.config();
-        assert_eq!(config.identifier, "ai.copilotkit.openbot.desktop");
-        assert_eq!(config.product_name.as_deref(), Some("OpenBot"));
+        assert_eq!(config.identifier, "org.awakenbot.desktop");
+        assert_eq!(config.product_name.as_deref(), Some("AwakenBot"));
         // Read from the files the installer is built from, the base and every overlay a build
         // passes with --config: the app's runtime config leaves the bundle settings out.
         let folder = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
@@ -7414,10 +7432,10 @@ mod app_page_tests {
                 );
             }
             if let Some(identifier) = file.get("identifier") {
-                assert_eq!(identifier, "ai.copilotkit.openbot.desktop", "{name}");
+                assert_eq!(identifier, "org.awakenbot.desktop", "{name}");
             }
             if let Some(product) = file.get("productName") {
-                assert_eq!(product, "OpenBot", "{name}");
+                assert_eq!(product, "AwakenBot", "{name}");
             }
             checked += 1;
         }
@@ -7445,7 +7463,7 @@ mod app_page_tests {
         }
     }
 
-    /// Narration listens through the shell's speech recognition from OpenBot's own page, and from
+    /// Narration listens through the shell's speech recognition from AwakenBot's own page, and from
     /// no other: a page that could start it could listen to the person.
     #[test]
     fn only_the_owned_app_origin_can_listen_through_the_shell() {
@@ -7469,7 +7487,7 @@ mod app_page_tests {
             assert_eq!(
                 ask(&window, owned.as_str(), &command),
                 Ok(serde_json::Value::Null),
-                "{command} from OpenBot"
+                "{command} from AwakenBot"
             );
         }
     }
@@ -7479,9 +7497,9 @@ mod app_page_tests {
 const STATUS_FRAGMENT: &str = "status";
 
 /**
-The Status window: what OpenBot is running, what it costs, and Restart and Stop for each part.
+The Status window: what AwakenBot is running, what it costs, and Restart and Stop for each part.
 
-Its own window rather than a page of the main one, so looking at it never takes OpenBot off the
+Its own window rather than a page of the main one, so looking at it never takes AwakenBot off the
 screen. Closing it hides it, as the main window does; it reads everything again when shown.
 */
 fn show_status_window(app: &tauri::AppHandle) {
@@ -7504,7 +7522,7 @@ fn show_status_window(app: &tauri::AppHandle) {
         tauri::WebviewUrl::CustomProtocol(url)
     };
     let built = tauri::WebviewWindowBuilder::new(app, "status", page)
-        .title("OpenBot Status")
+        .title("AwakenBot Status")
         .inner_size(640.0, 720.0)
         .min_inner_size(520.0, 480.0)
         .build();
@@ -7517,15 +7535,15 @@ fn show_status_window(app: &tauri::AppHandle) {
     }
 }
 
-/// Where OpenBot's Settings → This computer lives, in releases that have it.
+/// Where AwakenBot's Settings → This computer lives, in releases that have it.
 ///
 /// Not `/settings/computer`: the personal edition's Computers page (the Bots' computers) has that
 /// address, and its guard sends every other edition to General.
 const COMPUTER_SETTINGS_PATH: &str = "/settings/this-computer";
 
 /**
-Status in OpenBot itself, Settings → This computer, when the OpenBot running here has that page:
-the main window goes there. True when it did. Otherwise, with OpenBot stopped or from a release
+Status in AwakenBot itself, Settings → This computer, when the AwakenBot running here has that page:
+the main window goes there. True when it did. Otherwise, with AwakenBot stopped or from a release
 without the page, the Status window does the job.
 */
 fn show_status_in_app(app: &tauri::AppHandle) -> bool {
@@ -7561,12 +7579,12 @@ fn show_status_in_app(app: &tauri::AppHandle) -> bool {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DesktopStatus {
-    /// OpenBot answers on its own address, whoever started it.
+    /// AwakenBot answers on its own address, whoever started it.
     openbot_running: bool,
-    /// This session of the desktop app started the OpenBot that is running, so it can restart it.
-    /// False for an OpenBot left running by an earlier session that ended without its Quit.
+    /// This session of the desktop app started the AwakenBot that is running, so it can restart it.
+    /// False for an AwakenBot left running by an earlier session that ended without its Quit.
     openbot_held: bool,
-    /// Always empty now: OpenBot's server and worker are containers and are listed with them.
+    /// Always empty now: AwakenBot's server and worker are containers and are listed with them.
     /// Kept so a Status window from before that still reads the shape it expects.
     processes: Vec<desktop_status::Part>,
     containers: Vec<desktop_status::Part>,
@@ -7649,7 +7667,7 @@ fn read_desktop_status<R: tauri::Runtime>(
         None => (Vec::new(), Vec::new()),
     };
     let ports = ports_for_shell(app).ok();
-    // Whether this installation's OpenBot answers, shown in the window or not: one behind this app
+    // Whether this installation's AwakenBot answers, shown in the window or not: one behind this app
     // that waits for Start to upgrade it is still running.
     let answering = ports.as_ref().is_some_and(|ports| {
         app_url_published_by(held_engine(&shell, &root).as_ref(), &root, ports).is_some()
@@ -7754,7 +7772,7 @@ fn gather_troubleshooting_logs<R: tauri::Runtime>(
     });
     let text = troubleshooting::gather(troubleshooting::Sources {
         desktop: format!(
-            "OpenBot Desktop {} ({})",
+            "AwakenBot Desktop {} ({})",
             desktop_version(app),
             build_description(
                 env!("OPENBOT_BUILD_COMMIT"),
@@ -7772,9 +7790,9 @@ fn gather_troubleshooting_logs<R: tauri::Runtime>(
 }
 
 /**
-Restart OpenBot itself: the server and the worker containers, through Compose. The other
+Restart AwakenBot itself: the server and the worker containers, through Compose. The other
 containers, its database among them, keep running, so nothing is lost and the restart takes seconds.
-Only an OpenBot this session started, whose engine it knows.
+Only an AwakenBot this session started, whose engine it knows.
 */
 #[tauri::command]
 async fn restart_openbot<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Result<(), String> {
@@ -7807,13 +7825,13 @@ fn restart_openbot_now<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> Result<(
         .filter(|owned| Some(&owned.root) == root.as_ref())
         .map(|owned| owned.address.clone());
     let (Some(root), Some(address)) = (root, address) else {
-        return Err("OpenBot is not running.".into());
+        return Err("AwakenBot is not running.".into());
     };
     stack::restart_openbot(&address, &root)
-        .map_err(|error| format!("OpenBot could not restart: {error}"))
+        .map_err(|error| format!("AwakenBot could not restart: {error}"))
 }
 
-/// Stop, as the menu used to offer it: everything, Intelligence included if OpenBot started it.
+/// Stop, as the menu used to offer it: everything, Intelligence included if AwakenBot started it.
 #[tauri::command]
 fn stop_openbot_from_status(app: tauri::AppHandle) {
     stop_from_menu(app, AskedFrom::StatusWindow);
@@ -7832,7 +7850,7 @@ fn show_setup_and_focus<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Result<(
     show_setup(app.clone())?;
     let window = app
         .get_webview_window("main")
-        .ok_or("the OpenBot window is not there")?;
+        .ok_or("the AwakenBot window is not there")?;
     window
         .show()
         .map_err(|error| format!("could not show setup: {error}"))?;
@@ -7848,7 +7866,7 @@ fn show_setup_and_focus<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Result<(
 ///
 /// The shell keeps what it started in memory, so closing the window and opening it again forgets a
 /// stack that is still up. Without asking, the second launch offers to set up something already
-/// running, and the port check then reports OpenBot as a foreign process holding its own port.
+/// running, and the port check then reports AwakenBot as a foreign process holding its own port.
 ///
 /// Asked of the deployment rather than of a file: a stamp says a deployment was installed, and only
 /// an answer on the port says one is running now.
@@ -8043,7 +8061,7 @@ fn app_published_by(
 }
 
 /// An address the Recorder's native host answers in place of a Desktop deployment's own, so a test
-/// can drive the whole handoff against an OpenBot it started itself. Debug builds only: a release
+/// can drive the whole handoff against an AwakenBot it started itself. Debug builds only: a release
 /// binary never reads the variable.
 #[cfg(debug_assertions)]
 fn recorder_host_test_app_url() -> Option<String> {
@@ -8057,8 +8075,8 @@ fn recorder_host_test_app_url() -> Option<String> {
     None
 }
 
-/// An OpenBot this window shows as its own at launch, so a test can drive OpenBot's page inside the
-/// real Desktop window, with the shell's plugin granted to it, against an OpenBot it started itself
+/// An AwakenBot this window shows as its own at launch, so a test can drive AwakenBot's page inside the
+/// real Desktop window, with the shell's plugin granted to it, against an AwakenBot it started itself
 /// and no installation. Debug builds only: a release binary never reads the variable.
 #[cfg(debug_assertions)]
 fn desktop_test_app_url() -> Option<String> {
@@ -8072,13 +8090,13 @@ fn desktop_test_app_url() -> Option<String> {
     None
 }
 
-/// An OpenBot app a developer runs from source (`OPENBOT_DEV_APP_URL`, such as `cd app && SERVER_PORT=3001 bun run dev
+/// An AwakenBot app a developer runs from source (`OPENBOT_DEV_APP_URL`, such as `cd app && SERVER_PORT=3001 bun run dev
 /// --port 3030`, whose `/api` goes to this installation's server), shown in place of the installation's own once it has
 /// started, so a change to the app shows in the real window as it is saved. Unlike `OPENBOT_DESKTOP_TEST_APP_URL` it
 /// waits for the installation: setup and Start run as they always do. Debug builds only: a release binary never reads
 /// the variable.
 ///
-/// `localhost` is read as `127.0.0.1`. Only a loopback IP is trusted as OpenBot's own page
+/// `localhost` is read as `127.0.0.1`. Only a loopback IP is trusted as AwakenBot's own page
 /// (`intelligence_bridge::app_origin`), so at `localhost` the window drew the system's title bar over a page that never
 /// made room for the buttons.
 #[cfg(debug_assertions)]
@@ -8106,7 +8124,7 @@ fn loopback_ip(address: &str) -> String {
     }
 }
 
-/// Trust `address` as this shell's OpenBot and show it, the way `show_openbot` shows a verified one.
+/// Trust `address` as this shell's AwakenBot and show it, the way `show_openbot` shows a verified one.
 fn show_test_app<R: tauri::Runtime>(app: &tauri::AppHandle<R>, address: &str) {
     let (Some(window), Ok(url)) = (
         app.get_webview_window("main"),
@@ -8116,7 +8134,7 @@ fn show_test_app<R: tauri::Runtime>(app: &tauri::AppHandle<R>, address: &str) {
     };
     trust_owned_app(app, address);
     if let Err(error) = window.navigate(url) {
-        log::warn!("[window] could not show the test OpenBot: {error}");
+        log::warn!("[window] could not show the test AwakenBot: {error}");
     }
 }
 
@@ -8146,7 +8164,7 @@ fn last_launched_root() -> Option<PathBuf> {
     preparation::selected_root(&config)
 }
 
-/// What the Recorder's native host knows about this computer's OpenBot.
+/// What the Recorder's native host knows about this computer's AwakenBot.
 ///
 /// The browser starts the host as a fresh process with no app around it, so it finds the deployment
 /// the way the app's setup does: the root last launched, read from Tauri's config directory.
@@ -8183,7 +8201,7 @@ fn recorder_host_environment() -> recorder_host::HostEnvironment {
 
 /// The engine on which `root`'s `server` container publishes `ports`, if it does: asked of the
 /// engine this session raised it on when there is one, and otherwise of whichever engine answers:
-/// an OpenBot left running by an earlier session is still this deployment's, and its restart policy
+/// an AwakenBot left running by an earlier session is still this deployment's, and its restart policy
 /// kept it up.
 #[cfg(not(test))]
 fn server_container_publisher(
@@ -8240,7 +8258,7 @@ async fn last_failure<R: tauri::Runtime>(
         .await
         .unwrap_or_else(|error| {
             Some(Problem::with(
-                "OpenBot could not read what stopped it.",
+                "AwakenBot could not read what stopped it.",
                 error.to_string(),
             ))
         })
@@ -8509,7 +8527,7 @@ async fn finish_chatgpt_sign_in(app: tauri::AppHandle) -> Result<String, String>
 Stop a ChatGPT sign-in the person has left: another provider, Back, Escape.
 
 Whoever is waiting in `finish_chatgpt_sign_in` gets an error, which the screen it came from has
-already stopped listening for. The browser tab gets OpenBot's page saying the sign-in ended.
+already stopped listening for. The browser tab gets AwakenBot's page saying the sign-in ended.
 */
 #[tauri::command]
 async fn cancel_chatgpt_sign_in(app: tauri::AppHandle) -> Result<(), String> {
@@ -8620,7 +8638,7 @@ fn back_end_wait() -> std::sync::MutexGuard<'static, Option<openbot_desktop_lib:
 }
 
 /// The window stopped waiting for the back end, and why: the sentence it shows (`waitForReady`),
-/// such as "OpenBot didn't get ready in time. Retry to check again." Written with how long it
+/// such as "AwakenBot didn't get ready in time. Retry to check again." Written with how long it
 /// waited and the last status, so the log says why Start gave up.
 #[tauri::command]
 fn back_end_wait_ended(why: String) {
@@ -8636,7 +8654,7 @@ fn back_end_wait_ended(why: String) {
 static UPDATE_LOGGED: Mutex<Option<String>> = Mutex::new(None);
 
 /// The release the back end is on, the one the window updates it to, and the CLI's step an earlier
-/// update stopped at. The window says only "Updating OpenBot", and where it stopped in plain words:
+/// update stopped at. The window says only "Updating AwakenBot", and where it stopped in plain words:
 /// the versions and the step's name are for whoever reads the log.
 fn log_update_due(from: &str, to: &str, stopped_at: Option<&str>) {
     let entry = update_due_entry(from, to, stopped_at);
@@ -8671,7 +8689,7 @@ fn local_eval_answer(
         preparation::saved_engine(root),
     ) {
         log::info!(
-            "[local eval] {action:?} not asked: OpenBot's own engine does not answer, and the \
+            "[local eval] {action:?} not asked: AwakenBot's own engine does not answer, and the \
              backend's tool would take Podman's default connection"
         );
         return Ok(local_eval::Report::engine_not_answering());
@@ -8686,17 +8704,17 @@ fn local_eval_answer(
         )
     {
         log::warn!(
-            "[local eval] {}'s cluster is gone from OpenBot's engine; offering to start fresh",
+            "[local eval] {}'s cluster is gone from AwakenBot's engine; offering to start fresh",
             stack.as_str()
         );
         report.reason = Some(local_eval::Reason::StackLost);
     }
     // An Intelligence an older app installed, behind the release this app's CLI installs, or one
-    // whose update did not finish: the window updates it before it starts OpenBot on it.
+    // whose update did not finish: the window updates it before it starts AwakenBot on it.
     if action == local_eval::Action::Status {
         report.update_to =
             local_eval::update_due(&report, local_eval::bundled_release().as_deref());
-        // The window says "Updating OpenBot"; the log keeps the releases, once per update due,
+        // The window says "Updating AwakenBot"; the log keeps the releases, once per update due,
         // and the step an update that did not finish stopped at.
         if let (Some(to), Some(stack)) = (&report.update_to, &report.stack) {
             let stopped_at = stack
@@ -8710,14 +8728,14 @@ fn local_eval_answer(
 }
 
 /**
-Whether the backend OpenBot created for this installation is gone, so the window offers to start
+Whether the backend AwakenBot created for this installation is gone, so the window offers to start
 fresh rather than Retry (`local_eval::Reason::StackLost`).
 
-Box I: OpenBot's Podman machine was removed and made again, and the backend's cluster, with
-OpenBot's database, went with the old one. The installation still recorded the stack, so every
+Box I: AwakenBot's Podman machine was removed and made again, and the backend's cluster, with
+AwakenBot's database, went with the old one. The installation still recorded the stack, so every
 status the CLI ran failed at its ownership check ("status 404"), answered `local_command_failed`
 with no stack, and the window said "Setup stopped partway through with an error. Retry." forever.
-Only for a stack OpenBot created and recorded here, asked about by its own id, and only when the
+Only for a stack AwakenBot created and recorded here, asked about by its own id, and only when the
 engine answers and lists none of its cluster's containers.
 */
 fn backend_lost(
@@ -8734,7 +8752,7 @@ fn backend_lost(
 /**
 The engine for the Intelligence CLI when nothing this run has named one yet.
 
-A relaunched OpenBot can ask Intelligence for its status before Start has pinned an engine, and the
+A relaunched AwakenBot can ask Intelligence for its status before Start has pinned an engine, and the
 account screen asks the CLI before Install has found one (Install does not run again over an
 installation already prepared). On Windows Podman also answers on Docker's pipe, and a CLI not told
 which engine it is on declines with `engine_mismatch`. The
@@ -8756,7 +8774,7 @@ fn know_cli_engine(root: &Path) {
 Whether asking the CLI now would leave it to pick a Podman machine itself. Told no engine, it takes
 Podman's default connection, and on Windows that can be the person's machine: on box I their
 rootless `mine`, which the backend's check called an engine it can't run on. On Windows, where
-OpenBot runs only on its own machine, the CLI is asked only once that answers (`know_cli_engine`);
+AwakenBot runs only on its own machine, the CLI is asked only once that answers (`know_cli_engine`);
 until then the answer is that the engine does not answer, which Retry and the next start repair.
 */
 fn cli_left_to_pick(os: &str, engine_known: bool, saved: Option<engine::Engine>) -> bool {
@@ -8764,18 +8782,18 @@ fn cli_left_to_pick(os: &str, engine_known: bool, saved: Option<engine::Engine>)
 }
 
 /**
-Whether the person's own Podman machine answers while OpenBot's is still on its way, so the CLI must
+Whether the person's own Podman machine answers while AwakenBot's is still on its way, so the CLI must
 not be asked yet.
 
 The CLI, told no engine, takes the Podman machine that answers, and that is the person's. On a live
 Windows run it refused theirs ("Rootless Podman is not supported. Switch to rootful Podman ...") and
-the account step showed that as a change the person had to make. OpenBot passes theirs over and
+the account step showed that as a change the person had to make. AwakenBot passes theirs over and
 makes its own (`engine::passed_over_machine`), so until that answers, the account step waits as it
 waits for any engine coming up. Asked only while no engine is known, after `know_cli_engine`.
 */
 fn own_machine_on_its_way(root: &Path) -> bool {
     let (engine_known, saved) = (local_eval::engine_known(), preparation::saved_engine(root));
-    // On Windows nothing of the person's is asked: OpenBot's own machine answers, or it waits.
+    // On Windows nothing of the person's is asked: AwakenBot's own machine answers, or it waits.
     if engine::own_machine_only(std::env::consts::OS) {
         return cli_left_to_pick(std::env::consts::OS, engine_known, saved);
     }
@@ -8785,7 +8803,7 @@ fn own_machine_on_its_way(root: &Path) -> bool {
 }
 
 /// `own_machine_on_its_way`, with what it reads passed in: whether an engine is known, the engine
-/// the installation saved, and the person's machine behind Podman's default connection that OpenBot
+/// the installation saved, and the person's machine behind Podman's default connection that AwakenBot
 /// passes over, if any.
 fn own_machine_on_its_way_with(
     engine_known: bool,
@@ -8795,7 +8813,7 @@ fn own_machine_on_its_way_with(
     !engine_known && saved != Some(engine::Engine::Docker) && passed_over().is_some()
 }
 
-/// The account step's check: the CLI's own answer, or, while OpenBot's machine is on its way, that
+/// The account step's check: the CLI's own answer, or, while AwakenBot's machine is on its way, that
 /// the engine is not ready yet, without asking the CLI.
 fn account_terms(
     on_its_way: bool,
@@ -8837,7 +8855,7 @@ impl From<local_eval::Failure> for SetupError {
     }
 }
 
-/// A setup OpenBot stopped itself is said like a stack it could not record: in plain words.
+/// A setup AwakenBot stopped itself is said like a stack it could not record: in plain words.
 impl From<local_eval::SetupStopped> for SetupError {
     fn from(stopped: local_eval::SetupStopped) -> Self {
         match stopped {
@@ -8848,7 +8866,7 @@ impl From<local_eval::SetupStopped> for SetupError {
 }
 
 /**
-`local setup` for this installation, and the stack it made recorded as OpenBot's.
+`local setup` for this installation, and the stack it made recorded as AwakenBot's.
 
 Blocked is a normal answer here, not an error: the first one is the evaluation agreement, which the
 person accepts in their own terminal before the window asks again. Only a completed setup is
@@ -8869,7 +8887,7 @@ async fn set_up_local_eval<R: tauri::Runtime>(
         .transpose()
         .map_err(SetupError::Failure)?;
     let report = tauri::async_runtime::spawn_blocking(move || {
-        // A local first run starts setup while OpenBot is still installing into this folder, which
+        // A local first run starts setup while AwakenBot is still installing into this folder, which
         // may not exist yet; the CLI runs in it.
         std::fs::create_dir_all(&root)
             .map_err(|_| SetupError::Failure(local_eval::Failure::Spawn))?;
@@ -9080,11 +9098,11 @@ fn apps_unavailable() -> Problem {
 /**
 Run `setup` in `root` and record what it made.
 
-A stack set up here was made for OpenBot, so it starts and stops with it. It is OpenBot's only when
+A stack set up here was made for AwakenBot, so it starts and stops with it. It is AwakenBot's only when
 the CLI records it for `root` itself (`appPaths`): a stack recorded for another folder is another
 app's, whatever setup reported, and is kept as shared, so Stop and Quit never stop it. A record that
 already calls the same stack shared stays shared: setting up again resumes that stack, it does not
-make OpenBot its owner.
+make AwakenBot its owner.
 */
 fn set_up_local_eval_at<S>(root: &Path, setup: S) -> Result<local_eval::Report, SetupError>
 where
@@ -9107,7 +9125,7 @@ where
     };
     if !ours {
         log::warn!(
-            "[local setup] {} is recorded for another folder; OpenBot keeps it as shared and never stops it",
+            "[local setup] {} is recorded for another folder; AwakenBot keeps it as shared and never stops it",
             stack.as_str()
         );
     }
@@ -9116,8 +9134,8 @@ where
     Ok(report)
 }
 
-/// Why connecting OpenBot to local Intelligence produced nothing to show: the CLI's own static
-/// category, or a connection OpenBot would not take up. Told apart by shape, like `SetupError`.
+/// Why connecting AwakenBot to local Intelligence produced nothing to show: the CLI's own static
+/// category, or a connection AwakenBot would not take up. Told apart by shape, like `SetupError`.
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 enum ConnectError {
@@ -9126,10 +9144,10 @@ enum ConnectError {
 }
 
 /**
-`local connect` for this installation, after the person chose to connect OpenBot to it.
+`local connect` for this installation, after the person chose to connect AwakenBot to it.
 
-Interim, until the CLI issues OpenBot a credential of its own: the key `connect` writes into the
-installation's `.env` is moved into the credential store as OpenBot's Intelligence key, the same
+Interim, until the CLI issues AwakenBot a credential of its own: the key `connect` writes into the
+installation's `.env` is moved into the credential store as AwakenBot's Intelligence key, the same
 place a pasted key goes, and Start takes it from there. Blocked and conflicted answers are returned
 as they are, with nothing taken.
 */
@@ -9170,7 +9188,7 @@ async fn connect_local_eval<R: tauri::Runtime>(
     Ok(connection)
 }
 
-/// Where `local connect` puts the key for an app's runtime. OpenBot's server reads it as
+/// Where `local connect` puts the key for an app's runtime. AwakenBot's server reads it as
 /// `INTELLIGENCE_API_KEY`.
 const LOCAL_EVAL_CONNECTED_KEY: &str = "CPK_INTELLIGENCE_API_KEY";
 
@@ -9196,7 +9214,7 @@ where
 {
     let unconnected = |said: &str| ConnectError::Unconnected(Problem::plain(said));
     let recorded = local_eval_state::read(root, None)
-        .ok_or_else(|| unconnected("Set up the backend before connecting OpenBot to it."))?;
+        .ok_or_else(|| unconnected("Set up the backend before connecting AwakenBot to it."))?;
     let connection = connect(root).map_err(ConnectError::Failure)?;
     if connection.outcome != local_eval::Outcome::Completed || connection.conflicted {
         return Ok(connection);
@@ -9207,7 +9225,7 @@ where
         .filter(|stack| stack.id == recorded.stack)
     else {
         return Err(unconnected(
-            "A different backend was connected. OpenBot did not use it.",
+            "A different backend was connected. AwakenBot did not use it.",
         ));
     };
     let env_file = root.join(".env");
@@ -9221,7 +9239,7 @@ where
     )
     .map_err(|error| {
         ConnectError::Unconnected(Problem::with(
-            "OpenBot could not read the connection settings for its backend.",
+            "AwakenBot could not read the connection settings for its backend.",
             format!("{}: {}", env_file.display(), error.kind()),
         ))
     })?;
@@ -9248,7 +9266,7 @@ where
             != Some(reported)
     }) {
         return Err(unconnected(
-            "The connection settings do not match the backend that was set up. OpenBot did not use them.",
+            "The connection settings do not match the backend that was set up. AwakenBot did not use them.",
         ));
     }
     match written
@@ -9265,7 +9283,7 @@ where
             let purge = [(LOCAL_EVAL_CONNECTED_KEY.to_owned(), String::new())].into();
             openbot_env::write(&env_file, &settings, &purge).map_err(|error| {
                 ConnectError::Unconnected(Problem::with(
-                    "OpenBot kept the backend's key but could not remove it from its settings file.",
+                    "AwakenBot kept the backend's key but could not remove it from its settings file.",
                     format!("{}: {}", env_file.display(), error.kind()),
                 ))
             })?;
@@ -9277,7 +9295,7 @@ where
                     .is_some_and(|key| !key.trim().is_empty());
             if !kept {
                 return Err(unconnected(
-                    "The backend connected, but OpenBot has no key for it.",
+                    "The backend connected, but AwakenBot has no key for it.",
                 ));
             }
         }
@@ -9305,7 +9323,7 @@ fn cancel_local_eval(attempt: String) {
     local_eval::cancel(&attempt);
 }
 
-/// Why the dashboard did not open: a fixed category, which is all the OpenBot app's page is told.
+/// Why the dashboard did not open: a fixed category, which is all the AwakenBot app's page is told.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 enum DashboardFailure {
@@ -9345,12 +9363,12 @@ where
 
 /**
 The dashboard addresses the CLI has reported this session, and which stacks `local login` has
-signed in since OpenBot started.
+signed in since AwakenBot started.
 
 `local login` costs a CLI call: about 0.3 s to check the pinned CLI's digests and 0.25 s for it to
 start, before it waits for the dashboard, mints a single-use link and hands that to the browser.
 The browser keeps the session it was given, so once a stack has been signed in during this session,
-"Open back end dashboard" opens its address directly and at once. OpenBot does not read the
+"Open back end dashboard" opens its address directly and at once. AwakenBot does not read the
 CLI's credential files or the browser to decide; the first opening in each session signs in again,
 and a dashboard whose session ended shows its own Sign In.
 
@@ -9463,7 +9481,7 @@ fn intelligence_menu_root(root: &Path, offered: bool) -> Option<PathBuf> {
 The window says whether it is in local mode for `root`, and the app page's dashboard offer follows.
 
 The window decides local mode, as it does for its own link. The menus have no dashboard item: the
-dashboard is the back end's own, under another product's name, and a menu of OpenBot's does not
+dashboard is the back end's own, under another product's name, and a menu of AwakenBot's does not
 send a person there.
 */
 #[tauri::command]
@@ -9738,9 +9756,9 @@ fn publish_connection_failure<R: tauri::Runtime>(
         return Ok(true);
     }
     let said = match connection {
-        openbot_desktop_lib::problem::Connection::Model => "Your AI connection was refused. Refresh it to continue using your existing OpenBot.",
-        openbot_desktop_lib::problem::Connection::Intelligence => "Your OpenBot account connection was refused. Refresh it to continue using your existing OpenBot.",
-        openbot_desktop_lib::problem::Connection::Installation => "Part of OpenBot has to be installed again. OpenBot does that, then you can continue using your existing OpenBot.",
+        openbot_desktop_lib::problem::Connection::Model => "Your AI connection was refused. Refresh it to continue using your existing AwakenBot.",
+        openbot_desktop_lib::problem::Connection::Intelligence => "Your AwakenBot account connection was refused. Refresh it to continue using your existing AwakenBot.",
+        openbot_desktop_lib::problem::Connection::Installation => "Part of AwakenBot has to be installed again. AwakenBot does that, then you can continue using your existing AwakenBot.",
     };
     mark_recovery_required(&shell, root, generation);
     if let Some(recovery) = shell.recovery_required.lock().unwrap().as_mut() {
@@ -9752,7 +9770,7 @@ fn publish_connection_failure<R: tauri::Runtime>(
 }
 
 /**
-Watch a running OpenBot for a connection it reports refused, and send the window back to setup to
+Watch a running AwakenBot for a connection it reports refused, and send the window back to setup to
 refresh it.
 
 What is left of the host-process supervisor. Docker's restart policy keeps the server and the worker
@@ -9815,7 +9833,7 @@ fn watch_connections<R: tauri::Runtime>(
     })
 }
 
-/// Point the window at OpenBot if it is up, and at the setup screen if it is not.
+/// Point the window at AwakenBot if it is up, and at the setup screen if it is not.
 ///
 /// Used by the tray and by a second launch, both of which happen at moments when the caller has no
 /// idea which of the two the person should be looking at.
@@ -9889,8 +9907,8 @@ where
 
 /**
 Where a click on one of a Bot's notifications takes the window: the page the notice names
-(`extra.path`, which OpenBot's page sets as it posts it), on the OpenBot the window shows. Nothing
-when the window shows anything else, or for a path that is not one of that OpenBot's own pages.
+(`extra.path`, which AwakenBot's page sets as it posts it), on the AwakenBot the window shows. Nothing
+when the window shows anything else, or for a path that is not one of that AwakenBot's own pages.
 */
 fn notification_destination(
     current: &tauri::Url,
@@ -9906,7 +9924,7 @@ fn notification_destination(
 }
 
 /**
-A Bot's notification, shown by the system: OpenBot's page asks for it (`desktop_page::notify`) with
+A Bot's notification, shown by the system: AwakenBot's page asks for it (`desktop_page::notify`) with
 the page a click opens.
 
 On Windows a toast of our own, which opens an `openbot://` link by protocol: the only way an app
@@ -9972,7 +9990,7 @@ fn open_from_notification(
 }
 
 /// An `openbot://open?path=…` link, which a click on a Windows toast opens, from the notification
-/// centre too: Windows starts OpenBot.exe with it and the single-instance plugin hands it here.
+/// centre too: Windows starts AwakenBot.exe with it and the single-instance plugin hands it here.
 fn open_from_link(app: &tauri::AppHandle, link: &tauri::Url) {
     if link.scheme() != notice::SCHEME {
         return;
@@ -9981,9 +9999,9 @@ fn open_from_link(app: &tauri::AppHandle, link: &tauri::Url) {
 }
 
 /**
-OpenBot comes forward, as it does for a second launch, at the page a notice is about. While the
-window does not show this OpenBot yet (it is still starting, from a click that launched it), the
-page waits for it: `open_waiting_notice_page` opens it once OpenBot's page has loaded.
+AwakenBot comes forward, as it does for a second launch, at the page a notice is about. While the
+window does not show this AwakenBot yet (it is still starting, from a click that launched it), the
+page waits for it: `open_waiting_notice_page` opens it once AwakenBot's page has loaded.
 */
 fn open_notice_page(app: &tauri::AppHandle, path: Option<String>) {
     show_whichever_applies(app);
@@ -10024,7 +10042,7 @@ fn open_notice_page(app: &tauri::AppHandle, path: Option<String>) {
     navigate_to_notice_page(&current, &path, |script| window.eval(script));
 }
 
-/// The page a click asked for before OpenBot's page was there, now that it is.
+/// The page a click asked for before AwakenBot's page was there, now that it is.
 fn open_waiting_notice_page<R: tauri::Runtime>(window: &tauri::Webview<R>, loaded: &tauri::Url) {
     let waiting = window
         .app_handle()
@@ -10039,11 +10057,11 @@ fn open_waiting_notice_page<R: tauri::Runtime>(window: &tauri::Webview<R>, loade
 }
 
 /**
-Goes to `path` on the OpenBot at `current`, unless it is there already or `path` is not one of its
+Goes to `path` on the AwakenBot at `current`, unless it is there already or `path` is not one of its
 pages (`notification_destination`).
 
 As a route change in the page (`notice::open_script`), never by loading the page again: a click on a
-notice used to reload OpenBot and lose what the person was in the middle of. A page from before the
+notice used to reload AwakenBot and lose what the person was in the middle of. A page from before the
 page handled it is loaded at the target instead.
 */
 fn navigate_to_notice_page(
@@ -10071,13 +10089,13 @@ fn restore_after_second_instance(app: &tauri::AppHandle) {
             &reporting_app,
             "open",
             false,
-            format!("OpenBot could not show the existing window: {error}"),
+            format!("AwakenBot could not show the existing window: {error}"),
         );
     }
 }
 
 fn publish_quit_notice_failure<R: tauri::Runtime>(app: tauri::AppHandle<R>, error: String) {
-    let problem = Problem::with("OpenBot could not record a shutdown problem.", error);
+    let problem = Problem::with("AwakenBot could not record a shutdown problem.", error);
     let shell = app.state::<Shell>();
     {
         let _startup = shell.startup.lock().unwrap();
@@ -10097,7 +10115,7 @@ fn stop_from_menu<R: tauri::Runtime>(app: tauri::AppHandle<R>, from: AskedFrom) 
 
 /// Settings' Change on the AI model row: the same Stop, then the setup window at its AI screen,
 /// where the setup window's own Change AI connection goes. A Stop that failed shows setup as any
-/// failed Stop does, with its failure and Start, since OpenBot may still be running.
+/// failed Stop does, with its failure and Start, since AwakenBot may still be running.
 pub(crate) fn change_ai_connection_from_settings<R: tauri::Runtime>(app: tauri::AppHandle<R>) {
     stop_then_show_setup(app, AskedFrom::Settings, true);
 }
@@ -10115,7 +10133,7 @@ fn take_change_ai_connection(shell: &Shell) -> bool {
         .swap(false, std::sync::atomic::Ordering::SeqCst)
 }
 
-/// Asked for only once everything stopped: the AI screen then starts OpenBot with the new choice.
+/// Asked for only once everything stopped: the AI screen then starts AwakenBot with the new choice.
 fn settle_change_ai_connection(shell: &Shell, stopped: bool, change_ai_connection: bool) {
     shell.change_ai_connection.store(
         stopped && change_ai_connection,
@@ -10150,7 +10168,7 @@ fn stop_then_show_setup<R: tauri::Runtime>(
         logging::outcome("stop", asked, &settled);
         settle_change_ai_connection(&shell, settled.is_ok(), change_ai_connection);
         match settled {
-            Ok(()) => report_plain(&app, "stopped", true, "OpenBot has stopped."),
+            Ok(()) => report_plain(&app, "stopped", true, "AwakenBot has stopped."),
             // Said rather than swallowed. A menu item that fails silently is worse than one
             // that is not there: the person believes the stack is down and it is not.
             Err(problem) => report_plain(&app, "stopped", false, problem.said),
@@ -10159,18 +10177,18 @@ fn stop_then_show_setup<R: tauri::Runtime>(
     });
 }
 
-/// Keep a menu Stop's failure for the setup screen, and mark recovery only when OpenBot's own
+/// Keep a menu Stop's failure for the setup screen, and mark recovery only when AwakenBot's own
 /// processes or containers may still be running. None when everything stopped.
 fn settle_menu_stop(shell: &Shell, fallback_root: &Path, stopped: Stopped) -> Option<Problem> {
     let openbot_failed = !stopped.openbot.is_empty();
     let problem = if openbot_failed {
         Problem::with(
-            "OpenBot could not finish stopping. Try Stop OpenBot again.",
+            "AwakenBot could not finish stopping. Try Stop AwakenBot again.",
             stopped.lines().join("\n"),
         )
     } else {
         Problem::with(
-            "OpenBot stopped, but some of its services didn't. They may still be running.",
+            "AwakenBot stopped, but some of its services didn't. They may still be running.",
             stopped.intelligence?,
         )
     };
@@ -10245,18 +10263,18 @@ fn saved_zoom<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> f64 {
 }
 
 /**
-A quit macOS starts, not OpenBot: Dock > Quit, an AppleScript `quit`, logging out or shutting down.
+A quit macOS starts, not AwakenBot: Dock > Quit, an AppleScript `quit`, logging out or shutting down.
 
 Tauri on macOS answers those only in `applicationWillTerminate:`, which ends the event loop at once:
-`RunEvent::ExitRequested`, where OpenBot's own Quit stops its CLI calls, its containers and the
+`RunEvent::ExitRequested`, where AwakenBot's own Quit stops its CLI calls, its containers and the
 Intelligence stack it made, never runs. A local setup quit that way kept running with nobody to
 stop it, and the next setup was refused as busy.
 
 So the app delegate also answers `applicationShouldTerminate:`: it cancels macOS's termination
-and asks for OpenBot's own Quit (`app.exit`), whose cleanup then exits. Tauri ends the loop with
+and asks for AwakenBot's own Quit (`app.exit`), whose cleanup then exits. Tauri ends the loop with
 `stop:` and `process::exit`, never `terminate:`, so this is not asked again on the way out. A
-logout waits for nothing here: macOS reports that OpenBot cancelled it, and logging out again
-after OpenBot has closed goes through.
+logout waits for nothing here: macOS reports that AwakenBot cancelled it, and logging out again
+after AwakenBot has closed goes through.
 */
 #[cfg(target_os = "macos")]
 mod macos_quit {
@@ -10328,7 +10346,7 @@ fn desktop_version<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> String {
 }
 
 /**
-What About OpenBot says: the version, and which build this is.
+What About AwakenBot says: the version, and which build this is.
 
 The build is the commit it was built from, marked `-dirty` when the tree had uncommitted changes,
 and when; see `build_identity` in build.rs. macOS shows the version and the build on one line and
@@ -10341,7 +10359,7 @@ fn about_openbot(version: String) -> tauri::menu::AboutMetadata<'static> {
         env!("OPENBOT_BUILD_TIME").parse().unwrap_or_default(),
     );
     tauri::menu::AboutMetadata {
-        name: Some("OpenBot".into()),
+        name: Some("AwakenBot".into()),
         short_version: Some(version),
         version: Some(env!("OPENBOT_BUILD_COMMIT").into()),
         credits: Some(built.clone()),
@@ -10369,7 +10387,7 @@ fn log_launch<R: tauri::Runtime>(app: &tauri::AppHandle<R>, local_offset: Option
         .map(|folder| folder.display().to_string())
         .unwrap_or_else(|error| format!("unknown ({error})"));
     log::info!(
-        "[launch] OpenBot Desktop {} ({}) on {} {}; local time is {local}; logs in {folder}",
+        "[launch] AwakenBot Desktop {} ({}) on {} {}; local time is {local}; logs in {folder}",
         desktop_version(app),
         build_description(
             env!("OPENBOT_BUILD_COMMIT"),
@@ -10451,7 +10469,7 @@ fn install_menus<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<
      * status dot, then the things to do, each with an icon, then About, then Quit.
      *
      * No line carries the app's name. The icon it opens from already says whose menu it is, the
-     * name is a brand that builds change (OpenBot, Soar, a company's own), and a verb in front of
+     * name is a brand that builds change (AwakenBot, Soar, a company's own), and a verb in front of
      * a product name reads badly for some of them: never "Open Soar" (a product decision of
      * 2026-10-23).
      */
@@ -10523,7 +10541,7 @@ fn install_menus<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<
     let window_entries = || -> tauri::Result<Vec<MenuEntry<R>>> {
         let mut entries = vec![MenuEntry::Native(PredefinedMenuItem::about(
             app,
-            Some("About OpenBot"),
+            Some("About AwakenBot"),
             Some(about_openbot(desktop_version(app))),
         )?)];
         // Where every Mac app keeps it: under About.
@@ -10573,7 +10591,7 @@ fn install_menus<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<
      * No menu bar on Windows. Windows draws it as a white strip of its own that no colour reaches,
      * between a title bar tinted to the page and the page itself. Nothing is lost: the Edit menu is
      * there for macOS, which routes Command-V through the menu bar, while WebView2 handles Ctrl+V
-     * itself; and the OpenBot menu's items are in the tray and in Settings → This computer.
+     * itself; and the AwakenBot menu's items are in the tray and in Settings → This computer.
      */
     if cfg!(target_os = "windows") {
         return Ok(());
@@ -10588,7 +10606,7 @@ fn install_menus<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<
     // outlive each other.
     let window = window_entries()?;
     // A submenu, because a top-level entry in a menu bar has to be one to open at all.
-    let openbot = Submenu::with_items(app, "OpenBot", true, &menu_refs(&window))?;
+    let openbot = Submenu::with_items(app, "AwakenBot", true, &menu_refs(&window))?;
     /*
      * AN EDIT MENU, WITHOUT WHICH COMMAND-V DOES NOTHING.
      *
@@ -10645,7 +10663,7 @@ fn install_menus<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<
 
 /**
 Whether the system, rather than any one window, is in dark: the menu bar follows the system, and the
-main window follows OpenBot's own theme once it shows OpenBot.
+main window follows AwakenBot's own theme once it shows AwakenBot.
 */
 fn system_is_dark<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> bool {
     #[cfg(target_os = "macos")]
@@ -10902,7 +10920,7 @@ fn install_recorder_host_for_this_user() -> Result<Vec<PathBuf>, Problem> {
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     let current_exe = std::env::current_exe().map_err(|error| {
         Problem::with(
-            "OpenBot Desktop could not set up the Recorder.",
+            "AwakenBot Desktop could not set up the Recorder.",
             error.to_string(),
         )
     })?;
@@ -10922,7 +10940,7 @@ fn install_recorder_host_for_this_user() -> Result<Vec<PathBuf>, Problem> {
         (home, None, None, None)
     } else {
         let home = recorder_home()
-            .ok_or_else(|| Problem::plain("OpenBot Desktop could not find your home folder."))?;
+            .ok_or_else(|| Problem::plain("AwakenBot Desktop could not find your home folder."))?;
         (
             home,
             non_empty_var("XDG_CONFIG_HOME").map(PathBuf::from),
@@ -10984,7 +11002,7 @@ fn install_recorder_host_at_start() -> Option<std::thread::JoinHandle<()>> {
 fn main() {
     let args: Vec<std::ffi::OsString> = std::env::args_os().collect();
     // Windows opening a notification's link: pass the foreground on, before the single-instance plugin
-    // hands the link to the OpenBot already running and this launch exits. See `notice.rs`.
+    // hands the link to the AwakenBot already running and this launch exits. See `notice.rs`.
     #[cfg(windows)]
     if notice::launched_by_link(args.iter().map(|arg| arg.to_string_lossy().into_owned())) {
         notice::let_running_openbot_come_forward();
@@ -11012,8 +11030,8 @@ fn main() {
             }
         });
     }
-    // The Windows uninstaller stopping what OpenBot runs before it removes it (`uninstall`):
-    // headless, and before the single-instance plugin, which would hand this launch to an OpenBot
+    // The Windows uninstaller stopping what AwakenBot runs before it removes it (`uninstall`):
+    // headless, and before the single-instance plugin, which would hand this launch to an AwakenBot
     // still open and exit.
     if let Some(asked) = uninstall::asked(&args) {
         std::process::exit(stop_for_uninstall(asked));
@@ -11137,11 +11155,11 @@ fn main() {
             save_troubleshooting_logs,
         ])
         // A packaged application is not a browser tab. Left alone, WebView2 answers a right-click
-        // with Back, Refresh, Save as and Print: Back walks the window out of OpenBot with nothing
+        // with Back, Refresh, Save as and Print: Back walks the window out of AwakenBot with nothing
         // to walk it home, and Save as offers to write the page to disk as `Webpage, complete`.
         // macOS never showed this because Tauri suppresses it there in release builds; Windows has
         // no such setting, and Tauri has no configuration option for it either, so the page is
-        // asked to refuse. Every navigation, because the window navigates to OpenBot and back.
+        // asked to refuse. Every navigation, because the window navigates to AwakenBot and back.
         .on_page_load(|window, payload| {
             // A new page in the main window is not the setup page until it sends a heartbeat.
             if window.label() == "main" && payload.event() == tauri::webview::PageLoadEvent::Started
@@ -11209,9 +11227,9 @@ fn main() {
             build_main_window(app.handle())?;
             log_launch(app.handle(), local_offset);
             // The window is built visible, so this is its first show: a launch the installer
-            // started comes forward now, while Starting OpenBot is what it shows.
+            // started comes forward now, while Starting AwakenBot is what it shows.
             forward_at_first_show(from_installer, |why| bring_to_front(app.handle(), why));
-            // Built by `generate_context!`, so the permissions OpenBot's page is granted are
+            // Built by `generate_context!`, so the permissions AwakenBot's page is granted are
             // compiled in. First, before anything that could trust an app and open it.
             know_app_page_grants(app.handle());
             {
@@ -11228,7 +11246,7 @@ fn main() {
                         open_from_link(&handle, &link);
                     }
                 });
-                // OpenBot started by a click on a notification: its page, once OpenBot shows.
+                // AwakenBot started by a click on a notification: its page, once AwakenBot shows.
                 if let Ok(Some(links)) = app.deep_link().get_current() {
                     for link in links {
                         if let Some(path) = notice::path_of(&link) {
@@ -11267,7 +11285,7 @@ fn main() {
             {
                 remember_selected_root(&app.state::<Shell>(), &root);
             }
-            // Where the Compose provider OpenBot installs itself lives, OpenBot's own Docker
+            // Where the Compose provider AwakenBot installs itself lives, AwakenBot's own Docker
             // configuration (the one without the person's credential helper) and the registry
             // mirror k3d writes into a new back end node. Before anything asks for an engine.
             use_engine_folders(
@@ -11290,7 +11308,7 @@ fn main() {
             tauri::tray::TrayIconBuilder::with_id("openbot")
                 .icon(tray::icon())
                 .icon_as_template(false)
-                .tooltip("OpenBot")
+                .tooltip("AwakenBot")
                 .build(app)?;
             install_menus(app.handle())?;
             app.on_menu_event(|app, event| chose(app, event.id().as_ref()));
@@ -11302,7 +11320,7 @@ fn main() {
             Ok(())
         })
         .build(context)
-        .expect("the OpenBot window could not be created")
+        .expect("the AwakenBot window could not be created")
         .run(|app, event| {
             match event {
                 #[cfg(target_os = "macos")]
@@ -11348,7 +11366,7 @@ fn main() {
                             app,
                             "quit",
                             false,
-                            "OpenBot couldn't start shutting down. Try Quit again.",
+                            "AwakenBot couldn't start shutting down. Try Quit again.",
                         );
                     }
                 }
@@ -11361,7 +11379,7 @@ fn main() {
 mod background_launch_tests {
     use tauri::utils::config::BackgroundThrottlingPolicy;
 
-    /// OpenBot that opens at login, or that somebody launches and switches away from, starts with
+    /// AwakenBot that opens at login, or that somebody launches and switches away from, starts with
     /// its window behind other windows. WebKit counts an occluded window's page as not visible,
     /// and its default inactive policy (`WKInactiveSchedulingPolicySuspend`) lets RunningBoard
     /// suspend the page's web content process. The setup page then never loads, its JavaScript
@@ -11584,12 +11602,12 @@ mod check_for_updates_tests {
         let failure = check(&window).unwrap_err();
         assert_eq!(
             failure["said"],
-            "OpenBot couldn't check for updates. Check your internet connection and try again."
+            "AwakenBot couldn't check for updates. Check your internet connection and try again."
         );
         assert!(failure["detail"].as_str().is_some_and(|d| !d.is_empty()));
     }
 
-    /// One way to ask, in every place OpenBot offers it: the windows' command is the feed's, the old
+    /// One way to ask, in every place AwakenBot offers it: the windows' command is the feed's, the old
     /// shell update commands are gone, and both menus carry Check for Updates…, which the menu
     /// handler routes to the same check. AppKit menus cannot be built under the mock runtime (see
     /// `refresh_menus`), so this reads the shell's own wiring.
@@ -11612,9 +11630,9 @@ mod check_for_updates_tests {
         assert!(main.contains("app_update::MENU_ID => check_for_updates_from_menu(app.clone()),"));
     }
 
-    /// Check for Updates…'s answers carry OpenBot's icon on the Mac. The dialog plugin shows a
+    /// Check for Updates…'s answers carry AwakenBot's icon on the Mac. The dialog plugin shows a
     /// message with no parent window through `CFUserNotificationDisplayAlert`, which draws the
-    /// system's grey note icon, so on macOS `show_prompt` runs OpenBot's own alert
+    /// system's grey note icon, so on macOS `show_prompt` runs AwakenBot's own alert
     /// (`native_alert`, tested in `tests/native_alert.rs`) and leaves the plugin to the others.
     #[test]
     fn the_update_answers_show_openbots_icon_on_the_mac() {
@@ -11644,7 +11662,7 @@ mod update_download_fallback_tests {
     /// A test signing key's public half, as `tauri signer generate` writes it. Its secret half was
     /// used once, to sign `PACKAGE`, and is kept nowhere.
     const PUBKEY: &str = "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ3ODJGM0QyNDNFRTk4QUYKUldTdm1PNUQwdk9DUjJWTWEyaHJFWjNkck9KK0N6emtZcmVZVDIxTm1UaGhPNy9YRmMyYTRQRVgK";
-    const PACKAGE: &[u8] = b"OpenBot update fallback test package\n";
+    const PACKAGE: &[u8] = b"AwakenBot update fallback test package\n";
     /// `tauri signer sign` of `PACKAGE` with that key.
     const SIGNATURE: &str = "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdm1PNUQwdk9DUjBYZFFYWnQrWVZDMXNqbjY1TEdsQ0xDNHhjUnZvdEl4L2RaSEgwbVdadEpEVHcxYUVXb0lseG1mYkpQc2xjQzNydWxOS0JGcjBsRGh0NzUrTzI2ZEFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0MTgwNDYzCWZpbGU6cGF5bG9hZC5iaW4KaFF5azhkUzRYNW1LWk1SRW5YRk53SVVyTXlUbmdoOXFYMmVYa3FEangwRzF3d08zWTc0dDg4alBOTmVMZ2Vid0dheldNRzVRRFB3UDJRRDB3TVBpQkE9PQo=";
 
@@ -11855,7 +11873,7 @@ mod runtime_update_tests {
 
 #[cfg(test)]
 mod tests {
-    /// The window says "Updating OpenBot" and where an update stopped in plain words; the log
+    /// The window says "Updating AwakenBot" and where an update stopped in plain words; the log
     /// keeps the releases and the CLI's own name for the step.
     #[test]
     fn the_log_keeps_the_back_end_releases_and_the_step_an_update_stopped_at() {
@@ -11901,7 +11919,7 @@ mod tests {
 
     use super::*;
 
-    /// Setup opens in OpenBot's own light or dark once its page has reported one, and in the
+    /// Setup opens in AwakenBot's own light or dark once its page has reported one, and in the
     /// system's before that or when the record cannot be read.
     #[test]
     fn setup_takes_openbots_last_light_or_dark() {
@@ -12099,7 +12117,7 @@ mod tests {
         .unwrap();
     }
 
-    /// An update restarts the app after stopping OpenBot itself. Tauri sends that restart through the
+    /// An update restarts the app after stopping AwakenBot itself. Tauri sends that restart through the
     /// exit handler and ignores `prevent_exit` for it, so a Quit cleanup started there would be cut
     /// off halfway, possibly while stopping the local Intelligence the update meant to keep.
     #[test]
@@ -12281,7 +12299,7 @@ mod tests {
         let root = temp_root("openbot-quit-cleanup-notice");
         let lines = vec![
             "[exit] cleanup failed: Compose down failed: /Users/alice/OpenBot/docker-compose.yml refused token=secret".to_string(),
-            "[exit] cleanup failed: C:\\Users\\alice\\OpenBot\\owned.exe OAuth password".to_string(),
+            "[exit] cleanup failed: C:\\Users\\alice\\AwakenBot\\owned.exe OAuth password".to_string(),
         ];
 
         write_quit_cleanup_notice(&root, &lines).unwrap();
@@ -12289,7 +12307,7 @@ mod tests {
             .unwrap()
             .expect("notice should be present");
         let detail = first.detail.unwrap();
-        assert_eq!(first.said, "OpenBot had trouble shutting down last time.");
+        assert_eq!(first.said, "AwakenBot had trouble shutting down last time.");
         assert!(detail.contains("containers stopped"), "{detail}");
         assert!(detail.contains("app processes stopped"), "{detail}");
         assert!(!detail.contains("Compose down failed"), "{detail}");
@@ -13039,7 +13057,7 @@ mod tests {
         )
         .expect_err("unreadable .env must stop saved-key resolution");
 
-        assert_eq!(problem.said, "OpenBot could not read its settings.");
+        assert_eq!(problem.said, "AwakenBot could not read its settings.");
         assert!(
             problem
                 .detail
@@ -13280,7 +13298,7 @@ mod tests {
             database_leftovers(&BOT_LEFTOVERS).volumes
         );
 
-        // A database OpenBot cannot verify keeps the existing refusal, with nothing offered.
+        // A database AwakenBot cannot verify keeps the existing refusal, with nothing offered.
         let mut unverified = leftovers_without_database(&BOT_LEFTOVERS);
         unverified.database_exists = true;
         let error = require_existing_encryption_key_with_recovery(
@@ -13294,7 +13312,7 @@ mod tests {
         assert!(error.leftover_volumes().is_empty());
         assert!(error
             .said
-            .contains("OpenBot will not replace the key automatically"));
+            .contains("AwakenBot will not replace the key automatically"));
 
         // Stopped containers that hold the volumes join the confirmation; running ones block it.
         let mut held = leftovers_without_database(&BOT_LEFTOVERS);
@@ -14295,7 +14313,7 @@ mod tests {
             run(Some(Docker), true, false, true),
             ["open Docker Desktop"]
         );
-        // A saved Podman after a restart: OpenBot's machine is started.
+        // A saved Podman after a restart: AwakenBot's machine is started.
         assert_eq!(run(Some(Podman), true, false, true), ["start our machine"]);
         // An installation from before engines were saved, with nothing answering: the same.
         assert_eq!(run(None, true, false, true), ["start our machine"]);
@@ -14306,11 +14324,11 @@ mod tests {
         assert_eq!(run(Some(Podman), false, false, true), none);
     }
 
-    /// Box I, step 7: "Delete the application data" took OpenBot's machine, the installation folder
+    /// Box I, step 7: "Delete the application data" took AwakenBot's machine, the installation folder
     /// stayed, and Podman made the person's rootless `mine` its default connection. The relaunch
     /// found nothing answering, did nothing, and the backend's tool, told no engine, judged `mine`:
-    /// "OpenBot can't run on this computer as it's set up", with no way on. Now, on Windows, the
-    /// relaunch makes OpenBot's machine again, and the tool is never asked before it answers.
+    /// "AwakenBot can't run on this computer as it's set up", with no way on. Now, on Windows, the
+    /// relaunch makes AwakenBot's machine again, and the tool is never asked before it answers.
     #[test]
     fn a_relaunch_without_openbots_machine_makes_it_again_and_never_judges_the_persons() {
         use engine::Engine::{Docker, Podman};
@@ -14327,14 +14345,14 @@ mod tests {
         };
         let windows = engine::own_machine_only("windows");
 
-        // Nothing answers and only the person's machine is there: OpenBot's is made again.
+        // Nothing answers and only the person's machine is there: AwakenBot's is made again.
         assert!(our_machine_is_gone(
             Some(Podman),
             windows,
             || false,
             || ours_in(only_theirs)
         ));
-        // OpenBot's machine is there, stopped: started as before, never made again.
+        // AwakenBot's machine is there, stopped: started as before, never made again.
         assert!(!our_machine_is_gone(
             Some(Podman),
             windows,
@@ -14364,7 +14382,7 @@ mod tests {
             || false
         ));
 
-        // Until OpenBot's own engine answers, the backend's tool is not asked on Windows: the answer
+        // Until AwakenBot's own engine answers, the backend's tool is not asked on Windows: the answer
         // is that the engine doesn't answer, which the relaunch repairs, never "unsupported engine"
         // from a look at the person's machine.
         for saved in [Some(Podman), None] {
@@ -14381,7 +14399,7 @@ mod tests {
     /// A live Windows run: the machine's network was checked only at Start, after the back end had
     /// started, and setting it up again restarted the machine under the back end. The window wakes
     /// the engine before every CLI call that sets up, updates or starts the back end, and the wake
-    /// now makes OpenBot's machine ready last, after the engine is up.
+    /// now makes AwakenBot's machine ready last, after the engine is up.
     #[test]
     fn the_wake_makes_openbots_machine_ready_after_the_engine_and_before_the_back_end() {
         use std::cell::RefCell;
@@ -14431,7 +14449,7 @@ mod tests {
 
     /// The same run, when Start is where the network is set up again (it went down after the
     /// wake, or the back end was already running): the back end is started again, and waited for
-    /// until it is ready, before Compose starts OpenBot's services.
+    /// until it is ready, before Compose starts AwakenBot's services.
     #[test]
     fn a_machine_restarted_at_start_starts_the_back_end_again_before_compose() {
         use local_eval::{Action, Outcome, Readiness};
@@ -14503,14 +14521,14 @@ mod tests {
         .unwrap_err();
         assert_eq!(
             error.said,
-            "OpenBot couldn't start again after reconnecting to the internet. Try Start again."
+            "AwakenBot couldn't start again after reconnecting to the internet. Try Start again."
         );
     }
 
-    /// Box I: OpenBot's machine made again, the backend's cluster gone with the old one, and every
+    /// Box I: AwakenBot's machine made again, the backend's cluster gone with the old one, and every
     /// status "local-command-failed, no stack", which the window said as "Setup stopped partway
     /// through with an error. Retry." for good. It is now said as a lost backend, with Start fresh,
-    /// but only for the stack OpenBot created and recorded here, asked about by its own id, once
+    /// but only for the stack AwakenBot created and recorded here, asked about by its own id, once
     /// the engine answers without its cluster.
     #[test]
     fn a_backend_whose_cluster_is_gone_is_said_lost_only_when_openbot_made_it() {
@@ -14540,7 +14558,7 @@ mod tests {
         // The cluster is there, or the engine couldn't say: an ordinary failure, with Retry.
         assert!(!backend_lost(&lost, Some(&created), &asked, || Some(false)));
         assert!(!backend_lost(&lost, Some(&created), &asked, || None));
-        // A stack OpenBot found and shares, none recorded, or another one asked about.
+        // A stack AwakenBot found and shares, none recorded, or another one asked about.
         let shared = recorded(local_eval_state::Ownership::Shared);
         assert!(!backend_lost(&lost, Some(&shared), &asked, || Some(true)));
         assert!(!backend_lost(&lost, None, &asked, || Some(true)));
@@ -14592,8 +14610,8 @@ mod tests {
             true,
             Ok(()),
             Err(Problem::plain(
-                "Docker on this computer is too old to run OpenBot. Update Docker, then start \
-                 OpenBot again.",
+                "Docker on this computer is too old to run AwakenBot. Update Docker, then start \
+                 AwakenBot again.",
             )),
         );
         assert!(result
@@ -14831,7 +14849,7 @@ mod tests {
                     .borrow_mut()
                     .push(format!("cleanup:{}", root.display()));
                 Err(Problem::with(
-                    "OpenBot could not inspect or stop its host processes.",
+                    "AwakenBot could not inspect or stop its host processes.",
                     "lsof exited with status 2",
                 ))
             },
@@ -14850,7 +14868,7 @@ mod tests {
             ]
         );
         assert!(
-            problem.contains("OpenBot could not inspect or stop its host processes."),
+            problem.contains("AwakenBot could not inspect or stop its host processes."),
             "{problem}"
         );
         assert!(problem.contains("lsof exited with status 2"), "{problem}");
@@ -14882,7 +14900,7 @@ mod tests {
                     .borrow_mut()
                     .push(format!("cleanup:{}", root.display()));
                 Err(Problem::with(
-                    "OpenBot could not inspect or stop its host processes.",
+                    "AwakenBot could not inspect or stop its host processes.",
                     "taskkill exited with status 5",
                 ))
             },
@@ -15282,7 +15300,7 @@ mod tests {
         );
     }
 
-    /// Words a person setting OpenBot up does not know, and a release's name.
+    /// Words a person setting AwakenBot up does not know, and a release's name.
     fn technical(said: &str) -> Option<&'static str> {
         let lower = said.to_lowercase();
         [
@@ -15323,7 +15341,7 @@ mod tests {
         }
     }
 
-    /// Found on Windows F: "Downloading OpenBot internal-d2df1b062ac0." reached the Account
+    /// Found on Windows F: "Downloading AwakenBot internal-d2df1b062ac0." reached the Account
     /// step's background row for two seconds, the one step line of the run with no plain line of
     /// its own. Its text is the log's now, and the window says the step's plain line.
     #[test]
@@ -15332,9 +15350,9 @@ mod tests {
             (
                 "deployment",
                 true,
-                "Downloading OpenBot internal-d2df1b062ac0.",
+                "Downloading AwakenBot internal-d2df1b062ac0.",
             ),
-            ("deployment", false, "v1.0.1 in C:\\Users\\you\\OpenBot"),
+            ("deployment", false, "v1.0.1 in C:\\Users\\you\\AwakenBot"),
             ("install-engine", false, "Compose 5.5.1 installed."),
             ("health-gate", false, "engine API 6.1.4"),
         ] {
@@ -15348,10 +15366,10 @@ mod tests {
                 "deployment",
                 true,
                 true,
-                "Downloading OpenBot internal-d2df1b062ac0.".into()
+                "Downloading AwakenBot internal-d2df1b062ac0.".into()
             )
             .said,
-            "Downloading OpenBot."
+            "Downloading AwakenBot."
         );
     }
 
@@ -15559,9 +15577,9 @@ mod tests {
         assert!(!body.contains(".show()"), "{body}");
     }
 
-    /// Windows F: "[front] the engine machine is prepared" brought OpenBot in front of the
+    /// Windows F: "[front] the engine machine is prepared" brought AwakenBot in front of the
     /// browser while the person typed their email to sign in. While the sign-in is open, setup's
-    /// own moments hold back; when it ends, OpenBot comes forward once.
+    /// own moments hold back; when it ends, AwakenBot comes forward once.
     #[test]
     fn nothing_comes_forward_while_the_browser_sign_in_is_open_and_once_when_it_ends() {
         if crate::test_support::isolated_process(
@@ -15591,7 +15609,7 @@ mod tests {
             while_signing_in(|| panic!("the sign-in failed"), || {});
         });
         assert!(failed.is_err());
-        assert!(!held_back("OpenBot is showing"));
+        assert!(!held_back("AwakenBot is showing"));
         // `bring_to_front` asks before it does anything, and the sign-in runs inside the hold.
         let main = include_str!("main.rs");
         let body = &main[main.find("fn bring_to_front<").unwrap()..];
@@ -15607,7 +15625,7 @@ mod tests {
 
     /// Box H, an in-app update from 1.0.1 to 1.0.2 on Windows Server 2022 with a maximised Edge
     /// open: Windows put Edge in front as 1.0.1 closed, and 1.0.2 opened behind it. The person saw
-    /// only Edge through the four minutes of Starting OpenBot, until "[front] OpenBot is showing"
+    /// only Edge through the four minutes of Starting AwakenBot, until "[front] AwakenBot is showing"
     /// at home. The updating version passes the foreground on before its window goes, the
     /// installer passes it on again and starts the new version saying so, and the new version
     /// comes forward once, as its window first shows. Never while the browser sign-in is open.
@@ -15645,7 +15663,7 @@ mod tests {
         });
         assert_eq!(
             *asked.borrow(),
-            [("the installer started OpenBot".to_owned(), false)]
+            [("the installer started AwakenBot".to_owned(), false)]
         );
         // Any other launch asks nothing.
         forward_at_first_show(false, |why| {
@@ -15694,7 +15712,7 @@ mod tests {
             .find("pass_the_foreground_on();")
             .expect("the foreground passed on before the installer starts");
         assert!(passed < before.find("app.cleanup_before_exit();").unwrap());
-        // The installer starts OpenBot with the flag read here.
+        // The installer starts AwakenBot with the flag read here.
         assert!(include_str!("../windows/hooks.nsh").contains(&format!(
             "!define OPENBOT_STARTED_BY_INSTALLER \"{STARTED_BY_INSTALLER}\""
         )));
@@ -15729,7 +15747,7 @@ mod tests {
     fn the_main_window_built_in_setup_keeps_every_property_the_configured_window_had() {
         // The entry as it stood while Tauri created the window from it.
         let pinned = serde_json::json!({
-            "title": "OpenBot",
+            "title": "AwakenBot",
             "width": 1000,
             "height": 800,
             "minWidth": 720,
@@ -15765,7 +15783,7 @@ mod tests {
             .iter()
             .find(|window| window.label == "main")
             .unwrap();
-        assert_eq!(built.title, "OpenBot");
+        assert_eq!(built.title, "AwakenBot");
         assert_eq!((built.width, built.height), (1000.0, 800.0));
         assert_eq!(
             (built.min_width, built.min_height),
@@ -15892,7 +15910,7 @@ mod tests {
     /// The live Windows run: the person's own `podman-machine-default` answered, the CLI was told no
     /// engine and took it, and the account step showed its refusal ("Rootless Podman is not
     /// supported. Switch to rootful Podman ...") as a change the person had to make, with Try again
-    /// repeating it. While OpenBot's own machine is on its way the step waits instead, as it waits
+    /// repeating it. While AwakenBot's own machine is on its way the step waits instead, as it waits
     /// for any engine coming up, and the CLI is not asked. Once an engine is known, or on an
     /// installation that is on Docker, the CLI is asked as before.
     #[test]
@@ -16090,7 +16108,7 @@ mod tests {
         }
     }
 
-    /// D's Quit: the machine's API pipe had gone, so OpenBot's compose down and the back end's
+    /// D's Quit: the machine's API pipe had gone, so AwakenBot's compose down and the back end's
     /// local stop both failed ("docker_unavailable") and the next launch said some services didn't
     /// stop. Now one heal comes first, shared by both stops: the machine is restarted once, both
     /// stops succeed, and there is no failure to record.
@@ -16124,7 +16142,7 @@ mod tests {
         assert_eq!(restarts.get(), 1);
         assert_eq!(stopped.lines(), Vec::<String>::new());
 
-        // OpenBot already stopped, as on D: the back end's stop still comes after the heal.
+        // AwakenBot already stopped, as on D: the back end's stop still comes after the heal.
         api.set(false);
         restarts.set(0);
         let (down, intelligence) = healed_once_before(
@@ -16185,7 +16203,10 @@ mod tests {
         })
         .unwrap();
         let openbot = read_quit_cleanup_notice(&root).unwrap().unwrap();
-        assert_eq!(openbot.said, "OpenBot had trouble shutting down last time.");
+        assert_eq!(
+            openbot.said,
+            "AwakenBot had trouble shutting down last time."
+        );
         assert!(openbot
             .detail
             .as_deref()
@@ -16227,8 +16248,8 @@ mod tests {
         let mut status = QuitStatus::default();
         status.begin();
         let started = status.seq;
-        status.record(QuitStep::OpenBot, QuitStepState::Running);
-        status.record(QuitStep::OpenBot, QuitStepState::Failed);
+        status.record(QuitStep::AwakenBot, QuitStepState::Running);
+        status.record(QuitStep::AwakenBot, QuitStepState::Failed);
         status.record(QuitStep::Intelligence, QuitStepState::Running);
         assert!(status.seq > started);
         assert_eq!(
@@ -16335,7 +16356,7 @@ mod tests {
 
             assert_eq!(*exited.lock().unwrap(), Some(0), "{window_at:?}");
             // The Intelligence failure is in its own notice, as before the screen existed, and
-            // OpenBot's is not written for it.
+            // AwakenBot's is not written for it.
             assert!(!quit_cleanup_notice_path(&root).exists(), "{window_at:?}");
             assert!(
                 take_local_eval_stop_notice(&root).is_some(),
@@ -16473,7 +16494,7 @@ mod tests {
 
         assert_eq!(
             failed(Err(local_eval::Failure::Unavailable)),
-            "this build has no command-line tool to stop the backend OpenBot created"
+            "this build has no command-line tool to stop the backend AwakenBot created"
         );
         assert_eq!(
             failed(Err(local_eval::Failure::Timeout)),
@@ -16515,14 +16536,14 @@ mod tests {
             [
                 "Compose down failed: compose down refused",
                 "Backend stop failed: this build has no command-line tool to stop the backend \
-                 OpenBot created"
+                 AwakenBot created"
             ]
         );
         let _ = std::fs::remove_dir_all(root);
     }
 
     const NO_CLI_LINE: &str =
-        "Backend stop failed: this build has no command-line tool to stop the backend OpenBot created";
+        "Backend stop failed: this build has no command-line tool to stop the backend AwakenBot created";
 
     #[test]
     fn an_intelligence_failure_on_quit_is_shown_next_launch_without_recovery() {
@@ -16542,7 +16563,7 @@ mod tests {
         })
         .unwrap();
 
-        // Next launch: nothing about OpenBot's own processes, and nothing holding its start.
+        // Next launch: nothing about AwakenBot's own processes, and nothing holding its start.
         let next = Shell::default();
         assert!(!quit_cleanup_notice_path(&root).exists());
         assert!(!recovery_required_or_pending_quit_notice(&next, &root));
@@ -16550,11 +16571,11 @@ mod tests {
         assert_eq!(read_quit_cleanup_notice(&root).unwrap(), None);
         let problem =
             take_local_eval_stop_notice(&root).expect("the Intelligence failure is still shown");
-        // Said in the window's words: the part of OpenBot that did not stop, not its product name.
+        // Said in the window's words: the part of AwakenBot that did not stop, not its product name.
         assert_eq!(
             problem.said,
-            "When OpenBot last quit, some of its services didn't stop. They may still be running. \
-             Stopping OpenBot again asks them to stop."
+            "When AwakenBot last quit, some of its services didn't stop. They may still be running. \
+             Stopping AwakenBot again asks them to stop."
         );
         assert!(!problem.said.contains("app processes"), "{problem:?}");
         assert_eq!(take_local_eval_stop_notice(&root), None, "shown once");
@@ -16578,7 +16599,7 @@ mod tests {
         let openbot = read_quit_cleanup_notice(&root).unwrap().unwrap();
         assert_eq!(
             openbot.detail.as_deref(),
-            Some("OpenBot could not confirm all containers stopped.")
+            Some("AwakenBot could not confirm all containers stopped.")
         );
         assert!(take_local_eval_stop_notice(&root).is_some());
         let _ = std::fs::remove_dir_all(root);
@@ -16597,7 +16618,7 @@ mod tests {
             .expect("an Intelligence failure is still said");
         assert_eq!(
             problem.said,
-            "OpenBot stopped, but some of its services didn't. They may still be running."
+            "AwakenBot stopped, but some of its services didn't. They may still be running."
         );
         assert_eq!(problem.detail.as_deref(), Some(NO_CLI_LINE));
         assert!(!recovery_required(&shell, &root));
@@ -16610,7 +16631,7 @@ mod tests {
         let problem = settle_menu_stop(&shell, &root, both).unwrap();
         assert_eq!(
             problem.said,
-            "OpenBot could not finish stopping. Try Stop OpenBot again."
+            "AwakenBot could not finish stopping. Try Stop AwakenBot again."
         );
         assert_eq!(
             problem.detail.as_deref(),
@@ -16885,17 +16906,17 @@ mod tests {
     }
 
     /**
-    A stack `local setup` reported that the CLI records for another folder is never OpenBot's.
+    A stack `local setup` reported that the CLI records for another folder is never AwakenBot's.
 
     Found with a CLI that resumed the stack someone set up in their home folder for `~/OpenBot`:
     Desktop recorded it as one it created, so Stop and Quit would have stopped another app's
-    stack. It is kept as shared, even over an earlier record that called it OpenBot's, and a stack
-    recorded for OpenBot's folder alongside others is still OpenBot's.
+    stack. It is kept as shared, even over an earlier record that called it AwakenBot's, and a stack
+    recorded for AwakenBot's folder alongside others is still AwakenBot's.
     */
     #[test]
     fn a_stack_recorded_for_another_folder_is_never_recorded_as_openbots() {
         let home = temp_root("openbot-local-eval-setup-foreign");
-        let root = home.join("OpenBot");
+        let root = home.join("AwakenBot");
         std::fs::create_dir_all(&root).unwrap();
         let foreign = local_eval_completed_for("local-abc123", &[&home]);
         set_up_local_eval_at(&root, |_| Ok((foreign.clone(), LOCAL_EVAL_PIN.to_owned()))).unwrap();
@@ -16903,7 +16924,7 @@ mod tests {
         assert_eq!(state.stack, "local-abc123");
         assert!(!state.tied_to_openbot());
 
-        // An earlier OpenBot recorded it as its own: setting up again takes that back.
+        // An earlier AwakenBot recorded it as its own: setting up again takes that back.
         local_eval_state::begin(
             &root,
             &local_eval::StackId::parse("local-abc123").unwrap(),
@@ -16916,7 +16937,7 @@ mod tests {
             .unwrap()
             .tied_to_openbot());
 
-        // A report that names no folder is not OpenBot's either.
+        // A report that names no folder is not AwakenBot's either.
         set_up_local_eval_at(&root, |_| {
             Ok((
                 local_eval_completed("local-abc123"),
@@ -16928,7 +16949,7 @@ mod tests {
             .unwrap()
             .tied_to_openbot());
 
-        // OpenBot's own folder among the stack's folders: OpenBot's.
+        // AwakenBot's own folder among the stack's folders: AwakenBot's.
         local_eval_state::clear(&root).unwrap();
         set_up_local_eval_at(&root, |_| {
             Ok((
@@ -16956,7 +16977,7 @@ mod tests {
                 LOCAL_EVAL_PIN.to_owned(),
             ))
         })
-        .expect_err("an unrecorded stack would never be stopped with OpenBot");
+        .expect_err("an unrecorded stack would never be stopped with AwakenBot");
         let SetupError::Unrecorded(problem) = error else {
             panic!("{error:?}");
         };
@@ -16966,7 +16987,7 @@ mod tests {
 
     const LOCAL_KEY: &str = "cpk-synthetic-local-key";
 
-    /// What `local connect` leaves in an installation folder, after a line OpenBot wrote earlier.
+    /// What `local connect` leaves in an installation folder, after a line AwakenBot wrote earlier.
     fn local_eval_connected_env(root: &Path) {
         std::fs::write(
             root.join(".env"),
@@ -17032,7 +17053,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(connection.outcome, local_eval::Outcome::Completed);
-        // OpenBot's server reads INTELLIGENCE_API_KEY; the CLI names it for an app's runtime.
+        // AwakenBot's server reads INTELLIGENCE_API_KEY; the CLI names it for an app's runtime.
         assert_eq!(
             vault
                 .borrow()
@@ -17321,13 +17342,13 @@ mod tests {
         let _ = std::fs::remove_dir_all(root);
     }
 
-    /// Settings › This computer › Details said "Installed in \\?\C:\Users\Administrator\OpenBot" on
+    /// Settings › This computer › Details said "Installed in \\?\C:\Users\Administrator\AwakenBot" on
     /// Windows. The folder there is the one the app remembered, read at launch into the shell and
     /// named by `read_desktop_status`; this follows it the same way.
     #[test]
     fn details_name_the_installation_folder_without_the_windows_extended_length_prefix() {
         let config = temp_root("openbot-details-installed-in");
-        let root = config.join("OpenBot");
+        let root = config.join("AwakenBot");
         std::fs::create_dir_all(&root).unwrap();
         preparation::save_selected_root(&config, &root).unwrap();
         let shown = |config: &Path| {
@@ -17350,10 +17371,10 @@ mod tests {
         {
             std::fs::write(
                 config.join("last-launched-root.json"),
-                r#""\\\\?\\C:\\Users\\Administrator\\OpenBot""#,
+                r#""\\\\?\\C:\\Users\\Administrator\\AwakenBot""#,
             )
             .unwrap();
-            assert_eq!(shown(&config), r"C:\Users\Administrator\OpenBot");
+            assert_eq!(shown(&config), r"C:\Users\Administrator\AwakenBot");
         }
         std::fs::remove_dir_all(config).unwrap();
     }
@@ -18828,7 +18849,7 @@ fn main() {
 
         let commands = std::fs::read_to_string(&record).expect("command record");
         assert_eq!(
-            problem.said, "Part of OpenBot stopped during startup.",
+            problem.said, "Part of AwakenBot stopped during startup.",
             "problem={problem:?} commands={commands}"
         );
         assert_eq!(
@@ -18919,7 +18940,7 @@ fn main() {
         .expect_err("the fixture's dead service fails Start after the identity handoff");
         let took = asked.elapsed();
 
-        assert_eq!(problem.said, "Part of OpenBot stopped during startup.");
+        assert_eq!(problem.said, "Part of AwakenBot stopped during startup.");
         let commands = std::fs::read_to_string(&record).expect("command record");
         assert!(
             commands.contains(
@@ -18992,7 +19013,7 @@ fn main() {
             ),
             "{commands}"
         );
-        assert_eq!(problem.said, "Part of OpenBot stopped during startup.");
+        assert_eq!(problem.said, "Part of AwakenBot stopped during startup.");
         let detail = problem.detail.as_deref().unwrap_or_default();
         assert!(
             detail.contains("agent-computer stopped: agent-computer died after boot"),
@@ -19066,7 +19087,7 @@ fn main() {
             (
                 "dead-service",
                 telemetry::SetupErrorClass::Unknown,
-                "Part of OpenBot stopped during startup.",
+                "Part of AwakenBot stopped during startup.",
             ),
         ] {
             let root = temp_root(&format!("openbot-failed-start-{scenario}"));
@@ -19378,7 +19399,7 @@ fn escaped(path: &Path) -> String {
 "##;
 
     /**
-    Someone who once ran `copilotkit local setup` in their home folder, then started OpenBot
+    Someone who once ran `copilotkit local setup` in their home folder, then started AwakenBot
     Desktop, which keeps its installation in `~/OpenBot`.
 
     The CLI found `~/.copilotkit/local.json` above `~/OpenBot` and resumed the home folder's stack
@@ -19387,7 +19408,7 @@ fn escaped(path: &Path) -> String {
     folder's stack as one it created, so Stop and Quit would have stopped it.
 
     Through the window's own `set_up_local_eval` and `connect_local_eval`, against a CLI that finds
-    stacks as the real one does: OpenBot passes `--app-path`, gets a stack of its own, recorded as
+    stacks as the real one does: AwakenBot passes `--app-path`, gets a stack of its own, recorded as
     its own, `~/OpenBot/.env` names it, and Start takes its key. The home folder's stack, reference
     and `.env` are left alone.
     */
@@ -19423,7 +19444,7 @@ fn escaped(path: &Path) -> String {
         std::env::set_var("OPENBOT_DEV_LOCAL_EVAL_PROGRAM_SHA256", digest);
         std::env::remove_var("OPENBOT_DEV_LOCAL_EVAL_ENTRY");
 
-        // The home folder, where `copilotkit local setup` once ran, and OpenBot's folder in it.
+        // The home folder, where `copilotkit local setup` once ran, and AwakenBot's folder in it.
         let home = temp_root("openbot-parent-stack-home");
         std::fs::create_dir_all(home.join(".copilotkit")).unwrap();
         let home = home.canonicalize().unwrap();
@@ -19439,7 +19460,7 @@ fn escaped(path: &Path) -> String {
             format!("{HOME_STACK}\t{}\t52796", home.display()),
         )
         .unwrap();
-        let root = home.join("OpenBot");
+        let root = home.join("AwakenBot");
         std::fs::create_dir_all(&root).unwrap();
         std::fs::write(
             root.join(".env"),
@@ -19489,7 +19510,7 @@ fn escaped(path: &Path) -> String {
         assert!(!env.contains("CPK_INTELLIGENCE_API_KEY"), "{env}");
         assert!(local_eval_state::read(&root, None).unwrap().connected);
 
-        // Start takes the key `local connect` gave OpenBot's own stack.
+        // Start takes the key `local connect` gave AwakenBot's own stack.
         let key = intelligence_key_for_start(&root, |root, name| {
             Ok(openbot_desktop_lib::vault::recall(root, name)?.unwrap_or_default())
         })
@@ -19502,7 +19523,7 @@ fn escaped(path: &Path) -> String {
             std::fs::read_to_string(home.join(".copilotkit/local.json")).unwrap(),
             reference
         );
-        // Both calls name OpenBot's folder exactly.
+        // Both calls name AwakenBot's folder exactly.
         assert!(
             calls().contains(&format!(
                 "local setup --defer-model --json --app-path {}",
@@ -19555,7 +19576,7 @@ fn main() {
 "#;
 
     /**
-    OpenBot Desktop 1.0.0, installed again after the earlier installation's `~/OpenBot`, app data
+    AwakenBot Desktop 1.0.0, installed again after the earlier installation's `~/OpenBot`, app data
     and back end were deleted: the CopilotKit CLI still recorded a stack for `~/OpenBot`, whose
     private folder was gone. Every `local setup` stopped with "Restore the private setup and
     credentials files before resuming this stack", and the window said "Back end setup stopped".
@@ -19711,7 +19732,7 @@ fn main() {
         };
         assert!(
             problem.said.starts_with(
-                "The saved settings of OpenBot's services on this computer can't be read."
+                "The saved settings of AwakenBot's services on this computer can't be read."
             ),
             "{problem:?}"
         );
@@ -20068,7 +20089,10 @@ fn main() {
         )
         .unwrap();
         let notice = last_failure_now(app.handle()).expect("persisted Quit notice");
-        assert_eq!(notice.said, "OpenBot had trouble shutting down last time.");
+        assert_eq!(
+            notice.said,
+            "AwakenBot had trouble shutting down last time."
+        );
         assert!(notice
             .detail
             .as_ref()
@@ -20144,7 +20168,10 @@ fn main() {
             "restore must not consume the persisted notice before React asks for it"
         );
         let notice = last_failure_now(app.handle()).expect("persisted Quit notice");
-        assert_eq!(notice.said, "OpenBot had trouble shutting down last time.");
+        assert_eq!(
+            notice.said,
+            "AwakenBot had trouble shutting down last time."
+        );
         assert!(notice
             .detail
             .as_ref()
@@ -20175,7 +20202,10 @@ fn main() {
 
         assert!(recovery_required(&shell, &f.owned));
         let failure = last_failure_now(app.handle()).expect("volatile sink failure");
-        assert_eq!(failure.said, "OpenBot could not record a shutdown problem.");
+        assert_eq!(
+            failure.said,
+            "AwakenBot could not record a shutdown problem."
+        );
         assert!(failure
             .detail
             .as_ref()
@@ -20795,7 +20825,7 @@ fn main() {
         config.app.windows[0].label = "another-window".into();
         assert_eq!(
             configured_setup_url(&config, true, true).unwrap_err(),
-            "the OpenBot setup window is not configured",
+            "the AwakenBot setup window is not configured",
         );
     }
 

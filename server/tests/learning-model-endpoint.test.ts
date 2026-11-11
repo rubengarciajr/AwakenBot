@@ -1,6 +1,6 @@
 /**
  * The Learning agent of local Intelligence, thinking on the person's Claude or ChatGPT plan through
- * OpenBot (`learning/model-endpoint.ts`).
+ * AwakenBot (`learning/model-endpoint.ts`).
  *
  * The caller is the real client: `@earendil-works/pi-ai` 1.4.0, the version the Learning agent
  * pins, registered exactly as Intelligence registers a compatible endpoint
@@ -86,7 +86,7 @@ function planHarness(steps: Record<string, unknown>[][]) {
   return { runs, url: server.url };
 }
 
-/** OpenBot's server with the Learning endpoint, on the plan whose harness is at `harness`. */
+/** AwakenBot's server with the Learning endpoint, on the plan whose harness is at `harness`. */
 function openBot(
   provider: "chatgpt" | "claude",
   harness: URL,
@@ -333,7 +333,7 @@ test("a plan that needs signing in again is said as that, not as a broken stream
   )(context());
   expect(answer.stopReason).toBe("error");
   expect(answer.errorMessage).toContain(
-    "The model plan OpenBot is signed in to needs signing in again.",
+    "The model plan AwakenBot is signed in to needs signing in again.",
   );
 });
 
@@ -342,7 +342,7 @@ test("a plan that needs signing in again is said as that, not as a broken stream
  * run failed from the code and from what reached this endpoint while it ran. The codes are the ones
  * Intelligence's `learning-agent-client.ts` and planner record.
  */
-test("a failed run says why, from what reached OpenBot while it ran", async () => {
+test("a failed run says why, from what reached AwakenBot while it ran", async () => {
   const run = {
     status: "failed" as const,
     failureCode: "BatchInsightAgentFailed",
@@ -360,15 +360,15 @@ test("a failed run says why, from what reached OpenBot while it ran", async () =
   };
 
   // What the live check met: the agent's every call failed with "Connection error." and none
-  // reached OpenBot.
+  // reached AwakenBot.
   expect(runFailure(run, record())).toBe(
-    "Learning couldn't reach OpenBot to use your model plan. Quit OpenBot and open it again, then choose Learn now.",
+    "Learning couldn't reach AwakenBot to use your model plan. Quit AwakenBot and open it again, then choose Learn now.",
   );
   expect(runFailure(run, record("answered", "sign-in"))).toBe(
-    "Your model plan needs signing in again. Sign in to it in OpenBot, then choose Learn now.",
+    "Your model plan needs signing in again. Sign in to it in AwakenBot, then choose Learn now.",
   );
   expect(runFailure(run, record("refused"))).toBe(
-    "Learning couldn't sign in to OpenBot. Quit OpenBot and open it again, then choose Learn now.",
+    "Learning couldn't sign in to AwakenBot. Quit AwakenBot and open it again, then choose Learn now.",
   );
   expect(runFailure(run, record("unanswered"))).toBe(
     "Your model plan didn't answer Learning. Try Learn now again in a few minutes.",
@@ -378,9 +378,9 @@ test("a failed run says why, from what reached OpenBot while it ran", async () =
     Date.parse("2026-11-08T09:00:00.000Z"),
   );
   earlier.record("sign-in");
-  expect(runFailure(run, earlier)).toContain("couldn't reach OpenBot");
+  expect(runFailure(run, earlier)).toContain("couldn't reach AwakenBot");
 
-  // On a key, Learning never calls OpenBot.
+  // On a key, Learning never calls AwakenBot.
   expect(runFailure(run)).toBe(
     "Learning's model didn't finish. Check that your model key works and has credit, then choose Learn now.",
   );

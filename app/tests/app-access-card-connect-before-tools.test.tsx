@@ -30,7 +30,7 @@ import { settleReactWork } from "./settle-react-work";
 /**
  * CONNECT ON THE CHAT CARD, FOR AN APP THAT LISTS ITS TOOLS ONLY AFTER A SIGN-IN.
  *
- * OpenBot Personal on Windows: a Bot asked to read Notion drew "Notion isn't connected yet" with
+ * AwakenBot Personal on Windows: a Bot asked to read Notion drew "Notion isn't connected yet" with
  * Connect. The press answered "Notion has no tools to give yet. Refresh its tools on its page under
  * Plugins, then try again." and no browser opened. Connect on the Connections page opened Notion's
  * sign-in the whole time.
@@ -40,7 +40,7 @@ import { settleReactWork } from "./settle-react-work";
  * that approval refused to give a Bot an app with no tools, before the sign-in that brings them.
  *
  * The real card and the server's real `/api/plugins` routes over the test database, wired as
- * OpenBot Personal wires them. Notion is the one thing faked: its registration endpoint answers in
+ * AwakenBot Personal wires them. Notion is the one thing faked: its registration endpoint answers in
  * the RFC 7591 shape its hosted server registers a client with, and nothing else of Notion's is
  * reached before the sign-in.
  */

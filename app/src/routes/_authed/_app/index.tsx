@@ -72,7 +72,7 @@ function RouteComponent() {
   const capabilities = useQuery(deploymentCapabilitiesQueryOptions());
   /*
    * The personal edition has nobody to share a Bot with. Its Explore lists the Bots included with
-   * OpenBot, and when there are none it shows nothing: "Nobody has shared a Bot with you yet" was
+   * AwakenBot, and when there are none it shows nothing: "Nobody has shared a Bot with you yet" was
    * not true of it. A Bots list that fails to load is said under the composer already.
    */
   const personal = capabilities.data?.edition === "personal";
@@ -239,7 +239,7 @@ function RouteComponent() {
             // Said out loud: a message that silently reaches somebody you did not choose is the
             // kind of surprise that costs trust the first time it happens.
             <p className="mt-2 w-full max-w-2xl text-xs text-muted-foreground text-center">
-              OpenBot picks the right Bot. Type <code>@</code> to choose one.
+              AwakenBot picks the right Bot. Type <code>@</code> to choose one.
             </p>
           ) : null}
           {error ? (

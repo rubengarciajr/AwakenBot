@@ -177,7 +177,7 @@ function ReviewerGuidancePage() {
                       : null
                   }
                   explanation={checked.reading.explanation}
-                  failed="OpenBot won't save this."
+                  failed="AwakenBot won't save this."
                   heading="What this changes"
                   passed="Reads as guidance. Built-in safety still comes first."
                   warning={null}

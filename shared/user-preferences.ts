@@ -4,7 +4,7 @@ export type NarrationPreference = "on" | "off";
 /** Whether this person's Bots check in on their behalf at all. */
 export type ProactivePreference = "on" | "off";
 /**
- * Every skin OpenBot ships. `openbot` is the default and is OpenBot exactly as it is without a
+ * Every skin AwakenBot ships. `openbot` is the default and is AwakenBot exactly as it is without a
  * skin: no frame of its own, no tokens of its own.
  *
  * Here rather than in the app because the choice is saved on the person's account, so the server
@@ -31,15 +31,15 @@ export type UserPreferences = {
   /** Set by profile saves so choosing a name finishes the first-run prompt. */
   profileNameSet?: boolean;
   messageListEmphasis: MessageListEmphasis;
-  /** Whether this person closed the banner offering help self-hosting OpenBot. */
+  /** Whether this person closed the banner offering help self-hosting AwakenBot. */
   selfHostBannerDismissed: boolean;
   /**
-   * Whether this person narrates their recordings in OpenBot's Browser: the page listens to their microphone (hosted
-   * OpenBot), or the Recorder in their browser does (OpenBot Desktop), only when it is `on`. Null until they chose, which
+   * Whether this person narrates their recordings in AwakenBot's Browser: the page listens to their microphone (hosted
+   * AwakenBot), or the Recorder in their browser does (AwakenBot Desktop), only when it is `on`. Null until they chose, which
    * the Browser page asks before their first recording; the microphone stays closed until then.
    */
   narration: NarrationPreference | null;
-  /** How OpenBot looks for this person, on every device they sign in from. */
+  /** How AwakenBot looks for this person, on every device they sign in from. */
   skin: SkinId;
   /**
    * Check-ins for all of this person's Bots. On by default; `off` stops every Bot's background

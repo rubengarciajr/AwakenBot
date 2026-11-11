@@ -48,7 +48,7 @@ export type LearningContainerSpec = { id: string; name: string };
 /** The project's shared default, which Automatic Learning assigns. */
 export const OPENBOT_CONTAINER: LearningContainerSpec = {
   id: "openbot",
-  name: "OpenBot",
+  name: "AwakenBot",
 };
 
 export type CliResult = { exitCode: number; stdout: string };
@@ -149,7 +149,7 @@ export async function createWithRuntimeKey(input: {
     );
   throw Object.assign(
     new Error(
-      `The backend could not create the ${container.id} Learning container with the runtime key (HTTP ${response.status}${code ? `, ${code}` : ""}). OpenBot tries again.`,
+      `The backend could not create the ${container.id} Learning container with the runtime key (HTTP ${response.status}${code ? `, ${code}` : ""}). AwakenBot tries again.`,
     ),
     { retryable: transientStatus(response.status) },
   );
@@ -368,7 +368,7 @@ export function containerMissing(found: Record<string, unknown>) {
 }
 
 export const CREATE_IN_INTELLIGENCE =
-  'or create a Learning container with ID "openbot" in that project in the backend dashboard. OpenBot assigns it as the default on its next start.';
+  'or create a Learning container with ID "openbot" in that project in the backend dashboard. AwakenBot assigns it as the default on its next start.';
 
 /**
  * Exactly what an operator runs when nothing here could create the container. One sentence set,
@@ -376,10 +376,10 @@ export const CREATE_IN_INTELLIGENCE =
  */
 export function learningSetupInstructions(apiUrl: string): string {
   const create =
-    'Or create a Learning container with ID "openbot" in this project in the backend dashboard. OpenBot assigns it within ten minutes either way.';
+    'Or create a Learning container with ID "openbot" in this project in the backend dashboard. AwakenBot assigns it within ten minutes either way.';
   return apiUrl === MANAGED_API
-    ? `Sign in once with npx --yes copilotkit@latest login, then run bun scripts/setup-learning.ts from the OpenBot checkout (bun run start does this too). On Kubernetes, put that login in a Secret and name it in config.learning.setup.cliLoginSecret; the chart's setup Job creates the container. ${create}`
-    : `Run bun scripts/setup-learning.ts from the OpenBot checkout and sign in to CopilotKit in the browser it opens. On a CopilotKit local evaluation install, set INTELLIGENCE_SERVICE_TOKEN and INTELLIGENCE_PROJECT_ID instead and OpenBot creates it by itself. ${create}`;
+    ? `Sign in once with npx --yes copilotkit@latest login, then run bun scripts/setup-learning.ts from the AwakenBot checkout (bun run start does this too). On Kubernetes, put that login in a Secret and name it in config.learning.setup.cliLoginSecret; the chart's setup Job creates the container. ${create}`
+    : `Run bun scripts/setup-learning.ts from the AwakenBot checkout and sign in to CopilotKit in the browser it opens. On a CopilotKit local evaluation install, set INTELLIGENCE_SERVICE_TOKEN and INTELLIGENCE_PROJECT_ID instead and AwakenBot creates it by itself. ${create}`;
 }
 
 /**
@@ -786,7 +786,7 @@ async function jobMain() {
   console.log(
     result === "skipped"
       ? `Automatic Learning: no credential here could create the openbot container. ${learningSetupInstructions(apiUrl)}`
-      : `Automatic Learning: the openbot container is ${result === "created" ? "created" : "present"}; OpenBot assigns it as the default unless Admin → Automatic Learning has a saved setting.`,
+      : `Automatic Learning: the openbot container is ${result === "created" ? "created" : "present"}; AwakenBot assigns it as the default unless Admin → Automatic Learning has a saved setting.`,
   );
 }
 

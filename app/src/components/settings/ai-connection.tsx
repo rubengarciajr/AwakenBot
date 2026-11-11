@@ -30,10 +30,10 @@ import {
 import { desktopShell } from "@/lib/desktop/shell";
 
 /**
- * Settings → General's AI model: which AI provider OpenBot Desktop uses and how it signs in, with
+ * Settings → General's AI model: which AI provider AwakenBot Desktop uses and how it signs in, with
  * Change, which opens the desktop app's own AI screen. Never the key itself.
  *
- * Only inside OpenBot Desktop, which holds the connection. A self-hosted OpenBot reads its model
+ * Only inside AwakenBot Desktop, which holds the connection. A self-hosted AwakenBot reads its model
  * from its own configuration and has nothing here to change, so the section isn't drawn there. An
  * older desktop app that can't say draws nothing either.
  */
@@ -42,7 +42,7 @@ export function AiModelSection() {
   if (desktopShell() === null || !connection.data) return null;
   return (
     <PageSection
-      description="Choose the AI provider your Bots use and how OpenBot signs in to it."
+      description="Choose the AI provider your Bots use and how AwakenBot signs in to it."
       title="AI model"
     >
       <PageRows>
@@ -56,7 +56,7 @@ function AiConnectionRow({ connection }: { connection: DesktopAiConnection }) {
   const [open, setOpen] = useState(false);
   const change = useMutation(changeAiConnectionMutationOptions());
   const described = describeAiConnection(connection);
-  // On success the desktop app is stopping OpenBot, and this page goes with it.
+  // On success the desktop app is stopping AwakenBot, and this page goes with it.
   const stopping = change.isPending || change.isSuccess;
   return (
     <>
@@ -112,8 +112,8 @@ function AiConnectionRow({ connection }: { connection: DesktopAiConnection }) {
               </ItemGroup>
             )}
             <p className="text-muted-foreground">
-              To change it, OpenBot stops and the setup window opens. OpenBot
-              starts again with the connection you choose there.
+              To change it, AwakenBot stops and the setup window opens.
+              AwakenBot starts again with the connection you choose there.
             </p>
             {change.error ? (
               <p className="text-destructive" role="alert">
@@ -130,7 +130,7 @@ function AiConnectionRow({ connection }: { connection: DesktopAiConnection }) {
               onClick={() => change.mutate()}
               size="sm"
             >
-              {stopping ? "Stopping OpenBot…" : "Change AI connection"}
+              {stopping ? "Stopping AwakenBot…" : "Change AI connection"}
             </Button>
           </DialogFooter>
         </DialogContent>

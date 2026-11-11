@@ -1,4 +1,4 @@
-// A browser's zoom keys in OpenBot's window: Ctrl (Command on a Mac) with + or = zooms the page in,
+// A browser's zoom keys in AwakenBot's window: Ctrl (Command on a Mac) with + or = zooms the page in,
 // with - zooms it out, and with 0 puts it back to its actual size. The shell zooms every window and
 // keeps the level for the next launch (`zoom.rs`).
 //

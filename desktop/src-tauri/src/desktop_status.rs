@@ -1,10 +1,10 @@
-//! What the Status window says about what OpenBot is running, and how much memory it takes.
+//! What the Status window says about what AwakenBot is running, and how much memory it takes.
 //!
-//! OpenBot's containers are the ones that carry this installation's Compose project label, its Bots'
+//! AwakenBot's containers are the ones that carry this installation's Compose project label, its Bots'
 //! computers among them (see `stack::running_containers_of`), and k3d names an Intelligence stack's
 //! `k3d-<stack id>-<role>`. Not every `openbot-` container: another project, or a source checkout
 //! called `openbot`, names its own that way. Memory is Docker's own figure for each container,
-//! OpenBot's own server and worker among them, so the total is what the machine is actually spending.
+//! AwakenBot's own server and worker among them, so the total is what the machine is actually spending.
 
 use serde::Serialize;
 
@@ -36,7 +36,7 @@ pub fn memory_in_use(column: &str) -> Option<u64> {
     (number.is_finite() && number >= 0.0).then(|| (number * scale).round() as u64)
 }
 
-/// `docker stats --no-stream --format '{{.Name}}\t{{.MemUsage}}'`, split into OpenBot's containers,
+/// `docker stats --no-stream --format '{{.Name}}\t{{.MemUsage}}'`, split into AwakenBot's containers,
 /// the ones named in `owned`, and those of the Intelligence stack `stack`. Anybody else's containers
 /// are left out.
 pub fn containers(stats: &str, owned: &[String], stack: Option<&str>) -> (Vec<Part>, Vec<Part>) {

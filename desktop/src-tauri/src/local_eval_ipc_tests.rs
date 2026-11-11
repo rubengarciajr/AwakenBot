@@ -227,17 +227,17 @@ process.stdout.write(JSON.stringify({{ token, keys: JSON.stringify({{ [kid]: key
     /**
     AN UPDATE THAT DID NOT FINISH LEAVES THE BACK END READY ON THE RELEASE IT HAD.
 
-    Found on OpenBot Desktop 0.3.3 on a slow connection. Start began updating the back end from
+    Found on AwakenBot Desktop 0.3.3 on a slow connection. Start began updating the back end from
     0.16.0-rc.5 to 0.16.0-rc.9. The CLI stopped downloading one image at its own ten-minute limit
     and recorded `failedStep: "image-download"` with the update still `prepared`. Nothing in the
     cluster changed and every check passed, but `local status` says `degraded` while that record
-    stays. The window said "The back end is running but not healthy." and stopped OpenBot.
+    stays. The window said "The back end is running but not healthy." and stopped AwakenBot.
 
     The real CLI this app pins answers `local status` here, over a record for exactly that case,
     against health and engine endpoints served on 127.0.0.1 (a stand-in `docker` lists the pods).
     The window's `run_local_eval` answer for each case is compared with
     `test-fixtures/local-eval/update-did-not-finish.json`, which the window's own tests start
-    OpenBot from (`App.test.tsx`). So the window is tested against what the CLI really says:
+    AwakenBot from (`App.test.tsx`). So the window is tested against what the CLI really says:
     - every check passing, the update on record and still due, so the next Start resumes it;
     - the API failing its check, which stays not healthy;
     - the stack stopped by Quit, with the update on record and due.
@@ -432,7 +432,7 @@ process.stdout.write(JSON.stringify({{ token, keys: JSON.stringify({{ [kid]: key
     /**
     CONNECTING THE SAME FOLDER AGAIN AFTER OPENBOT TOOK UP ITS CONNECTION.
 
-    `local connect` writes the stack's addresses at `localhost`. OpenBot then writes them at
+    `local connect` writes the stack's addresses at `localhost`. AwakenBot then writes them at
     `127.0.0.1` (`numeric_loopback`) and moves the key to the credential store. Connecting the same
     folder again, which setup Retry, Back and forward through setup, and a reinstall over an
     existing install all do, got "App settings changed after connection was planned" from the CLI
@@ -457,7 +457,7 @@ process.stdout.write(JSON.stringify({{ token, keys: JSON.stringify({{ [kid]: key
         std::fs::create_dir_all(&root).unwrap();
         let root = root.canonicalize().unwrap();
         let home = root.join("home");
-        let installation = home.join("OpenBot");
+        let installation = home.join("AwakenBot");
         std::fs::create_dir_all(installation.join(".copilotkit")).unwrap();
         std::fs::write(installation.join(".env"), "SERVER_PORT=3001\n").unwrap();
 

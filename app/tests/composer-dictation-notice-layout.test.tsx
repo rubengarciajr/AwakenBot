@@ -7,7 +7,7 @@ import { compile } from "tailwindcss";
 /**
  * The microphone's notice never moves the message box and never lands on anything. Home centres the
  * box in the page, so a notice drawn above it in the flow pushed the box down by half its height
- * while it showed: 16px for "OpenBot couldn't find a microphone. Connect one, then try again.", seen
+ * while it showed: 16px for "AwakenBot couldn't find a microphone. Connect one, then try again.", seen
  * on Windows with no microphone. Drawn over the space above the box instead, it sat on the starter
  * tasks a new account sees there. In a conversation the box is pinned to the bottom and the notice
  * grows upward.
@@ -28,7 +28,7 @@ const shots = process.env.OPENBOT_APP_SHOTS;
 const APP = join(import.meta.dir, "..");
 const ORIGIN = "http://openbot.test";
 const NOTICE =
-  "OpenBot couldn't find a microphone. Connect one, then try again.";
+  "AwakenBot couldn't find a microphone. Connect one, then try again.";
 /** The desktop app's dictation runs on macOS and Windows; Chromium on Linux CI says it is a Mac. */
 const MAC =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
@@ -173,7 +173,7 @@ function regions(page: Page) {
       return { top, bottom, left, right };
     };
     const hint = [...document.querySelectorAll("p")].find((p) =>
-      p.textContent?.startsWith("OpenBot picks the right Bot"),
+      p.textContent?.startsWith("AwakenBot picks the right Bot"),
     );
     return {
       notice: rect(document.querySelector('[role="alert"]')),

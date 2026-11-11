@@ -48,7 +48,7 @@ import { testEnvironment } from "./support/environment";
 
 /** What every built-in Bot reads first: its name, and that a request for it is for it. */
 const identity = (name: string) =>
-  `You are ${name}, a Bot in OpenBot. ${selfAddressGuidance(name)}`;
+  `You are ${name}, a Bot in AwakenBot. ${selfAddressGuidance(name)}`;
 
 /** The tags of a prompt's sections, in the order the Bot reads them. */
 const sectionsOf = (prompt: string) =>
@@ -305,7 +305,7 @@ describe("registered Copilot agents", () => {
       systemPrompt: "Be helpful.",
       title: "Everyday Work",
       // What runs it, whatever its subtitle says.
-      framework: "OpenBot",
+      framework: "AwakenBot",
     });
     expect(
       registeredAgentFromRow({
@@ -727,7 +727,7 @@ describe("standing agent roles", () => {
     expect(sectionOf(message.content, "how_to_work")).toBe(
       HOW_TO_WORK_GUIDANCE,
     );
-    // Told OpenBot asks for what OpenBot gives it, and nothing about tools of its own.
+    // Told AwakenBot asks for what AwakenBot gives it, and nothing about tools of its own.
     expect(sectionOf(message.content, "asking")).toBe(
       BROUGHT_BOT_ASKING_GUIDANCE,
     );
@@ -1986,7 +1986,7 @@ describe("when a Bot answers with a component", () => {
       /*
        * The rules a background turn has to carry: when to draw, when to share out, and how to work.
        * And, because a routine fires with nobody watching, the unattended run mode with the shape
-       * its final answer takes, on the Bot OpenBot runs and on the one it does not alike.
+       * its final answer takes, on the Bot AwakenBot runs and on the one it does not alike.
        */
       for (const guidance of [
         COMPONENT_GUIDANCE,
@@ -2012,7 +2012,7 @@ describe("when a Bot answers with a component", () => {
  * Every Bot is an orchestrator by default: it gives work that needs many tool calls or a lot of
  * reading to subagents, and keeps the decisions and the answer. The rule travels the ways the
  * component rule does (a background turn is asserted with it above), and a check-in, which runs a
- * remote Bot on OpenBot's own runner, carries it once rather than twice.
+ * remote Bot on AwakenBot's own runner, carries it once rather than twice.
  */
 /**
  * A Claude Agent SDK Bot is told how to work the way a built-in one is.
@@ -2246,7 +2246,7 @@ describe("when a Bot gives work to subagents", () => {
     expect(prompt.split(COMPONENT_GUIDANCE)).toHaveLength(2);
     expect(prompt.split(HOW_TO_WORK_GUIDANCE)).toHaveLength(2);
     expect(prompt).toStartWith("<identity>\nYou are Risk, Risk & Compliance.");
-    // On OpenBot's runner every tool it holds is OpenBot's, so it is told OpenBot asks for all of them.
+    // On AwakenBot's runner every tool it holds is AwakenBot's, so it is told AwakenBot asks for all of them.
     expect(sectionOf(prompt, "asking")).toBe(ASKING_GUIDANCE);
     expect(sectionsOf(prompt).filter((tag) => tag === "role")).toHaveLength(1);
   });

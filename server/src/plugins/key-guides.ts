@@ -196,7 +196,7 @@ export const KEY_GUIDES: Record<string, KeyGuide> = {
 };
 
 /**
- * Labels the catalogue publishes again and again, in the words the rest of OpenBot uses.
+ * Labels the catalogue publishes again and again, in the words the rest of AwakenBot uses.
  *
  * Only the generic ones. A label naming the app ("Postmark Server API Token") already says what
  * it is and is left alone.
@@ -215,14 +215,14 @@ const PLAIN_LABELS: Record<string, string> = {
 };
 
 /**
- * The broker's own name, which a person never reads: they see OpenBot. A provider's help sentence
+ * The broker's own name, which a person never reads: they see AwakenBot. A provider's help sentence
  * sometimes names it ("lets Composio access your campaigns"), and that is the sentence's one word
- * about who is asking, so it becomes OpenBot.
+ * about who is asking, so it becomes AwakenBot.
  */
 const BROKER_NAME = /\bcomposio\b/gi;
 
 function forPerson(text: string): string {
-  return text.replace(BROKER_NAME, "OpenBot");
+  return text.replace(BROKER_NAME, "AwakenBot");
 }
 
 /** The form's boxes, each labelled and explained for a person. Names and order are untouched. */

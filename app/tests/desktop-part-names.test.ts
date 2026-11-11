@@ -4,7 +4,7 @@ import { partLabel as statusWindowLabel } from "../../desktop/src/partNames";
 
 /**
  * The name a person reads for each container This computer and the desktop app's Status window
- * list. Real names, as Compose and k3d give them on an installation, mapped to the part of OpenBot
+ * list. Real names, as Compose and k3d give them on an installation, mapped to the part of AwakenBot
  * each is. The two screens keep a copy each, so both are held to this one table.
  */
 const NAMES: [string, "bots" | "back-end", string][] = [
@@ -30,8 +30,8 @@ const NAMES: [string, "bots" | "back-end", string][] = [
 
 /** Containers the table doesn't know: the card each is listed under says which side it's on. */
 const UNKNOWN: [string, "bots" | "back-end", string][] = [
-  ["something-new-1", "bots", "OpenBot service"],
-  ["k3d-local-abc123-serverlb", "back-end", "OpenBot service"],
+  ["something-new-1", "bots", "AwakenBot service"],
+  ["k3d-local-abc123-serverlb", "back-end", "AwakenBot service"],
 ];
 
 test.each([...NAMES, ...UNKNOWN])(
@@ -42,7 +42,7 @@ test.each([...NAMES, ...UNKNOWN])(
   },
 );
 
-test("every container OpenBot and its backend run has its own name", () => {
+test("every container AwakenBot and its backend run has its own name", () => {
   const fallbacks = new Set(UNKNOWN.map(([, , label]) => label));
   for (const [name, group] of NAMES) {
     expect(fallbacks.has(partLabel(name, group))).toBe(false);

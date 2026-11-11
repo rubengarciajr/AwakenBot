@@ -28,8 +28,8 @@ import {
 import { settleReactWork } from "./settle-react-work";
 
 /*
- * An app's page in the personal edition is read by the one person running OpenBot on their own
- * computer. It said team things there: "Each person connects their own account through OpenBot",
+ * An app's page in the personal edition is read by the one person running AwakenBot on their own
+ * computer. It said team things there: "Each person connects their own account through AwakenBot",
  * "This deployment holds one key for every app like this", "a Bot sees only what that person can
  * see", "There is no token to paste". This draws the real page and its connect card in both
  * editions: the personal one speaks to you, and the team one keeps its words exactly.
@@ -180,9 +180,9 @@ test("a brokered app's page in personal speaks to the one person", async () => {
   const text = await pageText(
     draw({ edition: "personal", server: brokered("OAUTH2") }),
   );
-  expect(text).toContain("Connect your Gmail account through OpenBot.");
+  expect(text).toContain("Connect your Gmail account through AwakenBot.");
   expect(text).toContain(
-    "You sign in to Gmail in your browser. OpenBot never sees your password.",
+    "You sign in to Gmail in your browser. AwakenBot never sees your password.",
   );
   expect(text).toContain("Connect your Gmail account so your Bots can use it.");
   expect(text).not.toMatch(TEAM_WORDS);
@@ -218,7 +218,7 @@ test("an app with no account to connect says so in personal", async () => {
   const text = await pageText(
     draw({ edition: "personal", server: brokered("NO_AUTH") }),
   );
-  expect(text).toContain("Gmail works through OpenBot without an account.");
+  expect(text).toContain("Gmail works through AwakenBot without an account.");
   expect(text).toContain("There's nothing to sign in to.");
   expect(text).not.toContain("Connect your Gmail account");
   expect(text).not.toMatch(TEAM_WORDS);
@@ -244,7 +244,7 @@ test("an OAuth app's page in personal speaks to the one person", async () => {
     draw({ edition: "personal", server: notion, catalogue: [notionEntry] }),
   );
   expect(text).toContain(
-    "Connect your Notion account through OpenBot. OpenBot registers an OAuth client, and your Bots see only what you can see.",
+    "Connect your Notion account through AwakenBot. AwakenBot registers an OAuth client, and your Bots see only what you can see.",
   );
   expect(text).not.toMatch(TEAM_WORDS);
 });
@@ -254,12 +254,12 @@ test("the same brokered page in team keeps every word", async () => {
     draw({ edition: "team", server: brokered("OAUTH2") }),
   );
   expect(text).toContain(
-    "Each person connects their own account through OpenBot.",
+    "Each person connects their own account through AwakenBot.",
   );
   expect(text).toContain(
     "This deployment holds one key for every app like this. Each person connects their own account, and a Bot sees only what that person can see. There is no token to paste.",
   );
-  expect(text).toContain("Through OpenBot");
+  expect(text).toContain("Through AwakenBot");
 });
 
 test("the team connect card keeps its words, connected and with no key", async () => {
@@ -271,7 +271,7 @@ test("the team connect card keeps its words, connected and with no key", async (
     }),
   );
   expect(connected).toContain(
-    "Signed in with Gmail. Connected. A Bot with these tools uses your Gmail as you. Disconnecting also removes OpenBot's access to your account.",
+    "Signed in with Gmail. Connected. A Bot with these tools uses your Gmail as you. Disconnecting also removes AwakenBot's access to your account.",
   );
   cleanup();
   const missing = await pageText(

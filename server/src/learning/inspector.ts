@@ -15,7 +15,7 @@ const count = z.number().int().nonnegative();
  * (`GET /api/inspector/learning`, `inspectorLearningSnapshotV1Schema` in Intelligence). An
  * Intelligence with no dashboard answers only a caller that opts in with `dashboardLinksOptional=true`,
  * and then leaves out `webAppOrigin` and `links` and keeps every count. The runtime client neither
- * opts in nor accepts a snapshot without links, so OpenBot reads the route itself. Other fields
+ * opts in nor accepts a snapshot without links, so AwakenBot reads the route itself. Other fields
  * pass unread.
  */
 const snapshotSchema = z.object({

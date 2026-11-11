@@ -9,8 +9,8 @@ export type Section = "Account" | "Install" | "AI" | "Start";
 const SECTIONS: Section[] = ["Account", "Install", "AI", "Start"];
 
 /**
- * OpenBot's mark and name, with "by CopilotKit" beside it where the company is named: it reads
- * OpenBot by CopilotKit, never CopilotKit alone. Decoration: the window's title already says the
+ * AwakenBot's mark and name, with "by CopilotKit" beside it where the company is named: it reads
+ * AwakenBot by CopilotKit, never CopilotKit alone. Decoration: the window's title already says the
  * name, so it is hidden from assistive technology rather than read on every screen.
  */
 export function Lockup({ byCopilotKit = false }: { byCopilotKit?: boolean }) {
@@ -18,7 +18,7 @@ export function Lockup({ byCopilotKit = false }: { byCopilotKit?: boolean }) {
     <div className="lockup" aria-hidden="true">
       <div className="orb" />
       <span>
-        OpenBot
+        AwakenBot
         <sup className="trademark" aria-hidden="true">
           ™
         </sup>
@@ -31,7 +31,7 @@ export function Lockup({ byCopilotKit = false }: { byCopilotKit?: boolean }) {
 /**
  * Where you are in setup, and what is left: every section by name, the current one marked.
  *
- * Beside OpenBot's mark and name, so every step says which product is being set up, including the
+ * Beside AwakenBot's mark and name, so every step says which product is being set up, including the
  * step that signs in.
  */
 export function Sections({
@@ -39,7 +39,7 @@ export function Sections({
   byCopilotKit = false,
 }: {
   at: Section;
-  /** "by CopilotKit" beside OpenBot's name, on the step that asks for a sign-in. */
+  /** "by CopilotKit" beside AwakenBot's name, on the step that asks for a sign-in. */
   byCopilotKit?: boolean;
 }) {
   const names = SECTIONS;

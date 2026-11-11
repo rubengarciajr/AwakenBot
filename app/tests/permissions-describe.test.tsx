@@ -221,7 +221,7 @@ test("a description lands as switches with their reading, shows who loses and ke
   expect(await view.findByText(reading.explanation)).toBeTruthy();
   expect(
     view.getByText(
-      "Checks. Every change names a permission, role or group this OpenBot has.",
+      "Checks. Every change names a permission, role or group this AwakenBot has.",
     ),
   ).toBeTruthy();
   // The switches, in the Permissions page's own words: off for everybody, granted to the other groups.

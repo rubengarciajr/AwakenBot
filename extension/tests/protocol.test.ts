@@ -145,7 +145,7 @@ describe("parsePageConnectDecide", () => {
       "https://openbot.example.test/",
       "https://openbot.example.test/path",
       "http://openbot.example.test",
-      "HTTPS://OpenBot.example.test",
+      "HTTPS://AwakenBot.example.test",
       "not an address",
     ])
       expect(parsePageConnectDecide({ ...decide, origin })).toBeNull();

@@ -12,7 +12,7 @@ export type ApprovalDecision =
   | "deny"
   | "handled";
 export type RuleBehaviour = "allow" | "pre_approved" | "ask" | "hand_off";
-/** The kinds of action OpenBot asks about by name, as server/src/approvals/types.ts lists them. */
+/** The kinds of action AwakenBot asks about by name, as server/src/approvals/types.ts lists them. */
 export type ActionKind =
   | "deleting"
   | "sending"

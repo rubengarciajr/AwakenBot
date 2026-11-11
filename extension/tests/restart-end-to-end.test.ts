@@ -1,6 +1,6 @@
 // Kept recordings, end to end: the real service worker and the real offscreen document run side by side, each with the
 // chrome its context has (the document gets only chrome.runtime's messaging, getURL and id, as in Chrome), over a fake
-// OpenBot and a fake Intelligence. What a document kept in its IndexedDB outbox reaches Intelligence once a browser
+// AwakenBot and a fake Intelligence. What a document kept in its IndexedDB outbox reaches Intelligence once a browser
 // restart's recovery, or the person connecting again, hands it to a document.
 import { afterEach, beforeEach, expect, test } from "bun:test";
 import type {
@@ -44,9 +44,9 @@ async function until(check: () => boolean | Promise<boolean>, label: string) {
   }
 }
 
-// ---- The fake OpenBot and Intelligence --------------------------------------------------------
+// ---- The fake AwakenBot and Intelligence --------------------------------------------------------
 //
-// One server: OpenBot's capture pass route beside the gateway it hands out.
+// One server: AwakenBot's capture pass route beside the gateway it hands out.
 
 type Pass = {
   trajectoryId: string;
@@ -55,9 +55,9 @@ type Pass = {
 };
 let gateway: FakeGateway;
 let passes: Pass[] = [];
-/** The answer OpenBot gives a pass while set; a grant when null. */
+/** The answer AwakenBot gives a pass while set; a grant when null. */
 let passAnswer: (() => Response) | null = null;
-/** Every request to OpenBot's recorder routes, but the reports of what the Recorder is doing (activity.ts), which hold
+/** Every request to AwakenBot's recorder routes, but the reports of what the Recorder is doing (activity.ts), which hold
  * nothing recorded. */
 let recorderRequests: string[] = [];
 
@@ -66,7 +66,7 @@ const parked = () =>
   Response.json(
     {
       code: "INTELLIGENCE_RUNTIME_REQUIRED",
-      message: "OpenBot's backend is not configured.",
+      message: "AwakenBot's backend is not configured.",
     },
     { status: 503 },
   );
@@ -310,7 +310,7 @@ test("a recording kept when its connection was revoked is sent once the person c
   const trajectoryId = await recordTwoClicks();
   await until(() => names(trajectoryId).length === 5, "the clicks streamed");
 
-  // OpenBot answers that the connection was revoked (as the connection check sees it): the recording stops, and what
+  // AwakenBot answers that the connection was revoked (as the connection check sees it): the recording stops, and what
   // the document had not sent yet, its failed outcome included, is kept for the person.
   const connection = fake.storage.local.get("connection") as ConnectionRecord;
   await handlers.connectionLost({

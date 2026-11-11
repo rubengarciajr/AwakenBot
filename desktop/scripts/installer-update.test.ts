@@ -1,8 +1,8 @@
 // biome-ignore-all lint/suspicious/noTemplateCurlyInString: NSIS's own `${...}`, read as text.
 /**
- * Installing a new OpenBot over an installed one never offers to delete the person's data.
+ * Installing a new AwakenBot over an installed one never offers to delete the person's data.
  *
- * Run by hand over an installed OpenBot, Tauri's installer shows "Already Installed" with
+ * Run by hand over an installed AwakenBot, Tauri's installer shows "Already Installed" with
  * "Uninstall before installing" chosen, then runs the old version's uninstaller as it is: its
  * window opens in the middle of the update, with a "Delete the application data" box. One wrong
  * tick there deleted the person's Bots and conversations during what they took for an update.
@@ -11,7 +11,7 @@
  * uninstaller as the person leaves it, and NSIS_HOOK_PREINSTALL runs later, in the Install section.
  * No setting changes the command either. So bundle > windows > nsis > template
  * (https://v2.tauri.app/reference/config/#nsisconfig) points at src-tauri/windows/installer.nsi,
- * which is Tauri's own template with OpenBot's lines added, and the old uninstaller runs with
+ * which is Tauri's own template with AwakenBot's lines added, and the old uninstaller runs with
  * /UPDATE and /S: as an update, which keeps the data, and silently, with no window and no box.
  *
  * The template is Tauri's file, so it is held to the Tauri CLI it was copied from, pinned against
@@ -69,15 +69,15 @@ const template = () => {
   return readFileSync(path, "utf8");
 };
 
-/** The template without OpenBot's blocks, `; >>> OpenBot` to `; <<< OpenBot`. */
+/** The template without AwakenBot's blocks, `; >>> AwakenBot` to `; <<< AwakenBot`. */
 function tauriPart(text: string) {
   const kept: string[] = [];
   let inside = false;
   for (const line of text.split("\n")) {
-    if (line.trim() === "; >>> OpenBot") {
+    if (line.trim() === "; >>> AwakenBot") {
       expect(inside).toBe(false);
       inside = true;
-    } else if (line.trim() === "; <<< OpenBot") {
+    } else if (line.trim() === "; <<< AwakenBot") {
       expect(inside).toBe(true);
       inside = false;
     } else if (!inside) kept.push(line);
@@ -104,7 +104,7 @@ const builds = {
 };
 
 for (const [build, config] of Object.entries(builds)) {
-  test(`the ${build} build uses OpenBot's installer template and hooks`, () => {
+  test(`the ${build} build uses AwakenBot's installer template and hooks`, () => {
     expect(nsisOf(config)).toMatchObject({
       template: TEMPLATE,
       installerHooks: "./windows/hooks.nsh",
@@ -112,7 +112,7 @@ for (const [build, config] of Object.entries(builds)) {
   });
 }
 
-test("the template is Tauri's, with only OpenBot's marked lines added", () => {
+test("the template is Tauri's, with only AwakenBot's marked lines added", () => {
   const lock = readFileSync(join(desktop, "bun.lock"), "utf8");
   const locked = /"@tauri-apps\/cli": \["@tauri-apps\/cli@([^"]+)"/.exec(
     lock,
@@ -136,7 +136,7 @@ const code = (text: string) =>
 /**
  * The page never runs the old uninstaller itself. Tauri's page hides the installer's window
  * (HideWindow) and waits for the old uninstaller there. Run silently, that left nothing on screen:
- * on a live update from 1.0.1, OpenBot had closed and no window showed for two and a half minutes.
+ * on a live update from 1.0.1, AwakenBot had closed and no window showed for two and a half minutes.
  * So for an NSIS install the page only notes the choice and goes on, and the old version is
  * uninstalled on the Installing page.
  */
@@ -179,12 +179,12 @@ test("the old uninstaller runs on the Installing page, silently and as an update
     expect(index).toBeGreaterThan(-1);
     return index;
   };
-  // Asked first if OpenBot was opened again since the page, before anything is removed.
+  // Asked first if AwakenBot was opened again since the page, before anything is removed.
   const asked = at(
     '!insertmacro CheckIfAppIsRunning "${MAINBINARYNAME}.exe" "${PRODUCTNAME}"',
   );
   const said = at(
-    'DetailPrint "Removing the previous version of OpenBot. Your Bots and data stay."',
+    'DetailPrint "Removing the previous version of AwakenBot. Your Bots and data stay."',
   );
   const moving = at("!insertmacro OPENBOT_PROGRESS_MOVING 1");
   // /UPDATE keeps the data and shows no box, /S shows no window of its own, and `_?=` comes last,
@@ -227,13 +227,13 @@ test("the old uninstaller runs on the Installing page, silently and as an update
   );
 });
 
-test("a running OpenBot is asked about and closed when the person leaves the page", () => {
+test("a running AwakenBot is asked about and closed when the person leaves the page", () => {
   const macro = between(
     hooks(),
     "!macro OPENBOT_BEFORE_OLD_UNINSTALLER\n",
     "!macroend",
   );
-  // The words a running OpenBot gets everywhere else (#1428). Cancel stays on the page.
+  // The words a running AwakenBot gets everywhere else (#1428). Cancel stays on the page.
   expect(macro).toContain('"$(appRunningOkKill)"');
   expect(macro).toContain("MB_OKCANCEL");
   expect(macro).toMatch(/IDCANCEL`\n\s*Abort/);
@@ -263,14 +263,14 @@ test("the uninstaller deletes the data only when it is not an update", () => {
 });
 
 /**
- * Box H: after an in-app update the new OpenBot opened behind the maximised Edge that Windows put in
- * front as the old one closed, and Starting OpenBot ran there unseen for four minutes. Every OpenBot
+ * Box H: after an in-app update the new AwakenBot opened behind the maximised Edge that Windows put in
+ * front as the old one closed, and Starting AwakenBot ran there unseen for four minutes. Every AwakenBot
  * the installer starts, after an update (/R) and from its last page, is started the same way: the
  * installer first passes on its right to bring a window to the front (AllowSetForegroundWindow with
- * ASFW_ANY, -1), then starts OpenBot with the flag that has it come forward as its window first shows
+ * ASFW_ANY, -1), then starts AwakenBot with the flag that has it come forward as its window first shows
  * (STARTED_BY_INSTALLER in src-tauri/src/main.rs), added once to the arguments an update hands on.
  */
-test("every OpenBot the installer starts may come to the front and is told the installer started it", () => {
+test("every AwakenBot the installer starts may come to the front and is told the installer started it", () => {
   expect(hooks()).toContain(
     '!define OPENBOT_STARTED_BY_INSTALLER "--started-by-installer"',
   );

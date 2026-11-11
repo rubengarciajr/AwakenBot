@@ -65,7 +65,7 @@ const steps = () =>
     return (args as { step: string }).step;
   });
 
-test("Ctrl with =, +, - and 0 while typing in OpenBot zoom the window in, out and back", () => {
+test("Ctrl with =, +, - and 0 while typing in AwakenBot zoom the window in, out and back", () => {
   const events = [
     press({ key: "=", code: "Equal", ctrlKey: true }),
     // Ctrl and + is Ctrl+Shift+= on most keyboards, and the number pad's own +.

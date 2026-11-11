@@ -1,19 +1,19 @@
 /*!
-A Docker configuration of OpenBot's own, without the person's registry credentials, for every
-container command OpenBot runs and for the Intelligence CLI.
+A Docker configuration of AwakenBot's own, without the person's registry credentials, for every
+container command AwakenBot runs and for the Intelligence CLI.
 
 WHY.
 
 Docker Desktop writes `"credsStore": "desktop"` into `~/.docker/config.json`. From then on every
 download through Docker's configuration (`docker pull`, `docker compose pull`, `docker run` of an
 image that is not here yet, and Helm's `helm pull oci://`, which reads the same file) first runs
-`docker-credential-desktop get`, even for a public image. Run by OpenBot, that helper is OpenBot
-reading another app's data, and macOS stops it to ask the person whether "OpenBot" may access data
+`docker-credential-desktop get`, even for a public image. Run by AwakenBot, that helper is AwakenBot
+reading another app's data, and macOS stops it to ask the person whether "AwakenBot" may access data
 from other apps. Nothing downloads until somebody answers: the CLI's chart download times out and
 setup fails, and every build signed ad hoc is a new app to macOS, so it asks again.
 
-Everything OpenBot downloads is public. So its commands get `DOCKER_CONFIG` pointing at a
-directory of OpenBot's own whose `config.json` names no credential store, no credential helper and
+Everything AwakenBot downloads is public. So its commands get `DOCKER_CONFIG` pointing at a
+directory of AwakenBot's own whose `config.json` names no credential store, no credential helper and
 no saved logins, and keeps what Docker needs to find the engine the person uses: the current
 context, the proxy settings and the extra plug-in folders. The person's `contexts` and
 `cli-plugins` folders are linked in, so `docker context`, an explicit `DOCKER_CONTEXT` and
@@ -24,7 +24,7 @@ wins, as it does for Docker.
 Measured with Helm 3.17: `HELM_REGISTRY_CONFIG` alone still reaches the helper, because Helm also
 reads Docker's configuration; an empty `DOCKER_CONFIG` does not.
 
-Rewritten for every command, so a context switched while OpenBot runs is the context the next
+Rewritten for every command, so a context switched while AwakenBot runs is the context the next
 command uses. Written only when it changed, and replaced by rename, so a command started meanwhile
 never reads half a file or a missing link.
 
@@ -37,32 +37,32 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
 
-/// The keys of the person's `config.json` that OpenBot's copy keeps. Everything else, the
+/// The keys of the person's `config.json` that AwakenBot's copy keeps. Everything else, the
 /// credential store, the credential helpers and the saved logins above all, is left out.
 const KEPT: &[&str] = &["currentContext", "proxies", "cliPluginsExtraDirs"];
 
-/// The folders of the person's Docker configuration linked into OpenBot's: where contexts are
+/// The folders of the person's Docker configuration linked into AwakenBot's: where contexts are
 /// defined, and where Docker Desktop installs Compose and the other plug-ins.
 const LINKED: &[&str] = &["contexts", "cli-plugins"];
 
-/// The keys that must never reach OpenBot's copy.
+/// The keys that must never reach AwakenBot's copy.
 pub const CREDENTIAL_KEYS: &[&str] = &["credsStore", "credHelpers", "auths"];
 
 static OWNED: OnceLock<PathBuf> = OnceLock::new();
 static NEXT_TEMPORARY: AtomicU64 = AtomicU64::new(0);
 
-/// Tell this module where OpenBot's Docker configuration lives. Set once, at start-up, because
+/// Tell this module where AwakenBot's Docker configuration lives. Set once, at start-up, because
 /// the app knows its data directory and the modules that run commands do not.
 pub fn lives_in(dir: PathBuf) {
     let _ = OWNED.set(dir);
 }
 
-/// Where OpenBot's Docker configuration lives, once the app has said.
+/// Where AwakenBot's Docker configuration lives, once the app has said.
 pub fn owned() -> Option<&'static Path> {
     OWNED.get().map(PathBuf::as_path)
 }
 
-/// The `DOCKER_CONFIG` for a command OpenBot runs, prepared in `owned` from the environment `var`
+/// The `DOCKER_CONFIG` for a command AwakenBot runs, prepared in `owned` from the environment `var`
 /// reads, or None to leave the command with the configuration it inherits.
 pub fn for_commands_in(owned: &Path, var: impl Fn(&str) -> Option<OsString>) -> Option<PathBuf> {
     if cfg!(windows) {
@@ -73,7 +73,7 @@ pub fn for_commands_in(owned: &Path, var: impl Fn(&str) -> Option<OsString>) -> 
         // The command runs as it always did, with the configuration it inherits.
         Err(error) => {
             log::warn!(
-                "[docker config] could not prepare OpenBot's Docker configuration at {}: {error}",
+                "[docker config] could not prepare AwakenBot's Docker configuration at {}: {error}",
                 owned.display()
             );
             None
@@ -93,11 +93,11 @@ pub fn source(var: &impl Fn(&str) -> Option<OsString>) -> Option<PathBuf> {
         .map(|home| PathBuf::from(home).join(".docker"))
 }
 
-/// Write OpenBot's Docker configuration into `owned` from the person's, and answer `owned`.
+/// Write AwakenBot's Docker configuration into `owned` from the person's, and answer `owned`.
 pub fn prepare(owned: &Path, var: impl Fn(&str) -> Option<OsString>) -> std::io::Result<PathBuf> {
     std::fs::create_dir_all(owned)?;
     let source = source(&var);
-    // OpenBot started from a shell that already points at OpenBot's copy: nothing to mirror.
+    // AwakenBot started from a shell that already points at AwakenBot's copy: nothing to mirror.
     if let Some(source) = &source {
         if same_place(source, owned) {
             return Ok(owned.to_path_buf());
@@ -137,7 +137,7 @@ pub fn prepare(owned: &Path, var: impl Fn(&str) -> Option<OsString>) -> std::io:
                 link_dir(&target, &temporary)?;
                 replace(&temporary, &at)?;
             }
-            // Gone from the person's configuration: gone from OpenBot's, so nothing stale resolves.
+            // Gone from the person's configuration: gone from AwakenBot's, so nothing stale resolves.
             None => {
                 if std::fs::symlink_metadata(&at).is_ok_and(|meta| meta.file_type().is_symlink()) {
                     std::fs::remove_file(&at)?;
@@ -232,7 +232,7 @@ mod tests {
         assert_eq!(prepared, owned);
         let config = read(&owned);
         for key in CREDENTIAL_KEYS {
-            assert!(config.get(key).is_none(), "{key} reached OpenBot's copy");
+            assert!(config.get(key).is_none(), "{key} reached AwakenBot's copy");
         }
         assert!(
             !String::from_utf8(std::fs::read(owned.join("config.json")).unwrap())
@@ -284,12 +284,12 @@ mod tests {
             std::fs::read_link(owned.join("contexts")).unwrap(),
             theirs.join("contexts")
         );
-        // They have no plug-in folder, so OpenBot's has none either.
+        // They have no plug-in folder, so AwakenBot's has none either.
         assert!(std::fs::symlink_metadata(owned.join("cli-plugins")).is_err());
         let _ = std::fs::remove_dir_all(root);
     }
 
-    /// A person who switches context, or removes Docker's configuration, while OpenBot runs.
+    /// A person who switches context, or removes Docker's configuration, while AwakenBot runs.
     #[test]
     fn the_copy_follows_the_persons_configuration_between_commands() {
         let root = temp_root("docker-config-follow");
@@ -320,7 +320,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(root);
     }
 
-    /// OpenBot started from a shell that already points DOCKER_CONFIG at OpenBot's copy.
+    /// AwakenBot started from a shell that already points DOCKER_CONFIG at AwakenBot's copy.
     #[test]
     fn openbots_own_copy_is_never_mirrored_into_itself() {
         let root = temp_root("docker-config-self");

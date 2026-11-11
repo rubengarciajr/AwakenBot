@@ -169,11 +169,11 @@ type RegisteredBuiltInAgent = {
   type: "built_in";
   systemPrompt: string;
   /**
-   * The subtitle under its name ("Everyday life. Powered by OpenBot."). Told to the Bot with its
+   * The subtitle under its name ("Everyday life. Powered by AwakenBot."). Told to the Bot with its
    * name (`identityGuidance`), as a remote Bot's standing role tells it.
    */
   title?: string;
-  /** What runs it, which for a Bot here is OpenBot (`frameworkOf`). Told with its name too. */
+  /** What runs it, which for a Bot here is AwakenBot (`frameworkOf`). Told with its name too. */
   framework?: string;
 };
 
@@ -272,7 +272,7 @@ export function selfAddressGuidance(name: string): string {
  * is called.
  *
  * Then the subtitle under its name, the way a remote Bot's standing role says it
- * (`standingRoleMessage`), and the framework it runs on, which is OpenBot's own whatever the
+ * (`standingRoleMessage`), and the framework it runs on, which is AwakenBot's own whatever the
  * subtitle says (`frameworkOf`).
  */
 function identityGuidance(
@@ -282,7 +282,7 @@ function identityGuidance(
 ): string {
   const subtitle = title?.trim();
   return [
-    `You are ${name}, a Bot in OpenBot.`,
+    `You are ${name}, a Bot in AwakenBot.`,
     ...(subtitle ? [/[.!?]$/.test(subtitle) ? subtitle : `${subtitle}.`] : []),
     selfAddressGuidance(name),
     ...(framework ? [frameworkGuidance(framework)] : []),
@@ -331,11 +331,11 @@ export function standingRoleMessage(
 }
 
 /**
- * The working rules every brought Bot is sent after its role, the same ones a Bot OpenBot runs is
+ * The working rules every brought Bot is sent after its role, the same ones a Bot AwakenBot runs is
  * given (`workingGuidance`): how to work, when to ask, where answers come from, how to answer, when
  * to use subagents, and what untrusted content is.
  *
- * Shared by every remote Bot, whatever runs it. Its own role describes the work, and OpenBot adds
+ * Shared by every remote Bot, whatever runs it. Its own role describes the work, and AwakenBot adds
  * these to the same message, the one every framework reads as its instructions. The compliance Bot
  * that answered a filing question with thresholds and deadlines and no source was a `remote-ag-ui`
  * agent whose entire prompt was "Investigate policies, transaction monitoring, and control
@@ -344,7 +344,7 @@ export function standingRoleMessage(
  * how-to-work and asking sections a Claude SDK Bot lost "act when you have enough" and "report what
  * you skipped" along with it.
  *
- * Left off a role run on OpenBot's own runner (`onOpenBotRunner`), which is given the built-in
+ * Left off a role run on AwakenBot's own runner (`onOpenBotRunner`), which is given the built-in
  * version instead, so it is not said twice.
  */
 const BROUGHT_BOT_GUIDANCE = `\n\n${workingGuidance({
@@ -353,17 +353,17 @@ const BROUGHT_BOT_GUIDANCE = `\n\n${workingGuidance({
 }).join("\n\n")}`;
 
 /**
- * A Bot as OpenBot's own runner builds it, whatever it runs on elsewhere: what a check-in runs.
+ * A Bot as AwakenBot's own runner builds it, whatever it runs on elsewhere: what a check-in runs.
  *
  * A CHECK-IN NEVER CALLS A BOT'S OWN ENDPOINT. A Bot on another framework (a harness, an agent an
- * admin registered) holds tools of its own there, and OpenBot cannot see them, so it cannot hold them
+ * admin registered) holds tools of its own there, and AwakenBot cannot see them, so it cannot hold them
  * to reads; a check-in that called the endpoint could act through them with nobody watching. Run
  * here instead, as that Bot (its name and role, from the same standing role it is sent), on the
- * deployment's model, with the person's connected tools through OpenBot's own dispatcher, every tool
- * a check-in can touch is one OpenBot can refuse. The check-in's job is set by OpenBot's own
+ * deployment's model, with the person's connected tools through AwakenBot's own dispatcher, every tool
+ * a check-in can touch is one AwakenBot can refuse. The check-in's job is set by AwakenBot's own
  * instruction, so little of the framework's own logic is lost.
  *
- * A built-in Bot, or one OpenBot cannot run at all, is returned as it is.
+ * A built-in Bot, or one AwakenBot cannot run at all, is returned as it is.
  */
 export function onOpenBotRunner(agent: RegisteredAgent): RegisteredAgent {
   if (agent.type !== "remote_ag_ui" && agent.type !== "remote_mastra")
@@ -397,7 +397,7 @@ function runByThisDeployment(agent: RegisteredAgent): boolean {
  * The runtime makes runs of its own on a Bot (a suggestion, and once a title for a new conversation,
  * which `generateThreadNames: false` now turns off). On an agent somebody registered by its address,
  * those were runs nobody asked for: answered as if the person had said it, spending their model and
- * written into their agent's own history. So those runs are answered on OpenBot's own runner
+ * written into their agent's own history. So those runs are answered on AwakenBot's own runner
  * instead, as the Bot (`onOpenBotRunner`) on the deployment's model, the way a check-in runs. A
  * harness this deployment runs is its own, and answers them itself.
  */
@@ -423,7 +423,7 @@ export type RuntimeModel = {
   /**
    * What the composer's model picker calls `defaultModel`, for a run whose model the catalogue
    * chose (`modelForRun`). The Bot is told it (`modelGuidance`). Absent where nothing chose it: a
-   * plan whose own listing was not read leaves its harness to its own model, which OpenBot can't name.
+   * plan whose own listing was not read leaves its harness to its own model, which AwakenBot can't name.
    */
   label?: string;
   /**
@@ -607,7 +607,7 @@ function isHttpUrl(value: string) {
 /**
  * What the person asking has said they want, in every channel, from every coworker.
  *
- * The OpenBot equivalent of a CLAUDE.md, and the third instruction carrier beside the two that
+ * The AwakenBot equivalent of a CLAUDE.md, and the third instruction carrier beside the two that
  * already existed. A role is the coworker's and reads the same to everybody who talks to it; a skill
  * is pulled in for one task. This is the person's, and it is true of every task they ever ask for —
  * how they want to be written to, what their company is called, what it is not to be called.
@@ -806,7 +806,7 @@ export function builtInAgentConfiguration(
           ]),
       ...promptSection("person_instructions", standing),
       /*
-       * Unconditional: how to work, when to ask (OpenBot asks before consequential actions, so the
+       * Unconditional: how to work, when to ask (AwakenBot asks before consequential actions, so the
        * Bot does not ask as well), where answers come from (a Bot with no tools needs that most: all
        * it says is its own knowledge), when to draw a component, when to use subagents, and how to
        * read the untrusted-content envelope every outside result arrives in.
@@ -1554,7 +1554,7 @@ async function buildAgent(
    *
    * Two limits. Chat Completions refuses a 129th tool, so a run headed there is held to that. Where a
    * run searches, it is held to `MODEL_TOOL_LIMIT` on every provider, because that is the most
-   * `toolsForStep` will send; that number is OpenBot's, and the refusal says so rather than putting
+   * `toolsForStep` will send; that number is AwakenBot's, and the refusal says so rather than putting
    * it in the provider's mouth. A run on any other path with search off has no count to meet.
    *
    * The refusal is the person's answer; the log line and the audit row are the admin's, because a Bot
@@ -1971,7 +1971,7 @@ async function remoteTransport(
  * the run reaches this transport, turns it into the `render_ui` tool and the generative UI guide in
  * `context`, and checks every `render_ui` call against it on the way back. The endpoint gets that
  * tool and that guide either way, so the envelope was the same catalog a second time, on every turn,
- * and was most of what a turn sent. No agent OpenBot runs reads it. The rest of `copilotkit` stays.
+ * and was most of what a turn sent. No agent AwakenBot runs reads it. The rest of `copilotkit` stays.
  */
 function withoutGenerativeUIEnvelope(transport: AbstractAgent): AbstractAgent {
   const run = transport.run.bind(transport);
@@ -2001,7 +2001,7 @@ function withoutGenerativeUIEnvelope(transport: AbstractAgent): AbstractAgent {
  * A run as an endpoint is sent it, never with more tools than one request to a model may carry.
  *
  * The last word, after every middleware has added what it adds, so the count is what reaches the
- * endpoint and, through it, the model: a harness OpenBot installs binds exactly the tools it is sent
+ * endpoint and, through it, the model: a harness AwakenBot installs binds exactly the tools it is sent
  * (`agent-langgraph-agui`'s `bind_tools`; `agent-claude-sdk` adds Claude Code's own only on a
  * provider that documents no count). The Bot's grants are fitted first, where its chosen skills are
  * known (`remoteAgentWithStandingRole`), so this cuts nothing unless that left too little room. What
@@ -2192,7 +2192,7 @@ function remoteAgentWithStandingRole(
    * The model and effort this run answers on, for a harness this deployment runs that takes them
    * (`takesModelChoice`). Sent as `forwardedProps.openbotModel`, and the model's `label` named in
    * the standing role (`modelGuidance`). Absent for every other remote Bot, which picks its own
-   * model, so OpenBot names none.
+   * model, so AwakenBot names none.
    */
   chooseModel?: (input: RunAgentInput) => Promise<
     | {
@@ -2206,7 +2206,7 @@ function remoteAgentWithStandingRole(
   /** Who answered, by Bot id, for another Bot's answer in this one's thread. See {@link buildAgents}. */
   botNames: ReadonlyMap<string, string> = new Map(),
   /**
-   * The Bot on OpenBot's own runner, which answers every run the runtime makes for itself instead of
+   * The Bot on AwakenBot's own runner, which answers every run the runtime makes for itself instead of
    * the endpoint. Absent, those runs go to the endpoint holding nothing. See `answersOwnRunsHere`.
    */
   answerOwnRuns?: () => Promise<AbstractAgent>,
@@ -2428,7 +2428,7 @@ function remoteAgentWithStandingRole(
             agent.standingMessage.content,
             /*
              * A routine firing on a Bot that runs elsewhere is unattended too, and told so the way
-             * a built-in Bot is. A check-in never reaches here: it runs on OpenBot's own runner.
+             * a built-in Bot is. A check-in never reaches here: it runs on AwakenBot's own runner.
              */
             ...promptSection("run_mode", runModeGuidance(runModeOf(initiator))),
             /*
@@ -2603,12 +2603,12 @@ function remoteAgentWithStandingRole(
 }
 
 const RESERVED_MASTRA_CONTEXT_DESCRIPTIONS = new Set([
-  "OpenBot standing role",
-  "OpenBot granted tools guidance",
-  "OpenBot Bot id",
-  "OpenBot deployment tools",
-  "OpenBot signed run assertion",
-  "OpenBot learned skills",
+  "AwakenBot standing role",
+  "AwakenBot granted tools guidance",
+  "AwakenBot Bot id",
+  "AwakenBot deployment tools",
+  "AwakenBot signed run assertion",
+  "AwakenBot learned skills",
 ]);
 
 function callerMastraContext(context: AgentContext[]): AgentContext[] {
@@ -2632,29 +2632,29 @@ function mastraOpenBotContext({
 }): AgentContext[] {
   return [
     {
-      description: "OpenBot standing role",
+      description: "AwakenBot standing role",
       value: standingMessage.content,
     },
     ...(holdingsMessage
       ? [
           {
-            description: "OpenBot granted tools guidance",
+            description: "AwakenBot granted tools guidance",
             value: holdingsMessage.content,
           },
         ]
       : []),
     {
-      description: "OpenBot Bot id",
+      description: "AwakenBot Bot id",
       value: botId,
     },
     {
-      description: "OpenBot deployment tools",
+      description: "AwakenBot deployment tools",
       value: JSON.stringify(deploymentTools),
     },
     ...(runAssertion
       ? [
           {
-            description: "OpenBot signed run assertion",
+            description: "AwakenBot signed run assertion",
             value: runAssertion,
           },
         ]
@@ -3153,19 +3153,19 @@ export function mountCopilotRuntime(
      * NO TITLE RUNS. On a thread's first run the runtime would name it by running the same Bot again
      * on a title prompt, beside the person's run. On a harness that was a second run on the
      * harness at the same moment as the first, on every first message: two `run-model` lines and two
-     * POSTs, with the person's answer garbled where the two overlapped. OpenBot names its
+     * POSTs, with the person's answer garbled where the two overlapped. AwakenBot names its
      * conversations itself, after the fact and on its own model (`channels/summary.ts`), and that is
      * the title people see. The runtime's name only ever reached a Learning proposal's evidence,
      * whose title is optional and now empty for a conversation.
      */
     generateThreadNames: false,
     licenseToken: intelligence.licenseToken,
-    // Carried on the events the runtime already sends, so OpenBot's traffic is separable from any
+    // Carried on the events the runtime already sends, so AwakenBot's traffic is separable from any
     // other deployment's. Adds no events of its own.
     telemetryProperties: {
       app_id: "openbot",
       ...options.productTelemetry?.deploymentProperties(),
-      ...(config.accessibility ? { accessibility_title: "OpenBot" } : {}),
+      ...(config.accessibility ? { accessibility_title: "AwakenBot" } : {}),
       ...desktopTelemetryProperties(),
     },
     /*
@@ -3192,7 +3192,7 @@ export function mountCopilotRuntime(
      * Left unset, the runtime copies `authorization` and every `x-*` header from the request that
      * started a run onto the agent it runs, and a remote Bot's agent is a POST to whatever address
      * its author registered. Anyone allowed to publish a Bot can register their own, so a colleague
-     * signed in with an Entra bearer would hand that author a token OpenBot itself accepts.
+     * signed in with an Entra bearer would hand that author a token AwakenBot itself accepts.
      *
      * No Bot reads anything from the person's request. A Bot's key and the deployment's token are
      * the Bot's own headers, set on the server when the Bot is loaded, and the signed run travels in

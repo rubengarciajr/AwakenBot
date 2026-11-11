@@ -193,7 +193,7 @@ export type ServerRecord = {
    * at the vendor, or their own account behind a broker. See `ServerAccess.ownCredential`.
    *
    * False for a server an admin's key reaches for everybody, a Shared app, an app with no account
-   * at all, a public endpoint and OpenBot's own built-in tools, and for a row this deployment
+   * at all, a public endpoint and AwakenBot's own built-in tools, and for a row this deployment
    * cannot resolve. A check-in reads only servers where this is true.
    */
   ownCredential: boolean;
@@ -291,7 +291,7 @@ export type GrantedPlugins = {
     toolName: string;
     description: string;
     inputSchema: Record<string, unknown>;
-    /** The app marks it destructive (`mcpTools.destructive`): OpenBot always asks before it runs. */
+    /** The app marks it destructive (`mcpTools.destructive`): AwakenBot always asks before it runs. */
     destructive: boolean;
     /**
      * It only reads, by the rule a call to it is gated with (`classifyTool`). Absent reads as a
@@ -951,9 +951,9 @@ export const UNATTRIBUTED_ACTOR = "unattributed";
 /**
  * What started a configuration row, read from the actor it names, to spread into the row.
  *
- * A row OpenBot writes for a change nobody made names OpenBot as its actor ({@link DEPLOYMENT_ACTOR},
+ * A row AwakenBot writes for a change nobody made names AwakenBot as its actor ({@link DEPLOYMENT_ACTOR},
  * or `openbot:always-on` and the personal edition's `openbot:personal-defaults`), and is started by
- * OpenBot. Any other actor is a person, which is what a row with no initiator says. Without this an
+ * AwakenBot. Any other actor is a person, which is what a row with no initiator says. Without this an
  * upgrade that gave every Bot the goal tools put a row per tool on Activity saying a person did it.
  */
 export function initiatedBy(actor: string): { initiator?: AuditInitiator } {
@@ -1207,7 +1207,7 @@ export const IDENTITY_ACTION =
 export const BROKERED_ID_PREFIXES = Object.values(BROKERED_PROFILE);
 
 /**
- * The server half of every ref OpenBot's own memory tools carry (`memory/recall_personal_memory`).
+ * The server half of every ref AwakenBot's own memory tools carry (`memory/recall_personal_memory`).
  * No server may be added under it: see `addCustomServer`.
  */
 export const MEMORY_TOOLS_SERVER = "memory";

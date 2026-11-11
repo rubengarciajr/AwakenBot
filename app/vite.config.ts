@@ -102,7 +102,7 @@ export function thisMachineOnly(
     response.statusCode = 403;
     response.setHeader("content-type", "text/plain; charset=utf-8");
     response.end(
-      "This OpenBot only answers on the computer it runs on. Open it there.",
+      "This AwakenBot only answers on the computer it runs on. Open it there.",
     );
   };
   return {

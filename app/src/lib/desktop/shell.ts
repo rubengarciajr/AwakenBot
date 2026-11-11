@@ -5,7 +5,7 @@ export type ShellIpc = {
   invoke: (command: string, args?: Record<string, unknown>) => Promise<unknown>;
 };
 
-/** The OpenBot Desktop window this page is loaded in, or null in a plain browser. */
+/** The AwakenBot Desktop window this page is loaded in, or null in a plain browser. */
 export function desktopShell(): ShellIpc | null {
   if (typeof window === "undefined") return null;
   const internals = (window as { __TAURI_INTERNALS__?: Partial<ShellIpc> })
@@ -19,7 +19,7 @@ export function desktopShell(): ShellIpc | null {
 /**
  * `&from=desktop` on a request that starts an app's sign-in from the Desktop window, and nothing in a
  * browser. The sign-in opens in the person's own browser, so the server sends it back to a page that
- * hands the person back to OpenBot Desktop (`/desktop-return`) instead of leaving them on OpenBot in
+ * hands the person back to AwakenBot Desktop (`/desktop-return`) instead of leaving them on AwakenBot in
  * that browser.
  */
 export function desktopConsentQuery(): string {

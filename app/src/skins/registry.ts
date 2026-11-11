@@ -6,7 +6,7 @@ import { useSkinId } from "./store";
 import type { Skin, SkinId } from "./types";
 
 /*
- * The default is the product as `brand.yaml` names it, so a deployment that renames OpenBot sees
+ * The default is the product as `brand.yaml` names it, so a deployment that renames AwakenBot sees
  * its own name here too. The description says nothing a rename could make untrue.
  */
 const openbot: Skin = {

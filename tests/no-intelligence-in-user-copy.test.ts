@@ -4,8 +4,8 @@ import { join, relative } from "node:path";
 import ts from "typescript";
 
 /**
- * Guard: no text a person reads names Intelligence. To a person it is all OpenBot, and the part of
- * OpenBot they mean is the backend (see .claude/skills/openbot-copy), one word.
+ * Guard: no text a person reads names Intelligence. To a person it is all AwakenBot, and the part of
+ * AwakenBot they mean is the backend (see .claude/skills/openbot-copy), one word.
  *
  * Read are the string literals, template text and JSX text of the desktop window, the app, the
  * server, the Recorder extension and the shared Recorder disclosure, and the string literals of the
@@ -193,7 +193,7 @@ test("no text a person reads in the desktop app, the app, the server or the Reco
 
 /**
  * "Backend" is one word in what a person reads, never "back end" or "Back-end". The one two-word
- * "back end" left is the Recorder matching a message OpenBot does not write. The bare "back-end" is
+ * "back end" left is the Recorder matching a message AwakenBot does not write. The bare "back-end" is
  * the id of a group of containers (partNames.ts), never shown.
  */
 test("no text a person reads says back end in two words", () => {
@@ -203,30 +203,30 @@ test("no text a person reads says back end in two words", () => {
         !/\s{2}back-end$/.test(hit) &&
         !(
           hit.startsWith("extension/src/offscreen/grant.ts:") &&
-          hit.includes("Could not connect to OpenBot's back end")
+          hit.includes("Could not connect to AwakenBot's back end")
         ),
     ),
   ).toEqual([]);
 });
 
 /**
- * "CopilotKit" alone, where a person reads it. Product copy says OpenBot, and "OpenBot by
+ * "CopilotKit" alone, where a person reads it. Product copy says AwakenBot, and "AwakenBot by
  * CopilotKit" where the company has to be named: the license agreement, a privacy line, the Account
  * step's header (see .claude/skills/openbot-copy). Not caught: an address
  * (`github.com/CopilotKit/OpenBot`) or a name inside one (`X-CopilotKit-Telemetry-Id`), which a
  * person follows or never sees.
  */
-const COPILOTKIT = /(?<!OpenBot\s+by\s+)(?<![\w/.-])CopilotKit(?![\w/-])/;
+const COPILOTKIT = /(?<!AwakenBot\s+by\s+)(?<![\w/.-])CopilotKit(?![\w/-])/;
 
 /**
- * Text that says CopilotKit and is never shown, or says it beside OpenBot's name. Each entry must
+ * Text that says CopilotKit and is never shown, or says it beside AwakenBot's name. Each entry must
  * still match, so one that goes stale is removed rather than kept as a hole.
  */
 const COPILOTKIT_ALLOWED: { file: string; text: string; why: string }[] = [
   {
     file: "desktop/src/Sections.tsx",
     text: "by CopilotKit",
-    why: "the Account step's header, beside OpenBot's name: it reads OpenBot by CopilotKit",
+    why: "the Account step's header, beside AwakenBot's name: it reads AwakenBot by CopilotKit",
   },
   {
     file: "server/src/config.ts",
@@ -245,7 +245,7 @@ const COPILOTKIT_ALLOWED: { file: string; text: string; why: string }[] = [
   },
 ];
 
-test("no text a person reads says CopilotKit, except as OpenBot by CopilotKit", () => {
+test("no text a person reads says CopilotKit, except as AwakenBot by CopilotKit", () => {
   expect(
     shown(COPILOTKIT).filter(
       (hit) =>
@@ -269,10 +269,10 @@ test("every exception for CopilotKit still matches", () => {
   ).toEqual([]);
 });
 
-test("the CopilotKit scan catches the name alone and passes OpenBot by CopilotKit and addresses", () => {
+test("the CopilotKit scan catches the name alone and passes AwakenBot by CopilotKit and addresses", () => {
   for (const said of [
     "Sign in to CopilotKit",
-    "OpenBot sends CopilotKit usage data",
+    "AwakenBot sends CopilotKit usage data",
     "CopilotKit's dashboard",
     "Your CopilotKit🪁 account",
   ])
@@ -281,8 +281,8 @@ test("the CopilotKit scan catches the name alone and passes OpenBot by CopilotKi
       caught: true,
     });
   for (const said of [
-    "accept the OpenBot by CopilotKit license agreement",
-    "the OpenBot by\n        CopilotKit license agreement",
+    "accept the AwakenBot by CopilotKit license agreement",
+    "the AwakenBot by\n        CopilotKit license agreement",
     "https://github.com/CopilotKit/OpenBot/issues/new/choose",
     "X-CopilotKit-Telemetry-Id",
     "@copilotkit/react-core",

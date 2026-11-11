@@ -193,7 +193,9 @@ async function requireOwnerMayIsolate(
 
 export class ManagedAgentUnavailableError extends Error {
   constructor() {
-    super("OpenBot has no managed Bot. Give this Bot its own AG-UI endpoint.");
+    super(
+      "AwakenBot has no managed Bot. Give this Bot its own AG-UI endpoint.",
+    );
     this.name = "ManagedAgentUnavailableError";
   }
 }
@@ -280,7 +282,7 @@ function mapProfile(
   };
 }
 
-/** What runs it, by name, when OpenBot knows. See `AgentProfile.framework`. */
+/** What runs it, by name, when AwakenBot knows. See `AgentProfile.framework`. */
 function frameworkField(row: {
   type: "built_in" | "remote_ag_ui" | "remote_mastra";
   configuration: unknown;
@@ -291,7 +293,7 @@ function frameworkField(row: {
 
 /**
  * Where a personal starter keeps its instructions: the prompt a Bot that runs here runs on, or the
- * instructions OpenBot sends a remote one in its standing role, after what it does.
+ * instructions AwakenBot sends a remote one in its standing role, after what it does.
  */
 export function starterInstructionsKey(
   type: "built_in" | "remote_ag_ui" | "remote_mastra",

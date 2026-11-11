@@ -79,7 +79,7 @@ beforeEach(() => {
   requests.length = 0;
 });
 
-/** What OpenBot Desktop writes for each plan: its credential, the installed harness, no key. */
+/** What AwakenBot Desktop writes for each plan: its credential, the installed harness, no key. */
 const plans = {
   claude: {
     CLAUDE_CODE_OAUTH_TOKEN: "plan-token-the-server-never-reads",

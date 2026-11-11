@@ -112,7 +112,9 @@ test("the big downloads start when the first screen shows, before Install is cli
   await act(async () => {
     view = render(<App />);
   });
-  await view.findByRole("heading", { name: "Set up OpenBot (self-contained)" });
+  await view.findByRole("heading", {
+    name: "Set up AwakenBot (self-contained)",
+  });
 
   // Nothing was clicked: the first screen alone started them, for the installation's folder.
   expect(called("start_early_downloads")).toEqual([
@@ -133,10 +135,10 @@ test("the big downloads start when the first screen shows, before Install is cli
     bytesPerSecond: 10_000_000,
   };
   await said(welcome);
-  expect(view.getByRole("status").textContent).toBe("Downloading OpenBot.");
+  expect(view.getByRole("status").textContent).toBe("Downloading AwakenBot.");
   await steadied(welcome);
   expect(view.getByRole("status").textContent).toBe(
-    "Downloading OpenBot. About 3 minutes left.",
+    "Downloading AwakenBot. About 3 minutes left.",
   );
   const bar = view.getByRole("progressbar", { name: "Download progress" });
   expect(Number(bar.getAttribute("value"))).toBeCloseTo(1.2 / 2.9, 3);
@@ -146,17 +148,17 @@ test("the big downloads start when the first screen shows, before Install is cli
   // carries the download on, in the same words, and its bar goes on from where it was.
   await userEvent.click(view.getByRole("button", { name: "Install" }));
   // The account step, checking the sign-in, which here never answers.
-  await view.findByRole("heading", { name: "Your OpenBot account" });
+  await view.findByRole("heading", { name: "Your AwakenBot account" });
   const account = { ...welcome, bytes: 2.0 * GB };
   await said(account);
   await steadied(account);
   const row = within(
     view.getByRole("listitem", {
-      name: "Installing OpenBot in the background",
+      name: "Installing AwakenBot in the background",
     }),
   );
   expect(
-    row.getByText("Downloading OpenBot. About 2 minutes left."),
+    row.getByText("Downloading AwakenBot. About 2 minutes left."),
   ).toBeTruthy();
   const carried = row.getByRole("progressbar", { name: "Download progress" });
   expect(Number(carried.getAttribute("value"))).toBeCloseTo(2.0 / 2.9, 3);
@@ -177,10 +179,10 @@ const WINDOWS_F_SHORT: EarlyDownloads = {
 };
 
 /**
- * Windows F, filled to 15.0 GB free: this line said "16 GB of free space, and OpenBot needs about
+ * Windows F, filled to 15.0 GB free: this line said "16 GB of free space, and AwakenBot needs about
  * 44 GB", and the next screen "It needs 40 GB free". Both were the back end's 40 GiB: this one added
  * the download and counted billions of bytes. It says the 40 and the download apart now, in the GB
- * Windows shows. And Install was pressable: it built OpenBot's machine at 15 GB free, then the next
+ * Windows shows. And Install was pressable: it built AwakenBot's machine at 15 GB free, then the next
  * step stopped for space with less free than before. Install waits for room now.
  */
 test("a disk too full to download to says what is free and what is needed, and Install waits for room", async () => {
@@ -188,13 +190,15 @@ test("a disk too full to download to says what is free and what is needed, and I
   await act(async () => {
     view = render(<App />);
   });
-  await view.findByRole("heading", { name: "Set up OpenBot (self-contained)" });
+  await view.findByRole("heading", {
+    name: "Set up AwakenBot (self-contained)",
+  });
   await said(WINDOWS_F_SHORT);
   const line = view.getByRole("status");
   // Each figure and its unit are kept on one line.
   expect(line.textContent).toContain("2\u00a0GB for its download");
   expect(line.textContent?.replaceAll("\u00a0", " ")).toBe(
-    "This computer has 15 GB of free space, and OpenBot needs 40 GB plus about 2 GB for its download. Free up some space and the download starts by itself.",
+    "This computer has 15 GB of free space, and AwakenBot needs 40 GB plus about 2 GB for its download. Free up some space and the download starts by itself.",
   );
   // Nothing is downloading, so nothing spins and there is no bar.
   expect(line.querySelector(".step-spinner")).toBeNull();
@@ -206,7 +210,7 @@ test("a disk too full to download to says what is free and what is needed, and I
   await userEvent.click(install);
   expect(called("prepare_installation")).toEqual([]);
   expect(
-    view.getByRole("heading", { name: "Set up OpenBot (self-contained)" }),
+    view.getByRole("heading", { name: "Set up AwakenBot (self-contained)" }),
   ).toBeTruthy();
   // Space was freed: the download starts by itself, and Install is there again.
   await said({ state: "downloading", bytes: 0 });
@@ -224,7 +228,9 @@ test("an Install pressed before the disk is looked at builds nothing on a disk t
   await act(async () => {
     view = render(<App />);
   });
-  await view.findByRole("heading", { name: "Set up OpenBot (self-contained)" });
+  await view.findByRole("heading", {
+    name: "Set up AwakenBot (self-contained)",
+  });
   const install = view.getByRole("button", {
     name: "Install",
   }) as HTMLButtonElement;
@@ -239,7 +245,7 @@ test("an Install pressed before the disk is looked at builds nothing on a disk t
   });
   expect(called("prepare_installation")).toEqual([]);
   expect(
-    view.getByRole("heading", { name: "Set up OpenBot (self-contained)" }),
+    view.getByRole("heading", { name: "Set up AwakenBot (self-contained)" }),
   ).toBeTruthy();
   expect(
     view.getByRole("status").textContent?.replaceAll("\u00a0", " "),
@@ -300,7 +306,7 @@ test("a download paused for space says so, with no bar and no time running on", 
   );
   const item = within(
     view.getByRole("listitem", {
-      name: "Installing OpenBot in the background",
+      name: "Installing AwakenBot in the background",
     }),
   );
   expect(item.getByText("Step 2 of 4 · Paused")).toBeTruthy();
@@ -319,16 +325,16 @@ test("the line says what is known, and nothing once it is all downloaded", () =>
     bytes: GB,
     size: 2 * GB,
   };
-  expect(earlyDownloadsSaid(downloading, true)).toBe("Downloading OpenBot.");
+  expect(earlyDownloadsSaid(downloading, true)).toBe("Downloading AwakenBot.");
   expect(
     earlyDownloadsSaid(downloading, false, { left: 40, slow: false }),
-  ).toBe("Downloading OpenBot. Less than a minute left.");
+  ).toBe("Downloading AwakenBot. Less than a minute left.");
   expect(
     earlyDownloadsSaid(downloading, false, { left: 80, slow: false }),
-  ).toBe("Downloading OpenBot. About a minute left.");
+  ).toBe("Downloading AwakenBot. About a minute left.");
   expect(
     earlyDownloadsSaid(downloading, false, { left: null, slow: true }),
-  ).toBe("Downloading OpenBot. Taking longer than usual, still working.");
+  ).toBe("Downloading AwakenBot. Taking longer than usual, still working.");
   // Done says nothing, on the first screen too: Install is the next step either way.
   expect(earlyDownloadsSaid({ state: "done", bytes: GB, size: GB }, true)).toBe(
     null,
@@ -391,9 +397,9 @@ test("the background row carries the first screen's download as one bar, and kee
     step: "install-engine",
     ok: true,
     running: true,
-    detail: "Checking the software OpenBot needs.",
+    detail: "Checking the software AwakenBot needs.",
   });
-  expect(checking?.detail).toBe("Downloading OpenBot.");
+  expect(checking?.detail).toBe("Downloading AwakenBot.");
   expect(checking?.downloads).toEqual(early);
 
   // Install waiting on the machine image while the first screen's downloads still run: the same
@@ -402,10 +408,10 @@ test("the background row carries the first screen's download as one bar, and kee
     step: "create-machine",
     ok: true,
     running: true,
-    detail: "Preparing this computer to run OpenBot.",
+    detail: "Preparing this computer to run AwakenBot.",
     downloads: own,
   });
-  expect(waitingOnTheMachine?.detail).toBe("Downloading OpenBot.");
+  expect(waitingOnTheMachine?.detail).toBe("Downloading AwakenBot.");
   expect(waitingOnTheMachine?.downloads).toEqual(early);
 
   // Once those are done, a download of Install's own is the row's.
@@ -414,12 +420,12 @@ test("the background row carries the first screen's download as one bar, and kee
       step: "create-machine",
       ok: true,
       running: true,
-      detail: "Preparing this computer to run OpenBot.",
+      detail: "Preparing this computer to run AwakenBot.",
       downloads: own,
     },
     null,
   );
-  expect(machine?.detail).toBe("Downloading OpenBot.");
+  expect(machine?.detail).toBe("Downloading AwakenBot.");
   expect(machine?.downloads).toEqual(own);
 
   // The OS asking in its own window, explained in plain words: the row keeps them.
@@ -452,10 +458,10 @@ test("the background row carries the first screen's download as one bar, and kee
       step: "create-machine",
       ok: true,
       running: true,
-      detail: "Preparing this computer to run OpenBot.",
+      detail: "Preparing this computer to run AwakenBot.",
     },
     null,
   );
-  expect(plain?.detail).toBe("Preparing this computer to run OpenBot.");
+  expect(plain?.detail).toBe("Preparing this computer to run AwakenBot.");
   expect(plain?.downloads).toBeUndefined();
 });

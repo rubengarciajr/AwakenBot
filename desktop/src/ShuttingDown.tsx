@@ -59,7 +59,7 @@ export function useQuitStatus(catchUp: boolean): QuitStatus | null {
 }
 
 /**
- * The parts of a Quit, in order, and how long each typically takes: on Windows D stopping OpenBot
+ * The parts of a Quit, in order, and how long each typically takes: on Windows D stopping AwakenBot
  * took 14 seconds and stopping its services about 12. An update let finish first takes as long as
  * what is left of it, a minute or so.
  */
@@ -80,17 +80,17 @@ export const QUIT_PARTS: { step: string; plan: Plan }[] = [
     step: "stop-openbot",
     plan: {
       milestones: {},
-      stages: [{ said: "Closing OpenBot's apps", until: 14 }],
+      stages: [{ said: "Closing AwakenBot's apps", until: 14 }],
     },
   },
   {
     step: "stop-intelligence",
     plan: {
       milestones: {},
-      stages: [{ said: "Closing OpenBot's services", until: 14 }],
+      stages: [{ said: "Closing AwakenBot's services", until: 14 }],
     },
   },
-  // Only on a Mac where OpenBot paused the person's own Podman while it ran (`own_machine`).
+  // Only on a Mac where AwakenBot paused the person's own Podman while it ran (`own_machine`).
   {
     step: "start-your-podman",
     plan: {
@@ -143,7 +143,7 @@ export function quitTick(
   next.best = Math.max(next.best, Math.min(0.99, fraction));
   return {
     clock: next,
-    said: where.said || "Closing OpenBot",
+    said: where.said || "Closing AwakenBot",
     fraction: next.best,
     left: where.left === null ? null : Math.round(next.shown.left),
   };
@@ -193,14 +193,14 @@ function QuitJourney({
 /**
  * What the person sees between choosing Quit and the app closing. Nothing to press. While it runs,
  * the same journey a Start shows: what it is doing, one bar, and the time left. On Windows D it
- * showed only "Stopping OpenBot · In progress · 12s elapsed".
+ * showed only "Stopping AwakenBot · In progress · 12s elapsed".
  */
 export function ShuttingDown({ status }: { status: QuitStatus | null }) {
   const steps = status?.steps ?? [];
   const failed = steps.some((step) => !step.ok);
   /*
    * The journey stays for the whole quit, with its clock kept here. It was shown only while a
-   * step ran, so in the moment between "Stopping OpenBot" finishing and its services starting to
+   * step ran, so in the moment between "Stopping AwakenBot" finishing and its services starting to
    * stop it went away and came back with a new clock: on Windows F the bar went from 46% to 7% and
    * "14s so far" to "1s so far".
    */
@@ -209,11 +209,11 @@ export function ShuttingDown({ status }: { status: QuitStatus | null }) {
   return (
     <main>
       <div className="sheet connection-sheet">
-        <h1>Shutting down OpenBot</h1>
+        <h1>Shutting down AwakenBot</h1>
         <p className="lede" role="status">
           {failed
-            ? "Part of it could not be stopped. OpenBot says what happened the next time it opens."
-            : "OpenBot is stopping what it started on this computer, then it closes."}
+            ? "Part of it could not be stopped. AwakenBot says what happened the next time it opens."
+            : "AwakenBot is stopping what it started on this computer, then it closes."}
         </p>
         {running && <QuitJourney steps={steps} clock={clock} />}
         <SetupProgress

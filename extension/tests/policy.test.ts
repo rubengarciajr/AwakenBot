@@ -39,7 +39,7 @@ test("with no policy the Recorder is unpinned and unrestricted", async () => {
   });
 });
 
-test("a valid OpenBot address is read as its origin", async () => {
+test("a valid AwakenBot address is read as its origin", async () => {
   fake.storage.setManaged({ OpenBotUrl: "https://openbot.example.test" });
   expect((await readPolicy()).openbotUrl).toBe("https://openbot.example.test");
 });
@@ -78,7 +78,7 @@ test("the managed schema keeps to what Chrome loads: an object root, and exactly
     expect(property.description).toContain("chrome://policy");
 });
 
-test("an empty or non-string OpenBot address is invalid", async () => {
+test("an empty or non-string AwakenBot address is invalid", async () => {
   for (const value of ["", "   ", 7, "https://x.test/path"]) {
     fake.storage.setManaged({ OpenBotUrl: value });
     expect(await readPolicy()).toMatchObject({

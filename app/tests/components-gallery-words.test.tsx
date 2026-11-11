@@ -162,7 +162,7 @@ test("the personal gallery says what each component shows, not what the model is
     }
     const text = view.container.textContent ?? "";
     expect(text).toContain(
-      "Shows what your Bots have been doing and what was refused, read from OpenBot's own records.",
+      "Shows what your Bots have been doing and what was refused, read from AwakenBot's own records.",
     );
     expect(text).not.toContain("deployment");
     expect(text).not.toMatch(/\badmin/i);
@@ -209,7 +209,7 @@ test("one component's page says what it shows, in either edition", async () => {
     try {
       expect(
         await view.findByText(
-          "Shows what your Bots have been doing and what was refused, read from OpenBot's own records.",
+          "Shows what your Bots have been doing and what was refused, read from AwakenBot's own records.",
         ),
       ).toBeTruthy();
       const text = view.container.textContent ?? "";

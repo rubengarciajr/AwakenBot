@@ -1,7 +1,7 @@
 /*!
-Getting a release ready against real engines: OpenBot's images into Docker, the back end's into a
+Getting a release ready against real engines: AwakenBot's images into Docker, the back end's into a
 real k3s node, from a real registry behind a proxy that logs every request (`local_images::live`'s
-lab). The release being got ready is published to that registry as a newer OpenBot server and a
+lab). The release being got ready is published to that registry as a newer AwakenBot server and a
 newer back end API, beside the ones the "running" version uses.
 
 Run with `cargo test --lib update_ready::live -- --ignored --test-threads=1` where Docker runs
@@ -103,10 +103,10 @@ struct Installation {
     installed: Vec<String>,
     /// What the CLI it runs pulls into the node.
     current: CliImages,
-    /// The next release's OpenBot server, and a Bot this installation does not run.
+    /// The next release's AwakenBot server, and a Bot this installation does not run.
     server_next: String,
     other_bot: String,
-    /// A container standing in for the OpenBot that runs, which nothing may stop or restart.
+    /// A container standing in for the AwakenBot that runs, which nothing may stop or restart.
     running: String,
 }
 
@@ -122,7 +122,7 @@ impl Installation {
             door.named(&lab.push("copilotkit/openbot-agent-mastra", "next", &[250_000]));
         lab.push("copilotkit/intelligence/app-api", "1.0.0", &[200_000]);
         lab.push("copilotkit/intelligence/app-api", "1.1.0", &[350_000]);
-        // Installed and running: OpenBot's server image in the engine, the back end's in the node.
+        // Installed and running: AwakenBot's server image in the engine, the back end's in the node.
         crate::pull_metrics::pull_image(&engine, &server_now, |_| {}, |_| {}).unwrap();
         let current = CliImages {
             release: "1.0.0".into(),
@@ -220,7 +220,7 @@ impl Installation {
         Some(format!("{API}@{digest}")).filter(|named| self.lab.images().contains(named))
     }
 
-    /// When the stand-in OpenBot and the back end's node last started, and whether both run.
+    /// When the stand-in AwakenBot and the back end's node last started, and whether both run.
     fn started(&self) -> Vec<String> {
         [&self.running, &self.lab.node]
             .iter()
@@ -260,7 +260,7 @@ impl Drop for Installation {
 
 /**
 The feed names a release, and while the version that runs stays up, the release's images arrive:
-OpenBot's server in the engine and the back end's API in its node, pinned there for the update. Only
+AwakenBot's server in the engine and the back end's API in its node, pinned there for the update. Only
 what this installation runs: not the Bot it never picked. Nothing that runs is stopped or restarted,
 and the image it runs is still there. A Start or the Update click first stops it before anything.
 */
@@ -352,7 +352,7 @@ fn an_announced_release_downloads_while_the_running_version_stays_up() {
 
 /**
 After the release was got ready, the update's own pulls download nothing: the upgrade's pull of
-OpenBot's image (`pull_metrics::pull_image`, as `upgrade` makes it), OpenBot's download before
+AwakenBot's image (`pull_metrics::pull_image`, as `upgrade` makes it), AwakenBot's download before
 `local update`, and the CLI's own `ctr images pull` into the node. Not one blob is fetched.
 */
 #[test]
@@ -440,7 +440,7 @@ fn a_disk_short_of_room_downloads_nothing() {
 
 /**
 An installation behind the app, which the next Start moves to the app's release (`behind`), with
-OpenBot not running, as during sign-in or the back end's setup. Its release's OpenBot images arrive
+AwakenBot not running, as during sign-in or the back end's setup. Its release's AwakenBot images arrive
 only while the engine keeps the back end's 40 GiB free beside them, and then the update's own pull of
 them (`pull_metrics::pull_image`, as `upgrade` makes it) downloads nothing. On 2026-11-10 a Mac
 moving from v1.0.0 to v1.0.1 pulled them in the update, after 4.5 minutes of the back end's setup.
@@ -450,7 +450,7 @@ moving from v1.0.0 to v1.0.1 pulled them in the update, after 4.5 minutes of the
 fn an_installation_behind_gets_its_release_ready_before_the_update() {
     const GIB: u64 = 1 << 30;
     let installation = Installation::new("4m");
-    // OpenBot is not running.
+    // AwakenBot is not running.
     assert!(docker(&["rm", "-f", &installation.running]).0);
     let behind = |disk: &dyn Fn() -> Option<Disk>| {
         let ahead = Ahead {

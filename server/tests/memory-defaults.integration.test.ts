@@ -438,7 +438,7 @@ describe("the personal edition", () => {
   test("adopts no memory source, on a Bot's turn or when the person speaks, and still adopts research", async () => {
     await reset();
     synced.length = 0;
-    // OpenBot Desktop's local Intelligence isn't licensed for memory. The switch is left on.
+    // AwakenBot Desktop's local Intelligence isn't licensed for memory. The switch is left on.
     const personal = defaults({ edition: "personal" });
     expect(await personal.adoptSources(owner, bot)).toEqual([]);
     personal.botTurn(owner, bot);

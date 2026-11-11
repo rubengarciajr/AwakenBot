@@ -27,7 +27,7 @@ export const APPROVAL_DECISIONS = [
   "handled",
 ] as const satisfies readonly ApprovalDecision[];
 /**
- * The kinds of action OpenBot recognises by name and asks about whatever the person's own switch
+ * The kinds of action AwakenBot recognises by name and asks about whatever the person's own switch
  * says (`safetyRequirement` in ./policy). Open by default: the person can allow one once, for the
  * conversation, or always. An admin can close each kind (`ApprovalTeamSettings.actionKinds`).
  */
@@ -95,7 +95,7 @@ export type ApprovalPolicyOutcome = {
     | "task";
   reason: string;
   ruleId?: string;
-  /** The kind of action OpenBot recognised this as, where it is one (see `ActionKind`). */
+  /** The kind of action AwakenBot recognised this as, where it is one (see `ActionKind`). */
   kind?: ActionKind;
   /**
    * The admin closed this kind to standing answers: it asks every time, so the card offers Allow

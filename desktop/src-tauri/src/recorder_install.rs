@@ -1,4 +1,4 @@
-//! Writes the native messaging host manifests that let the Recorder extension find OpenBot Desktop.
+//! Writes the native messaging host manifests that let the Recorder extension find AwakenBot Desktop.
 //!
 //! Where each manifest goes, checked against the official pages:
 //! - Chrome and Chromium, macOS, Linux and the Windows registry key:
@@ -17,7 +17,7 @@
 //!   <https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md>
 //!
 //! A browser installed after Desktop started is found too. On Windows every browser's key is written whether or not the
-//! browser is there yet: the manifest lives in OpenBot's own folder, and a key no browser reads changes nothing. On macOS
+//! browser is there yet: the manifest lives in AwakenBot's own folder, and a key no browser reads changes nothing. On macOS
 //! and Linux a manifest goes inside the browser's own folder, which is not made for a browser that is not there, so the
 //! app checks again every minute and writes only what is missing or different.
 //!
@@ -229,7 +229,7 @@ pub fn host_manifest(path_to_exe: &Path) -> Value {
 pub fn host_manifest_with(path_to_exe: &Path, store: &StoreIds) -> Value {
     json!({
         "name": host_name(),
-        "description": "OpenBot Desktop: lets the Recorder find this computer's OpenBot",
+        "description": "AwakenBot Desktop: lets the Recorder find this computer's AwakenBot",
         "path": path_to_exe.to_string_lossy(),
         "type": "stdio",
         "allowed_origins": allowed_origins_with(store),
@@ -283,7 +283,7 @@ pub fn data_directory(os: Os, browser: Browser, dirs: UserDirs) -> PathBuf {
 pub fn host_manifest_location(os: Os, browser: Browser, dirs: UserDirs) -> PathBuf {
     match os {
         Os::Windows => windows_local_app_data(dirs)
-            .join("OpenBot")
+            .join("AwakenBot")
             .join("recorder")
             .join(manifest_file_name()),
         Os::Mac | Os::Linux => data_directory(os, browser, dirs)
@@ -391,7 +391,7 @@ fn stable_host_path_with(
                 Ok(appimage.to_path_buf())
             } else if exe.starts_with("/tmp/.mount_") {
                 Err(Problem::plain(
-                    "Run OpenBot Desktop from its AppImage file to let the Recorder find it.",
+                    "Run AwakenBot Desktop from its AppImage file to let the Recorder find it.",
                 ))
             } else {
                 Ok(current_exe.to_path_buf())
@@ -407,7 +407,9 @@ fn stable_host_path_with(
             .and_then(|(on, from)| untranslocated(current_exe, &on, &from))
             .filter(|original| !original.starts_with("/Volumes"))
             .ok_or_else(|| {
-                Problem::plain("Move OpenBot Desktop to Applications to let the Recorder find it.")
+                Problem::plain(
+                    "Move AwakenBot Desktop to Applications to let the Recorder find it.",
+                )
             }),
         Os::Mac | Os::Windows => Ok(current_exe.to_path_buf()),
     }
@@ -425,7 +427,7 @@ fn write_manifest(
     }
     writer.write_file(path, &contents).map_err(|error| {
         Problem::with(
-            "OpenBot Desktop could not set up the Recorder.",
+            "AwakenBot Desktop could not set up the Recorder.",
             format!("{}: {error}", path.display()),
         )
     })
@@ -446,7 +448,7 @@ pub fn install(
             for argv in registry_commands(browser, &manifest) {
                 writer.run(&argv).map_err(|error| {
                     Problem::with(
-                        "OpenBot Desktop could not set up the Recorder.",
+                        "AwakenBot Desktop could not set up the Recorder.",
                         format!("{}: {error}", argv.join(" ")),
                     )
                 })?;
@@ -531,11 +533,11 @@ mod tests {
             Os::Mac => home
                 .join("Library")
                 .join("Application Support")
-                .join("OpenBot"),
+                .join("AwakenBot"),
             Os::Windows => var("LOCALAPPDATA")
                 .map(PathBuf::from)
                 .unwrap_or_else(|| home.join("AppData").join("Local"))
-                .join("OpenBot"),
+                .join("AwakenBot"),
             Os::Linux => var("XDG_DATA_HOME")
                 .map(PathBuf::from)
                 .filter(|path| path.to_string_lossy().starts_with('/'))
@@ -622,7 +624,7 @@ mod tests {
             manifest,
             serde_json::json!({
                 "name": "ai.copilotkit.openbot.recorder",
-                "description": "OpenBot Desktop: lets the Recorder find this computer's OpenBot",
+                "description": "AwakenBot Desktop: lets the Recorder find this computer's AwakenBot",
                 "path": "/Applications/OpenBot.app/Contents/MacOS/openbot",
                 "type": "stdio",
                 "allowed_origins": shared_origins(),
@@ -750,7 +752,7 @@ mod tests {
         expect(Os::Linux, Browser::Edge, plain, &linux("microsoft-edge"));
         expect(Os::Linux, Browser::Chromium, plain, &linux("chromium"));
         let windows = PathBuf::from("/c/Local")
-            .join("OpenBot")
+            .join("AwakenBot")
             .join("recorder")
             .join(file);
         let with_local = UserDirs {
@@ -860,7 +862,7 @@ mod tests {
             home()
                 .join("AppData")
                 .join("Local")
-                .join("OpenBot")
+                .join("AwakenBot")
                 .join("recorder")
                 .join("ai.copilotkit.openbot.recorder.json")
         );
@@ -869,7 +871,7 @@ mod tests {
     #[test]
     fn registry_commands_set_the_default_value_under_each_browsers_key() {
         let path = Path::new(
-            "C:\\Users\\a\\AppData\\Local\\OpenBot\\recorder\\ai.copilotkit.openbot.recorder.json",
+            "C:\\Users\\a\\AppData\\Local\\AwakenBot\\recorder\\ai.copilotkit.openbot.recorder.json",
         );
         let argv = |key: &str| {
             vec![vec![
@@ -986,12 +988,12 @@ mod tests {
         );
         assert_eq!(
             got.unwrap_err().said,
-            "Move OpenBot Desktop to Applications to let the Recorder find it."
+            "Move AwakenBot Desktop to Applications to let the Recorder find it."
         );
     }
 
-    /// OpenBot Desktop 1.0.0, copied into Applications with `ditto` from its disk image and opened:
-    /// Gatekeeper ran it translocated, and the Recorder said "Move OpenBot Desktop to Applications"
+    /// AwakenBot Desktop 1.0.0, copied into Applications with `ditto` from its disk image and opened:
+    /// Gatekeeper ran it translocated, and the Recorder said "Move AwakenBot Desktop to Applications"
     /// to an app that was in Applications. The mount is as `mount` showed it that night. Unix paths,
     /// which Windows does not count as absolute.
     #[cfg(unix)]
@@ -1027,7 +1029,7 @@ mod tests {
             stable_host_path_with(Os::Mac, &exe, None, mounted("/Volumes/OpenBot/OpenBot.app"))
                 .unwrap_err()
                 .said,
-            "Move OpenBot Desktop to Applications to let the Recorder find it."
+            "Move AwakenBot Desktop to Applications to let the Recorder find it."
         );
         // A mount that is not this app's, or none at all, is never guessed through.
         for unrelated in [
@@ -1053,7 +1055,7 @@ mod tests {
     fn installed_paths_are_returned_unchanged() {
         let mac = Path::new("/Applications/OpenBot.app/Contents/MacOS/openbot-desktop");
         assert_eq!(stable_host_path(Os::Mac, mac, None).unwrap(), mac);
-        let windows = Path::new("C:\\Program Files\\OpenBot\\openbot-desktop.exe");
+        let windows = Path::new("C:\\Program Files\\AwakenBot\\openbot-desktop.exe");
         assert_eq!(
             stable_host_path(Os::Windows, windows, None).unwrap(),
             windows
@@ -1144,10 +1146,10 @@ mod tests {
         };
         // No browser is there yet: each key is written anyway, so one installed later finds the host.
         let mut writer = Recording::default();
-        let exe = Path::new("C:\\Program Files\\OpenBot\\openbot-desktop.exe");
+        let exe = Path::new("C:\\Program Files\\AwakenBot\\openbot-desktop.exe");
         let written = install(exe, dirs, Os::Windows, &mut writer).unwrap();
         let manifest = local
-            .join("OpenBot")
+            .join("AwakenBot")
             .join("recorder")
             .join("ai.copilotkit.openbot.recorder.json");
         assert_eq!(written, vec![manifest.clone()]);
@@ -1213,7 +1215,7 @@ mod tests {
     }
 
     /// A person whose Windows profile folder has an apostrophe in it (`C:\Users\O'Brien`) has
-    /// OpenBot installed under it. Put inside the script, the folder ended the script's string
+    /// AwakenBot installed under it. Put inside the script, the folder ended the script's string
     /// early, PowerShell refused the whole command, and the uninstaller failed on the locked
     /// node.exe again. `[` and `]` are wildcards to `-like`. The folder reaches the script as data.
     #[test]
@@ -1256,7 +1258,7 @@ mod tests {
         let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("target")
             .join(format!("hook-test-{system}-{}", std::process::id()))
-            .join("O'Brien [OpenBot]");
+            .join("O'Brien [AwakenBot]");
         let runtime = base.join("cli-bundle").join("runtime");
         std::fs::create_dir_all(&runtime).unwrap();
         let source = base.join("waiter.rs");

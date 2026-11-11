@@ -26,7 +26,7 @@ export type Provider = {
 /** What the flow carries forward once this screen is done. */
 /** The sentence `preparation::require` refuses a sign-in or start with when Install must run again. */
 export const INSTALL_REQUIRED =
-  "Finish installing OpenBot's local software before signing in or starting. Return to Install and try again.";
+  "Finish installing AwakenBot's local software before signing in or starting. Return to Install and try again.";
 
 export type ModelChoice = {
   provider: string;
@@ -106,9 +106,9 @@ const endpointPresets: Record<
 const oauthExplanation: Record<string, string> = {
   google:
     "Authorize Gemini API access using the configured Google Cloud project and its API quota.",
-  xai: "Authorize OpenBot to use models available to your xAI account.",
+  xai: "Authorize AwakenBot to use models available to your xAI account.",
   unbiased:
-    "Sign in or create an Unbiased AI account in your browser and approve the code shown here. OpenBot receives an API key for Pareto and keeps it on this computer.",
+    "Sign in or create an Unbiased AI account in your browser and approve the code shown here. AwakenBot receives an API key for Pareto and keeps it on this computer.",
 };
 
 function endpointIdentity(baseUrl: string | undefined): string {
@@ -283,7 +283,7 @@ export function ProviderPicker({
     if (chatGptRun.current === null) return;
     chatGptRun.current = null;
     invoke("cancel_chatgpt_sign_in").catch(() => {
-      console.error("OpenBot could not stop the ChatGPT sign-in.");
+      console.error("AwakenBot could not stop the ChatGPT sign-in.");
     });
   }
 
@@ -366,14 +366,14 @@ export function ProviderPicker({
       if (chatGptRun.current !== null) {
         chatGptRun.current = null;
         invoke("cancel_chatgpt_sign_in").catch(() => {
-          console.error("OpenBot could not stop the ChatGPT sign-in.");
+          console.error("AwakenBot could not stop the ChatGPT sign-in.");
         });
       }
       const attemptId = oauthAttempt.current;
       if (attemptId) {
         invoke("cancel_model_oauth", { attemptId }).catch(() => {
           console.error(
-            "OpenBot could not cancel the pending provider sign-in.",
+            "AwakenBot could not cancel the pending provider sign-in.",
           );
         });
       }

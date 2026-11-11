@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useId, useState } from "react";
 import { ExternalLink } from "./ExternalLink";
 
-/** What OpenBot Desktop sends, and what it never does, in full. */
+/** What AwakenBot Desktop sends, and what it never does, in full. */
 export const USAGE_DATA_DOC =
   "https://github.com/CopilotKit/OpenBot/blob/main/desktop/TELEMETRY.md";
 
@@ -16,11 +16,11 @@ type UsageData = { shared: boolean; offByEnvironment: boolean };
  * not called anonymous: once signed in, it is joined to the person's account.
  */
 const WHAT_IT_SHARES =
-  "Help make OpenBot better by sharing diagnostics like errors, hangs, updates and available memory, never any content. OpenBot is built to respect your privacy.";
+  "Help make AwakenBot better by sharing diagnostics like errors, hangs, updates and available memory, never any content. AwakenBot is built to respect your privacy.";
 
 /**
  * Usage data, as a small checkbox at the foot of the last screen of setup: the choice comes once
- * everything else is asked, while OpenBot finishes setting up, and takes one line or two.
+ * everything else is asked, while AwakenBot finishes setting up, and takes one line or two.
  *
  * The same setting as Settings > General > Privacy > Share usage data, through the same commands
  * (`usage_data`, `set_usage_data`): checked by default, as sharing always has been, and unchecked is
@@ -81,10 +81,10 @@ export function UsageDataChoice() {
         {/* The link sits outside the label, so following it never ticks the box. */}
         <label htmlFor={box}>
           {offByEnvironment
-            ? "Usage data is turned off on this computer. OpenBot sends none."
+            ? "Usage data is turned off on this computer. AwakenBot sends none."
             : WHAT_IT_SHARES}
         </label>{" "}
-        <ExternalLink href={USAGE_DATA_DOC}>What OpenBot sends</ExternalLink>
+        <ExternalLink href={USAGE_DATA_DOC}>What AwakenBot sends</ExternalLink>
       </p>
       {failed && (
         <p className="usage-choice-failed inline-error" role="alert">

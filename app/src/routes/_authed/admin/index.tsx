@@ -58,7 +58,7 @@ const SECTIONS: {
 }[] = [
   {
     title: "What Bots can reach",
-    description: "Control what Bots can access outside OpenBot.",
+    description: "Control what Bots can access outside AwakenBot.",
     items: [
       {
         title: "Credentials",
@@ -174,14 +174,14 @@ const SECTIONS: {
       {
         title: "Audit",
         description:
-          "Review actions taken in OpenBot and who took them, and record Bots' commands.",
+          "Review actions taken in AwakenBot and who took them, and record Bots' commands.",
         icon: IconListDetails,
         linkOptions: { to: "/admin/audit" },
       },
       {
         title: "What would happen",
         description:
-          "Ask what OpenBot would do if a Bot took an action, and see which control decides.",
+          "Ask what AwakenBot would do if a Bot took an action, and see which control decides.",
         icon: IconZoomQuestion,
         linkOptions: { to: "/admin/what-if" },
       },

@@ -14,7 +14,7 @@ import type { PluginsPage } from "@/lib/plugins/queries";
 
 /**
  * The Plugins screens name no broker at all: a person, the admin included, connects apps through
- * OpenBot. The only vendor word left is the ACTIVE provider's environment variable, where an admin
+ * AwakenBot. The only vendor word left is the ACTIVE provider's environment variable, where an admin
  * has to set it. Everything here is a pure function, so nothing renders.
  */
 
@@ -43,7 +43,7 @@ test("no sentence names either broker", () => {
   expect(brokeredProvenance("arcade")).toBe(true);
 });
 
-test("a Composio deployment's words are OpenBot's", () => {
+test("a Composio deployment's words are AwakenBot's", () => {
   expect(providerVocabulary("composio")).toEqual({
     directoryLabel: "Browse apps",
     envVar: "COMPOSIO_API_KEY",
@@ -51,7 +51,7 @@ test("a Composio deployment's words are OpenBot's", () => {
       "A few hundred apps. Each person connects their own account.",
   });
   expect(moreAppsSectionDescription("composio")).toBe(
-    "More apps people can connect through OpenBot. Nobody here has reviewed them.",
+    "More apps people can connect through AwakenBot. Nobody here has reviewed them.",
   );
   expect(moreAppsRow("composio", true)).toEqual({
     title: "Browse apps",
@@ -65,15 +65,15 @@ test("a Composio deployment's words are OpenBot's", () => {
     linked: false,
   });
   expect(brokeredConnectionDescription("composio")).toBe(
-    "Each person connects their own account through OpenBot.",
+    "Each person connects their own account through AwakenBot.",
   );
   expect(brokeredReach("composio")).toEqual({
     description:
       "This deployment holds one key for every app like this. Each person connects their own account, and a Bot sees only what that person can see. There is no token to paste.",
-    badge: "Through OpenBot",
+    badge: "Through AwakenBot",
   });
   expect(brokeredDisconnectNote("composio")).toBe(
-    "Disconnecting also removes OpenBot's access to your account.",
+    "Disconnecting also removes AwakenBot's access to your account.",
   );
 });
 

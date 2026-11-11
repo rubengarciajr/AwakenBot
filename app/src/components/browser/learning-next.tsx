@@ -203,7 +203,7 @@ export function useLearningNext(stopped: Stopped) {
   };
 }
 
-/** Whether this browser lets OpenBot interrupt. Some browsers throw on the mere question. */
+/** Whether this browser lets AwakenBot interrupt. Some browsers throw on the mere question. */
 function notificationsAllowed() {
   try {
     return (
@@ -278,19 +278,19 @@ export function learningNextWords(
     return {
       heading: `Saved “${title}”`,
       sentence:
-        "Your recording is kept. OpenBot learns a skill from it once Learning can run.",
+        "Your recording is kept. AwakenBot learns a skill from it once Learning can run.",
     };
   if (!canReview)
     return {
       heading: `Saved “${title}”`,
       sentence:
-        "OpenBot learns a skill from it, and an admin reviews it. Once it's approved, ask any Bot to do it.",
+        "AwakenBot learns a skill from it, and an admin reviews it. Once it's approved, ask any Bot to do it.",
     };
   return {
     heading: `Saved “${title}”`,
     sentence: autoApprove
-      ? "OpenBot learns a skill from it, and you'll find it in Settings, Learning. Once it's learned, ask any Bot to do it."
-      : "OpenBot learns a skill from it, and you'll see it in Settings, Learning to review. Once you approve it, ask any Bot to do it.",
+      ? "AwakenBot learns a skill from it, and you'll find it in Settings, Learning. Once it's learned, ask any Bot to do it."
+      : "AwakenBot learns a skill from it, and you'll see it in Settings, Learning to review. Once you approve it, ask any Bot to do it.",
   };
 }
 
@@ -427,7 +427,7 @@ export function LearningNextRow({
 }
 
 /**
- * The next step under a saved recording in the browser drawn in the page (OpenBot Desktop, hosted OpenBot), where Teach
+ * The next step under a saved recording in the browser drawn in the page (AwakenBot Desktop, hosted AwakenBot), where Teach
  * a Bot is one page and Record lives in the browser's toolbar: under the toolbar's line that says where the recording
  * went, what Learning does with it next, worded for who approves, and the row that follows it through Learning, with
  * See your skills beside its action. Record another is the toolbar's Record.

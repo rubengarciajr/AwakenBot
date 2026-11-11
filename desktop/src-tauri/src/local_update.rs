@@ -17,7 +17,7 @@
 //! stack's own values and `--no-hooks`. That puts them back, the CLI's next quiesce scales them to
 //! zero again, and the update resumes. Reproduced and verified by hand on 0.16.0-rc.9 to rc.10.
 //!
-//! THE CLI OWNS INTELLIGENCE (`local_eval`). This is the one place OpenBot runs the CLI's private
+//! THE CLI OWNS INTELLIGENCE (`local_eval`). This is the one place AwakenBot runs the CLI's private
 //! Helm against its stack, because the CLI cannot get past this on its own. It runs the CLI's own
 //! Helm binary (checked against the digest in its folder name, as the CLI checks it), with the
 //! stack's own kubeconfig, chart and values files, and reads nothing else the CLI keeps. Every
@@ -44,7 +44,7 @@ pub const LEARNING_DEPLOYMENTS: [&str; 2] = ["cpki-learning-reconciler", "cpki-l
 
 /// The CLI's configuration folder, as `conf` names it for `copilotkit-config` (`env-paths`).
 ///
-/// `COPILOTKIT_CONFIG_DIR` would move it, but the CLI OpenBot runs never inherits that variable
+/// `COPILOTKIT_CONFIG_DIR` would move it, but the CLI AwakenBot runs never inherits that variable
 /// (`local_eval::INHERITED`), so it is not read here either.
 pub fn cli_config_dir() -> Option<PathBuf> {
     config_dir_with(|name| std::env::var_os(name), std::env::consts::OS)
@@ -77,7 +77,7 @@ pub fn stack_dir(stack: &str) -> Option<PathBuf> {
     Some(cli_config_dir()?.join("local-evaluation").join(stack))
 }
 
-/// The CLI's log: `~/.copilotkit/cli.log` (`services/cli-logs.ts`). The CLI OpenBot runs inherits
+/// The CLI's log: `~/.copilotkit/cli.log` (`services/cli-logs.ts`). The CLI AwakenBot runs inherits
 /// neither `XDG_STATE_HOME` nor `COPILOTKIT_CONFIG_DIR`, so this is where it writes.
 pub fn cli_log() -> Option<PathBuf> {
     let home = if cfg!(windows) {
@@ -445,7 +445,7 @@ Uncordon the stack's node when it is cordoned (`spec.unschedulable`). True when 
 Found on a Mac whose update hung for minutes in `dependencies-wait`: the database, Redis and object
 storage pods sat in `FailedScheduling: 0/1 nodes are available: 1 node(s) were unschedulable`,
 and `kubectl rollout status` waits up to ten minutes for each. Nothing in the CLI (48a3863 or
-647a03b) or in OpenBot cordons a node. k3s marks its node `NodeNotSchedulable` as it shuts down,
+647a03b) or in AwakenBot cordons a node. k3s marks its node `NodeNotSchedulable` as it shuts down,
 which is what `local stop` (`docker stop` of the node) does, and clears it once it is back up; a
 node that comes back still cordoned leaves every new pod unscheduled. A local stack has one node
 and nothing that cordons it on purpose, so a cordon there is always a leftover.
@@ -673,7 +673,7 @@ fn running_after(last: &str) -> Option<&'static str> {
 /**
 The `local.step` lines one update adds to `cli.log`, read from where the file ended when it began.
 
-Other CLI processes write the same file, but OpenBot runs one CLI call at a time
+Other CLI processes write the same file, but AwakenBot runs one CLI call at a time
 (`local_eval::one_at_a_time`), so while its update runs the lines are the update's.
 */
 pub struct StepLog {

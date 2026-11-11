@@ -2,11 +2,11 @@
  * THE CONVERSATION'S MODEL PICKER, FOR EVERY WAY THE DESKTOP SIGNS IN.
  *
  * The picker shows when the catalogue says `choosable`: more than one model a run may use. Each test
- * here starts from the environment OpenBot Desktop writes for one row of its model screen
+ * here starts from the environment AwakenBot Desktop writes for one row of its model screen
  * (`desktop/src-tauri/src/env.rs`), turns it into the deployment's model the way the server does at
  * boot (`runtimeModelForEnvironment`, `planModelForEnvironment`), and reads the catalogue against
  * providers that answer as the real ones do: their captured listings for the right credential, and
- * a 401 for anything else. A Google or xAI sign-in goes through OpenBot's real sign-in proxy.
+ * a 401 for anything else. A Google or xAI sign-in goes through AwakenBot's real sign-in proxy.
  */
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
@@ -176,7 +176,7 @@ afterEach(async () => {
   clearDesktopConnectionFailure("model");
 });
 
-/** OpenBot's sign-in proxy, as the server mounts it, over a signed-in record on disk. */
+/** AwakenBot's sign-in proxy, as the server mounts it, over a signed-in record on disk. */
 async function signInProxy(
   provider: "google" | "xai",
   upstream: (
@@ -360,7 +360,7 @@ describe("every sign-in the Desktop offers has a model to pick", () => {
     });
   });
 
-  test("a Google sign-in: Google's own listing, through OpenBot's sign-in proxy", async () => {
+  test("a Google sign-in: Google's own listing, through AwakenBot's sign-in proxy", async () => {
     const { read, failure } = await catalogueFor(
       {
         OPENBOT_MODEL_OAUTH_FILE: "/ignored/by/this/test",

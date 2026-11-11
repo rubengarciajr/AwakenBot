@@ -118,7 +118,7 @@ function DescribeTeamRulesPage() {
           <FieldGroup>
             <DescribeField
               action="Write rules"
-              description="Say in a sentence what Bots should do, and your model writes rules from this OpenBot's apps and Bots. A second reading that never sees your words says what the rules do."
+              description="Say in a sentence what Bots should do, and your model writes rules from this AwakenBot's apps and Bots. A second reading that never sees your words says what the rules do."
               id="team-rules-english"
               label="Describe the rules"
               placeholder="Ask before any Bot sends email from Gmail"
@@ -143,10 +143,10 @@ function DescribeTeamRulesPage() {
                   // No rules says so itself, with the model's reason.
                   written.rules.length === 0
                     ? ""
-                    : "These rules don't check, so OpenBot won't save them."
+                    : "These rules don't check, so AwakenBot won't save them."
                 }
                 heading="What these rules do"
-                passed="Checks. Every rule matches tools and Bots this OpenBot has."
+                passed="Checks. Every rule matches tools and Bots this AwakenBot has."
                 warning={written.warning}
               />
             ) : null}

@@ -95,7 +95,7 @@ export function useNameStep({
 export const FINISH_MS = 1_200;
 
 /**
- * OpenBot's orb, listening while somebody types their name. `finished` settles it into done, which
+ * AwakenBot's orb, listening while somebody types their name. `finished` settles it into done, which
  * is how onboarding ends.
  *
  * ROOM FOR ITS GLOW. In one column the orb comes first, right under the header with the step

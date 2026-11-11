@@ -400,9 +400,9 @@ describe("tenant YAML validation", () => {
     ).toThrow("agent.avatar_seed must be a non-empty string");
   });
 
-  // A person's own OpenBot browser is a computer named `person-` and 32 hex digits, reached the way a Bot's is: a Bot
+  // A person's own AwakenBot browser is a computer named `person-` and 32 hex digits, reached the way a Bot's is: a Bot
   // with that id would share its computer with the person whose browser it is.
-  test("rejects an agent whose id is the shape of a person's OpenBot browser, and keeps one that is not", () => {
+  test("rejects an agent whose id is the shape of a person's AwakenBot browser, and keeps one that is not", () => {
     const withAgent = (id: string) =>
       validateTenantPackage({
         brand: "tenant: { id: fintech, product_name: Ledgerline }",
@@ -414,7 +414,7 @@ describe("tenant YAML validation", () => {
         themeCss: "",
       });
     expect(() => withAgent(`person-${"0a".repeat(16)}`)).toThrow(
-      /person's OpenBot browser/,
+      /person's AwakenBot browser/,
     );
     expect(withAgent("person-helper").agents.map((agent) => agent.id)).toEqual([
       "person-helper",
@@ -1678,7 +1678,7 @@ describe("bundled personal starter", () => {
     endpoint: string,
     name?: string,
   ) {
-    // The name OpenBot Desktop sends is the catalogue's, from shared/harnesses.json.
+    // The name AwakenBot Desktop sends is the catalogue's, from shared/harnesses.json.
     const env = {
       PICKED_HARNESS_URL: endpoint,
       PICKED_HARNESS_NAME:
@@ -1992,8 +1992,8 @@ describe("bundled personal starter", () => {
   test.each([
     ["Claude Agent SDK, as seeded", claude, ""],
     ["Claude Agent SDK, added to", claude, " I live in Berlin."],
-    ["OpenBot, as seeded", "", ""],
-    ["OpenBot, added to", "", " I live in Berlin."],
+    ["AwakenBot, as seeded", "", ""],
+    ["AwakenBot, added to", "", " I live in Berlin."],
   ])(
     "a starter seeded with its instructions as what it does is repaired on the next start: %s",
     async (_case, endpoint, added) => {
@@ -2068,12 +2068,12 @@ describe("bundled personal starter", () => {
    * through this repair. Text the person changed, by so much as a sentence, stays theirs.
    */
   const shippedUntilNow =
-    "You are a personal assistant for one person. Help with their email, calendar, research, planning and everyday errands. Be clear and brief, and ask when something is ambiguous rather than guessing. When you send, buy, delete or post anything, say exactly what you are doing; OpenBot asks the person before it happens, so do not ask them yourself first. Never type a password yourself: ask the person to sign in, and wait for them.";
+    "You are a personal assistant for one person. Help with their email, calendar, research, planning and everyday errands. Be clear and brief, and ask when something is ambiguous rather than guessing. When you send, buy, delete or post anything, say exactly what you are doing; AwakenBot asks the person before it happens, so do not ask them yourself first. Never type a password yourself: ask the person to sign in, and wait for them.";
   test.each([
-    ["OpenBot", ""],
+    ["AwakenBot", ""],
     ["Claude Agent SDK", claude],
   ])(
-    "a starter still on the instructions an earlier OpenBot shipped moves to the current ones: %s",
+    "a starter still on the instructions an earlier AwakenBot shipped moves to the current ones: %s",
     async (_case, endpoint) => {
       const tenantId = starterTestTenant();
       const loaded = await loadStarter(tenantId, endpoint);
@@ -2234,7 +2234,7 @@ describe("bundled personal starter", () => {
       await next();
     };
     const app = new Hono<{ Variables: AppVariables }>();
-    // A laptop's deployment, as OpenBot Desktop runs one.
+    // A laptop's deployment, as AwakenBot Desktop runs one.
     app.route("/api/agents", createAgentRoutes(profiles, requireUser, true));
     // What the Setup page sends for a new name and title: everything else as it showed it.
     const response = await app.request("/api/agents/picked-harness", {
@@ -2444,9 +2444,9 @@ describe("bundled personal starter", () => {
       database,
       await loadStarter(tenantId, ""),
     );
-    // It runs here, so it says it runs on OpenBot itself.
+    // It runs here, so it says it runs on AwakenBot itself.
     expect(await profiles.get(actor, "personal-assistant")).toMatchObject({
-      title: "Everyday life. Powered by OpenBot.",
+      title: "Everyday life. Powered by AwakenBot.",
     });
     await synchronizeTenantPackage(
       database,
@@ -2843,7 +2843,7 @@ describe("upgrading a deployment set up under a package's former id", () => {
     expect(() =>
       validateTenantPackage({
         brand:
-          "tenant:\n  id: openbot\n  former_ids: [openbot]\n  product_name: OpenBot\n",
+          "tenant:\n  id: openbot\n  former_ids: [openbot]\n  product_name: AwakenBot\n",
         agents: "agents: []\n",
         channels: "channels: []\n",
         model:

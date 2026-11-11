@@ -87,7 +87,7 @@ test("a newer version is offered with both versions named", async () => {
   offer = available();
   const view = render(<UpdateOffer />);
   expect(
-    await view.findByRole("heading", { name: "OpenBot 0.3.2 is available" }),
+    await view.findByRole("heading", { name: "AwakenBot 0.3.2 is available" }),
   ).toBeTruthy();
   expect(view.container.textContent).toContain("You are running 0.3.1");
 });
@@ -99,10 +99,10 @@ test("while the new version downloads in the background it says how far, then th
   };
   const view = render(<UpdateOffer />);
   expect(
-    await view.findByRole("heading", { name: "OpenBot 0.3.2 is available" }),
+    await view.findByRole("heading", { name: "AwakenBot 0.3.2 is available" }),
   ).toBeTruthy();
   expect(view.container.textContent).toContain(
-    "You are running 0.3.1. OpenBot is downloading it in the background (60%).",
+    "You are running 0.3.1. AwakenBot is downloading it in the background (60%).",
   );
   // Nothing waits for it.
   expect(view.getByRole("button", { name: "Update and restart" })).toBeTruthy();
@@ -110,12 +110,12 @@ test("while the new version downloads in the background it says how far, then th
   expect(
     await view.findByRole(
       "heading",
-      { name: "OpenBot 0.3.2 is ready to install" },
+      { name: "AwakenBot 0.3.2 is ready to install" },
       { timeout: 7_000 },
     ),
   ).toBeTruthy();
   expect(view.container.textContent).toContain(
-    "You are running 0.3.1. Installing it takes a few minutes and restarts OpenBot.",
+    "You are running 0.3.1. Installing it takes a few minutes and restarts AwakenBot.",
   );
 }, 10_000);
 
@@ -159,7 +159,7 @@ test("an install that fails says so and offers it again", async () => {
   );
   const alert = await view.findByRole("alert");
   expect(alert.textContent).toBe(
-    "OpenBot could not install the update: signature verification failed",
+    "AwakenBot could not install the update: signature verification failed",
   );
   expect(view.getByRole("button", { name: "Update and restart" })).toBeTruthy();
 });

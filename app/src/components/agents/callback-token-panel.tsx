@@ -19,12 +19,12 @@ import {
  * A coworker with no token can still hold a conversation. What it cannot do is reach anything outside
  * one, which is the right default for a URL somebody pasted.
  *
- * A Bot OpenBot runs itself, the harness picked in setup, is handed OpenBot's key on every run and
+ * A Bot AwakenBot runs itself, the harness picked in setup, is handed AwakenBot's key on every run and
  * uses its tools with none of its own. The panel says so and offers nothing to generate: it used to
  * tell the personal starter it "can't use tools" while it searched the web and used the browser.
  */
 export const KEY_FROM_OPENBOT =
-  "OpenBot runs this Bot, so it can use its tools without a key.";
+  "AwakenBot runs this Bot, so it can use its tools without a key.";
 
 export function CallbackTokenPanel({
   agentId,

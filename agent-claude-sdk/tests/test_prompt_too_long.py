@@ -1,6 +1,6 @@
 """The first question of a conversation is answered, however large what a tool brought back.
 
-FOUND ON A MAC (OpenBot 1.0.1). A person asked the Personal Assistant, on this harness and a Claude
+FOUND ON A MAC (AwakenBot 1.0.1). A person asked the Personal Assistant, on this harness and a Claude
 plan, "what was added to the just updated version of openbot?". It searched the web and Notion, and
 the turn ended at once on "Claude turned down the request because this conversation is too long for
 the model". It was the first message of a new conversation.
@@ -220,7 +220,7 @@ FETCH = {
 
 
 def page(chars):
-    return ("OpenBot 1.0.1 release notes: signed updates, faster setup. " * (chars // 60 + 1))[:chars]
+    return ("AwakenBot 1.0.1 release notes: signed updates, faster setup. " * (chars // 60 + 1))[:chars]
 
 
 def run_body(thread, run, messages, tools, model, standing_role=None):
@@ -403,7 +403,7 @@ def test_a_result_larger_than_the_window_is_cut_and_the_turn_answered(app, messa
     assert errors(events) == [], "the step was refused as too long"
     assert said(events) == ANSWER
     sent = json.dumps(asked[-1]["messages"])
-    assert "OpenBot 1.0.1 release notes" in sent, "the head of the result reaches the model"
+    assert "AwakenBot 1.0.1 release notes" in sent, "the head of the result reaches the model"
     assert "more characters of this result were left out to fit the context window" in sent
     assert "call the tool again asking for less" in sent
     assert state["refused"] == 0

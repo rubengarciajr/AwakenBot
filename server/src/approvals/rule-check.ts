@@ -6,7 +6,7 @@
  * `mcp/...`), one written as a regular expression (`composio-gmail/.*`, which looks for a dot and a
  * star), or one naming a tool, a kind of action or a Bot that does not exist here. Saved, each reads
  * as protection and protects nothing. This checks every row against the matcher the gate itself uses
- * ({@link globMatches}) and the tools, effects and Bots this OpenBot has, and says what is wrong with
+ * ({@link globMatches}) and the tools, effects and Bots this AwakenBot has, and says what is wrong with
  * each in words a model can act on and an admin can read.
  */
 import { globMatches } from "./policy";
@@ -112,10 +112,10 @@ function rowProblems(
       rule.toolRef.startsWith("mcp/")
         ? `"${rule.toolRef}" matches no tool: no tool here starts with mcp/. An app's tool is <app id>/<tool>, such as ${example}/*.`
         : rule.toolRef.includes("*")
-          ? `"${rule.toolRef}" matches no tool OpenBot has.${apps.length ? ` Apps set up: ${list(apps)}.` : " No apps are set up."}`
+          ? `"${rule.toolRef}" matches no tool AwakenBot has.${apps.length ? ` Apps set up: ${list(apps)}.` : " No apps are set up."}`
           : apps.includes(prefix) || rule.toolRef.includes("/")
-            ? `"${rule.toolRef}" is not a tool OpenBot has.${apps.includes(prefix) ? ` ${prefix} has: ${list(tools.filter((tool) => tool.scope.kind === "app" && tool.scope.app === prefix).map((tool) => tool.ref.slice(prefix.length + 1)))}.` : apps.length ? ` Apps set up: ${list(apps)}.` : " No apps are set up."}`
-            : `"${rule.toolRef}" is not a tool OpenBot has. Name an app's tool as <app id>/<tool>, or one of OpenBot's own, such as computer_click.`,
+            ? `"${rule.toolRef}" is not a tool AwakenBot has.${apps.includes(prefix) ? ` ${prefix} has: ${list(tools.filter((tool) => tool.scope.kind === "app" && tool.scope.app === prefix).map((tool) => tool.ref.slice(prefix.length + 1)))}.` : apps.length ? ` Apps set up: ${list(apps)}.` : " No apps are set up."}`
+            : `"${rule.toolRef}" is not a tool AwakenBot has. Name an app's tool as <app id>/<tool>, or one of AwakenBot's own, such as computer_click.`,
     );
     return problems;
   }

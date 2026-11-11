@@ -31,10 +31,10 @@ import { seedAuditPage } from "./seed-audit-page";
 import { settleReactWork } from "./settle-react-work";
 
 /*
- * The personal edition calls the product OpenBot. Seen on Windows: Settings > Activity said
- * "Started by this deployment" under rows OpenBot itself started, and an app's page under
+ * The personal edition calls the product AwakenBot. Seen on Windows: Settings > Activity said
+ * "Started by this deployment" under rows AwakenBot itself started, and an app's page under
  * Connections said what "this deployment" registers and keeps. That is Admin's word, for the person
- * who runs OpenBot for everybody; Admin keeps it.
+ * who runs AwakenBot for everybody; Admin keeps it.
  */
 
 beforeAll(() => GlobalRegistrator.register({ url: "http://localhost/" }));
@@ -132,7 +132,7 @@ function draw(edition: "team" | "personal", screen: () => ReactNode) {
   client.setQueryData(pluginKeys.connections(), { connections: [] });
   client.setQueryData(agentKeys.list(false), []);
   client.setQueryData(agentKeys.list(true), []);
-  // Activity asks without OpenBot's own working; Admin asks for everything.
+  // Activity asks without AwakenBot's own working; Admin asks for everything.
   seedAuditPage(
     client,
     edition === "personal" ? withoutOpenBotWorking("") : "",
@@ -149,10 +149,10 @@ function draw(edition: "team" | "personal", screen: () => ReactNode) {
   );
 }
 
-test("Activity says OpenBot started what OpenBot started", async () => {
+test("Activity says AwakenBot started what AwakenBot started", async () => {
   const Activity = ActivityRoute.options.component as ComponentType;
   const view = draw("personal", () => <Activity />);
-  expect(await view.findByText("Started by OpenBot")).toBeTruthy();
+  expect(await view.findByText("Started by AwakenBot")).toBeTruthy();
   expect(view.container.textContent).not.toContain("deployment");
 });
 
@@ -161,13 +161,13 @@ test("Admin's Audit still says this deployment", async () => {
   expect(await view.findByText("Started by this deployment")).toBeTruthy();
 });
 
-test("an app's page under Connections says what OpenBot does, not a deployment", async () => {
+test("an app's page under Connections says what AwakenBot does, not a deployment", async () => {
   const view = draw("personal", () => <PluginPage pluginKey="notion" />);
   await view.findByText("Connection");
   const text = view.container.textContent ?? "";
-  expect(text).toContain("OpenBot registers an OAuth client");
-  expect(text).toContain("OpenBot registers itself with the vendor");
-  expect(text).toContain("OpenBot has no public URL");
+  expect(text).toContain("AwakenBot registers an OAuth client");
+  expect(text).toContain("AwakenBot registers itself with the vendor");
+  expect(text).toContain("AwakenBot has no public URL");
   expect(text).not.toContain("deployment");
 });
 

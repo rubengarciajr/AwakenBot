@@ -3,7 +3,7 @@ import { isDecisionTool } from "./decision-tools";
 /**
  * A step: the tool calls a model asks for in one response, which AG-UI carries as one assistant
  * message. Claude asks for several at once by default, and other models can too. Whichever model a
- * Bot runs on, OpenBot holds a step to the pattern Anthropic documents for parallel tool use
+ * Bot runs on, AwakenBot holds a step to the pattern Anthropic documents for parallel tool use
  * (https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use): the API does
  * not say what order the calls run in, so the side that runs them decides.
  *

@@ -208,7 +208,7 @@ fn persist_configuration_with(
                 api_key: api_key.trim().to_string(),
             })
             .map_err(|_| {
-                Problem::plain("OpenBot could not prepare the endpoint key for saving.")
+                Problem::plain("AwakenBot could not prepare the endpoint key for saving.")
             })?,
         ),
         _ if SavedIntent::read(root)
@@ -225,18 +225,19 @@ fn persist_configuration_with(
     remember(root, &scoped_secrets)?;
     crate::env::write_plan_store(root, credential).map_err(|error| {
         Problem::with(
-            "OpenBot could not save the model sign-in. Try Start again.",
+            "AwakenBot could not save the model sign-in. Try Start again.",
             error.to_string(),
         )
     })?;
     let mut intent = SavedIntent::read(root);
     intent.record(secrets, credential);
     intent.write(root).map_err(|error| Problem::with(
-        "OpenBot could not record the saved connections. Your previous settings are kept; try Start again.",
+        "AwakenBot could not record the saved connections. Your previous settings are kept; try Start again.",
         error.to_string(),
     ))?;
-    crate::env::write(&root.join(".env"), settings, purge)
-        .map_err(|error| Problem::with("OpenBot could not write its settings.", error.to_string()))
+    crate::env::write(&root.join(".env"), settings, purge).map_err(|error| {
+        Problem::with("AwakenBot could not write its settings.", error.to_string())
+    })
 }
 
 #[cfg(test)]
@@ -718,7 +719,7 @@ mod tests {
             },
         )
         .unwrap_err();
-        assert_eq!(problem.said, "OpenBot could not write its settings.");
+        assert_eq!(problem.said, "AwakenBot could not write its settings.");
         assert_eq!(
             SavedIntent::read(&root).model,
             Some(ModelIntent::ClaudePlan)

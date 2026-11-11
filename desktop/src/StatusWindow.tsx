@@ -73,10 +73,10 @@ export function diagnostics(
           )
           .join(", ");
   return [
-    `OpenBot Desktop ${status.version} (${status.build})`,
+    `AwakenBot Desktop ${status.version} (${status.build})`,
     `Installed in ${status.root}${status.appPort ? `, app on port ${status.appPort}` : ""}`,
     `Container engine: ${status.engine ?? "not answering"}`,
-    `OpenBot: ${status.openbotRunning ? "running" : "stopped"}`,
+    `AwakenBot: ${status.openbotRunning ? "running" : "stopped"}`,
     `  processes: ${parts(status.processes)}`,
     `  containers: ${parts(status.containers)}`,
     status.intelligenceStack
@@ -88,8 +88,8 @@ export function diagnostics(
   ].join("\n");
 }
 
-/** What OpenBot runs on, Docker or Podman, in the words setup uses for it. */
-const ENGINE = "Software OpenBot runs on";
+/** What AwakenBot runs on, Docker or Podman, in the words setup uses for it. */
+const ENGINE = "Software AwakenBot runs on";
 
 type Busy =
   | "openbot-restart"
@@ -99,24 +99,24 @@ type Busy =
   | "intelligence-start";
 
 /**
- * The local Intelligence is "OpenBot's services" on this window, as on the Shutting down screen
- * ("Stopping OpenBot's services"). Its parts say what they do (`partNames.ts`).
+ * The local Intelligence is "AwakenBot's services" on this window, as on the Shutting down screen
+ * ("Stopping AwakenBot's services"). Its parts say what they do (`partNames.ts`).
  */
-const SERVICES = "OpenBot's services";
+const SERVICES = "AwakenBot's services";
 
 const BUSY_SAID: Record<Busy, string> = {
-  "openbot-restart": "Restarting OpenBot…",
-  "openbot-stop": "Stopping OpenBot…",
+  "openbot-restart": "Restarting AwakenBot…",
+  "openbot-stop": "Stopping AwakenBot…",
   "intelligence-restart": `Restarting ${SERVICES}…`,
   "intelligence-stop": `Stopping ${SERVICES}…`,
   "intelligence-start": `Starting ${SERVICES}…`,
 };
 
 /**
- * What OpenBot is running, what each part costs, and Restart and Stop for each.
+ * What AwakenBot is running, what each part costs, and Restart and Stop for each.
  *
  * Memory is read every few seconds while the window shows; it is Docker's figure per container,
- * OpenBot's own server and worker among them. Intelligence's readiness is the CLI's, asked only on
+ * AwakenBot's own server and worker among them. Intelligence's readiness is the CLI's, asked only on
  * opening, on Refresh and after an action here: the main window's own Intelligence calls take the
  * same lock, and a status window polling it would make them fail as busy.
  */
@@ -135,7 +135,7 @@ export function StatusWindow({ readEveryMs = 5000 }: { readEveryMs?: number }) {
       setStatus(found);
       return found;
     } catch {
-      setSaid("OpenBot could not read its status. Try Refresh.");
+      setSaid("AwakenBot could not read its status. Try Refresh.");
       return null;
     }
   }, []);
@@ -209,12 +209,12 @@ export function StatusWindow({ readEveryMs = 5000 }: { readEveryMs?: number }) {
       <div className="sheet status-sheet">
         <h1>Status</h1>
         <p className="lede">
-          See what OpenBot is running on this computer and how much memory it
+          See what AwakenBot is running on this computer and how much memory it
           uses.
         </p>
 
         {!status ? (
-          <StatusLine>Reading OpenBot's status…</StatusLine>
+          <StatusLine>Reading AwakenBot's status…</StatusLine>
         ) : (
           <>
             <section className="status-part" aria-label="App">
@@ -327,7 +327,7 @@ export function StatusWindow({ readEveryMs = 5000 }: { readEveryMs?: number }) {
                 </div>
                 {status.openbotRunning && (
                   <p className="footnote">
-                    OpenBot needs these services while it runs. Stopping them
+                    AwakenBot needs these services while it runs. Stopping them
                     frees memory until you start them again here.
                   </p>
                 )}
@@ -344,8 +344,8 @@ export function StatusWindow({ readEveryMs = 5000 }: { readEveryMs?: number }) {
               </div>
               {!status.engine && (
                 <p className="footnote">
-                  OpenBot needs this to run. If you use Docker Desktop, open it
-                  and wait for it to start.
+                  AwakenBot needs this to run. If you use Docker Desktop, open
+                  it and wait for it to start.
                 </p>
               )}
             </section>

@@ -561,7 +561,7 @@ export async function grantedTools(options: {
     searchable: true as const,
     ...(tool.read ? { reads: true as const } : {}),
     initiator,
-    // OpenBot always asks before a tool its app marks destructive, and the Bot is told so here, on
+    // AwakenBot always asks before a tool its app marks destructive, and the Bot is told so here, on
     // the tool, since its name needn't say it (ASKING_GUIDANCE names these words).
     description: tool.destructive
       ? [tool.description.trim(), DESTRUCTIVE_TOOL_NOTE]

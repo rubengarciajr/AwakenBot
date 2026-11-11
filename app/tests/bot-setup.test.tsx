@@ -68,7 +68,7 @@ afterEach(() => {
 
 /** What `scripts/start.sh` sets `MANAGED_AGENT_AG_UI_URL` to. */
 const MANAGED = "http://localhost:4201/ag-ui";
-/** The harness OpenBot Desktop runs for the personal starter, as `PICKED_HARNESS_URL` names it. */
+/** The harness AwakenBot Desktop runs for the personal starter, as `PICKED_HARNESS_URL` names it. */
 const PICKED = "http://agent-harness:4212";
 
 const actor = {
@@ -222,7 +222,7 @@ test("the personal edition's Setup has no Visibility or Isolated: one person, on
   expect(
     view
       .getByRole("link", {
-        name: "Give each Bot its own computer with OpenBot for Business.",
+        name: "Give each Bot its own computer with AwakenBot for Business.",
       })
       .getAttribute("href"),
   ).toBe("https://open.bot/business");
@@ -301,7 +301,7 @@ test("a coworker somebody hosts keeps its own endpoint when it is renamed", asyn
   });
 });
 
-test("a Bot on the harness OpenBot runs says it can use its tools, and offers no key to make", async () => {
+test("a Bot on the harness AwakenBot runs says it can use its tools, and offers no key to make", async () => {
   serve(PICKED);
   const view = draw("personal");
 
@@ -373,7 +373,7 @@ test("an isolated Bot's Visibility row says, before it is made public and while 
   const shared = draw();
   expect(
     await shared.findByText(
-      `Everyone on OpenBot can find and use it. ${ISOLATED_PUBLIC_SHARES_LOGINS}`,
+      `Everyone on AwakenBot can find and use it. ${ISOLATED_PUBLIC_SHARES_LOGINS}`,
     ),
   ).toBeTruthy();
   cleanup();
@@ -382,7 +382,7 @@ test("an isolated Bot's Visibility row says, before it is made public and while 
   serve(MANAGED, actor.id, { visibility: "public" });
   const plain = draw();
   expect(
-    await plain.findByText("Everyone on OpenBot can find and use it."),
+    await plain.findByText("Everyone on AwakenBot can find and use it."),
   ).toBeTruthy();
 });
 

@@ -53,7 +53,7 @@ function resultText(result: unknown): string {
  * server. Exported for the test that holds the two sides together.
  */
 export const DENIED_ON_DESKTOP: ReadonlySet<string> = new Set([
-  "Declined in OpenBot Desktop.",
+  "Declined in AwakenBot Desktop.",
   "The local owner denied this operation.",
 ]);
 
@@ -174,15 +174,15 @@ async function answer(
 
 /**
  * What "Check your folders" answers when this Bot has no folder: shown on the step as it is, and
- * read by the model, which repeats it. Folder access is session-only, so after OpenBot restarts every
+ * read by the model, which repeats it. Folder access is session-only, so after AwakenBot restarts every
  * Bot lands here. Found on Windows: "No host folders are granted to this Bot." read as jargon, and
  * the model, given no next step, told the person "an administrator can restore the folder grant",
- * when in the personal edition (the one OpenBot Desktop runs) nobody but the person chooses a folder.
+ * when in the personal edition (the one AwakenBot Desktop runs) nobody but the person chooses a folder.
  */
 export function noFolders(): string {
   return currentEdition() === "personal"
-    ? "This Bot has no folders it can read right now. Folder access ends when you stop OpenBot. To give it a folder, use Choose folder in Settings → Computer."
-    : "This Bot has no folders it can read right now. Folder access ends when OpenBot stops. An admin gives a Bot a folder with Choose folder in Admin → Computers.";
+    ? "This Bot has no folders it can read right now. Folder access ends when you stop AwakenBot. To give it a folder, use Choose folder in Settings → Computer."
+    : "This Bot has no folders it can read right now. Folder access ends when AwakenBot stops. An admin gives a Bot a folder with Choose folder in Admin → Computers.";
 }
 
 export function hostAccessTools(options: {

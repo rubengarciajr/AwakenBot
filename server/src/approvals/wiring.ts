@@ -146,7 +146,7 @@ export function createServerApprovalService(deps: {
                 id: request.id,
                 kind: "approval",
                 requestId: request.id,
-                text: `${botName} wants to ${approvalPhrase(action)}. Open the Bot's page in OpenBot to review it.`,
+                text: `${botName} wants to ${approvalPhrase(action)}. Open the Bot's page in AwakenBot to review it.`,
               },
             );
         }

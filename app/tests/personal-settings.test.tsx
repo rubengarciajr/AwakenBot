@@ -327,10 +327,10 @@ describe("the Computer page", () => {
     });
     const browsers = view.getByRole("heading", { name: "Your Bots' browsers" })
       .parentElement?.parentElement as HTMLElement;
-    await within(browsers).findByText("Your OpenBot browser");
+    await within(browsers).findByText("Your AwakenBot browser");
     expect(browsers.textContent).not.toContain("A Bot no longer here");
 
-    const own = browserRow(view, "Your OpenBot browser");
+    const own = browserRow(view, "Your AwakenBot browser");
     expect(own.textContent).toContain("You record in it with Teach a Bot.");
     expect(
       within(own).getByRole("button", { name: "Stop browser" }),
@@ -347,23 +347,23 @@ describe("the Computer page", () => {
     const text = view.container.textContent ?? "";
     expect(text).not.toContain("closes a Bot's browser");
     expect(text).toContain(
-      "Clear browser data does the same for your OpenBot browser.",
+      "Clear browser data does the same for your AwakenBot browser.",
     );
   });
 
-  test("in the personal edition says a stopped OpenBot browser opens when you record", async () => {
+  test("in the personal edition says a stopped AwakenBot browser opens when you record", async () => {
     const view = await renderPage("personal", hostAccess, {
       ...fleet,
       computers: [{ ...teachBrowser, running: false, startedAt: null }],
     });
-    const own = browserRow(view, "Your OpenBot browser");
+    const own = browserRow(view, "Your AwakenBot browser");
     expect(own.textContent).toContain(
       "No browser running. It opens when you record with Teach a Bot.",
     );
     expect(own.textContent).not.toContain("when the Bot next needs it");
   });
 
-  test("in the team edition names whose OpenBot browser it is, never a Bot that is gone", async () => {
+  test("in the team edition names whose AwakenBot browser it is, never a Bot that is gone", async () => {
     const view = await renderPage("team", hostAccess, {
       isolation: "per-person",
       computers: [
@@ -378,15 +378,15 @@ describe("the Computer page", () => {
         },
       ],
     });
-    const ada = browserRow(view, "Ada's OpenBot browser");
+    const ada = browserRow(view, "Ada's AwakenBot browser");
     expect(ada.textContent).toContain("Their own browser for Teach a Bot");
     expect(ada.textContent).not.toContain("Isolated");
-    expect(view.getByText("A person's OpenBot browser")).toBeTruthy();
+    expect(view.getByText("A person's AwakenBot browser")).toBeTruthy();
     expect(view.container.textContent).not.toContain("A Bot no longer here");
 
     within(ada).getByRole("button", { name: "Reset" }).click();
     const dialog = await view.findByRole("dialog");
-    expect(dialog.textContent).toContain("Reset Ada's OpenBot browser?");
+    expect(dialog.textContent).toContain("Reset Ada's AwakenBot browser?");
     expect(dialog.textContent).toContain(
       "The person is signed out of every site they signed in to in it.",
     );
@@ -399,9 +399,9 @@ describe("the Computer page", () => {
       .parentElement?.parentElement as HTMLElement;
   }
 
-  // OpenBot Desktop gives its server a host, and the personal edition allows it, so a Bot's row
-  // offers the picker. It answered "isn't part of OpenBot Personal".
-  test("in OpenBot Desktop offers each Bot a folder", async () => {
+  // AwakenBot Desktop gives its server a host, and the personal edition allows it, so a Bot's row
+  // offers the picker. It answered "isn't part of AwakenBot Personal".
+  test("in AwakenBot Desktop offers each Bot a folder", async () => {
     const view = await renderPage("personal", {
       ...hostAccess,
       desktop: true,
@@ -418,13 +418,13 @@ describe("the Computer page", () => {
 
   // Started with scripts/start.sh, or anywhere but the desktop: no host will ever answer, so the
   // section says what is missing instead of offering a picker that cannot open.
-  test("outside OpenBot Desktop says the folders need it, with no picker to press", async () => {
+  test("outside AwakenBot Desktop says the folders need it, with no picker to press", async () => {
     const view = await renderPage("personal", {
       ...hostAccess,
       desktop: false,
     });
     const folders = foldersSection(view);
-    expect(within(folders).getByText("Needs OpenBot Desktop")).toBeTruthy();
+    expect(within(folders).getByText("Needs AwakenBot Desktop")).toBeTruthy();
     expect(
       within(folders).queryByRole("button", { name: "Choose folder" }),
     ).toBeNull();
@@ -462,9 +462,9 @@ describe("the Computer page", () => {
     ],
   };
 
-  // FOUND ON WINDOWS: behind OpenBot Desktop's own dialog the row read "Folder access waiting for
+  // FOUND ON WINDOWS: behind AwakenBot Desktop's own dialog the row read "Folder access waiting for
   // approval from the desktop owner." The desktop owner is the person reading it.
-  test("in the personal edition a waiting folder says OpenBot Desktop is asking you", async () => {
+  test("in the personal edition a waiting folder says AwakenBot Desktop is asking you", async () => {
     const view = await renderPage("personal", {
       ...hostAccess,
       desktop: true,
@@ -474,7 +474,7 @@ describe("the Computer page", () => {
     const text = foldersSection(view).textContent ?? "";
     expect(text).toContain("1 pending request");
     expect(text).toContain(
-      "Folder access is waiting for you. OpenBot Desktop is asking you in a window.",
+      "Folder access is waiting for you. AwakenBot Desktop is asking you in a window.",
     );
     expect(text).not.toContain("desktop owner");
   });
@@ -491,10 +491,10 @@ describe("the Computer page", () => {
     });
     const text = foldersSection(view).textContent ?? "";
     expect(text).toContain(
-      "A file change is waiting for you. OpenBot Desktop is asking you in a window.",
+      "A file change is waiting for you. AwakenBot Desktop is asking you in a window.",
     );
     expect(text).toContain(
-      "A command is waiting for you or still running. OpenBot Desktop asks you in a window.",
+      "A command is waiting for you or still running. AwakenBot Desktop asks you in a window.",
     );
     expect(text).toContain("Listing files.");
     expect(text).toContain("Reading a file.");
@@ -544,7 +544,7 @@ describe("the Computer page", () => {
     expect(text).toContain("Listing files.");
     expect(text).not.toContain("Listing files from");
     expect(text).toContain("Approved by the desktop owner · Read-only");
-    expect(text).not.toContain("OpenBot Desktop is asking you");
+    expect(text).not.toContain("AwakenBot Desktop is asking you");
   });
 
   test("in the team edition still tells an admin how to give each person a computer", async () => {

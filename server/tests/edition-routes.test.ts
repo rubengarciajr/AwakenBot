@@ -14,7 +14,7 @@ function appFor(edition: Edition) {
 }
 
 const closed = [
-  // No memory in the personal edition: OpenBot Desktop's local Intelligence isn't licensed for it.
+  // No memory in the personal edition: AwakenBot Desktop's local Intelligence isn't licensed for it.
   "/api/memory",
   "/api/memory/sources",
   "/api/memory/sources/available/expenses",

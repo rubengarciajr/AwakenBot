@@ -141,13 +141,13 @@ export type AuthConfig = {
    * account including personal ones, `organizations` any work or school account anywhere, and a GUID
    * admits one directory. A deployment that wants only its own company needs the GUID.
    *
-   * `apiScope` is OpenBot's own API in Entra, as a scope: what a person's app asks for a token to
-   * OpenBot with, and what OpenBot asks for from a person's stored sign-in before exchanging it on
+   * `apiScope` is AwakenBot's own API in Entra, as a scope: what a person's app asks for a token to
+   * AwakenBot with, and what AwakenBot asks for from a person's stored sign-in before exchanging it on
    * their behalf (`auth/entra.ts`). `api://<client id>/.default` unless MICROSOFT_OAUTH_API_SCOPE says
    * otherwise.
    *
-   * `allowedClients` is which apps may call OpenBot with a person's token, by application (client)
-   * id, lower-cased: a token's `azp` must be one of them. Entra issues a token for OpenBot's API to
+   * `allowedClients` is which apps may call AwakenBot with a person's token, by application (client)
+   * id, lower-cased: a token's `azp` must be one of them. Entra issues a token for AwakenBot's API to
    * any app a person or an admin consents to, so the token alone does not say the app is one this
    * company meant. Empty, from MICROSOFT_OAUTH_ALLOWED_CLIENTS unset, no app's token is taken.
    */
@@ -209,7 +209,7 @@ export type HandoffCaps = {
 /**
  * Which requests a single-user deployment admits as its one administrator.
  *
- * `thisMachineOnly` is true for a server running on the person's own machine (OpenBot Desktop,
+ * `thisMachineOnly` is true for a server running on the person's own machine (AwakenBot Desktop,
  * `scripts/start.sh`, `bun run dev`) with no address beyond it configured: only a caller connecting
  * from this machine's loopback is the administrator. False in a container, where every caller arrives
  * through the engine's network and none of them is on loopback, and wherever the operator named an
@@ -228,14 +228,14 @@ export type SingleUserAccess = {
 
 export type DeploymentConfig = {
   /**
-   * Browser extension ids OpenBot trusts as the Recorder besides its own fixed id, for a fork or a
+   * Browser extension ids AwakenBot trusts as the Recorder besides its own fixed id, for a fork or a
    * build signed with another key. From OPENBOT_RECORDER_EXTRA_EXTENSION_IDS, never from NODE_ENV.
    */
   recorder: { extraExtensionIds: string[] };
   /** Optional environment default. A saved Admin setting takes precedence. */
   learning?: LearningTarget;
   /**
-   * Whether OpenBot assigns the Intelligence project's `openbot` Learning container as the default
+   * Whether AwakenBot assigns the Intelligence project's `openbot` Learning container as the default
    * when nobody has chosen one (learning/auto-assign.ts). On unless OPENBOT_LEARNING_AUTO_ASSIGN is
    * "false" or "0". A container CPK_INTELLIGENCE_LEARNING_CONTAINER_ID names stands it aside once
    * Intelligence confirms it has that container; one it does not have is ignored, and this assigns
@@ -254,7 +254,7 @@ export type DeploymentConfig = {
    */
   learningSetup?: { serviceToken: string; projectId: string };
   /**
-   * Memory sources and background research OpenBot switches on for each person (memory/defaults.ts).
+   * Memory sources and background research AwakenBot switches on for each person (memory/defaults.ts).
    * Both on unless OPENBOT_MEMORY_SOURCE_DEFAULTS or OPENBOT_PROACTIVE_DEFAULTS is "false" or "0".
    * Switching either off stops new defaults and leaves every existing row as it is.
    */
@@ -289,7 +289,7 @@ export type DeploymentConfig = {
   agentEndpointAllowedHosts: ReadonlySet<string>;
   /**
    * The name this server's container reaches the person's machine by, from
-   * `OPENBOT_THIS_MACHINE_HOST`. OpenBot Desktop sets it (`host.docker.internal`), because there the
+   * `OPENBOT_THIS_MACHINE_HOST`. AwakenBot Desktop sets it (`host.docker.internal`), because there the
    * server runs in a container and `127.0.0.1` is the container, so an agent the person registers on
    * their own loopback is dialled through this name (`onThisMachine` in agents/endpoint.ts). Absent
    * wherever the server is a host process or hosted, and nothing is translated.
@@ -303,8 +303,8 @@ export type DeploymentConfig = {
    */
   deploymentId: string | undefined;
   /**
-   * The OpenBot release this server runs, such as `v0.3.1`, from OPENBOT_BUILD_VERSION: release CI
-   * bakes it into the image, and OpenBot Desktop sets it from the release it installed. Absent in
+   * The AwakenBot release this server runs, such as `v0.3.1`, from OPENBOT_BUILD_VERSION: release CI
+   * bakes it into the image, and AwakenBot Desktop sets it from the release it installed. Absent in
    * development and in a local image build.
    */
   version?: string;
@@ -390,7 +390,7 @@ export type DeploymentConfig = {
     google?: { clientId: string; clientSecret: string };
   };
   auth?: AuthConfig;
-  /** Customer OpenBot authority for employee desktop sessions, separate from Intelligence. */
+  /** Customer AwakenBot authority for employee desktop sessions, separate from Intelligence. */
   organizationAuthUrl?: string;
   /**
    * Admit everybody as one fixed administrator instead of requiring sign-in.
@@ -418,7 +418,7 @@ export type DeploymentConfig = {
   browserOrigins: string[];
   /** Which product this is. `personal` requires single-user mode and the one shared computer. */
   edition: Edition;
-  /** Names OpenBot on the analytics the runtime already sends. Off with OPENBOT_ACCESSIBILITY_DISABLED. */
+  /** Names AwakenBot on the analytics the runtime already sends. Off with OPENBOT_ACCESSIBILITY_DISABLED. */
   accessibility: boolean;
   /**
    * Whether a Bot may answer with an interface it wrote itself.
@@ -445,10 +445,10 @@ export type DeploymentConfig = {
    */
   generativeUi: boolean;
   /**
-   * Whether the signed-in app shows the banner offering help self-hosting OpenBot.
+   * Whether the signed-in app shows the banner offering help self-hosting AwakenBot.
    *
    * On by default, because a fresh clone is somebody evaluating the template. A fork that runs
-   * OpenBot for its own organization turns it off with OPENBOT_SELF_HOST_BANNER=false or
+   * AwakenBot for its own organization turns it off with OPENBOT_SELF_HOST_BANNER=false or
    * OPENBOT_SELF_HOST_BANNER=0, since its people have nothing to self-host. This is the operator's
    * switch only; a deployment on a paid Intelligence plan hides the bar too (self-host-banner.ts).
    */
@@ -466,7 +466,7 @@ export type DeploymentConfig = {
    */
   computer?: ComputerConfig;
   /**
-   * The computer that runs people's own OpenBot browsers here when it is not the Bots' (`OPENBOT_BROWSER_URL`): a
+   * The computer that runs people's own AwakenBot browsers here when it is not the Bots' (`OPENBOT_BROWSER_URL`): a
    * host-side local Chrome computer (`scripts/start-local-chrome-computer.ts`), so a person's browser is a window on
    * their own desktop while Bots' computers stay where they are. Called with the same COMPUTER_TOKEN as every computer.
    * Absent, the Bots' computer provider runs people's browsers too, shown in the page.
@@ -666,7 +666,7 @@ function singleUserAllowed(
  * WHERE THE SERVER RUNS IS SAID BY THE IMAGE, NOT GUESSED. `OPENBOT_IN_CONTAINER=true` is set by both
  * Dockerfiles that run this server (`server/Dockerfile`, used by Compose and the chart, and the
  * one-container `Dockerfile`), so every container gets it without anybody writing it down, and every
- * other way of starting the server (OpenBot Desktop, `scripts/start.sh`, `bun run dev`) does not.
+ * other way of starting the server (AwakenBot Desktop, `scripts/start.sh`, `bun run dev`) does not.
  * The default is the strict one: a server nobody said is in a container admits only this machine.
  * Inside a container that would refuse everybody, because the engine's proxy is the peer of every
  * request, which is the one place the flag is needed and the one place it is always present.
@@ -693,7 +693,7 @@ function singleUserAccess(environment: Environment): SingleUserAccess {
  * The origins this deployment's own pages are served from. See {@link DeploymentConfig.browserOrigins}.
  *
  * In single-user mode the app's port as well, on all three loopback names, whatever else is configured,
- * because that is where OpenBot Desktop and `scripts/start.sh` open it, and on the host of every configured
+ * because that is where AwakenBot Desktop and `scripts/start.sh` open it, and on the host of every configured
  * address, because that is where another machine opens it once one is configured
  * (`OPENBOT_PUBLIC_URL=http://192.168.1.10:3001` puts the app at `http://192.168.1.10:3010`). The app's
  * servers proxy API calls to this one, so the browser's `Origin` names the app's port and the request's
@@ -1041,7 +1041,7 @@ function authConfig(
   /*
    * A list this deployment cannot enforce is worse than no list.
    *
-   * `common` is multi-tenant, and OpenBot never sets `requireEmailVerification` or reads
+   * `common` is multi-tenant, and AwakenBot never sets `requireEmailVerification` or reads
    * `users.emailVerified`, so the address a rule is applied to is one the signing-in tenant's own
    * administrator wrote. Anybody may create a tenant. So an allowlist under `common` refuses the
    * honest and admits the rest, while reading on the Boundaries page as though it were a control.
@@ -1117,7 +1117,7 @@ const ENTRA_CLIENT_ID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 /**
- * The apps whose tokens OpenBot takes, from MICROSOFT_OAUTH_ALLOWED_CLIENTS.
+ * The apps whose tokens AwakenBot takes, from MICROSOFT_OAUTH_ALLOWED_CLIENTS.
  *
  * Refused at start-up when an entry is not a client id, because the likely mistake is pasting the
  * app's `api://` URI or its name, which no token's `azp` will ever equal: every app would then be
@@ -1201,7 +1201,7 @@ function runtimeCapabilities(environment: Environment): RuntimeCapabilities {
   /*
    * Optional, and only ever a second address for the same gateway. The browser opens the gateway
    * itself, at the address `/info` gives it, so a server that reaches Intelligence somewhere the
-   * browser cannot follow names the browser's address here. The server in OpenBot Desktop's
+   * browser cannot follow names the browser's address here. The server in AwakenBot Desktop's
    * container does: it reaches local Intelligence at `host.docker.internal`, and the window on the
    * host reaches the same gateway at `localhost`. Unset, the browser is given `gatewayWsUrl`, as
    * before.
@@ -1212,9 +1212,9 @@ function runtimeCapabilities(environment: Environment): RuntimeCapabilities {
   );
 
   /*
-   * Or OpenBot carries the browser's socket itself, for an Intelligence that only OpenBot can reach:
+   * Or AwakenBot carries the browser's socket itself, for an Intelligence that only AwakenBot can reach:
    * one in the same cluster, behind a `kubectl port-forward` or a single Ingress host. The browser
-   * is then told OpenBot's own address for it, so naming a second one as well is a contradiction.
+   * is then told AwakenBot's own address for it, so naming a second one as well is a contradiction.
    */
   const gatewayProxy = onOrOff(environment, "INTELLIGENCE_GATEWAY_PROXY");
   if (gatewayProxy && browserGatewayWsUrl) {

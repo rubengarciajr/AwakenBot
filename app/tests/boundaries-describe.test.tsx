@@ -210,7 +210,7 @@ test("a description fills the rule, shows its reading and compile result, replay
     SOCIAL.rule,
   );
   expect(
-    view.getByText("Compiles. OpenBot can check it on every action."),
+    view.getByText("Compiles. AwakenBot can check it on every action."),
   ).toBeTruthy();
   // Replayed as soon as it rests in the field, on its own.
   expect(
@@ -326,7 +326,7 @@ test("a rule that never compiled is shown with the error and can't be added as w
   );
 
   expect(
-    await view.findByText(/Doesn't compile, so OpenBot won't save it/),
+    await view.findByText(/Doesn't compile, so AwakenBot won't save it/),
   ).toBeTruthy();
   expect(view.queryByText("What this rule does")).toBeNull();
   expect(
@@ -363,7 +363,7 @@ test("with no model set up, the server's sentence is shown and nothing is filled
   translation = {
     status: 503,
     error:
-      "OpenBot needs a model key to write a rule from a description. Add one on the Credentials page, or write the rule in CEL.",
+      "AwakenBot needs a model key to write a rule from a description. Add one on the Credentials page, or write the rule in CEL.",
   };
   const { view } = open("/admin/boundaries/new");
 
@@ -372,7 +372,7 @@ test("with no model set up, the server's sentence is shown and nothing is filled
 
   expect(
     await view.findByText(
-      "OpenBot needs a model key to write a rule from a description. Add one on the Credentials page, or write the rule in CEL.",
+      "AwakenBot needs a model key to write a rule from a description. Add one on the Credentials page, or write the rule in CEL.",
     ),
   ).toBeTruthy();
   expect((view.getByLabelText("Rule") as HTMLTextAreaElement).value).toBe("");

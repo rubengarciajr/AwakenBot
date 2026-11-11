@@ -37,8 +37,8 @@ const PRODUCT = appConfig.brand.productName;
  * Every step, by id, with the number the server stores for it.
  *
  * `POST /api/me/onboarding` keeps a step as an integer, so each id has a number of its own. A
- * number per id, never a position in the list: OpenBot for Business joins the list only for somebody trying
- * OpenBot alone, and the name step leaves it for somebody whose name is known, so a position would
+ * number per id, never a position in the list: AwakenBot for Business joins the list only for somebody trying
+ * AwakenBot alone, and the name step leaves it for somebody whose name is known, so a position would
  * mean different steps to different people. 0 is the server's "not started".
  */
 const STEP_NUMBER = {
@@ -86,14 +86,14 @@ export const Route = createFileRoute("/_authed/onboarding")({
 });
 
 /*
- * THREE CLICKS AT MOST INTO THE APP. Welcome, then OpenBot for Business for somebody trying OpenBot alone,
+ * THREE CLICKS AT MOST INTO THE APP. Welcome, then AwakenBot for Business for somebody trying AwakenBot alone,
  * then the name. Everything else waits for the app: the setup checklist lives in Settings → Setup,
  * apps are connected from Connections when a Bot needs one, and notifications are offered once the
  * first task has started (`NotifyPrompt`), when what they are for is plain.
  */
 
 /**
- * The welcome step: one animation of what OpenBot does, and beside it the one choice worth making
+ * The welcome step: one animation of what AwakenBot does, and beside it the one choice worth making
  * before the first task, whether a Bot asks before it changes anything.
  *
  * What always asks is said above the switch, so nobody reads turning it off as turning those off
@@ -145,10 +145,10 @@ function welcomeStep(computer: boolean): OnboardingStep {
 /*
  * OPENBOT FOR BUSINESS IS FOR SOMEBODY TRYING OPENBOT ON THEIR OWN MACHINE, and only they see it (see
  * `localEvaluation` in RouteComponent). None of it is said to an organization's own people, who
- * already have OpenBot.
+ * already have AwakenBot.
  *
- * WHAT IT IS COMES BEFORE ASKING FOR A CALL. The step opens on what OpenBot for Business adds, beside
- * the picture of running OpenBot yourself (on this computer, with the agents you already have, for
+ * WHAT IT IS COMES BEFORE ASKING FOR A CALL. The step opens on what AwakenBot for Business adds, beside
+ * the picture of running AwakenBot yourself (on this computer, with the agents you already have, for
  * your organization), with Book a demo and Not now. Somebody who has never heard of it has no reason
  * to book anything until they know what they would be booking.
  *
@@ -158,7 +158,7 @@ function welcomeStep(computer: boolean): OnboardingStep {
  * Continue, in the same place.
  *
  * A calendar that can't load (offline, blocked, silent) puts the picture back, with Book a call, which
- * opens the OpenBot for Business page in a new tab (on the Desktop, in the person's browser).
+ * opens the AwakenBot for Business page in a new tab (on the Desktop, in the person's browser).
  */
 function useBookDemoStep(): OnboardingStep {
   const [calendar, setCalendar] = React.useState(false);
@@ -168,7 +168,7 @@ function useBookDemoStep(): OnboardingStep {
   const book = React.useCallback(() => setBooked(true), []);
   const value: OnboardingStep = {
     id: "selfhost",
-    title: "OpenBot for Business",
+    title: "AwakenBot for Business",
     intro: () => (
       <StepIntro>
         <p>
@@ -229,7 +229,7 @@ function RouteComponent() {
   const me = useQuery(currentUserQueryOptions());
 
   /*
-   * OpenBot for Business is for somebody evaluating OpenBot locally, never for an organization's people: the
+   * AwakenBot for Business is for somebody evaluating AwakenBot locally, never for an organization's people: the
    * server says single-user mode, which an organization's deployment, always behind sign-in, cannot
    * be in. Until the answer arrives it is left out, and Welcome's button waits for it, so a slow or
    * failed request never shows an organization's employees a page about booking a call, and an
@@ -269,7 +269,7 @@ function RouteComponent() {
 
   /*
    * The step on screen: the address's, else the one the server saved, else the first. A step not in
-   * this person's list (OpenBot for Business for an organization's person, the name step once it is known)
+   * this person's list (AwakenBot for Business for an organization's person, the name step once it is known)
    * reads as the last one they have, once the answer that decides it is in. Arriving without a step
    * writes it into the address in place, so the entry the person lands on already names its step.
    */
@@ -291,7 +291,7 @@ function RouteComponent() {
   const { mutate: save } = advance;
   React.useEffect(() => {
     if (savedStep === undefined || savedStep === STEP_NUMBER[current]) return;
-    // OpenBot for Business waits for the answer that says whether this person has one.
+    // AwakenBot for Business waits for the answer that says whether this person has one.
     if (current === "selfhost" && !capabilities) return;
     /*
      * A save that fails is tried again on the next move, since the saved step still differs. It is
@@ -401,7 +401,7 @@ function RouteComponent() {
   /*
    * Without the name step, the last step's buttons finish onboarding where they would have moved
    * on: Get started on Welcome, and Book a demo, Continue (once booked), Book a call or Not now on
-   * OpenBot for Business.
+   * AwakenBot for Business.
    */
   const lastId = ids[ids.length - 1];
   const steps: OnboardingStep[] = ids.map((id) => {
@@ -423,7 +423,7 @@ function RouteComponent() {
     };
   });
 
-  // An OpenBot for Business step in the address waits for the answer that puts it in the list, rather than
+  // An AwakenBot for Business step in the address waits for the answer that puts it in the list, rather than
   // drawing Welcome for a moment and then jumping.
   const waiting = askingCapabilities && current === "selfhost";
 

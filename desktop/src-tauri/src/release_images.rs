@@ -6,7 +6,7 @@ container registry is slow pulls them from there (scripts/downloads-images.ts, d
 The list it copies is made here, from the same calls Install and the back end's download make, so
 it cannot name one image fewer than the app pulls:
 
-- OpenBot's own: `preparation::installation_pull_set`, which asks Compose for the images of the
+- AwakenBot's own: `preparation::installation_pull_set`, which asks Compose for the images of the
   services this app runs, with each Bot this release can install picked in turn, and adds the two
   sign-in images. Compose reads the release's `docker-compose.yml`, with the images pinned by its
   `container-images.json`, exactly as it does beside an installation.
@@ -16,7 +16,7 @@ it cannot name one image fewer than the app pulls:
   host's engine pulls when the CLI has k3d create the cluster (`local_images::cli_cluster_images`):
   the k3s node image and k3d's proxy and tools, each at the digest the CLI gives k3d.
 - The engine machine images on quay.io that the first setup screen downloads before Install, so
-  Podman builds OpenBot's machine from a local file (`early_downloads::machine_image_references`).
+  Podman builds AwakenBot's machine from a local file (`early_downloads::machine_image_references`).
 
 The release publishes the list as `desktop-images.json` (`examples/release_images.rs`).
 */
@@ -32,7 +32,7 @@ use crate::harness::{catalogue, HarnessChoice};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct ReleaseImages {
-    /// The OpenBot release, as its `container-images.json` names it.
+    /// The AwakenBot release, as its `container-images.json` names it.
     pub openbot: String,
     /// The Intelligence release the bundled CLI installs.
     pub intelligence: String,

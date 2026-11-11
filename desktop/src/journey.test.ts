@@ -34,7 +34,7 @@ const recorded: { setup: [number, string][]; update: [number, string][] } =
     ),
   );
 
-/** Words a person setting OpenBot up doesn't know. */
+/** Words a person setting AwakenBot up doesn't know. */
 const TECHNICAL = [
   /Podman/i,
   /\bWSL\b/,
@@ -158,7 +158,7 @@ test("a Start's legs make one journey, weighed by how long each takes", () => {
   const where = journey(legs);
   expect(where.fraction).toBeGreaterThan(60 / 85);
   expect(where.fraction).toBeLessThan(1);
-  expect(where.said).toBe("Checking OpenBot's settings");
+  expect(where.said).toBe("Checking AwakenBot's settings");
   expect(leftSaid(where.left)).toBe("Less than a minute left");
   const first = journey([
     { plan: WAIT, state: "now", at: position(WAIT, [], 0) },
@@ -221,10 +221,10 @@ test("a long download moves the bar by its bytes and holds up no step's clock", 
 });
 
 /**
- * Windows D updating OpenBot 1.0.1-internal.1008 to 1012, as the Start screen was sampled every 3
- * to 12 seconds: the back end up at 5 s, the update getting ready (stopping OpenBot, backing up its
+ * Windows D updating AwakenBot 1.0.1-internal.1008 to 1012, as the Start screen was sampled every 3
+ * to 12 seconds: the back end up at 5 s, the update getting ready (stopping AwakenBot, backing up its
  * data) until 24 s, its 944.3 MB download from 28 s (386.9 MB at 38 s, 783.5 at 50, 929.6 at 62,
- * 939.1 at 74), installing it at 76 s, starting it at 78 s, and OpenBot open at 110 s.
+ * 939.1 at 74), installing it at 76 s, starting it at 78 s, and AwakenBot open at 110 s.
  */
 const D_DOWNLOAD: [number, number][] = [
   [28, 0],
@@ -268,16 +268,16 @@ function windowsD(second: number): {
   if (opening) {
     const detail =
       second < 6
-        ? "Updating OpenBot. Your Bots, sign-ins and data stay as they are."
+        ? "Updating AwakenBot. Your Bots, sign-ins and data stay as they are."
         : second < 12
-          ? "Stopping OpenBot."
+          ? "Stopping AwakenBot."
           : second < 24
             ? "Backing up your data."
             : second < 76
               ? "Downloading the update."
               : second < 78
                 ? "Installing the update."
-                : "Starting OpenBot.";
+                : "Starting AwakenBot.";
     open.push({ step: "release", ok: true, running: true, detail });
   }
   if (second >= 28 && second < 76)
@@ -354,13 +354,13 @@ test("over Windows D's update, the bar follows the time each part takes and the 
   const said = [...new Set(seen.map((moment) => moment.said))];
   expect(said).toContain("Getting the update ready");
   expect(said).toContain("Downloading the update");
-  expect(said).toContain("Starting the updated OpenBot");
+  expect(said).toContain("Starting the updated AwakenBot");
   expect(said.join(" ")).not.toMatch(/back ?end|Podman|engine/i);
 });
 
 /**
  * Windows F said "Taking longer than usual, still working" 46 seconds into setting up the rest of
- * OpenBot, a part that takes about three minutes. It says so only once a step is well past when it
+ * AwakenBot, a part that takes about three minutes. It says so only once a step is well past when it
  * typically ends: half as long again, and a minute at least.
  */
 test("taking longer than usual is said only well past when a step typically ends", () => {
@@ -428,7 +428,7 @@ test("the background row's time so far only goes up as the install moves on", ()
   expect(relaunch?.startedAt).toBe(since + 120_000);
 });
 
-/** Windows D's Quit: stopping OpenBot took 14 seconds and its services about 12. */
+/** Windows D's Quit: stopping AwakenBot took 14 seconds and its services about 12. */
 test("a Quit says what it is doing, moves its bar, and says the time left", () => {
   let clock: QuitClock | null = null;
   const seen: { said: string; fraction: number; left: number | null }[] = [];
@@ -444,9 +444,9 @@ test("a Quit says what it is doing, moves its bar, and says the time left", () =
     clock = ticked.clock;
     seen.push(ticked);
   }
-  expect(seen[0]?.said).toBe("Closing OpenBot's apps");
+  expect(seen[0]?.said).toBe("Closing AwakenBot's apps");
   expect(seen[0]?.left).toBe(28);
-  expect(seen[20]?.said).toBe("Closing OpenBot's services");
+  expect(seen[20]?.said).toBe("Closing AwakenBot's services");
   for (let second = 1; second < seen.length; second += 1)
     expect(seen[second]?.fraction).toBeGreaterThan(
       seen[second - 1]?.fraction ?? 1,
@@ -456,9 +456,9 @@ test("a Quit says what it is doing, moves its bar, and says the time left", () =
 });
 
 /**
- * A Start as Windows G's took it: Docker Desktop starting for a minute, then OpenBot updating
+ * A Start as Windows G's took it: Docker Desktop starting for a minute, then AwakenBot updating
  * itself, its 944.4 MB update downloading at about 12.5 MB a second, its first four parts unpacking
- * in two seconds each and its last for `lastPart` seconds, then OpenBot starting until 30 seconds
+ * in two seconds each and its last for `lastPart` seconds, then AwakenBot starting until 30 seconds
  * after that.
  */
 function windowsG(
@@ -492,14 +492,14 @@ function windowsG(
       startedAt: start + 60_000,
       detail:
         second < 66
-          ? "Stopping OpenBot."
+          ? "Stopping AwakenBot."
           : second < 80
             ? "Backing up your data."
             : second < unpacked
               ? "Downloading the update."
               : second < unpacked + 2
                 ? "Installing the update."
-                : "Starting OpenBot.",
+                : "Starting AwakenBot.",
     });
   if (second >= 80 && second < unpacked) {
     const bytes = Math.min(size, (second - 80) * 12_500_000);

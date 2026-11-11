@@ -172,7 +172,7 @@ export const mcpServers = pgTable(
      * `plugins/plugin-store/model.ts` as of the refresh that stored them, 0 for rows stored before
      * this column existed.
      *
-     * What OpenBot records from a listing can change between releases while the vendor's answer
+     * What AwakenBot records from a listing can change between releases while the vendor's answer
      * does not: #1177 started recording a broker's silence as `unclassified`, where Arcade's had been
      * recorded as `destructive`. Nothing stored tells those rows apart from an action the vendor did
      * flag, so they are listed again instead. At each start, every app of the active broker whose

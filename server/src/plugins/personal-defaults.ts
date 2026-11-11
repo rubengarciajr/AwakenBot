@@ -87,22 +87,22 @@ export const ALWAYS_ON_REFUSAL = "Routines are always on, for every Bot.";
 
 /** What the personal edition's server answers when somebody tries to take an app from one Bot. */
 export const EVERY_BOT_REFUSAL =
-  "In OpenBot Personal every Bot can use every app you connect. Turn the app off to take it from all of them.";
+  "In AwakenBot Personal every Bot can use every app you connect. Turn the app off to take it from all of them.";
 
 /**
  * What the personal edition's server answers when somebody tries to stop one Bot asking another.
  * Every Bot there is the one person's, so each can ask the others (see `botsReachableFrom`).
  */
 export const EVERY_BOT_ASKS_REFUSAL =
-  "In OpenBot Personal every Bot can ask your other Bots for help.";
+  "In AwakenBot Personal every Bot can ask your other Bots for help.";
 
 /**
  * Gives Bots every tool of these apps they don't hold yet. Writes nothing when they hold them all,
  * so asking on every run costs reads and no trail rows. The trail names why: Routines' grants as
  * always on, any other app's as `by`.
  *
- * One trail row per Bot and app, naming every tool it was given, and started by OpenBot when `by`
- * is OpenBot's own (see `initiatedBy`). An upgrade that added seven goal tools to Routines wrote one
+ * One trail row per Bot and app, naming every tool it was given, and started by AwakenBot when `by`
+ * is AwakenBot's own (see `initiatedBy`). An upgrade that added seven goal tools to Routines wrote one
  * row per tool for every Bot, each saying a person had changed a setting.
  */
 async function grantEveryTool(
@@ -173,9 +173,9 @@ export async function ensurePersonalSkills(
  * written before that.
  *
  * Only skills the person installed: `installed_by` is their email, which is what the route records.
- * A skill OpenBot ships has none, and one the person edited keeps it, so both stay OpenBot's, as an
+ * A skill AwakenBot ships has none, and one the person edited keeps it, so both stay AwakenBot's, as an
  * edit keeps the owner a skill already had. Writes nothing once there are none left, and then an
- * audit row naming them, started by OpenBot.
+ * audit row naming them, started by AwakenBot.
  *
  * @returns the slugs it gave to the person
  */
@@ -215,7 +215,7 @@ export async function ensurePersonalSkillsOwned(
  * startup for the Bots that exist; every Bot's first listing or run checks again (see
  * `withPersonalDefaults`). A Bot made later has no mapping and follows the default already.
  *
- * Writes only when a Bot was left out, and then an audit row naming the Bots, started by OpenBot.
+ * Writes only when a Bot was left out, and then an audit row naming the Bots, started by AwakenBot.
  */
 export async function ensurePersonalLearning(
   deps: Pick<PersonalDefaultsDeps, "includeEveryBotInLearning">,
@@ -242,7 +242,7 @@ async function everyBotApps(deps: PersonalDefaultsDeps): Promise<string[]> {
 
 /**
  * At startup, in every edition: add Routines if it isn't added, bring the saved tools of every app
- * whose tools are OpenBot's own code up to date with this build (see `refreshOwnListings`), and give
+ * whose tools are AwakenBot's own code up to date with this build (see `refreshOwnListings`), and give
  * every Bot all of Routines' tools. The ones that change things too, because scheduling is the point;
  * a Bot still asks before each one runs while Extra vigilant is on.
  *
@@ -359,11 +359,11 @@ export function startPersonalDefaultApps(
       const waiting = await ensurePersonalDefaultApps(store, deps, memory);
       if (waiting.length === 0) return;
       warnOnce(
-        `${waiting.join(", ")} could not list its tools, so web search is not ready yet. OpenBot will keep trying.`,
+        `${waiting.join(", ")} could not list its tools, so web search is not ready yet. AwakenBot will keep trying.`,
       );
     } catch (error) {
       warnOnce(
-        `OpenBot could not turn on its default apps (${reasonWithoutStatement(error)}). It will keep trying.`,
+        `AwakenBot could not turn on its default apps (${reasonWithoutStatement(error)}). It will keep trying.`,
       );
     }
     if (stopped) return;

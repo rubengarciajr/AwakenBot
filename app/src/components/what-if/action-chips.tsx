@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils";
  * One action as chips: who, what started it, and what it does. A question read by the model arrives
  * here, and every chip can be changed, so the action that is checked is the one the admin confirmed.
  *
- * Each chip holds only what this OpenBot has: its Bots, people, groups, apps and tools. The same chip
+ * Each chip holds only what this AwakenBot has: its Bots, people, groups, apps and tools. The same chip
  * shape as the Audit page's filters, wrapping onto as many lines as the column needs.
  */
 export function ActionChips({

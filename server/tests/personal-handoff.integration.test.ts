@@ -31,7 +31,7 @@ import { TEST_POOL, testDatabaseUrl } from "./support/database";
 /**
  * In the personal edition one person's Bot hands work to another of that person's Bots.
  *
- * Found on OpenBot Desktop: asked to "ask the Claude Agent SDK bot for three short bullet points",
+ * Found on AwakenBot Desktop: asked to "ask the Claude Agent SDK bot for three short bullet points",
  * Personal Assistant answered that it had no tool to message another Bot. Nobody had granted it one,
  * and in the personal edition there is nobody to grant it: there is one person and every Bot is
  * theirs, as every app they connect already is.

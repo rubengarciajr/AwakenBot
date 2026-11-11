@@ -48,7 +48,7 @@ pub fn initialize<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
     }
 }
 
-/// A setup row is running: OpenBot's own start, or the release row OpenBot updating itself says.
+/// A setup row is running: AwakenBot's own start, or the release row AwakenBot updating itself says.
 pub fn row_running<R: tauri::Runtime>(app: &tauri::AppHandle<R>, step: &str, said: &str) {
     row_running_at(app, step, said, Instant::now());
 }
@@ -70,7 +70,7 @@ fn row_running_at<R: tauri::Runtime>(
     }
 }
 
-/// A download the running row `step` waits on brought in more bytes: the machine image or OpenBot's
+/// A download the running row `step` waits on brought in more bytes: the machine image or AwakenBot's
 /// images the first screen started (`early_downloads`). Its clock restarts, as a moving download
 /// restarts the clock of the CLI step it holds up (`follow_cli`).
 pub fn moved<R: tauri::Runtime>(app: &tauri::AppHandle<R>, step: &str) {
@@ -153,7 +153,7 @@ fn heartbeat_at<R: tauri::Runtime>(
 }
 
 /// The main window loaded a page. Until that page sends a heartbeat nothing is expected of it: it
-/// may be OpenBot itself, which sends none.
+/// may be AwakenBot itself, which sends none.
 pub fn page_loaded<R: tauri::Runtime>(window: &tauri::Webview<R>) {
     let app = window.app_handle();
     let Some(stalls) = app.try_state::<Stalls>() else {
@@ -169,7 +169,7 @@ pub fn page_loaded<R: tauri::Runtime>(window: &tauri::Webview<R>) {
     say(app, news);
 }
 
-/// OpenBot is quitting: a stall still going is recorded now, before the usage data is flushed.
+/// AwakenBot is quitting: a stall still going is recorded now, before the usage data is flushed.
 pub fn at_quit<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
     let Some(stalls) = app.try_state::<Stalls>() else {
         return;
@@ -371,15 +371,15 @@ mod tests {
         start + Duration::from_secs(seconds)
     }
 
-    /// OpenBot's services typically start in 9 seconds (Start's journey): past 129 seconds it is one
+    /// AwakenBot's services typically start in 9 seconds (Start's journey): past 129 seconds it is one
     /// `setup_stalled`, however long it then runs, and nothing when it finishes.
     fn services_run_long(app: &tauri::AppHandle<tauri::test::MockRuntime>, start: Instant) {
-        row_running_at(app, "services", "Starting OpenBot's services.", start);
+        row_running_at(app, "services", "Starting AwakenBot's services.", start);
         for second in (0..=129).step_by(5) {
             row_running_at(
                 app,
                 "services",
-                "Starting OpenBot's services.",
+                "Starting AwakenBot's services.",
                 at(start, second),
             );
             tick(app, at(start, second), Some(true));

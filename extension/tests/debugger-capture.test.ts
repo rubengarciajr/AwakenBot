@@ -368,7 +368,7 @@ test("images, scripts, stylesheets, fonts and a document request outside the top
   expect(commandsTo("Network.getResponseBody")).toHaveLength(1);
 });
 
-test("calls to OpenBot itself are ignored, by the steps and by the agent events alike", async () => {
+test("calls to AwakenBot itself are ignored, by the steps and by the agent events alike", async () => {
   await capture.start(7, "https://crm.example.test/");
   // The Recorder's own capture pass and connect code, had a tab made them: a pass answers join credentials as an
   // Intelligence run does, and neither is ever followed.
@@ -848,7 +848,7 @@ test("a page-level write reaches the steps with its exchange, a read with when i
   ]);
 });
 
-test("a page-level event for a call to OpenBot itself is dropped, like the debugger drops it", async () => {
+test("a page-level event for a call to AwakenBot itself is dropped, like the debugger drops it", async () => {
   await capture.start(7, "https://crm.example.test/");
   const now = Date.now();
   const pageEvent = (url: string, responseUrl = url): CapturedEvent => ({
@@ -873,7 +873,7 @@ test("a page-level event for a call to OpenBot itself is dropped, like the debug
     7,
     pageEvent(`${OPENBOT}/api/recorder/connect-codes`),
   );
-  // A call that a redirect landed on OpenBot.
+  // A call that a redirect landed on AwakenBot.
   await capture.recordPageEvent(
     7,
     pageEvent("https://crm.example.test/go", `${OPENBOT}/api/recorder/me`),

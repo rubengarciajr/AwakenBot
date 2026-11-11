@@ -434,7 +434,7 @@ describe("arcade adapter connection lifecycle", () => {
 
   test("both the type and the instance are compared case-insensitively", async () => {
     providers({ Gmail: "GOOGLE" });
-    configs([{ id: "Google-OpenBot", provider_id: "Google" }]);
+    configs([{ id: "Google-AwakenBot", provider_id: "Google" }]);
     listing([row(4, "google-openbot", { name: "Grace" })]);
     const { broker } = createArcadeClient("never-dialled");
     expect(await broker.isConnected({ account, toolkit: "Gmail" })).toBe(true);

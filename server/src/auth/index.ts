@@ -128,7 +128,7 @@ export async function stampSignIn(
  * configuration. `common`, the default tenant here, is multi-tenant.
  *
  * Better Auth maps `email` straight through with no fallback, so on those deployments it is
- * undefined. That matters more here than in most products: every authorization decision OpenBot
+ * undefined. That matters more here than in most products: every authorization decision AwakenBot
  * makes about a person is keyed on their address. `INITIAL_ADMIN_EMAILS`, the role, the deny list
  * and the People screen all read it, so an absent address is not a cosmetic gap. Somebody would
  * sign in successfully, match no administrator, and land as a plain user with nothing on any screen
@@ -193,7 +193,7 @@ export function createAuth(
     signOutRecorders?: (userId: string, ending: string) => Promise<void>;
     /**
      * Whether `auth/entra.ts` has just verified this Entra token, for the one sign-in it starts with
-     * one: somebody arriving from their app's token whom OpenBot has not seen before.
+     * one: somebody arriving from their app's token whom AwakenBot has not seen before.
      *
      * Better Auth's own check of a Microsoft token cannot pass against Entra's real keys, which
      * publish no `alg`, so its id-token sign-in is answered here instead. Only a token verified a
@@ -482,7 +482,7 @@ export function createAuth(
                 },
               });
               throw new APIError("FORBIDDEN", {
-                message: "Your access to OpenBot has been removed.",
+                message: "Your access to AwakenBot has been removed.",
               });
             }
             return { data: user };
@@ -552,7 +552,7 @@ export function createAuth(
                 },
               });
               throw new APIError("FORBIDDEN", {
-                message: "Your access to OpenBot has been removed.",
+                message: "Your access to AwakenBot has been removed.",
               });
             }
             return { data: session };
@@ -635,7 +635,7 @@ export function createAuth(
 
 /**
  * How long a session here lasts unused, in milliseconds: Better Auth's `session.expiresIn` as this instance resolved it.
- * OpenBot sets none, so it is Better Auth's own default, and it is read rather than restated so the two cannot drift.
+ * AwakenBot sets none, so it is Better Auth's own default, and it is read rather than restated so the two cannot drift.
  * Better Auth moves a session's expiry to this long from now whenever it is used (at most once per `updateAge`).
  */
 export async function sessionLifetimeMs(

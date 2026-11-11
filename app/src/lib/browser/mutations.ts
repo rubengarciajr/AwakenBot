@@ -19,7 +19,7 @@ function invalidateBrowser(queryClient: QueryClient) {
 
 /**
  * Opens the person's browser, or brings it forward when it is already open: a window on their desktop where a
- * host-side computer runs people's browsers, and elsewhere (hosted OpenBot, OpenBot Desktop) a browser the page shows. The answer says which, and names the computer the live screen
+ * host-side computer runs people's browsers, and elsewhere (hosted AwakenBot, AwakenBot Desktop) a browser the page shows. The answer says which, and names the computer the live screen
  * streams.
  *
  * With a host-side computer it may instead be the person's own everyday Chrome or Edge (`opened`): brought forward when the
@@ -88,11 +88,11 @@ const REAL_BROWSER_NAMES: Record<RealBrowser, string> = {
  * that browser.
  */
 export function storeOpenedSentence(browser: RealBrowser): string {
-  return `The OpenBot Recorder's page is open in ${REAL_BROWSER_NAMES[browser]}. Add it there to record in your own browser.`;
+  return `The AwakenBot Recorder's page is open in ${REAL_BROWSER_NAMES[browser]}. Add it there to record in your own browser.`;
 }
 
-/** What the person is told when Start recording found their own everyday browser rather than the one OpenBot opens:
- * OpenBot cannot start the Recorder there, so they start it with its own button. */
+/** What the person is told when Start recording found their own everyday browser rather than the one AwakenBot opens:
+ * AwakenBot cannot start the Recorder there, so they start it with its own button. */
 export const RECORD_THERE =
   "Your browser is open. Start recording with the Recorder's button in its toolbar.";
 
@@ -101,7 +101,7 @@ export const RECORD_THERE =
  * and starts recording in it, so the person is doing the task as soon as the window is in front of them. Open answers
  * once the Recorder in it is connected, so the start that follows finds it ready.
  *
- * Where Open brought forward the person's own everyday Chrome or Edge instead (`opened`), OpenBot cannot start the
+ * Where Open brought forward the person's own everyday Chrome or Edge instead (`opened`), AwakenBot cannot start the
  * Recorder in it: the person is told to press its button there.
  */
 export function openAndStartBrowserRecordingMutationOptions(

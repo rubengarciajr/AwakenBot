@@ -42,11 +42,11 @@ function RouteComponent() {
    */
   return (
     <PageShell
-      description="Set your name, how OpenBot looks, and the instructions every Bot follows."
+      description="Set your name, how AwakenBot looks, and the instructions every Bot follows."
       title="General"
     >
       {/*
-       * What OpenBot and every Bot know of the person, first: their name and how they want things done. Both are free
+       * What AwakenBot and every Bot know of the person, first: their name and how they want things done. Both are free
        * text, so both are a summary that opens a dialog.
        */}
       <PageSection title="About you">
@@ -56,9 +56,9 @@ function RouteComponent() {
           <StandingInstructionsRow />
         </PageRows>
       </PageSection>
-      {/* Only in OpenBot Desktop, which holds the AI connection and changes it in its own window. */}
+      {/* Only in AwakenBot Desktop, which holds the AI connection and changes it in its own window. */}
       <AiModelSection />
-      {/* Only in OpenBot Desktop, which sends usage data and keeps this choice. */}
+      {/* Only in AwakenBot Desktop, which sends usage data and keeps this choice. */}
       <UsageDataSection />
       <PageSection title="Appearance">
         <PageRows>
@@ -69,7 +69,7 @@ function RouteComponent() {
             <ItemContent>
               <ItemTitle>Dark theme</ItemTitle>
               <ItemDescription>
-                Use the dark appearance across OpenBot.
+                Use the dark appearance across AwakenBot.
               </ItemDescription>
             </ItemContent>
             <ItemActions>

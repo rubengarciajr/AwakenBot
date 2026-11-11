@@ -5,7 +5,7 @@ This is the row where a plan can stand in for a key. `claude setup-token` mints 
 this harness is the one the model screen offers a subscription on.
 
 The precedence trap is the thing to get right: `ANTHROPIC_API_KEY` wins over the OAuth token, so a
-deployment that sets both silently bills the key and the plan goes unused. OpenBot sets one.
+deployment that sets both silently bills the key and the plan goes unused. AwakenBot sets one.
 """
 
 import hmac

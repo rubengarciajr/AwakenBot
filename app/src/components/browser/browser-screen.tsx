@@ -53,7 +53,7 @@ const SCREEN_ASPECT_RATIO = 1280 / 800;
 const MIN_COLUMN_WIDTH = 640;
 
 /**
- * THE PERSON'S BROWSER, SHOWN IN THE PAGE (hosted OpenBot). A cloud browser has no window of its own, so the page is
+ * THE PERSON'S BROWSER, SHOWN IN THE PAGE (hosted AwakenBot). A cloud browser has no window of its own, so the page is
  * the window: a bar with the recording controls, the tabs, the address bar with back, forward and reload, and the live
  * screen, which the person already drives (it is their browser, so there is no wheel to take).
  *
@@ -447,7 +447,7 @@ function Screen({
 }
 
 /**
- * What an empty tab shows: the OpenBot orb and one field to search or go to a site, as a browser's new tab page does,
+ * What an empty tab shows: the AwakenBot orb and one field to search or go to a site, as a browser's new tab page does,
  * over the empty page the browser itself would draw white. It goes where the address bar would.
  */
 function StartPage({ onGo }: { onGo: (url: string) => void }) {

@@ -22,7 +22,8 @@ pub fn saved(directory: &Path) -> bool {
         .ok()
         .and_then(|record| serde_json::from_str::<serde_json::Value>(&record).ok())
         .and_then(|record| record.get("share")?.as_bool())
-        .unwrap_or(true)
+        // AwakenBot: off until the person turns it on in Settings.
+        .unwrap_or(false)
 }
 
 /// Keep the choice for the next launch. `set_off` applies it to this one.
@@ -51,13 +52,16 @@ mod tests {
     #[test]
     fn the_choice_is_kept_for_the_next_launch_and_sharing_is_the_default() {
         let directory = crate::test_support::temp_root("usage-data-choice");
-        assert!(saved(&directory), "nothing saved yet shares, as before");
+        assert!(
+            !saved(&directory),
+            "AwakenBot: nothing saved yet does not share"
+        );
         save(&directory, false).unwrap();
         assert!(!saved(&directory));
         save(&directory, true).unwrap();
         assert!(saved(&directory));
         std::fs::write(directory.join(FILE), "not json").unwrap();
-        assert!(saved(&directory));
+        assert!(!saved(&directory));
         let _ = std::fs::remove_dir_all(directory);
     }
 }

@@ -17,7 +17,7 @@ import { explainAuditEvent, type WhatIfExplained } from "@/lib/what-if/check";
 import { cn } from "@/lib/utils";
 import { OUTCOMES, WhatIfResultView } from "./what-if-result";
 
-/** Whether "Why did this happen?" can answer for a row: one OpenBot's controls decided. */
+/** Whether "Why did this happen?" can answer for a row: one AwakenBot's controls decided. */
 export function explainable(event: AuditEvent): boolean {
   return whatIfExplainable(event);
 }
@@ -79,7 +79,7 @@ export function WhyButton({ event }: { event: AuditEvent }) {
           <DialogHeader>
             <DialogTitle>Why did this happen?</DialogTitle>
             <DialogDescription>
-              Each of OpenBot's controls, asked about this event's own facts
+              Each of AwakenBot's controls, asked about this event's own facts
               with today's settings.
             </DialogDescription>
           </DialogHeader>

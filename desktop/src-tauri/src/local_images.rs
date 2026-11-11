@@ -1,5 +1,5 @@
 /*!
-The back end's container images, downloaded by OpenBot before the CopilotKit CLI pulls them.
+The back end's container images, downloaded by AwakenBot before the CopilotKit CLI pulls them.
 
 THE PROBLEM. `local setup` and `local update` (a new update, or the next Start's retry of one that
 did not finish) each pull every image the release runs into the stack's k3d node with
@@ -939,12 +939,12 @@ pub fn download(
 /// `pkg/cri/labels`, `PinnedImageLabelKey`; kubelet `image_gc_manager.go`).
 pub const PINNED: &str = "io.cri-containerd.pinned";
 
-/// The OpenBot release an image was downloaded ahead of, on the images `download_ahead` pinned.
+/// The AwakenBot release an image was downloaded ahead of, on the images `download_ahead` pinned.
 pub const READY_FOR: &str = "ai.copilotkit.openbot.ready-for";
 
 /**
 Download `images` into the stack's node ahead of an update, while the back end keeps running, and
-keep them there for it: OpenBot Desktop's background download of an announced release
+keep them there for it: AwakenBot Desktop's background download of an announced release
 (`update_ready`).
 
 Unlike `download`, it never starts or stops the node. A node that is not running is
@@ -2908,7 +2908,7 @@ var init_define_CLI_LOCAL_EVALUATION_SUPPORT = __esm({{
     back-end images came down. A first setup has no node until the CLI makes it, so nothing was
     downloaded or followed for it. Here the CLI makes the node after it starts and pulls into it on a
     slow line, and the setup's attempt is told how far that pull has got, out of the whole download,
-    until all of it has arrived. Nothing is pulled by OpenBot: the CLI's own pulls finish it.
+    until all of it has arrived. Nothing is pulled by AwakenBot: the CLI's own pulls finish it.
     */
     #[test]
     #[ignore = "runs a privileged k3s node, a registry and a proxy on Docker"]
@@ -2961,7 +2961,7 @@ var init_define_CLI_LOCAL_EVALUATION_SUPPORT = __esm({{
                 .all(|w| w[0].done <= w[1].done && w[0].total == w[1].total),
             "{seen:?}"
         );
-        // Only the CLI pulled: OpenBot read manifests, and the layer was sent once.
+        // Only the CLI pulled: AwakenBot read manifests, and the layer was sent once.
         let (layer, _) = layer_of(&lab, &runtime);
         let gets: Vec<String> = lab
             .requests()
@@ -2998,7 +2998,7 @@ var init_define_CLI_LOCAL_EVALUATION_SUPPORT = __esm({{
     }
 
     /// The bug: the CLI's own pull of a 6 MB image through a 384 KB/s line takes about sixteen
-    /// seconds, over its fixed six. OpenBot downloads first, with no fixed limit, and the CLI then
+    /// seconds, over its fixed six. AwakenBot downloads first, with no fixed limit, and the CLI then
     /// finds all three images present and finishes.
     #[test]
     #[ignore = "runs a privileged k3s node, a registry and a proxy on Docker"]

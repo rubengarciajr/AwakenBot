@@ -55,7 +55,7 @@ type RecordingActions = {
 
 /**
  * Where "See it on Teach a Bot" goes: the page's list of recordings, which opens no browser on arrival (`?recordings`).
- * Resolved relative to OpenBot's address, so a path prefix on it is kept.
+ * Resolved relative to AwakenBot's address, so a path prefix on it is kept.
  */
 function teachABotUrl(openbotUrl: string): string {
   const base = openbotUrl.endsWith("/") ? openbotUrl : `${openbotUrl}/`;
@@ -190,7 +190,7 @@ function keptCounts(kept: NonNullable<RecorderState["kept"]>) {
 function keptSentence(kept: NonNullable<RecorderState["kept"]>): string {
   const { counts, verb } = keptCounts(kept);
   return kept.waitingFor
-    ? `${counts} by ${kept.waitingFor.name} ${verb} kept in this browser for up to ${KEPT_FOR_PERSON_DAYS} days. Connect this browser to OpenBot again as ${kept.waitingFor.name} to send them.`
+    ? `${counts} by ${kept.waitingFor.name} ${verb} kept in this browser for up to ${KEPT_FOR_PERSON_DAYS} days. Connect this browser to AwakenBot again as ${kept.waitingFor.name} to send them.`
     : `${counts} ${verb} kept in this browser: ${stripCaptureStatus(kept.reason)}`;
 }
 
@@ -271,8 +271,8 @@ export function AfterStop({
             <ItemContent>
               <ItemTitle>
                 {sent
-                  ? "Sent to OpenBot's backend"
-                  : "Sending to OpenBot's backend"}
+                  ? "Sent to AwakenBot's backend"
+                  : "Sending to AwakenBot's backend"}
               </ItemTitle>
               {sent ? null : (
                 <ItemDescription className="line-clamp-none">
@@ -335,7 +335,7 @@ export function AfterStop({
             <DialogTitle>Discard kept events?</DialogTitle>
           </DialogHeader>
           <DialogBody className="mt-4 text-sm">
-            OpenBot's backend will never receive them.
+            AwakenBot's backend will never receive them.
           </DialogBody>
           <DialogFooter className="mt-4">
             <Button size="sm" variant="ghost" onClick={() => setAsking(false)}>

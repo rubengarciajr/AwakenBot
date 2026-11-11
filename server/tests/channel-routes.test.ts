@@ -855,7 +855,7 @@ describe("channel route composition", () => {
       user: {
         id: actor.id,
         email: actor.email,
-        name: "OpenBot Member",
+        name: "AwakenBot Member",
         image: "https://example.test/member.png",
       },
     };
@@ -869,7 +869,7 @@ describe("channel route composition", () => {
         "get",
         {
           ...actor,
-          name: "OpenBot Member",
+          name: "AwakenBot Member",
           image: "https://example.test/member.png",
         },
         "channel-1",

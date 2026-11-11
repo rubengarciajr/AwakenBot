@@ -10,7 +10,7 @@ services:
     # says it plainly: isolation is the container's job, a shell can reach whatever the container
     # can reach.
     #
-    # `migrate` reaches this by name, and so do `server` and `worker` when an installed OpenBot runs
+    # `migrate` reaches this by name, and so do `server` and `worker` when an installed AwakenBot runs
     # them; those are all that belong here. In local development the API server and the worker run
     # on the host instead and connect through the published port below.
     environment:
@@ -59,7 +59,7 @@ services:
     # default however its image is named. IMAGE_PULL_POLICY=missing makes it pull instead.
     #
     # Not a guarantee that nothing is built: a pull that fails falls back to building, silently,
-    # which is right for a developer and wrong for an installed OpenBot, where there is no
+    # which is right for a developer and wrong for an installed AwakenBot, where there is no
     # toolchain and the honest answer is that the image could not be fetched. Anything shipping
     # these images to a machine that cannot build them overrides the `build` section away rather
     # than relying on this variable.
@@ -80,13 +80,13 @@ services:
     networks:
       - data
 
-  # OpenBot itself, the API and the app it serves, as an installed OpenBot runs it.
+  # AwakenBot itself, the API and the app it serves, as an installed AwakenBot runs it.
   #
   # BEHIND A PROFILE, BECAUSE A DEVELOPER'S SERVER IS ON THE HOST. `scripts/start.sh` runs the server
   # and the worker as host processes for hot reload, names the services it wants from this file, and
   # owns port 3001 while it does. Without the profile, a plain `docker compose up -d` would start a
   # second server beside that one, fighting it for the port and the routines. Naming `server` on the
-  # command line still starts it, profile or not, which is how an installed OpenBot asks for it.
+  # command line still starts it, profile or not, which is how an installed AwakenBot asks for it.
   #
   # The image `migrate` runs, because it is one image: the API, the built app at `APP_DIST_DIR`, and
   # the worker below. A machine with that image needs Docker and nothing else, which is the point.
@@ -95,7 +95,7 @@ services:
     # Same build arguments for every user of this image. No empty runtime override masks its
     # baked identity when a release image is pulled instead of built locally.
     build: *server-build
-    # See migrate above for what pull_policy decides, and why an installed OpenBot overrides the
+    # See migrate above for what pull_policy decides, and why an installed AwakenBot overrides the
     # `build` section away rather than trusting it.
     image: ${SERVER_IMAGE:-openbot-server:latest}
     pull_policy: ${IMAGE_PULL_POLICY:-build}
@@ -115,7 +115,7 @@ services:
       PORT: "3001"
       SERVER_PORT: "3001"
       # Not production, as a host server is not. The image says production, and in production the
-      # server refuses `AGENT_COMPUTER_ALLOW_PRIVATE_HOSTS`, which a local OpenBot needs: its
+      # server refuses `AGENT_COMPUTER_ALLOW_PRIVATE_HOSTS`, which a local AwakenBot needs: its
       # supervisor, computers and Bots are all at private addresses, on purpose. Empty rather than
       # `development`, because unset is what a host server has, and libraries that look at this
       # treat the two alike.
@@ -129,7 +129,7 @@ services:
       # the host is not one this container can open. Whoever starts this service sets that as well.
       #
       # `-` and not `:-`: unset is the supervisor, as it always was, and set empty is no supervisor,
-      # which is how OpenBot Desktop runs the personal edition on its one computer.
+      # which is how AwakenBot Desktop runs the personal edition on its one computer.
       COMPUTER_SUPERVISOR_URL: ${COMPUTER_SUPERVISOR_CONTAINER_URL-http://supervisor:4300}
       # The managed Bot by name, when the deployment has one. `:+` keeps an empty setting empty, which
       # is how a deployment without that Bot says so: the package drops its row while this is blank.
@@ -150,13 +150,13 @@ services:
       # edition), listening on the host's loopback, and its container address when one is given.
       # Unset, the person's browser runs on the computers the Bots run on and shows in the page.
       OPENBOT_BROWSER_URL: ${OPENBOT_BROWSER_CONTAINER_URL:-${OPENBOT_BROWSER_URL:-}}
-      # The name this container reaches the person's machine by, which OpenBot Desktop writes. With
+      # The name this container reaches the person's machine by, which AwakenBot Desktop writes. With
       # it, an agent a person registers on their own loopback (`http://127.0.0.1:8765/ag-ui`) is
       # dialled there rather than at this container. A container name only, so a host server reading
       # the same `.env` never translates its own loopback.
       OPENBOT_THIS_MACHINE_HOST: ${OPENBOT_THIS_MACHINE_CONTAINER_HOST:-}
       # The deployment's secrets, from the environment Compose runs in and then from `.env`, which
-      # Compose reads for these `${...}` and the host server reads for itself. OpenBot Desktop keeps
+      # Compose reads for these `${...}` and the host server reads for itself. AwakenBot Desktop keeps
       # them out of that file and hands them to Compose in its environment, so they reach this
       # container only by being named here. The defaults are the ones every other service in this
       # file and `scripts/start.sh` agree on.
@@ -184,7 +184,7 @@ services:
       # below, so a host path here becomes the mount's. Empty stays empty: no sign-in, no file.
       OPENBOT_MODEL_OAUTH_FILE: ${OPENBOT_MODEL_OAUTH_FILE:+/openbot/model-oauth.json}
       # The secret local Intelligence's Learning agent sends when it asks the person's Claude or
-      # ChatGPT plan for a step (server/src/learning/model-endpoint.ts). OpenBot Desktop mints it
+      # ChatGPT plan for a step (server/src/learning/model-endpoint.ts). AwakenBot Desktop mints it
       # once per installation and gives it to this service and that agent alone.
       OPENBOT_LEARNING_MODEL_TOKEN: ${LEARNING_MODEL_TOKEN:-}
     # Who the server runs as. The image's own user by default. On Linux the desktop names the host's,
@@ -206,14 +206,14 @@ services:
     ports:
       # Two host ports, one process. The app's is the address a window is given: the server serves
       # the built app itself, so that one port reaches both halves on one origin. The server's is
-      # where everything else on the host already calls it, OpenBot Desktop's host-access broker
+      # where everything else on the host already calls it, AwakenBot Desktop's host-access broker
       # among them. Loopback, for the reason every other port here is.
       - "127.0.0.1:${APP_PORT:-3010}:3001"
       - "[::1]:${APP_PORT:-3010}:3001"
       - "127.0.0.1:${SERVER_PORT:-3001}:3001"
       - "[::1]:${SERVER_PORT:-3001}:3001"
     # For whatever stays on the host and is addressed as such: a model endpoint on this machine, and
-    # anything else the Bots below already reach the same way. OpenBot Desktop sets
+    # anything else the Bots below already reach the same way. AwakenBot Desktop sets
     # `OPENBOT_HOST_GATEWAY` under rootless Podman on Linux, where `host-gateway` is not this
     # machine's loopback and the address it gives is.
     extra_hosts:
@@ -323,9 +323,9 @@ services:
       # person's computer never does.
       OPENBOT_EDITION: ${OPENBOT_EDITION:-}
       # The laptop's loopback addresses a browser here is handed, as this container reaches them
-      # (`<port>=<host>:<port>`, comma-separated). The Recorder reaches OpenBot only at https or at
+      # (`<port>=<host>:<port>`, comma-separated). The Recorder reaches AwakenBot only at https or at
       # loopback, so on a laptop it is given `http://127.0.0.1:<port>`, which in here is this
-      # container. OpenBot Desktop sets it; unset, nothing is relayed (loopback-relay.ts).
+      # container. AwakenBot Desktop sets it; unset, nothing is relayed (loopback-relay.ts).
       COMPUTER_LOOPBACK_RELAYS: ${COMPUTER_LOOPBACK_RELAYS:-}
     # Where a relay above sends a local Intelligence gateway: this machine. As for the server.
     extra_hosts:

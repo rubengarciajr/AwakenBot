@@ -1263,7 +1263,7 @@ export function BrokeredAccountRow({
                  * RECONNECT OVER THE ACCOUNT THAT STANDS, where the broker adds a consent to it.
                  * This is where a Bot's card sends somebody whose call the vendor refused, and on
                  * Arcade one press asks for everything the app needs. The arrow says it leaves
-                 * OpenBot for the vendor's consent page, as Connect's does.
+                 * AwakenBot for the vendor's consent page, as Connect's does.
                  */}
                 {account.reconnectsInPlace && account.kind === "consent" ? (
                   <Button
@@ -1311,7 +1311,7 @@ export function BrokeredAccountRow({
             ) : (
               <>
                 <NotConnected />
-                {/* The arrow says this leaves OpenBot for the vendor's consent page. It does, for
+                {/* The arrow says this leaves AwakenBot for the vendor's consent page. It does, for
                  every app but a key app. */}
                 <Button
                   disabled={account.connecting}

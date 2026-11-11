@@ -81,7 +81,7 @@ export const Route = createFileRoute("/_authed/_app/connections/")({
   /*
    * `?connected=` is how the OAuth callback reports back, carrying a server key on success and
    * `failed` otherwise. `?linked=` is the same for the GitHub account-link callback: `github` on
-   * success, `github-taken` when that GitHub account belongs to another OpenBot user, `failed`
+   * success, `github-taken` when that GitHub account belongs to another AwakenBot user, `failed`
    * otherwise (see linked-notice.ts). Each is the only channel available: the callback is a
    * redirect from another company's server, so there is no response body to read.
    *
@@ -151,7 +151,7 @@ export const AUTHORIZATION_NOTICES: ReadonlyMap<string, string> = new Map([
   ],
   [
     "vendor-unavailable",
-    "The app didn't answer when OpenBot tried to finish that authorization, so nothing was recorded. Try the link again in a moment.",
+    "The app didn't answer when AwakenBot tried to finish that authorization, so nothing was recorded. Try the link again in a moment.",
   ],
   [
     "not-your-authorization",
@@ -171,7 +171,7 @@ export const AUTHORIZATION_NOTICES: ReadonlyMap<string, string> = new Map([
   ],
   [
     "name-changed",
-    "That authorization was started before an update changed how OpenBot signs you in to the app, so nothing was recorded. Press Connect on the app's page to start again.",
+    "That authorization was started before an update changed how AwakenBot signs you in to the app, so nothing was recorded. Press Connect on the app's page to start again.",
   ],
   [
     "not-permitted",
@@ -208,7 +208,7 @@ export const PERSONAL_AUTHORIZATION_NOTICES: ReadonlyMap<string, string> =
     ],
     [
       "not-recorded",
-      "Couldn't record that authorization, so nothing was saved. Start again from the app's page, or check OpenBot's logs if it keeps happening.",
+      "Couldn't record that authorization, so nothing was saved. Start again from the app's page, or check AwakenBot's logs if it keeps happening.",
     ],
   ]);
 

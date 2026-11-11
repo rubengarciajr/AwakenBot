@@ -92,7 +92,7 @@ const PERSONAL: Record<string, string> = {
   "not-permitted":
     "You can't connect that app's account anymore, so nothing was recorded. The app's setup changed while the authorization was open. Start again from the app's page.",
   "not-recorded":
-    "Couldn't record that authorization, so nothing was saved. Start again from the app's page, or check OpenBot's logs if it keeps happening.",
+    "Couldn't record that authorization, so nothing was saved. Start again from the app's page, or check AwakenBot's logs if it keeps happening.",
 };
 
 const TEAM: Record<string, string> = {

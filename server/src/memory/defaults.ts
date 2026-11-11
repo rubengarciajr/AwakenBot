@@ -40,7 +40,7 @@ import { proactiveSettings } from "../db/schema/proactive";
 import type { MemoryIngestion } from "./ingestion";
 
 /**
- * How often check-ins run when OpenBot switched them on, in minutes: hourly, the most often a Bot
+ * How often check-ins run when AwakenBot switched them on, in minutes: hourly, the most often a Bot
  * may look. Most end silently, and the person hears at most once an hour whatever they find.
  */
 export const DEFAULT_RESEARCH_INTERVAL_MINUTES = 60;

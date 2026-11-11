@@ -33,7 +33,7 @@ export const HOTKEYS = [
   {
     id: "new-chat",
     label: "New conversation",
-    description: "Start a new conversation from anywhere in OpenBot.",
+    description: "Start a new conversation from anywhere in AwakenBot.",
     combo: { key: "n", shift: true },
   },
 ] as const satisfies readonly Hotkey[];

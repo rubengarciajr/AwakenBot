@@ -12,7 +12,7 @@ import { installDesktopShell } from "./desktop-shell.fixture";
 
 /**
  * The message box on a page of its own, for composer-dictation-notice-layout.test.tsx to bundle and
- * load in Chromium. OpenBot has no transcription provider, and this is the Desktop window on a
+ * load in Chromium. AwakenBot has no transcription provider, and this is the Desktop window on a
  * computer with no microphone: the desktop app answers every start with `audio-capture`, as
  * speech.rs does, so the microphone's notice shows above the box.
  *
@@ -61,7 +61,7 @@ function Home() {
           ) : null}
           <Composer className="w-full max-w-2xl" onSubmit={() => {}} />
           <p className="mt-2 w-full max-w-2xl text-xs text-muted-foreground text-center">
-            OpenBot picks the right Bot. Type @ to choose one.
+            AwakenBot picks the right Bot. Type @ to choose one.
           </p>
         </div>
         <div className="mt-10 w-full max-w-2xl">

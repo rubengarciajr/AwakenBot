@@ -70,7 +70,7 @@ export function grantMethods(context: StoreContext) {
      * Give a Bot several tools of one app at once, each as an administrator's grant, with ONE row on
      * the trail for all of them: `refs` in the payload, the app as the target.
      *
-     * For what OpenBot gives every Bot by itself: Routines' tools at every start, and in the personal
+     * For what AwakenBot gives every Bot by itself: Routines' tools at every start, and in the personal
      * edition every tool of an app. One row per tool filled Activity with twenty-one rows the day an
      * upgrade added seven goal tools to Routines on a computer with three Bots. One row per Bot says
      * what happened.

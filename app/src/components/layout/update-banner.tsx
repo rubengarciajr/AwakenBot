@@ -13,15 +13,15 @@ import {
 import { queryClient } from "@/query-client";
 
 /**
- * A slim bar saying a newer OpenBot Desktop is out, with Update and restart, until this person
+ * A slim bar saying a newer AwakenBot Desktop is out, with Update and restart, until this person
  * closes it. It says how ready the new version is: downloading in the background while this one
  * keeps running, then ready to install in a few minutes. Update and restart works at any point.
  *
- * Only inside OpenBot Desktop. The desktop app reads its update feed and this asks the app, so a
- * browser on a self-hosted OpenBot draws nothing and asks nothing. Closing it lasts until a newer
+ * Only inside AwakenBot Desktop. The desktop app reads its update feed and this asks the app, so a
+ * browser on a self-hosted AwakenBot draws nothing and asks nothing. Closing it lasts until a newer
  * version comes out, through reloads and restarts, because the app keeps it.
  *
- * The same bar as the self-host one, so it reads as OpenBot's own, and packed from the left for the
+ * The same bar as the self-host one, so it reads as AwakenBot's own, and packed from the left for the
  * same reason: CopilotKit's dev inspector floats over the top-right corner on localhost.
  */
 export function UpdateBanner() {
@@ -38,7 +38,7 @@ export function UpdateBanner() {
 
   return (
     <aside
-      aria-label="OpenBot update"
+      aria-label="AwakenBot update"
       className="flex shrink-0 flex-col border-b border-border bg-muted/60 px-4 py-1.5 text-sm"
     >
       {/* One line, as tall as its buttons, in every state, so the page under it never moves as

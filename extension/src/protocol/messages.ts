@@ -79,9 +79,9 @@ export type RecorderState = {
   /** Narrated phrases this recording has kept so far: each final phrase placed among its steps, heard by the
    * Recorder itself or passed in by its launcher. Absent while there are none. */
   phrases?: number;
-  /** The recording Stop ended last: the popup says it went to Intelligence, and the launcher tells OpenBot its name,
+  /** The recording Stop ended last: the popup says it went to Intelligence, and the launcher tells AwakenBot its name,
    * when it stopped and what it held (the person's actions as the badge counted them, and its narrated phrases), so
-   * OpenBot can confirm it too and say when it held nothing. */
+   * AwakenBot can confirm it too and say when it held nothing. */
   lastStopped?: {
     recordingId: string;
     title?: string;
@@ -194,7 +194,7 @@ export type StreamSession = {
   e2eHoldRetryMs?: number;
 };
 /** Why a recording ended without being saved, sent to Intelligence with its failed outcome: `disconnected` for a
- * Disconnect (the person's own, or the organization's policy moving the Recorder), `signed-out` for a connection OpenBot
+ * Disconnect (the person's own, or the organization's policy moving the Recorder), `signed-out` for a connection AwakenBot
  * signed out, `discarded` for the person's Stop on the recording mark answered with Discard. Events streamed live before
  * it ended are already in Intelligence. */
 export type StopFailure = "disconnected" | "signed-out" | "discarded";
@@ -302,7 +302,7 @@ export type PageToBackground =
       /** The narration's language: the page's own, else the browser's (the service worker's browser language when
        * absent or unusable). */
       language?: string;
-      /** Whether the person narrates this recording, when whoever started it asked them (OpenBot's own Record form, by
+      /** Whether the person narrates this recording, when whoever started it asked them (AwakenBot's own Record form, by
        * the launcher). Absent: the choice they made in the Recorder, and no microphone until they made one. */
       narrate?: boolean;
     }
@@ -343,13 +343,13 @@ export type PageResponse =
   | {
       ok: true;
       pending: { origin: string; via: "web" | "desktop" } | null;
-      /** The connection approving it replaces, when this browser is connected: its OpenBot and the person it is for. */
+      /** The connection approving it replaces, when this browser is connected: its AwakenBot and the person it is for. */
       replaces?: { origin: string; email: string };
     }
   | { ok: true; learning: LearningSpaceState }
   | { ok: true; available: boolean }
-  | { ok: true; connected: true } // OpenBot Desktop connected this browser, with no Connect page
-  | { ok: true; connected: false; reason: string } // why OpenBot Desktop did not connect this browser, as a code (DesktopConnect)
+  | { ok: true; connected: true } // AwakenBot Desktop connected this browser, with no Connect page
+  | { ok: true; connected: false; reason: string } // why AwakenBot Desktop did not connect this browser, as a code (DesktopConnect)
   | { ok: true }
   | { ok: false; error: string };
 
@@ -417,8 +417,8 @@ const externalToBackgroundSchema = z.discriminatedUnion("type", [
       observation: pageAgentObservation,
     })
     .strict(),
-  // What OpenBot's own page asks the Recorder in the same browser (shared/recorder-page.ts): openbot.state,
-  // openbot.record and openbot.stop, answered only for the OpenBot this copy is connected to (openbot-page.ts).
+  // What AwakenBot's own page asks the Recorder in the same browser (shared/recorder-page.ts): openbot.state,
+  // openbot.record and openbot.stop, answered only for the AwakenBot this copy is connected to (openbot-page.ts).
   ...recorderPageMessageSchema.options,
 ]);
 export type ExternalToBackground = z.infer<typeof externalToBackgroundSchema>;
@@ -433,9 +433,9 @@ export type ExternalResponse =
       ok: true;
       version: string;
       installId: string;
-      /** A trusted OpenBot's connect (connection.ts `trustedConnectRule`): connected now, with no Connect page. */
+      /** A trusted AwakenBot's connect (connection.ts `trustedConnectRule`): connected now, with no Connect page. */
       connected?: true;
-    } // the connected origin's ping, and a trusted OpenBot's connect; installId = installIdFor(sender.origin)
+    } // the connected origin's ping, and a trusted AwakenBot's connect; installId = installIdFor(sender.origin)
   | {
       ok: false;
       error:
@@ -445,7 +445,7 @@ export type ExternalResponse =
         | "busy"
         | "invalid"
         | "not-recording"
-        // A trusted OpenBot's code that OpenBot refused, or an OpenBot that did not answer its exchange.
+        // A trusted AwakenBot's code that AwakenBot refused, or an AwakenBot that did not answer its exchange.
         | "exchange-refused"
         | "openbot-unreachable";
     }

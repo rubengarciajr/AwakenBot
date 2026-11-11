@@ -64,7 +64,7 @@ const serviceToken = { token: "synthetic-service-token", projectId: "7" };
 describe("creating the container with a service token", () => {
   test("posts the openbot container to the token's project and proves it with the key", async () => {
     const api = intelligenceFetch(201, {
-      container: { id: "openbot", projectId: 7, name: "OpenBot" },
+      container: { id: "openbot", projectId: 7, name: "AwakenBot" },
     });
     const runtimeKey = key(["absent", "present"]);
     expect(
@@ -90,7 +90,7 @@ describe("creating the container with a service token", () => {
     expect(headers["x-copilotkit-ei-service-token"]).toBe(serviceToken.token);
     expect(JSON.parse(String(request.init.body))).toEqual({
       id: "openbot",
-      name: "OpenBot",
+      name: "AwakenBot",
     });
     expect(runtimeKey.probes).toBe(2);
   });

@@ -3,7 +3,7 @@
 //!
 //! ```text
 //! cargo run --example engine_update_check
-//!     Reads this machine's engine and says what OpenBot would do.
+//!     Reads this machine's engine and says what AwakenBot would do.
 //! cargo run --example engine_update_check -- --as-docker-desktop-4.27.2 --cache <dir> [--download]
 //!     Decides for Docker Desktop 4.27.2's real outputs, plans the update against Docker's live
 //!     feed and, with --download, downloads the installer and checks its checksum and Docker's

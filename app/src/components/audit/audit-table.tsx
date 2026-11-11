@@ -105,7 +105,7 @@ export function AuditTable({
   storedNames = false,
   toolbar,
 }: {
-  /** What OpenBot itself is called in a row it started: "this deployment" in Admin. */
+  /** What AwakenBot itself is called in a row it started: "this deployment" in Admin. */
   deploymentName?: string;
   events: AuditEvent[];
   /** Drawn under the last row, inside the scroll: where older events are asked for. */

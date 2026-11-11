@@ -60,7 +60,7 @@ let recorder:
   | {
       ping: Record<string, unknown>;
       connect: Record<string, unknown>;
-      /** What the Recorder does with OpenBot as it connects with no Connect page: exchanges the code, which makes the
+      /** What the Recorder does with AwakenBot as it connects with no Connect page: exchanges the code, which makes the
        * connection on the server. */
       exchange?: () => void;
       /** Where the connect has got to on its Connect page (`openbot.connect.status`); waiting while unset. */
@@ -174,7 +174,7 @@ function draw(screen = <ThisBrowser />) {
 test("without the Recorder the row says so and offers no button or link", async () => {
   const view = draw();
   await view.findByText(
-    "The OpenBot Recorder isn't installed in this browser.",
+    "The AwakenBot Recorder isn't installed in this browser.",
   );
   expect(view.queryByRole("button")).toBeNull();
   expect(view.queryByRole("link")).toBeNull();
@@ -189,7 +189,7 @@ test("Connect sends the code to the detected Recorder and asks for confirmation 
   fireEvent.click(
     await view.findByRole("button", { name: "Connect this browser" }),
   );
-  await view.findByText("Confirm in the OpenBot Recorder tab that opened.");
+  await view.findByText("Confirm in the AwakenBot Recorder tab that opened.");
   expect(sent).toContainEqual({
     path: "/api/recorder/connect-codes",
     method: "POST",
@@ -211,8 +211,8 @@ test("once the person approves on the Connect page, the install id the Recorder 
   fireEvent.click(
     await view.findByRole("button", { name: "Connect this browser" }),
   );
-  await view.findByText("Confirm in the OpenBot Recorder tab that opened.");
-  // The person clicks Connect on the Recorder's page: the connection is OpenBot's, and the Recorder's ping says which
+  await view.findByText("Confirm in the AwakenBot Recorder tab that opened.");
+  // The person clicks Connect on the Recorder's page: the connection is AwakenBot's, and the Recorder's ping says which
   // copy made it.
   connections = [connection()];
   recorder.ping = { ok: true, version: "1", installId: THIS_COPY };
@@ -223,15 +223,15 @@ test("once the person approves on the Connect page, the install id the Recorder 
 for (const [how, sentence] of [
   [
     "cancelled",
-    "You cancelled in the OpenBot Recorder tab. Nothing was connected.",
+    "You cancelled in the AwakenBot Recorder tab. Nothing was connected.",
   ],
   [
     "closed",
-    "The OpenBot Recorder tab closed before you confirmed. Nothing was connected.",
+    "The AwakenBot Recorder tab closed before you confirmed. Nothing was connected.",
   ],
 ] as const)
   test(`once the person ${how === "cancelled" ? "cancels on" : "closes"} the Connect page, the row says so within a second, with Connect back`, async () => {
-    // After a Cancel, Settings used to go on saying "Confirm in the OpenBot Recorder tab that opened." for up to five
+    // After a Cancel, Settings used to go on saying "Confirm in the AwakenBot Recorder tab that opened." for up to five
     // minutes: nothing told it the person had cancelled.
     recorder = {
       ping: { ok: true },
@@ -241,7 +241,7 @@ for (const [how, sentence] of [
     fireEvent.click(
       await view.findByRole("button", { name: "Connect this browser" }),
     );
-    await view.findByText("Confirm in the OpenBot Recorder tab that opened.");
+    await view.findByText("Confirm in the AwakenBot Recorder tab that opened.");
     recorder.wait = how;
     const at = Date.now();
     await view.findByText(sentence, {}, { timeout: 1500 });
@@ -251,14 +251,14 @@ for (const [how, sentence] of [
     // Connect again starts afresh: the wait before it is not read for this one.
     recorder.wait = "waiting";
     fireEvent.click(again);
-    await view.findByText("Confirm in the OpenBot Recorder tab that opened.");
+    await view.findByText("Confirm in the AwakenBot Recorder tab that opened.");
     await new Promise((resolve) => setTimeout(resolve, 1200));
     expect(
-      view.getByText("Confirm in the OpenBot Recorder tab that opened."),
+      view.getByText("Confirm in the AwakenBot Recorder tab that opened."),
     ).toBeTruthy();
   });
 
-test("a trusted OpenBot's connect, answered connected with no Connect page, reads Connected at once and never asks the person to confirm", async () => {
+test("a trusted AwakenBot's connect, answered connected with no Connect page, reads Connected at once and never asks the person to confirm", async () => {
   recorder = {
     ping: { ok: true },
     connect: { ok: true, version: "1", installId: THIS_COPY, connected: true },
@@ -284,7 +284,7 @@ test("a trusted OpenBot's connect, answered connected with no Connect page, read
   watch.disconnect();
   expect(
     said.some((text) =>
-      text.includes("Confirm in the OpenBot Recorder tab that opened."),
+      text.includes("Confirm in the AwakenBot Recorder tab that opened."),
     ),
   ).toBe(false);
   expect(view.queryByRole("button")).toBeNull();
@@ -300,11 +300,11 @@ test("a connection from another copy (Chrome connected, this is Edge) neither sh
   fireEvent.click(
     await view.findByRole("button", { name: "Connect this browser" }),
   );
-  await view.findByText("Confirm in the OpenBot Recorder tab that opened.");
+  await view.findByText("Confirm in the AwakenBot Recorder tab that opened.");
   await new Promise((resolve) => setTimeout(resolve, 2500));
   expect(view.queryByText("Connected")).toBeNull();
   expect(
-    view.getByText("Confirm in the OpenBot Recorder tab that opened."),
+    view.getByText("Confirm in the AwakenBot Recorder tab that opened."),
   ).toBeTruthy();
 });
 
@@ -328,7 +328,7 @@ test("a pinned-elsewhere refusal shows its sentence", async () => {
     await view.findByRole("button", { name: "Connect this browser" }),
   );
   await view.findByText(
-    "Your organization set the Recorder to another OpenBot.",
+    "Your organization set the Recorder to another AwakenBot.",
   );
 });
 
@@ -375,23 +375,23 @@ test("an answer with no sentence of its own still gets one", async () => {
   await view.findByText("The Recorder didn't accept the request. Try again.");
 });
 
-test("the OpenBot browser's connection says it is the person's OpenBot browser", async () => {
+test("the AwakenBot browser's connection says it is the person's AwakenBot browser", async () => {
   connections = [
     connection({
       id: "conn-2",
-      label: "OpenBot browser",
+      label: "AwakenBot browser",
       via: "openbot-browser",
       installId: "b".repeat(32),
     }),
   ];
   const view = draw(<ConnectedBrowsers />);
-  await view.findByText("OpenBot browser");
+  await view.findByText("AwakenBot browser");
   const at = new Intl.DateTimeFormat(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(String(connections[0]?.createdAt)));
   expect(
-    view.getByText(`Your OpenBot browser, connected ${at}, never used`),
+    view.getByText(`Your AwakenBot browser, connected ${at}, never used`),
   ).toBeTruthy();
 });
 
@@ -419,7 +419,7 @@ test("a browser recording now says so instead of when it was last used, and the 
       dateStyle: "medium",
       timeStyle: "short",
     }).format(new Date(String(connections[0]?.createdAt)));
-    await view.findByText(/^Connected .* from OpenBot, last used /);
+    await view.findByText(/^Connected .* from AwakenBot, last used /);
     // The browser starts recording; the screen hears of it on its next ask, with no reload.
     connections = [connection({ lastUsedAt, recording: true })];
     expect(polls.length).toBeGreaterThan(0);
@@ -427,7 +427,7 @@ test("a browser recording now says so instead of when it was last used, and the 
     act(() => {
       for (const poll of polls) poll();
     });
-    await view.findByText(`Connected ${at} from OpenBot, recording now`);
+    await view.findByText(`Connected ${at} from AwakenBot, recording now`);
     expect(connectionsFetches).toBeGreaterThan(asked);
     expect(view.queryByText(/last used/)).toBeNull();
   } finally {
@@ -444,7 +444,7 @@ test("Disconnect sends the DELETE and the row disappears", async () => {
     timeStyle: "short",
   }).format(new Date(String(connections[0]?.createdAt)));
   expect(
-    view.getByText(`Connected ${at} from OpenBot, never used`),
+    view.getByText(`Connected ${at} from AwakenBot, never used`),
   ).toBeTruthy();
   fireEvent.click(
     view.getByRole("button", { name: "Disconnect Chrome on Mac" }),
@@ -455,7 +455,7 @@ test("Disconnect sends the DELETE and the row disappears", async () => {
   });
   // Named as the row is: it is not known to be this browser, so the dialog does not say it is.
   expect(dialog.textContent).toContain(
-    "OpenBot signs the Recorder in Chrome on Mac out. It records nothing for you until you connect it again, and a recording running there stops.",
+    "AwakenBot signs the Recorder in Chrome on Mac out. It records nothing for you until you connect it again, and a recording running there stops.",
   );
   expect(dialog.textContent).not.toContain("this browser");
   expect(sent).toEqual([]);
@@ -505,7 +505,7 @@ test("the Disconnect dialog says this browser only on this browser's row, and na
     }),
     connection({
       id: "conn-3",
-      label: "OpenBot browser",
+      label: "AwakenBot browser",
       via: "openbot-browser",
       installId: "e".repeat(32),
     }),
@@ -520,13 +520,13 @@ test("the Disconnect dialog says this browser only on this browser's row, and na
     return text;
   };
   expect(await said("Disconnect Chrome on Mac · This browser")).toStartWith(
-    "OpenBot signs the Recorder in this browser out.",
+    "AwakenBot signs the Recorder in this browser out.",
   );
   expect(await said("Disconnect Edge on Windows")).toStartWith(
-    "OpenBot signs the Recorder in Edge on Windows out.",
+    "AwakenBot signs the Recorder in Edge on Windows out.",
   );
-  expect(await said("Disconnect OpenBot browser")).toStartWith(
-    "OpenBot signs the Recorder in your OpenBot browser out.",
+  expect(await said("Disconnect AwakenBot browser")).toStartWith(
+    "AwakenBot signs the Recorder in your AwakenBot browser out.",
   );
   expect(sent).toEqual([]);
 });
@@ -601,7 +601,7 @@ test("in Chrome without the Recorder, This browser offers its store page in a ne
       </QueryClientProvider>,
     );
     await view.findByText(
-      "The OpenBot Recorder isn't installed in this browser.",
+      "The AwakenBot Recorder isn't installed in this browser.",
     );
     const link = view.getByRole("link", { name: "Add to Chrome" });
     expect(link.getAttribute("href")).toBe(
@@ -663,7 +663,7 @@ test("in the personal edition Settings, Browsers says a recording goes to your o
   const view = await browsersPage("personal");
   const page = view.container.textContent ?? "";
   expect(page).toContain(
-    "What you record goes straight from your browser to your own Learning space in OpenBot's backend",
+    "What you record goes straight from your browser to your own Learning space in AwakenBot's backend",
   );
   expect(page).toContain(
     "Your recordings are used only for your own Skills, evaluations and insights.",
@@ -676,11 +676,11 @@ test("in the personal edition Settings, Browsers says a recording goes to your o
   }
 });
 
-test("in the team edition Settings, Browsers still says a recording goes to your organization's OpenBot", async () => {
+test("in the team edition Settings, Browsers still says a recording goes to your organization's AwakenBot", async () => {
   const view = await browsersPage("team");
   expect(view.getByText(RECORDER_DISCLOSURE)).toBeTruthy();
   expect(view.container.textContent).toContain(
-    "the learning part of your organization's OpenBot backend",
+    "the learning part of your organization's AwakenBot backend",
   );
 });
 
@@ -720,7 +720,7 @@ test("a connect request nobody confirms expires after five minutes and stops pol
     fireEvent.click(
       await view.findByRole("button", { name: "Connect this browser" }),
     );
-    await view.findByText("Confirm in the OpenBot Recorder tab that opened.");
+    await view.findByText("Confirm in the AwakenBot Recorder tab that opened.");
     expect(expiries.length).toBeGreaterThan(0);
     const polling = connectionsFetches;
     await new Promise((resolve) => realSetTimeout(resolve, 2500));
@@ -779,7 +779,7 @@ test("the copy in this browser is marked among connected browsers that share a n
   ).toBeTruthy();
   // Two copies connected two hours ago, a minute apart, read differently.
   const descriptions = view
-    .getAllByText(/^Connected .* from OpenBot, last used /)
+    .getAllByText(/^Connected .* from AwakenBot, last used /)
     .map((element) => element.textContent);
   expect(new Set(descriptions).size).toBe(3);
 });

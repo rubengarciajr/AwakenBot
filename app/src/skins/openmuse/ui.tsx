@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /*
- * OpenMuse's primitives, rebuilt on OpenBot's own. Each one is an OpenBot component — Button, Item,
+ * OpenMuse's primitives, rebuilt on AwakenBot's own. Each one is an AwakenBot component — Button, Item,
  * Dialog — wearing OpenMuse's measurements: 23px cards, pill buttons, 42px icon tiles, a 44px round
  * icon button, and the 15/14/11px type steps from its stylesheet. Colours come from the skin's tokens,
  * so dark mode follows without a branch here.
@@ -287,8 +287,8 @@ export function StatusDot({ tone }: { tone: "green" | "blue" }) {
 
 /**
  * OpenMuse's sheet: a card that rises from the bottom on a phone, with a grab handle, and settles in
- * the middle on anything wider. Built on OpenBot's Dialog, so focus, Escape and the backdrop behave
- * the way every other OpenBot dialog does.
+ * the middle on anything wider. Built on AwakenBot's Dialog, so focus, Escape and the backdrop behave
+ * the way every other AwakenBot dialog does.
  */
 export function MuseSheet({
   title,

@@ -4,7 +4,7 @@ Claude Code saves a tool result over its threshold (50,000 characters, or 25,000
 for an MCP tool) to `<config>/projects/<cwd>/<session>/tool-results/` and shows the model a preview
 and the path, and that notice is what the turn kept as the call's result. A full Bot was given no
 built-in tools, so it had nothing that could open the file: it tried its computer's `Read file`,
-which OpenBot refused for a path outside the Bot's workspace, then `grep` on its computer, a
+which AwakenBot refused for a path outside the Bot's workspace, then `grep` on its computer, a
 different machine, and lost the result.
 
 No provider requests or Claude subprocesses. The tool list is read through the SDK's own bridge,

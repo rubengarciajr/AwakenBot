@@ -337,21 +337,21 @@ export const ORCHESTRATION_GUIDANCE = asParagraphs(
 );
 
 /**
- * When a Bot asks the person anything: OpenBot's own cards first, then a closed test for the rest.
+ * When a Bot asks the person anything: AwakenBot's own cards first, then a closed test for the rest.
  *
- * OpenBot puts a card in front of the person before any delete, archive, send, share or post in their
+ * AwakenBot puts a card in front of the person before any delete, archive, send, share or post in their
  * apps or on websites, before any app tool its app marks destructive, and before any payment or
  * purchase (`server/src/approvals/policy.ts`), unless the person or their organisation has already
  * allowed that kind of action. The Bot's own computer is its scratch space and is left out
  * (`NOT_ACCOUNT_ACTIONS` there), so the guidance says "in their apps or on websites" and never
  * promises a card for a file the Bot deletes there. A Bot told by its approval card's description to
  * ask "before sending a message" asked too, so the person was asked twice for one delete. The card
- * OpenBot shows names the exact action, so it is the one that stays.
+ * AwakenBot shows names the exact action, so it is the one that stays.
  *
  * A tool marked destructive can be called anything ("reset pipeline"), so the Bot can't tell it from
  * its name. Its description carries {@link DESTRUCTIVE_TOOL_NOTE}, and this names that note's words.
  * Without them a Bot treated a reset as "something that cannot be undone and is none of these" and
- * asked its own question before OpenBot's card.
+ * asked its own question before AwakenBot's card.
  *
  * THE SECOND PARAGRAPH IS A CLOSED TEST. This used to end "ask for their decision yourself only when
  * the choice is theirs to make", and `ask_person` said "prefer this to guessing" on every run. A
@@ -364,7 +364,7 @@ export const ORCHESTRATION_GUIDANCE = asParagraphs(
  */
 const ASK_TEST_LINES = [
   "Ask the person something yourself only when you cannot go on without them: a wrong guess would be",
-  "hard to undo and OpenBot does not ask about it, the possible readings would lead to materially",
+  "hard to undo and AwakenBot does not ask about it, the possible readings would lead to materially",
   "different work, or only they know the answer. Otherwise make the most reasonable choice, say what",
   "you assumed, and keep going. Do everything that does not depend on the answer first, and ask at",
   "the end of a reply that delivers that progress.",
@@ -377,11 +377,11 @@ const OPENBOT_ASKS =
   "of action.";
 
 const ASKING_GUIDANCE_LINES = [
-  `OpenBot asks the person itself ${OPENBOT_ASKS}`,
+  `AwakenBot asks the person itself ${OPENBOT_ASKS}`,
   "It also asks before other changes when the person or their organisation has set it to, and the",
-  "OpenBot desktop app asks before you change a file or run a command in a folder on their own",
+  "AwakenBot desktop app asks before you change a file or run a command in a folder on their own",
   "computer. So do not ask them first, in words or with an approval card of your own: take the step,",
-  "and they are asked once, by OpenBot. Your own computer is your scratch space, and what you do there",
+  "and they are asked once, by AwakenBot. Your own computer is your scratch space, and what you do there",
   "asks only when their settings say so.",
   "",
   ...ASK_TEST_LINES,
@@ -393,16 +393,16 @@ export const ASKING_GUIDANCE = asParagraphs(ASKING_GUIDANCE_LINES);
  * The same, for a Bot that runs somewhere else (the Claude Agent SDK harness, LangGraph, an agent an
  * admin registered by its address).
  *
- * Only the apps and tools OpenBot hands it pass OpenBot's gate. A tool of its own does not, and a
- * Bot told flatly that "OpenBot asks the person itself" before a delete would skip asking before one
- * of those, and nobody would ask at all. So it is told OpenBot asks for what OpenBot gives it, and to
+ * Only the apps and tools AwakenBot hands it pass AwakenBot's gate. A tool of its own does not, and a
+ * Bot told flatly that "AwakenBot asks the person itself" before a delete would skip asking before one
+ * of those, and nobody would ask at all. So it is told AwakenBot asks for what AwakenBot gives it, and to
  * ask itself before anything of its own that cannot be undone. Without any of this a brought Bot was
  * told "Don't ask them first" on a destructive tool's note and never told why.
  */
 const BROUGHT_BOT_ASKING_GUIDANCE_LINES = [
-  "When you use the apps and tools OpenBot gives you, OpenBot asks the person itself",
+  "When you use the apps and tools AwakenBot gives you, AwakenBot asks the person itself",
   `${OPENBOT_ASKS} So for those, do not ask them first, in words or with an approval card of your`,
-  "own: take the step, and they are asked once, by OpenBot. Tools of your own that OpenBot did not",
+  "own: take the step, and they are asked once, by AwakenBot. Tools of your own that AwakenBot did not",
   "give you are not covered: ask before one of those does something that cannot be undone.",
   "",
   ...ASK_TEST_LINES,
@@ -486,7 +486,7 @@ const ROUTINE_RUN_LINES = [
   UNATTENDED_LINE,
   "The person who set up this routine approved its steps, so carry them out without asking. Where",
   "something is unclear, make the most reasonable choice, say what you assumed, and keep going.",
-  "OpenBot will still ask the person before anything it gates; that is not a question for you to ask.",
+  "AwakenBot will still ask the person before anything it gates; that is not a question for you to ask.",
   "If one part cannot be done, finish every other part and say exactly what you left out and why.",
   "Before you finish, read your last paragraph: if it promises work you have not done, do that work now.",
   "",
@@ -531,8 +531,8 @@ export function promptSection(
  * The working rules every Bot gets, in their fixed order, after its role: how to work, when to ask,
  * where answers come from, how to answer, when to use subagents, and what untrusted content is.
  *
- * One list for both kinds of Bot, so a Bot behaves the same whatever framework runs it. A Bot OpenBot
- * runs and one somewhere else differ only in what OpenBot's gate covers (see
+ * One list for both kinds of Bot, so a Bot behaves the same whatever framework runs it. A Bot AwakenBot
+ * runs and one somewhere else differ only in what AwakenBot's gate covers (see
  * {@link BROUGHT_BOT_ASKING_GUIDANCE}). The untrusted-content line is the server's
  * (`untrusted-content.ts`), passed in so this module stays free of server code.
  */
@@ -555,11 +555,11 @@ export function workingGuidance(options: {
 
 /**
  * Added to the description of an app tool its app marks destructive (MCP's `destructiveHint`, a
- * broker's destructive flag), where the Bot is offered it. OpenBot asks before one runs, so the Bot
+ * broker's destructive flag), where the Bot is offered it. AwakenBot asks before one runs, so the Bot
  * is told so on the tool itself, in the words {@link ASKING_GUIDANCE} names.
  */
 export const DESTRUCTIVE_TOOL_NOTE =
-  "This tool deletes or overwrites something, so OpenBot asks the person before it runs. Don't ask them first.";
+  "This tool deletes or overwrites something, so AwakenBot asks the person before it runs. Don't ask them first.";
 
 const WEEKDAYS = [
   "Sunday",
@@ -585,7 +585,7 @@ export function modelGuidance(label: string): string {
 }
 
 /**
- * Which agent framework the Bot runs on, by the name the app gives it ("OpenBot", "LangChain
+ * Which agent framework the Bot runs on, by the name the app gives it ("AwakenBot", "LangChain
  * (LangGraph)", "Claude Agent SDK").
  *
  * Decided by what runs the Bot, never by its subtitle: a subtitle is the person's to write, and the

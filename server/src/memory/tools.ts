@@ -57,10 +57,10 @@ export class PersonalMemoryMiddleware extends Middleware {
             ],
             context: [
               ...input.context.filter(
-                (entry) => entry.description !== "OpenBot personal memory",
+                (entry) => entry.description !== "AwakenBot personal memory",
               ),
               ...(content
-                ? [{ description: "OpenBot personal memory", value: content }]
+                ? [{ description: "AwakenBot personal memory", value: content }]
                 : []),
             ],
           },
@@ -78,7 +78,7 @@ type MemoryToolOptions = {
 };
 
 /**
- * The memory tools a Bot is offered in this edition: none in the personal edition. OpenBot Desktop
+ * The memory tools a Bot is offered in this edition: none in the personal edition. AwakenBot Desktop
  * runs a local Intelligence whose licence leaves memory out, and the personal edition's screens show
  * no memory, so a Bot offering to remember something would promise what the person can never see
  * or change. Every place a Bot's tools are listed or called asks this, not `memoryTools`.

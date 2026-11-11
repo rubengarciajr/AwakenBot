@@ -16,7 +16,7 @@ import {
 import { settleReactWork } from "./settle-react-work";
 
 /**
- * DICTATION WITHOUT A TRANSCRIPTION PROVIDER. Every OpenBot shows the microphone: the Desktop window
+ * DICTATION WITHOUT A TRANSCRIPTION PROVIDER. Every AwakenBot shows the microphone: the Desktop window
  * listens through the desktop app's on-device recognizer (desktop/src-tauri/src/speech.rs, faked here by
  * the same channel contract the real commands keep), and a browser through its Web Speech API (replayed
  * from a recorded Chrome run). Words stream into the box; Stop or Enter stops listening and keeps them;

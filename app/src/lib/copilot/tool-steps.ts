@@ -26,7 +26,7 @@ type StepMessage = {
 
 /**
  * Which tools draw a component in the conversation: this build's gallery, its cards that ask the
- * person included, and the components authored in this OpenBot that are published.
+ * person included, and the components authored in this AwakenBot that are published.
  *
  * Read from the gallery each time, not once: the registry is filled when its modules load.
  */

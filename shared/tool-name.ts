@@ -43,7 +43,7 @@ export function readToolName(name: string, running = false): ToolName {
 
   const [, rawServer, ...rest] = parts;
   /*
-   * OpenBot's own Routines app also carries a goal's tools for a conversation. They are the tools a
+   * AwakenBot's own Routines app also carries a goal's tools for a conversation. They are the tools a
    * goal's run holds, so they read in its words, "Created a goal", and not "Create goal" beside
    * "routines".
    */
@@ -54,7 +54,7 @@ export function readToolName(name: string, running = false): ToolName {
   return appToolName(rawServer ?? "", rest.join("__"));
 }
 
-/** The key of OpenBot's own Routines app (`ALWAYS_ON_APP` on the server). */
+/** The key of AwakenBot's own Routines app (`ALWAYS_ON_APP` on the server). */
 const ROUTINES_APP = "routines";
 
 /**
@@ -219,7 +219,7 @@ function approvalParts(action: {
     : action.toolRef.replace(/^computer_|^host\//, "").replaceAll("_", " ");
   /*
    * A folder on the person's computer by the name Settings > Computer shows. Its scope is the id
-   * OpenBot gave the grant, which kept a rule saved from the card on that grant, and read on the
+   * AwakenBot gave the grant, which kept a rule saved from the card on that grant, and read on the
    * card as "write file on host-grant-15407-1794112361547002000".
    */
   if (action.toolRef.startsWith("host/")) {
@@ -458,7 +458,7 @@ function goalTools(names: {
 }
 
 /**
- * The tools OpenBot itself offers a Bot, named in words somebody chose.
+ * The tools AwakenBot itself offers a Bot, named in words somebody chose.
  *
  * These are not MCP names, so nothing above rewrites them, and the bare identifier is what a line
  * would otherwise say: "show_app_access", shimmering, while the Bot works out what an app is for the
@@ -468,7 +468,7 @@ function goalTools(names: {
  * EVERY ONE OF THEM, including those the app draws a card for. A card is the usual picture, but the
  * same call is also a step inside a subtask, a line in a conversation opened where its card is not
  * registered, and a line in a run with no browser at all. `server/tests/built-in-tool-labels.test.ts`
- * reads every tool OpenBot registers and fails on one missing here.
+ * reads every tool AwakenBot registers and fails on one missing here.
  */
 const OWN_TOOLS: Record<string, OwnTool> = {
   [SHOW_APP_ACCESS_TOOL]: {
@@ -514,7 +514,7 @@ const OWN_TOOLS: Record<string, OwnTool> = {
   save_skill: { running: "Proposing a skill", done: "Proposed a skill" },
 
   /*
-   * Drawing a generated interface in the conversation. The runtime offers it, not an OpenBot
+   * Drawing a generated interface in the conversation. The runtime offers it, not an AwakenBot
    * registration, so `built-in-tool-labels.test.ts` cannot find it; its words go here by hand.
    */
   render_ui: { running: "Drawing an interface", done: "Drew an interface" },
@@ -688,7 +688,7 @@ const OWN_TOOLS: Record<string, OwnTool> = {
   },
 };
 
-/** One of OpenBot's own tools in words, or null for any other name. */
+/** One of AwakenBot's own tools in words, or null for any other name. */
 export function ownToolLabel(name: string, running = false): string | null {
   const own = Object.hasOwn(OWN_TOOLS, name) ? OWN_TOOLS[name] : undefined;
   if (!own) return null;
@@ -696,7 +696,7 @@ export function ownToolLabel(name: string, running = false): string | null {
 }
 
 /**
- * What one of OpenBot's own steps asked for, for a step that was blocked and so did not happen, or
+ * What one of AwakenBot's own steps asked for, for a step that was blocked and so did not happen, or
  * null when it has no words of its own for that.
  */
 export function ownToolAttempt(name: string): string | null {
@@ -705,7 +705,7 @@ export function ownToolAttempt(name: string): string | null {
 }
 
 /**
- * What one of OpenBot's own steps acted on, read from its arguments (a JSON string while it streams,
+ * What one of AwakenBot's own steps acted on, read from its arguments (a JSON string while it streams,
  * or already parsed): the file a file step read or saved. Undefined for any other step, and for
  * arguments not yet complete.
  */

@@ -1,8 +1,8 @@
 /*
- * OpenBot Desktop: the setup window, in OpenBot's own visual system.
+ * AwakenBot Desktop: the setup window, in AwakenBot's own visual system.
  *
- * The values are OpenBot's tokens from `app/src/theme.css`, copied rather than approximated, so the
- * window someone sets up in looks like the product it turns into: Inter, OpenBot's lavender frame
+ * The values are AwakenBot's tokens from `app/src/theme.css`, copied rather than approximated, so the
+ * window someone sets up in looks like the product it turns into: Inter, AwakenBot's lavender frame
  * with a white card on it, its near-black primary button, its periwinkle focus ring, its 10px radius
  * and its type scale (on a 15px base, as the app sets text). The app's shadcn names are kept as
  * written (`--background`, `--card`, `--muted-foreground`, ...) and the names these screens were
@@ -16,7 +16,7 @@
  * macOS title bar takes this ground (see `SETUP_BACKGROUND` and `match_title_bar`).
  */
 :root {
-  /* OpenBot's tokens, light (app/src/theme.css `:root`). */
+  /* AwakenBot's tokens, light (app/src/theme.css `:root`). */
   --background: oklch(0.983 0.003 286.4);
   --foreground: oklch(0.108 0.015 220.9);
   --card: oklch(1 0 0);
@@ -35,13 +35,13 @@
   --sidebar-accent: oklch(0.832 0.085 281.4 / 30%);
   --radius: 0.625rem;
 
-  /* OpenBot's radius scale (theme.css `@theme`). */
+  /* AwakenBot's radius scale (theme.css `@theme`). */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
 
-  /* OpenBot's type scale: Tailwind's sizes times 15/16 (theme.css `@theme`). */
+  /* AwakenBot's type scale: Tailwind's sizes times 15/16 (theme.css `@theme`). */
   --text-xs: 0.703125rem; /* 11.25px */
   --text-sm: 0.8203125rem; /* 13.125px */
   --text-base: 0.9375rem; /* 15px */
@@ -52,7 +52,7 @@
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 
-  /* The names these screens were written against, onto OpenBot's tokens. */
+  /* The names these screens were written against, onto AwakenBot's tokens. */
   --surface-main: var(--sidebar);
   --surface-container: var(--card);
   --surface-hovered: var(--muted);
@@ -136,7 +136,7 @@ body {
 }
 
 /*
- * The ground. OpenBot's pages sit on flat surfaces, so the window does too: the frame's lavender,
+ * The ground. AwakenBot's pages sit on flat surfaces, so the window does too: the frame's lavender,
  * with nothing painted over it. The element stays so a skin can draw on it later.
  */
 .backdrop {
@@ -182,7 +182,7 @@ main {
   padding: clamp(16px, 3vh, 32px) 24px 24px;
 }
 
-/* The one focal surface per screen: a white card on the frame, as OpenBot draws its panels. */
+/* The one focal surface per screen: a white card on the frame, as AwakenBot draws its panels. */
 .sheet {
   width: 100%;
   max-width: 36rem;
@@ -211,7 +211,7 @@ main {
 }
 
 /*
- * The top of every setup step: OpenBot's mark and name, then where you are. The product the person
+ * The top of every setup step: AwakenBot's mark and name, then where you are. The product the person
  * is setting up is named on every screen, whichever account a step signs in to.
  */
 .setup-header {
@@ -338,7 +338,7 @@ h2 {
 }
 
 /*
- * Buttons are OpenBot's `Button`: sentence case in the body face, 10px corners, the near-black
+ * Buttons are AwakenBot's `Button`: sentence case in the body face, 10px corners, the near-black
  * primary fill. `lg` (40px) on these screens, as the app's own onboarding sets its Continue.
  */
 button {
@@ -1026,7 +1026,7 @@ a:hover {
   font-size: 12px;
 }
 
-/* A newer OpenBot exists. Shares the blocker's box because it is the same shape of interruption,
+/* A newer AwakenBot exists. Shares the blocker's box because it is the same shape of interruption,
    without its red heading: this is good news, not something in the way. Above the backdrop, as
    `main` is: the backdrop is fixed, and painted over anything in the page's flow that is not. */
 .update-offer {
@@ -1342,8 +1342,8 @@ a:hover {
 /*
  * A plain line, with no download under it, may take up to three lines: the row is then 130 px of
  * the 132 held, its badge on a line of its own included, so it still never moves anything. Cut at one line, "The Podman on this computer is
- * too old for OpenBot, so OpenBot is updating it." read "...so OpenBot is u…"; cut at two, Docker
- * Desktop's hand-off read "...OpenBot comes back when Docker is…". The longest line that reaches
+ * too old for AwakenBot, so AwakenBot is updating it." read "...so AwakenBot is u…"; cut at two, Docker
+ * Desktop's hand-off read "...AwakenBot comes back when Docker is…". The longest line that reaches
  * this row is three lines at 1016x839 and at 720x560 (`setupLayout.browser.test.ts`).
  */
 .behind-slot .step:not(:has(> .downloads)) .detail {
@@ -1437,7 +1437,7 @@ a:hover {
 /*
  * The background row's name whole, with its step and time on a line of their own under it, as a
  * narrow window sets every row. On Windows G the badge ("Step 3 of 4 · 4m 18s elapsed") cut the
- * name to "Installing OpenBot in the backgr…". After the rules it changes. Its tallest forms still
+ * name to "Installing AwakenBot in the backgr…". After the rules it changes. Its tallest forms still
  * fill the 132 px held and no more: a download (name, badge, line, bar and bytes), or a plain line
  * of three (`.behind-slot`).
  */
@@ -1466,7 +1466,7 @@ a:hover {
 }
 
 /*
- * OpenBot's own mark, and it is the real one.
+ * AwakenBot's own mark, and it is the real one.
  *
  * An earlier version of this screen shipped a mark I drew: two overlapping squares. That was
  * invented, which is the same thing this file refuses to do for other people's brands, and there
@@ -1533,7 +1533,7 @@ a:hover {
 }
 
 /*
- * The trademark sign on OpenBot's name, as open.bot sets it and as the app's `Trademark` does: a
+ * The trademark sign on AwakenBot's name, as open.bot sets it and as the app's `Trademark` does: a
  * small superscript in the name's own colour, its top level with the capitals, that leaves the line
  * where it was. Never under 8px, so it still reads beside the header's 16px name.
  */
@@ -1577,7 +1577,7 @@ a:hover {
   letter-spacing: -0.01em;
 }
 
-/* "by CopilotKit" beside the name: the same size, quieter, so OpenBot still leads. */
+/* "by CopilotKit" beside the name: the same size, quieter, so AwakenBot still leads. */
 .setup-header .lockup span.lockup-by,
 .local-needs .lockup span.lockup-by {
   font-weight: 400;
@@ -1766,7 +1766,7 @@ a:hover {
 }
 
 /*
- * Dark, following the system: OpenBot's own `.dark` tokens (app/src/theme.css), the near-black plum
+ * Dark, following the system: AwakenBot's own `.dark` tokens (app/src/theme.css), the near-black plum
  * ground with the frame darkest and the cards lightest. Everything else follows from the mapping in
  * `:root`.
  */

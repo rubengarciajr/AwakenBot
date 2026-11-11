@@ -67,7 +67,7 @@ function hasText(said: string, slug: string): boolean {
 }
 
 /**
- * Box I: OpenBot's machine was made again and the backend went with the old one, so every status
+ * Box I: AwakenBot's machine was made again and the backend went with the old one, so every status
  * failed and the row said "Setup stopped partway through with an error. Retry." for good. A lost
  * backend says what happened and what to do, honestly, and offers Start fresh instead of Retry.
  */
@@ -82,7 +82,7 @@ test("a lost backend says the saved data is gone and offers Start fresh", () => 
   }).intelligence;
   expect(row).toEqual({
     state: "blocked",
-    said: "OpenBot's saved data on this computer is gone, with your Bots and conversations. Start fresh to set OpenBot up again. Your sign-in and AI connection stay.",
+    said: "AwakenBot's saved data on this computer is gone, with your Bots and conversations. Start fresh to set AwakenBot up again. Your sign-in and AI connection stay.",
     action: "start-fresh",
   });
 });
@@ -127,7 +127,7 @@ test("Docker reasons block the runtime when the probe has no answer", () => {
   });
   expect(rows.runtime).toEqual({
     state: "blocked",
-    said: "The software OpenBot runs on isn't running.",
+    said: "The software AwakenBot runs on isn't running.",
     action: "retry",
   });
   expect(rows.intelligence.state).toBe("blocked");
@@ -137,7 +137,7 @@ test("Docker reasons block the runtime when the probe has no answer", () => {
     intelligence: report({ outcome: "blocked", reason: "unsupported-engine" }),
   });
   expect(engine.runtime.said).toBe(
-    "OpenBot can't run on this computer as it's set up.",
+    "AwakenBot can't run on this computer as it's set up.",
   );
   expect(engine.runtime.action).toBeUndefined();
 });
@@ -156,7 +156,7 @@ test("runtime probe maps directly", () => {
   );
   expect(localReadiness({ ...base, runtime: "not-running" }).runtime).toEqual({
     state: "blocked",
-    said: "The software OpenBot runs on isn't running.",
+    said: "The software AwakenBot runs on isn't running.",
     action: "retry",
   });
   expect(localReadiness({ ...base, runtime: "unknown" }).runtime.state).toBe(
@@ -171,14 +171,14 @@ test("specific wording and actions", () => {
     said(report({ outcome: "blocked", reason: "port-unavailable" })),
   ).toEqual({
     state: "blocked",
-    said: "Another app is using a network port OpenBot needs. Quit that app, then Retry.",
+    said: "Another app is using a network port AwakenBot needs. Quit that app, then Retry.",
     action: "retry",
   });
   expect(
     said(report({ outcome: "blocked", reason: "authentication-required" })),
   ).toEqual({
     state: "blocked",
-    said: "Sign in to OpenBot.",
+    said: "Sign in to AwakenBot.",
     action: "sign-in",
   });
   expect(said("cancelled").action).toBe("retry");
@@ -187,14 +187,16 @@ test("specific wording and actions", () => {
   );
   expect(
     said(report({ outcome: "blocked", reason: "local-command-busy" })).said,
-  ).toBe("OpenBot is still busy with another step. Wait a moment, then Retry.");
+  ).toBe(
+    "AwakenBot is still busy with another step. Wait a moment, then Retry.",
+  );
   expect(said("timeout")).toEqual({
     state: "blocked",
-    said: "OpenBot took too long to set up, so it stopped waiting. What it already downloaded is kept, so Retry picks up from there.",
+    said: "AwakenBot took too long to set up, so it stopped waiting. What it already downloaded is kept, so Retry picks up from there.",
     action: "restart-intelligence",
   });
   expect(said("unexpected-exit").said).toBe(
-    "Part of OpenBot stopped without saying why. Retry. If it stops again, copy the logs below.",
+    "Part of AwakenBot stopped without saying why. Retry. If it stops again, copy the logs below.",
   );
   // A setup the CLI itself failed says so, not only that the back end could not start.
   expect(
@@ -219,42 +221,42 @@ test("specific wording and actions", () => {
     );
   expect(short({ disk: true })).toEqual({
     state: "blocked",
-    said: "Docker Desktop doesn't have enough free disk space. OpenBot needs 40 GB free. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
+    said: "Docker Desktop doesn't have enough free disk space. AwakenBot needs 40 GB free. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
     action: "retry",
   });
   expect(short({ cpu: true }).said).toBe(
-    "Docker Desktop doesn't have enough CPUs. OpenBot needs 4 free CPUs. Raise the CPU limit in Docker Desktop > Settings > Resources, then Retry.",
+    "Docker Desktop doesn't have enough CPUs. AwakenBot needs 4 free CPUs. Raise the CPU limit in Docker Desktop > Settings > Resources, then Retry.",
   );
   expect(short({ memory: true }).said).toBe(
-    "Docker Desktop doesn't have enough memory. OpenBot needs 4 GB of free memory. Raise the memory limit in Docker Desktop > Settings > Resources, then Retry.",
+    "Docker Desktop doesn't have enough memory. AwakenBot needs 4 GB of free memory. Raise the memory limit in Docker Desktop > Settings > Resources, then Retry.",
   );
   expect(short({ cpu: true, memory: true, disk: true }).said).toBe(
-    "Docker Desktop doesn't have enough CPUs, memory and free disk space. OpenBot needs 4 free CPUs, 4 GB of free memory and 40 GB free. Raise the limits in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
+    "Docker Desktop doesn't have enough CPUs, memory and free disk space. AwakenBot needs 4 free CPUs, 4 GB of free memory and 40 GB free. Raise the limits in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
   );
   expect(short({ podman: true, disk: true }).said).toBe(
-    "OpenBot doesn't have enough free disk space. It needs 40 GB free. Stop your Podman machine, run podman machine set --disk-size 160, start it again, then Retry.",
+    "AwakenBot doesn't have enough free disk space. It needs 40 GB free. Stop your Podman machine, run podman machine set --disk-size 160, start it again, then Retry.",
   );
   // With the CLI's own numbers, as `local_eval.rs` reads them from its error.
   expect(
     short({ disk: true, cpus: "9.8", memoryGb: "18.9", diskGb: "0" }).said,
   ).toBe(
-    "Docker Desktop has 0 GB of free disk space. OpenBot needs 40 GB. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
+    "Docker Desktop has 0 GB of free disk space. AwakenBot needs 40 GB. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
   );
   expect(
     short({ cpu: true, cpus: "3.7", memoryGb: "5.2", diskGb: "51" }).said,
   ).toBe(
-    "Docker Desktop has 3.7 free CPUs. OpenBot needs 4. Raise the CPU limit in Docker Desktop > Settings > Resources, then Retry.",
+    "Docker Desktop has 3.7 free CPUs. AwakenBot needs 4. Raise the CPU limit in Docker Desktop > Settings > Resources, then Retry.",
   );
   expect(short({ memory: true, memoryGb: "2.9" }).said).toBe(
-    "Docker Desktop has 2.9 GB of free memory. OpenBot needs 4 GB. Raise the memory limit in Docker Desktop > Settings > Resources, then Retry.",
+    "Docker Desktop has 2.9 GB of free memory. AwakenBot needs 4 GB. Raise the memory limit in Docker Desktop > Settings > Resources, then Retry.",
   );
   expect(
     short({ cpu: true, disk: true, cpus: "3.5", memoryGb: "6", diskGb: "12" })
       .said,
   ).toBe(
-    "Docker Desktop has 3.5 free CPUs and 12 GB of free disk space. OpenBot needs 4 free CPUs and 40 GB of free disk space. Raise the limits in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
+    "Docker Desktop has 3.5 free CPUs and 12 GB of free disk space. AwakenBot needs 4 free CPUs and 40 GB of free disk space. Raise the limits in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
   );
-  // OpenBot's own check after a start that failed (`local_eval::checked_call`), as it reports
+  // AwakenBot's own check after a start that failed (`local_eval::checked_call`), as it reports
   // each case. A nearly full disk is said as k3s's, beside the 40 GB only when it is below it.
   expect(
     short({
@@ -267,7 +269,7 @@ test("specific wording and actions", () => {
       drive: "C:",
     }).said,
   ).toBe(
-    "OpenBot is nearly out of disk space. It has 30.5 GB free of 1006.8 GB. It needs 40 GB. Free up space on drive C:, then Retry.",
+    "AwakenBot is nearly out of disk space. It has 30.5 GB free of 1006.8 GB. It needs 40 GB. Free up space on drive C:, then Retry.",
   );
   // C: is what ran short, as `local_eval.rs` reports it after a start that failed on Windows.
   expect(
@@ -280,19 +282,19 @@ test("specific wording and actions", () => {
       freeOnDrive: true,
     }).said,
   ).toBe(
-    "This computer has 30 GB of free space on drive C:, and OpenBot needs 40 GB. Free up some space, then Retry.",
+    "This computer has 30 GB of free space on drive C:, and AwakenBot needs 40 GB. Free up some space, then Retry.",
   );
-  // OpenBot's machine's own disk is what ran short, and C: has room: never said as C:'s.
+  // AwakenBot's machine's own disk is what ran short, and C: has room: never said as C:'s.
   expect(
     short({ podman: true, disk: true, diskGb: "10", wsl: true, drive: "C:" })
       .said,
   ).toBe(
-    "OpenBot has 10 GB of free disk space. It needs 40 GB. Free up space on drive C:, then Retry.",
+    "AwakenBot has 10 GB of free disk space. It needs 40 GB. Free up space on drive C:, then Retry.",
   );
   // On Windows, never `podman machine set --disk-size`: Podman refuses it for WSL machines, even
   // when WSL did not say which drive holds the disk.
   expect(short({ podman: true, disk: true, wsl: true }).said).toBe(
-    "OpenBot doesn't have enough free disk space. It needs 40 GB free. Free up space on the drive OpenBot is installed on, then Retry.",
+    "AwakenBot doesn't have enough free disk space. It needs 40 GB free. Free up space on the drive AwakenBot is installed on, then Retry.",
   );
   expect(
     short({
@@ -302,7 +304,7 @@ test("specific wording and actions", () => {
       diskSizeGb: "1827.9",
     }).said,
   ).toBe(
-    "OpenBot is nearly out of disk space. Docker Desktop has 160 GB free of 1827.9 GB. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
+    "AwakenBot is nearly out of disk space. Docker Desktop has 160 GB free of 1827.9 GB. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Retry.",
   );
   expect(
     short({
@@ -313,17 +315,17 @@ test("specific wording and actions", () => {
       diskSizeGb: "60",
     }).said,
   ).toBe(
-    "OpenBot is nearly out of disk space. It has 8 GB free of 60 GB. It needs 40 GB. Stop your Podman machine, run podman machine set --disk-size 160, start it again, then Retry.",
+    "AwakenBot is nearly out of disk space. It has 8 GB free of 60 GB. It needs 40 GB. Stop your Podman machine, run podman machine set --disk-size 160, start it again, then Retry.",
   );
   // Space was freed and k3s still says the disk is low: wait, rather than free more.
   expect(
     short({ podman: true, recovering: true, wsl: true, drive: "C:" }),
   ).toEqual({
     state: "blocked",
-    said: "OpenBot is recovering from low disk space. Wait a few minutes, then Retry.",
+    said: "AwakenBot is recovering from low disk space. Wait a few minutes, then Retry.",
     action: "retry",
   });
-  // A back end that runs but does not answer, with OpenBot's check of its disk, and without.
+  // A back end that runs but does not answer, with AwakenBot's check of its disk, and without.
   const degraded = (shortfall?: Partial<Shortfall>) =>
     said(
       report({
@@ -344,7 +346,7 @@ test("specific wording and actions", () => {
     );
   expect(degraded({ recovering: true, wsl: true, drive: "C:" })).toEqual({
     state: "blocked",
-    said: "OpenBot is recovering from low disk space. Wait a few minutes, then Retry.",
+    said: "AwakenBot is recovering from low disk space. Wait a few minutes, then Retry.",
     action: "restart-intelligence",
   });
   expect(
@@ -357,14 +359,14 @@ test("specific wording and actions", () => {
       drive: "C:",
     }).said,
   ).toBe(
-    "OpenBot is nearly out of disk space. It has 30.5 GB free of 1006.8 GB. It needs 40 GB. Free up space on drive C:, then Retry.",
+    "AwakenBot is nearly out of disk space. It has 30.5 GB free of 1006.8 GB. It needs 40 GB. Free up space on drive C:, then Retry.",
   );
   expect(degraded().said).toBe(
-    "OpenBot is running but not working properly. Retry to start it again.",
+    "AwakenBot is running but not working properly. Retry to start it again.",
   );
   // The account step's check before a first setup, on Windows, as Windows F's check answered it
   // (`local-eval-terms-windows-f-short-of-disk.json`): what is free, then what is needed. With 13
-  // GB free it was told "OpenBot is out of disk space" and no figure.
+  // GB free it was told "AwakenBot is out of disk space" and no figure.
   expect(
     engineTooSmallSaid({
       podman: true,
@@ -377,7 +379,7 @@ test("specific wording and actions", () => {
       freeOnDrive: true,
     }),
   ).toBe(
-    "This computer has 13.2 GB of free space on drive C:, and OpenBot needs 40 GB. Free up some space, then Try again.",
+    "This computer has 13.2 GB of free space on drive C:, and AwakenBot needs 40 GB. Free up some space, then Try again.",
   );
   // Windows G on Docker Desktop: its disk is a sparse virtual disk on C:, and C: ran short. Said
   // as C:'s, never as Docker's disk limit, which had 938.3 GB free.
@@ -392,7 +394,7 @@ test("specific wording and actions", () => {
       freeOnDrive: true,
     }),
   ).toBe(
-    "This computer has 13.9 GB of free space on drive C:, and OpenBot needs 40 GB. Free up some space, then Try again.",
+    "This computer has 13.9 GB of free space on drive C:, and AwakenBot needs 40 GB. Free up some space, then Try again.",
   );
   // A disk that is short is never said as out of space, measured or not.
   expect(
@@ -405,19 +407,19 @@ test("specific wording and actions", () => {
       drive: "C:",
     }),
   ).toBe(
-    "OpenBot doesn't have enough free disk space. It needs 40 GB free. Free up space on drive C:, then Try again.",
+    "AwakenBot doesn't have enough free disk space. It needs 40 GB free. Free up space on drive C:, then Try again.",
   );
   // A report that does not say which is still about resources, never "partway through".
   expect(
     said(report({ outcome: "failed", reason: "resources-short" })).said,
   ).toBe(
-    "Docker Desktop doesn't give OpenBot enough CPUs, memory or disk space. Raise them in Docker Desktop > Settings > Resources, then Retry.",
+    "Docker Desktop doesn't give AwakenBot enough CPUs, memory or disk space. Raise them in Docker Desktop > Settings > Resources, then Retry.",
   );
   expect(said("unavailable").action).toBeUndefined();
   expect(said("unverified").action).toBe("repair");
   expect(said("invalid-json")).toEqual({
     state: "blocked",
-    said: "OpenBot got an answer it couldn't read. Retry. If it happens again, copy the logs below.",
+    said: "AwakenBot got an answer it couldn't read. Retry. If it happens again, copy the logs below.",
   });
 });
 
@@ -436,7 +438,7 @@ test("a v1 report is unknown, never ready", () => {
   const row = localReadiness(base).intelligence;
   expect(row).toEqual({
     state: "unknown",
-    said: "OpenBot started, and hasn't said yet whether it's ready.",
+    said: "AwakenBot started, and hasn't said yet whether it's ready.",
   });
   expect(
     localReadiness({ ...base, intelligence: null }).intelligence.state,
@@ -486,7 +488,7 @@ test("only exactly ready and valid on a completed report is ready", () => {
   ).not.toBe("ready");
 });
 
-test("OpenBot and provider rows", () => {
+test("AwakenBot and provider rows", () => {
   expect(localReadiness({ ...base, openBot: "connected" }).openBot.state).toBe(
     "ready",
   );
@@ -533,7 +535,7 @@ test("rows are independent", () => {
 });
 
 // chatGate does not take the runtime. So the direction that holds is: if every row is ready, chat
-// is open; and if chat is open, the Intelligence, OpenBot and provider rows are ready (the runtime
+// is open; and if chat is open, the Intelligence, AwakenBot and provider rows are ready (the runtime
 // row may still be unknown or blocked).
 test("agrees with chatGate", () => {
   const intelligences: ChatGateInput["intelligence"][] = [
@@ -588,7 +590,7 @@ test("types: the failure and reason inputs are the upstream ones", () => {
   const failure: LocalFailure = "spawn";
   expect(
     localReadiness({ ...base, intelligence: failure }).intelligence.said,
-  ).toBe("OpenBot couldn't run part of its own software. Retry.");
+  ).toBe("AwakenBot couldn't run part of its own software. Retry.");
 });
 
 test("each readiness state of a valid licence has its own row", () => {
@@ -599,25 +601,25 @@ test("each readiness state of a valid licence has its own row", () => {
     }).intelligence;
   expect(row("ready")).toEqual({
     state: "ready",
-    said: "OpenBot is ready.",
+    said: "AwakenBot is ready.",
   });
   expect(row("starting")).toEqual({
     state: "unknown",
-    said: "OpenBot is starting.",
+    said: "AwakenBot is starting.",
   });
   expect(row("stopped")).toEqual({
     state: "blocked",
-    said: "OpenBot's services are stopped.",
+    said: "AwakenBot's services are stopped.",
     action: "start-intelligence",
   });
   expect(row("degraded")).toEqual({
     state: "blocked",
-    said: "OpenBot is running but not working properly. Retry to start it again.",
+    said: "AwakenBot is running but not working properly. Retry to start it again.",
     action: "restart-intelligence",
   });
   expect(row("unknown")).toEqual({
     state: "unknown",
-    said: "OpenBot started, and hasn't said yet whether it's ready.",
+    said: "AwakenBot started, and hasn't said yet whether it's ready.",
   });
 });
 
@@ -633,7 +635,7 @@ test("a licence that is not valid blocks a ready Intelligence", () => {
   });
   expect(row("missing")).toEqual({
     state: "blocked",
-    said: "OpenBot has no evaluation licence on this computer.",
+    said: "AwakenBot has no evaluation licence on this computer.",
   });
   expect(row("invalid")).toEqual({
     state: "blocked",
@@ -660,11 +662,11 @@ test("a licence expiring in four days is ready with a warning", () => {
     }).intelligence;
   expect(expiring("2026-10-25T18:00:00.000Z")).toEqual({
     state: "ready",
-    said: "OpenBot is ready. Its evaluation licence expires within 5 days.",
+    said: "AwakenBot is ready. Its evaluation licence expires within 5 days.",
   });
   expect(expiring("2026-10-27T18:00:00.000Z")).toEqual({
     state: "ready",
-    said: "OpenBot is ready.",
+    said: "AwakenBot is ready.",
   });
 });
 
@@ -726,7 +728,7 @@ test("every way setup, start or update can stop is said in plain words, with wha
   ])
     row(future(readiness, "valid"));
   row(null);
-  // Short of something, on Docker Desktop, on OpenBot's own Podman machine, and in WSL.
+  // Short of something, on Docker Desktop, on AwakenBot's own Podman machine, and in WSL.
   const resources = [
     { cpu: true },
     { memory: true },

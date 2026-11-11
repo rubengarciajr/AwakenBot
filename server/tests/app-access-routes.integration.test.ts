@@ -1127,7 +1127,7 @@ describe("an administrator's one press on a card", () => {
   });
 
   /*
-   * OpenBot Personal has no Plugins page: its apps are set up under Connections, and a sentence
+   * AwakenBot Personal has no Plugins page: its apps are set up under Connections, and a sentence
    * sending the one person to Plugins sends them to a page they cannot find.
    */
   test("names the page apps are set up on, for the edition", async () => {

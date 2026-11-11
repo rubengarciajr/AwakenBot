@@ -25,7 +25,7 @@ afterEach(() => {
 afterAll(() => GlobalRegistrator.unregister());
 
 const ADMINISTRATOR_INSTRUCTION =
-  "Setting up Windows Subsystem for Linux needs administrator rights. Ask an administrator to open Windows Terminal or PowerShell as an administrator and run `dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart`, `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`, and `wsl --install`. Restart Windows, then start OpenBot again in your own account.";
+  "Setting up Windows Subsystem for Linux needs administrator rights. Ask an administrator to open Windows Terminal or PowerShell as an administrator and run `dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart`, `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`, and `wsl --install`. Restart Windows, then start AwakenBot again in your own account.";
 
 const noRestart = () => {
   throw new Error("no restart expected");
@@ -41,7 +41,7 @@ test("the commands are read from the native instruction, in order", () => {
 
 /*
  * David's direction for 1.0.1: no button before an install step's prompt. The screen says what
- * Windows will ask and why, and OpenBot starts the change by itself after a moment; Windows shows
+ * Windows will ask and why, and AwakenBot starts the change by itself after a moment; Windows shows
  * its own administrator prompt. Here no click is made, and the fix still runs.
  */
 test("turning on WSL starts by itself, with no click, and hands over to the restart", async () => {
@@ -60,7 +60,7 @@ test("turning on WSL starts by itself, with no click, and hands over to the rest
   // Said before Windows asks, with no button to press.
   expect(
     view.getByText(
-      "Windows will ask for your permission so OpenBot can turn it on. Then Windows needs one restart.",
+      "Windows will ask for your permission so AwakenBot can turn it on. Then Windows needs one restart.",
     ),
   ).toBeTruthy();
   expect(
@@ -107,7 +107,7 @@ test("a declined prompt is said without an error, and asked again by itself and 
     />,
   );
   await view.findByText(
-    "OpenBot needs Windows' permission to turn on a feature it needs. It asks again in a moment, or choose Try again.",
+    "AwakenBot needs Windows' permission to turn on a feature it needs. It asks again in a moment, or choose Try again.",
   );
   expect(view.queryByRole("alert")).toBeNull();
   // Asked again by itself after the wait.
@@ -122,7 +122,7 @@ test("a declined prompt is said without an error, and asked again by itself and 
 test("a fix that fails says so, with Try again and the commands", async () => {
   answer = async () => {
     throw {
-      said: "OpenBot could not set up Windows Subsystem for Linux. Try again, or run the commands yourself.",
+      said: "AwakenBot could not set up Windows Subsystem for Linux. Try again, or run the commands yourself.",
     };
   };
   const view = render(
@@ -211,7 +211,7 @@ test("a virtual machine without nested virtualization is told what to change on 
 test("Restart now restarts Windows, and a refusal is said with the button back", async () => {
   answer = async () => {
     throw {
-      said: "OpenBot could not restart Windows. Restart it from the Start menu.",
+      said: "AwakenBot could not restart Windows. Restart it from the Start menu.",
     };
   };
   const view = render(<WindowsRestart />);

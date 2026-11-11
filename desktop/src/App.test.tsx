@@ -146,7 +146,7 @@ async function beginPendingInstallation() {
   });
   const view = await renderApp();
   await installLocal(view);
-  await view.findByRole("heading", { name: "Installing OpenBot" });
+  await view.findByRole("heading", { name: "Installing AwakenBot" });
   return {
     view,
     preparation,
@@ -207,7 +207,7 @@ function expectBehind(
   { waiting = false }: { waiting?: boolean } = {},
 ) {
   const row = view.getByRole("listitem", {
-    name: "Installing OpenBot in the background",
+    name: "Installing AwakenBot in the background",
   });
   expect(row.querySelector(".detail")?.textContent).toBe(said);
   expect(row.querySelector(".step-status")?.textContent).toContain(
@@ -263,7 +263,7 @@ test("installation shows its active stage immediately, with its time so far", as
     view.getByRole("listitem", { name: "Preparing this computer" }),
   );
   expect(
-    preparing.getByText("Checking the software OpenBot needs."),
+    preparing.getByText("Checking the software AwakenBot needs."),
   ).toBeTruthy();
   // Running, it says how far along the install is: the first of its four parts.
   expect(preparing.getByText("Step 1 of 4")).toBeTruthy();
@@ -271,25 +271,25 @@ test("installation shows its active stage immediately, with its time so far", as
   expect(preparing.getByText(/· \d+s elapsed/)).toBeTruthy();
   await act(async () => preparation.resolve());
   // Installed: on to the AI provider screen. The install's rows are done; what is left, setting
-  // up the rest of OpenBot, is said on one row under the choice.
+  // up the rest of AwakenBot, is said on one row under the choice.
   await view.findByRole("heading", { name: "Connect your AI" });
   expect(
     view.queryByRole("listitem", { name: "Preparing this computer" }),
   ).toBeNull();
   expect(
-    view.queryByRole("listitem", { name: "Downloading OpenBot" }),
+    view.queryByRole("listitem", { name: "Downloading AwakenBot" }),
   ).toBeNull();
   expectBehind(
     view,
     3,
-    "Setting up OpenBot on this computer. This takes a few minutes the first time.",
+    "Setting up AwakenBot on this computer. This takes a few minutes the first time.",
   );
 });
 
 /*
- * The rest of OpenBot downloads alongside OpenBot's own download, once the software OpenBot runs on
- * answers. On a live Windows run the Install step showed both at once, "Downloading OpenBot ·
- * Step 2 of 4" and "Downloading the rest of OpenBot · Step 3 of 4", each with its spinner, which
+ * The rest of AwakenBot downloads alongside AwakenBot's own download, once the software AwakenBot runs on
+ * answers. On a live Windows run the Install step showed both at once, "Downloading AwakenBot ·
+ * Step 2 of 4" and "Downloading the rest of AwakenBot · Step 3 of 4", each with its spinner, which
  * read as two steps at the same time. The step says one step at a time: the third once the
  * second is done, with as much of its download as has come in meanwhile.
  */
@@ -303,12 +303,12 @@ test("the Install step shows one step in progress at a time while both downloads
   });
   const view = await renderApp();
   await installLocal(view);
-  await view.findByRole("heading", { name: "Installing OpenBot" });
+  await view.findByRole("heading", { name: "Installing AwakenBot" });
   await emitProgress({
     step: "engine",
     ok: true,
     running: false,
-    detail: "The software OpenBot runs on is ready.",
+    detail: "The software AwakenBot runs on is ready.",
   });
   await emitProgress({
     step: "images",
@@ -323,7 +323,7 @@ test("the Install step shows one step in progress at a time while both downloads
       bytesPerSecond: 9_000_000,
     },
   });
-  // The rest of OpenBot is downloading too, and the window has heard how far it has got.
+  // The rest of AwakenBot is downloading too, and the window has heard how far it has got.
   await waitFor(() =>
     expect(
       invokeCalls.some((call) => call.command === "local_eval_download"),
@@ -337,13 +337,13 @@ test("the Install step shows one step in progress at a time while both downloads
         (row) =>
           `${row.getAttribute("aria-label")} | ${row.querySelector(".step-status")?.textContent?.replace(/ · [\dms ]+ elapsed$/, "")}`,
       );
-  expect(inProgress()).toEqual(["Downloading OpenBot | Step 2 of 4"]);
+  expect(inProgress()).toEqual(["Downloading AwakenBot | Step 2 of 4"]);
   expect(view.container.textContent).not.toContain("Step 3 of 4");
   // Step 2 done: the third step is the one in progress, its download as far as it has got.
   await act(async () => preparation.resolve());
   await view.findByRole("heading", { name: "Connect your AI" });
   expect(inProgress()).toEqual([
-    "Installing OpenBot in the background | Step 3 of 4",
+    "Installing AwakenBot in the background | Step 3 of 4",
   ]);
   expect(view.container.textContent).toContain("400.0 MB of 1.6 GB");
 });
@@ -352,7 +352,7 @@ test("a setup failure only a Windows restart fixes offers the restart, not Try a
   const { view, preparation } = await beginPendingInstallation();
   await act(async () =>
     preparation.reject({
-      said: "Windows needs to restart to finish setting up the software OpenBot runs on. Restart Windows, then open OpenBot again.",
+      said: "Windows needs to restart to finish setting up the software AwakenBot runs on. Restart Windows, then open AwakenBot again.",
       detail:
         "user-mode networking is not working in the openbot VM: host.containers.internal did not resolve in the openbot VM within 30s: podman machine ssh openbot timeout 3 getent ahostsv4 host.containers.internal exited with status 124",
       restart_windows: true,
@@ -362,7 +362,7 @@ test("a setup failure only a Windows restart fixes offers the restart, not Try a
     await view.findByRole("heading", { name: "Restart Windows to finish" }),
   ).toBeTruthy();
   expect(view.container.textContent).toContain(
-    "Windows needs to restart to finish setting up the software OpenBot runs on.",
+    "Windows needs to restart to finish setting up the software AwakenBot runs on.",
   );
   expect(view.container.textContent).not.toContain(
     "Windows Subsystem for Linux is set up.",
@@ -392,7 +392,7 @@ test("installation failure stops active indicators and retry begins fresh", asyn
     preparation.reject({ said: "The download was interrupted." }),
   );
   const installing = within(
-    view.getByRole("listitem", { name: "Downloading OpenBot" }),
+    view.getByRole("listitem", { name: "Downloading AwakenBot" }),
   );
   expect(installing.getByText("Failed")).toBeTruthy();
   expect(installing.getByText("✗")).toBeTruthy();
@@ -535,7 +535,7 @@ function localCliCalls() {
   );
 }
 
-/** A first run hands over the moment Start succeeds: OpenBot opens, and nothing is asked first. */
+/** A first run hands over the moment Start succeeds: AwakenBot opens, and nothing is asked first. */
 async function expectHandover(timeout?: number) {
   await waitFor(
     () =>
@@ -549,7 +549,7 @@ async function expectHandover(timeout?: number) {
   );
 }
 
-/** The first screen's Install, which with a CLI installs OpenBot and local Intelligence. */
+/** The first screen's Install, which with a CLI installs AwakenBot and local Intelligence. */
 async function installLocal(view: Awaited<ReturnType<typeof renderApp>>) {
   await userEvent.click(view.getByRole("button", { name: "Install" }));
 }
@@ -557,7 +557,7 @@ async function installLocal(view: Awaited<ReturnType<typeof renderApp>>) {
 /** Words about the software underneath, which no local screen says. */
 // Docker is not here: Docker Desktop is an app a person may already have, and its prompts and
 // agreements show windows of its own, so a screen names it when it waits on one. See
-// `plainInstallSteps`. Podman is: OpenBot installs it, and a person reads "the software OpenBot
+// `plainInstallSteps`. Podman is: AwakenBot installs it, and a person reads "the software AwakenBot
 // runs on" instead. The log names it.
 const JARGON = [
   /\bCLI\b/,
@@ -602,17 +602,17 @@ test("the first screen is Install, with nothing to choose", async () => {
   withLocalCli({});
   const view = await renderApp();
   expect(
-    view.getByRole("heading", { name: "Set up OpenBot (self-contained)" }),
+    view.getByRole("heading", { name: "Set up AwakenBot (self-contained)" }),
   ).toBeTruthy();
   // Three short paragraphs: what it is, how long setup takes, and production, in that order.
   expect(
     [...view.container.querySelectorAll(".lede")].map((p) => p.textContent),
   ).toEqual([
-    "This version of OpenBot is fully self-contained and runs entirely on your computer, including the OpenBot backend.",
+    "This version of AwakenBot is fully self-contained and runs entirely on your computer, including the AwakenBot backend.",
     "Depending on your internet speed, setup can take between 1 and 10 minutes.",
-    "In production, OpenBot for Business runs on your own infrastructure with Kubernetes, or on OpenBot Cloud. Book a demo for early access.",
+    "In production, AwakenBot for Business runs on your own infrastructure with Kubernetes, or on AwakenBot Cloud. Book a demo for early access.",
   ]);
-  expect(view.getByText("OpenBot for Business").tagName).toBe("STRONG");
+  expect(view.getByText("AwakenBot for Business").tagName).toBe("STRONG");
   // The one booking link, never a scheduling page of its own.
   expect(
     view.getByRole("link", { name: "Book a demo" }).getAttribute("href"),
@@ -630,10 +630,12 @@ test("the first screen says nothing about usage data: that is the last screen's 
   );
   withLocalCli({});
   const view = await renderApp();
-  await view.findByRole("heading", { name: "Set up OpenBot (self-contained)" });
+  await view.findByRole("heading", {
+    name: "Set up AwakenBot (self-contained)",
+  });
   expect(view.queryByText(/usage/i)).toBeNull();
   expect(view.queryByRole("checkbox")).toBeNull();
-  expect(view.queryByRole("link", { name: "What OpenBot sends" })).toBeNull();
+  expect(view.queryByRole("link", { name: "What AwakenBot sends" })).toBeNull();
 });
 
 test("Install prepares the default Bot in the default folder, with no Bot or folder screen", async () => {
@@ -651,16 +653,16 @@ test("Install prepares the default Bot in the default folder, with no Bot or fol
     },
   ]);
   expect(
-    view.getByRole("heading", { name: "Installing OpenBot" }),
+    view.getByRole("heading", { name: "Installing AwakenBot" }),
   ).toBeTruthy();
   expect(stepLabel(view)).toBe("Install");
   // Names every part it installs, so a large download is expected.
   expect(
     view.getByText(
-      /installs OpenBot on this computer: the app, its database, your Bots/,
+      /installs AwakenBot on this computer: the app, its database, your Bots/,
     ),
   ).toBeTruthy();
-  expect(view.queryByLabelText("Where OpenBot lives")).toBeNull();
+  expect(view.queryByLabelText("Where AwakenBot lives")).toBeNull();
   expect(view.queryByText(/Pick a Bot|Which Bot/i)).toBeNull();
   expect(invokeCalls.some((call) => call.command === "harnesses")).toBe(false);
   // Nothing to press, and no way out while it installs.
@@ -699,7 +701,7 @@ test("Install prepares the default Bot in the default folder, with no Bot or fol
   await emitProgress({
     step: "engine",
     ok: true,
-    detail: "The software OpenBot runs on is ready.",
+    detail: "The software AwakenBot runs on is ready.",
   });
   await emitProgress({
     step: "create-machine",
@@ -712,7 +714,7 @@ test("Install prepares the default Bot in the default folder, with no Bot or fol
     running: true,
     detail: "Checking which local software to download.",
   });
-  const checking = rowStatus(view, "Downloading OpenBot");
+  const checking = rowStatus(view, "Downloading AwakenBot");
   expect(
     checking.getByText("Checking which local software to download."),
   ).toBeTruthy();
@@ -730,7 +732,7 @@ test("Install prepares the default Bot in the default folder, with no Bot or fol
     ).getByText("Complete"),
   ).toBeTruthy();
   const installing = within(
-    view.getByRole("listitem", { name: "Downloading OpenBot" }),
+    view.getByRole("listitem", { name: "Downloading AwakenBot" }),
   );
   expect(installing.getByText("Step 2 of 4")).toBeTruthy();
   expect(installing.queryByText(/Downloading local software/)).toBeNull();
@@ -807,13 +809,13 @@ test("a signed-out first run signs in and accepts the agreement as its own step,
   });
   const view = await renderApp();
   await installLocal(view);
-  // The first step. OpenBot needs no account, so it installs behind it, exactly once; nothing
+  // The first step. AwakenBot needs no account, so it installs behind it, exactly once; nothing
   // of Intelligence's runs before the agreement. The browser sign-in starts without a click.
   await view.findByRole("heading", { name: "Get your free license key" });
-  await view.findByText("Finish signing in to OpenBot in your browser…");
+  await view.findByText("Finish signing in to AwakenBot in your browser…");
   expect(
     view.getByText(
-      /OpenBot keeps your conversations and files on this computer/,
+      /AwakenBot keeps your conversations and files on this computer/,
     ),
   ).toBeTruthy();
   expect(stepLabel(view)).toBe("Account");
@@ -827,7 +829,7 @@ test("a signed-out first run signs in and accepts the agreement as its own step,
   await view.findByRole("heading", { name: "Accept the license agreement" });
   expect(
     view.getByText(
-      "To run OpenBot on this computer, accept the OpenBot by CopilotKit license agreement.",
+      "To run AwakenBot on this computer, accept the AwakenBot by CopilotKit license agreement.",
     ),
   ).toBeTruthy();
   expect(
@@ -840,7 +842,7 @@ test("a signed-out first run signs in and accepts the agreement as its own step,
   await userEvent.click(view.getByRole("button", { name: "Accept" }));
   await view.findByRole("heading", { name: "Connect your AI" });
   expect(stepLabel(view)).toBe("AI");
-  expect(view.queryByText(/Sign in to finish setting up OpenBot/)).toBeNull();
+  expect(view.queryByText(/Sign in to finish setting up AwakenBot/)).toBeNull();
   // Signed in, this installation's apps were connected before moving on.
   expect(
     invokeCalls
@@ -864,7 +866,7 @@ test("a signed-out first run signs in and accepts the agreement as its own step,
 });
 
 /**
- * A new Mac sat on "Checking your OpenBot account…" for the whole of Podman's install, and no
+ * A new Mac sat on "Checking your AwakenBot account…" for the whole of Podman's install, and no
  * browser opened: the check ran the CLI's `onboard local-terms`, which checks the engine first. The
  * CLI's `login` needs no engine. So the sign-in starts the moment the step opens, and the engine is
  * waited for only after it, for the agreement.
@@ -895,7 +897,7 @@ test("the account step opens the CopilotKit sign-in at once, without waiting for
 
   // The browser sign-in, first, with nothing asked of the engine before it. Under it, what is
   // installing meanwhile.
-  await view.findByText("Finish signing in to OpenBot in your browser…");
+  await view.findByText("Finish signing in to AwakenBot in your browser…");
   expect(view.getByText("WXYZ-2345")).toBeTruthy();
   expectBehind(view, 1, DOWNLOADING_SOFTWARE);
   const accountCalls = () =>
@@ -911,7 +913,7 @@ test("the account step opens the CopilotKit sign-in at once, without waiting for
   await view.findByRole("heading", { name: "Setting up this computer" });
   expect(
     view.getByText(
-      "You're signed in. OpenBot is setting up the software it runs on. The license agreement comes next.",
+      "You're signed in. AwakenBot is setting up the software it runs on. The license agreement comes next.",
     ),
   ).toBeTruthy();
   expectBehind(view, 1, DOWNLOADING_SOFTWARE);
@@ -919,14 +921,14 @@ test("the account step opens the CopilotKit sign-in at once, without waiting for
   expect(accountCalls()).toContain("local_eval_terms");
 });
 
-// What Install says as it downloads the software OpenBot runs on, before macOS asks for the
+// What Install says as it downloads the software AwakenBot runs on, before macOS asks for the
 // password, and after a prompt the person closed (`install::podman_downloading`,
 // `podman_install_said`, `podman_declined`).
-const DOWNLOADING_SOFTWARE = "Downloading the software OpenBot runs on.";
+const DOWNLOADING_SOFTWARE = "Downloading the software AwakenBot runs on.";
 const PODMAN_PROMPTING =
-  "Your Mac will ask for your password so OpenBot can install what it needs to run.";
+  "Your Mac will ask for your password so AwakenBot can install what it needs to run.";
 const PODMAN_DECLINED =
-  "OpenBot needs your password to install what it needs to run. It asks again in a moment, or choose Try again.";
+  "AwakenBot needs your password to install what it needs to run. It asks again in a moment, or choose Try again.";
 
 /**
  * David's direction for 1.0.1: no Continue before macOS asks for the password. #1385 put one
@@ -948,7 +950,7 @@ test("macOS's password prompt is explained and comes without a click, and a clos
   });
   const view = await renderApp();
   await installLocal(view);
-  await view.findByText("Checking your OpenBot account…");
+  await view.findByText("Checking your AwakenBot account…");
 
   // Downloaded while the person signs in, then said before the prompt, with nothing to click.
   await emitProgress({
@@ -1005,17 +1007,17 @@ test("macOS's password prompt is explained and comes without a click, and a clos
   expectBehind(view, 1, PODMAN_PROMPTING);
 });
 
-// What Install says on a Mac whose own Podman OpenBot can't use (`own_machine::PAUSE_OFFER`).
+// What Install says on a Mac whose own Podman AwakenBot can't use (`own_machine::PAUSE_OFFER`).
 const PAUSE_OFFER =
-  "Your Podman is set up in a way OpenBot can't use. OpenBot will use its own, and pause yours while OpenBot is running. Yours starts again when you quit OpenBot.";
+  "Your Podman is set up in a way AwakenBot can't use. AwakenBot will use its own, and pause yours while AwakenBot is running. Yours starts again when you quit AwakenBot.";
 
 /**
- * David's decision for 1.0.2: on a Mac, where Podman runs one machine at a time, OpenBot says it
+ * David's decision for 1.0.2: on a Mac, where Podman runs one machine at a time, AwakenBot says it
  * needs its own and offers to pause the person's while it runs. Pausing theirs is their choice:
  * the card says so with one button, and nothing is paused until it is pressed. The password card is
  * not shown for it, and the background row says what it waits for.
  */
-test("a Mac whose own Podman OpenBot can't use is offered a pause, and nothing is paused until the person says yes", async () => {
+test("a Mac whose own Podman AwakenBot can't use is offered a pause, and nothing is paused until the person says yes", async () => {
   setupRootConfiguration("/tmp/local-eval-pause-podman", async () =>
     emptyConfiguration(),
   );
@@ -1029,7 +1031,7 @@ test("a Mac whose own Podman OpenBot can't use is offered a pause, and nothing i
   });
   const view = await renderApp();
   await installLocal(view);
-  await view.findByText("Checking your OpenBot account…");
+  await view.findByText("Checking your AwakenBot account…");
   await emitProgress({
     step: "pause-podman",
     ok: true,
@@ -1039,7 +1041,7 @@ test("a Mac whose own Podman OpenBot can't use is offered a pause, and nothing i
   });
   // Said before and after signing in, on whichever part of the step the person is on.
   const offered = () =>
-    view.findByRole("region", { name: "OpenBot needs its own Podman" });
+    view.findByRole("region", { name: "AwakenBot needs its own Podman" });
   expect((await offered()).textContent).toContain(PAUSE_OFFER);
   expectBehind(view, 1, "Waiting for you to pause your Podman.", {
     waiting: true,
@@ -1064,10 +1066,10 @@ test("a Mac whose own Podman OpenBot can't use is offered a pause, and nothing i
     step: "pause-podman",
     ok: true,
     running: false,
-    detail: "Your Podman is paused while OpenBot runs.",
+    detail: "Your Podman is paused while AwakenBot runs.",
   });
   expect(
-    view.queryByRole("region", { name: "OpenBot needs its own Podman" }),
+    view.queryByRole("region", { name: "AwakenBot needs its own Podman" }),
   ).toBeNull();
 });
 
@@ -1095,7 +1097,7 @@ test("the account step waits for a container engine Install is still setting up,
     { timeout: 6000 },
   );
   expect(asked).toBe(2);
-  expect(view.queryByText(/Couldn.t check your OpenBot account/)).toBeNull();
+  expect(view.queryByText(/Couldn.t check your AwakenBot account/)).toBeNull();
 }, 15000);
 
 /*
@@ -1121,7 +1123,7 @@ test("an install that failed behind the account step offers Try again, which run
 
   await act(async () =>
     preparation.reject({
-      said: "OpenBot updated Podman, but Podman isn't answering. Try again.",
+      said: "AwakenBot updated Podman, but Podman isn't answering. Try again.",
       detail:
         "npipe:////./pipe/podman-machine-default: The system cannot find the file specified. (os error 2)",
     }),
@@ -1169,7 +1171,7 @@ const OLD_DOCKER_DESKTOP_REFUSED = {
   switchEngine: true,
 };
 const DOCKER_UPDATING =
-  "The Docker Desktop on this computer is too old for OpenBot, so OpenBot is updating it. About 9 minutes left.";
+  "The Docker Desktop on this computer is too old for AwakenBot, so AwakenBot is updating it. About 9 minutes left.";
 
 /*
  * The same tester: the account's licence check ran while Install was updating that Docker Desktop,
@@ -1220,7 +1222,7 @@ test("an old engine refused while Install updates it shows the update, and one T
   // The update stops: one card, one Try again, which runs the install and the check again.
   await act(async () =>
     preparation.reject({
-      said: "The Docker update OpenBot downloaded could not be checked, so it has not been run. Try again.",
+      said: "The Docker update AwakenBot downloaded could not be checked, so it has not been run. Try again.",
     }),
   );
   await view.findByRole("alert");
@@ -1242,7 +1244,7 @@ test("an old engine refused while Install updates it shows the update, and one T
     step: "engine",
     ok: true,
     running: false,
-    detail: "OpenBot updated Docker.",
+    detail: "AwakenBot updated Docker.",
   });
   await act(async () => preparation.resolve());
   await view.findByRole(
@@ -1254,15 +1256,15 @@ test("an old engine refused while Install updates it shows the update, and one T
 
 // What the native side says as it opens Docker Desktop: `docker_desktop::HAND_OFF`.
 const DOCKER_HAND_OFF =
-  "Docker Desktop is starting in its own window. If it asks you to accept its terms or sign in, do that there. OpenBot comes back when Docker is ready.";
+  "Docker Desktop is starting in its own window. If it asks you to accept its terms or sign in, do that there. AwakenBot comes back when Docker is ready.";
 
 function broughtToFront() {
   return invokeCalls.filter((call) => call.command === "bring_setup_to_front");
 }
 
 test("the account step says Docker Desktop is starting while Install waits on it, until Docker answers", async () => {
-  // Dogfooding 0.3.3: Install opened Docker Desktop, whose window came to the front. OpenBot's,
-  // behind it on the account step, said only "Checking your OpenBot account…" for minutes.
+  // Dogfooding 0.3.3: Install opened Docker Desktop, whose window came to the front. AwakenBot's,
+  // behind it on the account step, said only "Checking your AwakenBot account…" for minutes.
   setupRootConfiguration("/tmp/hand-off-docker", async () =>
     emptyConfiguration(),
   );
@@ -1284,7 +1286,7 @@ test("the account step says Docker Desktop is starting while Install waits on it
   });
   expectBehind(view, 1, DOCKER_HAND_OFF);
   // One line, saying what the wait is for.
-  expect(view.queryByText("Checking your OpenBot account…")).toBeNull();
+  expect(view.queryByText("Checking your AwakenBot account…")).toBeNull();
   expect(view.getAllByText(DOCKER_HAND_OFF)).toHaveLength(1);
 
   // Docker answers: the line goes. Until the account check hears the engine, the step says what
@@ -1296,12 +1298,12 @@ test("the account step says Docker Desktop is starting while Install waits on it
     detail: "Docker Desktop is running.",
   });
   expect(view.queryByText(DOCKER_HAND_OFF)).toBeNull();
-  expectBehind(view, 1, "Checking the software OpenBot needs.");
+  expectBehind(view, 1, "Checking the software AwakenBot needs.");
 });
 
 /**
  * The line about the install behind the account step stays whatever the step shows: signing in,
- * waiting for the engine, the agreement. A person on any of them knows OpenBot is still installing.
+ * waiting for the engine, the agreement. A person on any of them knows AwakenBot is still installing.
  */
 test("the install behind the account step is said on every part of it, signing in included", async () => {
   setupRootConfiguration("/tmp/hand-off-none", async () =>
@@ -1320,11 +1322,11 @@ test("the install behind the account step is said on every part of it, signing i
     step: "install-engine",
     ok: true,
     running: true,
-    detail: "Installing the software OpenBot runs on.",
+    detail: "Installing the software AwakenBot runs on.",
   });
   // What the account check waits on, in Install's own words, said once.
-  expectBehind(view, 1, "Installing the software OpenBot runs on.");
-  expect(view.queryByText("Checking your OpenBot account…")).toBeNull();
+  expectBehind(view, 1, "Installing the software AwakenBot runs on.");
+  expect(view.queryByText("Checking your AwakenBot account…")).toBeNull();
   expect(view.queryAllByRole("status")).toHaveLength(0);
 
   // Signed out, the step is about signing in, and the install behind it is still said.
@@ -1334,14 +1336,14 @@ test("the install behind the account step is said on every part of it, signing i
     { name: "Sign in for a free local license key" },
     { timeout: 5000 },
   );
-  expectBehind(view, 1, "Installing the software OpenBot runs on.");
+  expectBehind(view, 1, "Installing the software AwakenBot runs on.");
 }, 15000);
 
 /*
  * A tester waited minutes on the first setup step and could not tell whether it was stuck: the
  * screen read "Preparing the engine machine", "Installing Podman", "Waiting for the back end",
  * "Updating the back end to 0.16.0-rc.10". The product's rule: the log keeps the technical parts,
- * and the screen says what OpenBot is doing in plain words.
+ * and the screen says what AwakenBot is doing in plain words.
  *
  * These walk setup as a person meets it, with the native side's lines word for word as it sends
  * them, and read every screen. The log side is `install::tests::every_line_shown_while_preparing_
@@ -1349,7 +1351,7 @@ test("the install behind the account step is said on every part of it, signing i
  * technical words beside it, and the back end's releases by `log_update_due`.
  */
 
-/** Words a person setting OpenBot up doesn't know, the back end's versions, and CopilotKit alone. */
+/** Words a person setting AwakenBot up doesn't know, the back end's versions, and CopilotKit alone. */
 const TECHNICAL = [
   /Podman/i,
   /\bWSL\b/,
@@ -1364,30 +1366,30 @@ const TECHNICAL = [
   /\bCLI\b/,
   /\bCompose\b/,
   /0\.16\.0/,
-  // The company alone. It is named only as OpenBot by CopilotKit, which the Account step's header
-  // reads as "OpenBot™by CopilotKit" here: two spans, set apart by the stylesheet, the first with
+  // The company alone. It is named only as AwakenBot by CopilotKit, which the Account step's header
+  // reads as "AwakenBot™by CopilotKit" here: two spans, set apart by the stylesheet, the first with
   // its trademark sign.
-  /(?<!OpenBot™?\s*by\s+)CopilotKit/,
+  /(?<!AwakenBot™?\s*by\s+)CopilotKit/,
 ];
 
 /** The native side's lines while it prepares this computer (`engine.rs`, `install.rs`). */
 const NATIVE = {
-  checking: "Checking the software OpenBot needs.",
-  looking: "Looking for the software OpenBot runs on.",
+  checking: "Checking the software AwakenBot needs.",
+  looking: "Looking for the software AwakenBot runs on.",
   downloading: DOWNLOADING_SOFTWARE,
   declined: PODMAN_DECLINED,
   prompting: PODMAN_PROMPTING,
-  installingWindows: "Installing the software OpenBot runs on.",
+  installingWindows: "Installing the software AwakenBot runs on.",
   // The row of a finished install keeps Install's own words: never shown, and checked here.
   installed: "Podman 5.6.2 and Compose 2.40.3 installed.",
   preparingMac:
-    "Preparing this computer to run OpenBot. This takes a few minutes the first time.",
+    "Preparing this computer to run AwakenBot. This takes a few minutes the first time.",
   preparingWindows:
-    "Preparing this computer to run OpenBot. If a window asks to install a Windows feature OpenBot needs, allow it. Windows then asks for your approval and a restart.",
-  starting: "Starting the software OpenBot runs on.",
-  answering: "Checking that the software OpenBot runs on is ready.",
-  ready: "The software OpenBot runs on is ready.",
-  version: "Checking which version of OpenBot to download.",
+    "Preparing this computer to run AwakenBot. If a window asks to install a Windows feature AwakenBot needs, allow it. Windows then asks for your approval and a restart.",
+  starting: "Starting the software AwakenBot runs on.",
+  answering: "Checking that the software AwakenBot runs on is ready.",
+  ready: "The software AwakenBot runs on is ready.",
+  version: "Checking which version of AwakenBot to download.",
   images: "Checking which local software to download.",
 };
 
@@ -1396,7 +1398,7 @@ type Beat = { beat: string; text: string; behind: string | null };
 /** The background install's row as a person reads it, less its ticking time: status | line. */
 function behindNow(view: ReturnType<typeof render>): string | null {
   const row = view.queryByRole("listitem", {
-    name: "Installing OpenBot in the background",
+    name: "Installing AwakenBot in the background",
   });
   if (!row) return null;
   const status = row
@@ -1416,7 +1418,7 @@ function technicalOn(beats: Beat[]) {
   );
 }
 
-/** What each part of a first run said, from the first screen to OpenBot opening. */
+/** What each part of a first run said, from the first screen to AwakenBot opening. */
 async function walkFirstRun(platform: "macOS" | "Windows"): Promise<Beat[]> {
   setupRootConfiguration(`/tmp/plain-walk-${platform}`, async () =>
     emptyConfiguration(),
@@ -1457,7 +1459,7 @@ async function walkFirstRun(platform: "macOS" | "Windows"): Promise<Beat[]> {
   seen("welcome");
 
   await installLocal(view);
-  await view.findByText("Finish signing in to OpenBot in your browser…");
+  await view.findByText("Finish signing in to AwakenBot in your browser…");
   seen("signing in");
   await running("install-engine", NATIVE.looking);
   seen("signing in, looking");
@@ -1522,7 +1524,7 @@ async function walkFirstRun(platform: "macOS" | "Windows"): Promise<Beat[]> {
   await view.findByRole("button", { name: "Accept" }, { timeout: 5000 });
   seen("agreement");
   await userEvent.click(view.getByRole("button", { name: "Accept" }));
-  await view.findByRole("heading", { name: "Installing OpenBot" });
+  await view.findByRole("heading", { name: "Installing AwakenBot" });
   const installing: ProgressEvent = {
     step: "images",
     ok: true,
@@ -1594,36 +1596,36 @@ for (const platform of ["macOS", "Windows"] as const) {
       "checking the software": `Step 1 of 4 | ${NATIVE.answering}`,
       "checking the version": `Step 2 of 4 | ${NATIVE.version}`,
       "checking what to download": `Step 2 of 4 | ${NATIVE.images}`,
-      downloading: "Step 2 of 4 | Downloading OpenBot. About 4 minutes left.",
-      agreement: "Step 2 of 4 | Downloading OpenBot. About 4 minutes left.",
+      downloading: "Step 2 of 4 | Downloading AwakenBot. About 4 minutes left.",
+      agreement: "Step 2 of 4 | Downloading AwakenBot. About 4 minutes left.",
       // The install is the screen itself here: its own rows say it.
       install: null,
       "AI, downloading the rest":
-        "Step 3 of 4 | Downloading the rest of OpenBot.",
+        "Step 3 of 4 | Downloading the rest of AwakenBot.",
       "AI, installed": null,
       start: null,
     });
     // Once everything is installed, the AI step says so, and what comes next.
     const installed = beats.find(({ beat }) => beat === "AI, installed");
     expect(installed?.text).toContain(
-      "OpenBot is installedCompleteOpenBot starts as soon as you connect your AI.",
+      "AwakenBot is installedCompleteAwakenBot starts as soon as you connect your AI.",
     );
     // The Install step's own rows say how far along, the time so far and the time left. Its row
-    // is not named as the heading above it is: on Windows F both said "Installing OpenBot".
+    // is not named as the heading above it is: on Windows F both said "Installing AwakenBot".
     const install = beats.find(({ beat }) => beat === "install");
     expect(install?.text).toMatch(
-      /Downloading OpenBotStep 2 of 4 · \d+s elapsedLess than a minute left\./,
+      /Downloading AwakenBotStep 2 of 4 · \d+s elapsedLess than a minute left\./,
     );
-    expect(install?.text).not.toContain("Installing OpenBotStep");
+    expect(install?.text).not.toContain("Installing AwakenBotStep");
   });
 }
 
 /**
- * Every day: a start after a restart wakes the software OpenBot runs on, and a start after an app
- * update updates what runs behind OpenBot. "Waiting for the back end" and "Updating the back end to
- * 0.16.0-rc.9" are now "Getting OpenBot ready" and "Updating OpenBot", with how far along.
+ * Every day: a start after a restart wakes the software AwakenBot runs on, and a start after an app
+ * update updates what runs behind AwakenBot. "Waiting for the back end" and "Updating the back end to
+ * 0.16.0-rc.9" are now "Getting AwakenBot ready" and "Updating AwakenBot", with how far along.
  */
-test("a start that wakes the computer's software and updates OpenBot says it in plain words", async () => {
+test("a start that wakes the computer's software and updates AwakenBot says it in plain words", async () => {
   const after = pinnedCli.updateDidNotFinish;
   const before = {
     ...after,
@@ -1659,7 +1661,7 @@ test("a start that wakes the computer's software and updates OpenBot says it in 
       text: view.container.textContent ?? "",
       behind: behindNow(view),
     });
-  await view.findByRole("heading", { name: "Starting OpenBot" });
+  await view.findByRole("heading", { name: "Starting AwakenBot" });
   await emitProgress({
     step: "start-machine",
     ok: true,
@@ -1683,26 +1685,26 @@ test("a start that wakes the computer's software and updates OpenBot says it in 
   );
   seen("downloading the update");
   await act(async () => update.resolve(updateFailed));
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
   seen("running on the version it had");
 
-  // No technical word, and no version of what runs behind OpenBot, at any point.
+  // No technical word, and no version of what runs behind AwakenBot, at any point.
   expect(technicalOn(beats)).toEqual([]);
 
   // What each part said instead: the row that waits says how far along, and what it is doing.
   const said = Object.fromEntries(beats.map(({ beat, text }) => [beat, text]));
   // One journey over the whole Start: what is happening now, the time left, then the rows.
   expect(said["waking the software"]).toContain(
-    "Starting the software OpenBot runs onAbout a minute left · 0s so far",
+    "Starting the software AwakenBot runs onAbout a minute left · 0s so far",
   );
   expect(said["waking the software"]).toContain(
-    "Getting OpenBot readyStep 3 of 4",
+    "Getting AwakenBot readyStep 3 of 4",
   );
   expect(said.updating).toContain(
     "Getting the update readyAbout 2 minutes left",
   );
   expect(said.updating).toContain(
-    "Getting OpenBot readyStep 3 of 4Updating OpenBot. Your Bots and data stay as they are.",
+    "Getting AwakenBot readyStep 3 of 4Updating AwakenBot. Your Bots and data stay as they are.",
   );
   // The download is the journey's: what is happening, and its measure beside the time left. The row
   // keeps what this part is, and has no measure of its own.
@@ -1711,7 +1713,7 @@ test("a start that wakes the computer's software and updates OpenBot says it in 
   );
   expect(said["downloading the update"].match(/MB of/g)).toHaveLength(1);
   expect(said["downloading the update"]).toContain(
-    "Getting OpenBot readyStep 3 of 4Updating OpenBot. Your Bots and data stay as they are.",
+    "Getting AwakenBot readyStep 3 of 4Updating AwakenBot. Your Bots and data stay as they are.",
   );
   expect(said["running on the version it had"]).toContain(KEPT_RELEASE);
 });
@@ -1725,11 +1727,11 @@ test("a start that wakes the computer's software and updates OpenBot says it in 
 
 /** A failure's headline as the native side now sends it (`acquire.rs`, `problem.rs`). */
 const NATIVE_FAILURE = {
-  machine: "OpenBot couldn't prepare this computer to run it. Try again.",
+  machine: "AwakenBot couldn't prepare this computer to run it. Try again.",
   unreachable:
-    "OpenBot can't reach the software it runs on. If you use Docker Desktop, open it and wait for it to start. Then try again.",
+    "AwakenBot can't reach the software it runs on. If you use Docker Desktop, open it and wait for it to start. Then try again.",
   lastQuit:
-    "When OpenBot last quit, some of its services didn't stop. They may still be running. Stopping OpenBot again asks them to stop.",
+    "When AwakenBot last quit, some of its services didn't stop. They may still be running. Stopping AwakenBot again asks them to stop.",
 };
 
 /** What a person reads on a failure screen: not the technical details or the logs' own controls. */
@@ -1897,7 +1899,7 @@ test("every failure screen says what happened and what to do, in plain words", a
       if (command === "last_local_eval_stop_failure")
         return {
           said: NATIVE_FAILURE.lastQuit,
-          detail: "the backend stack did not stop when OpenBot last quit",
+          detail: "the backend stack did not stop when AwakenBot last quit",
         };
       return previous(command, args);
     };
@@ -1915,7 +1917,7 @@ test("every failure screen says what happened and what to do, in plain words", a
   for (const { beat, text } of beats)
     expect({
       beat,
-      next: /Retry|Try again|try again|Repair|Start OpenBot|Free up|Quit|Open Docker Desktop|Stop your Podman machine|Wait|update|copy the logs|Copy the logs/.test(
+      next: /Retry|Try again|try again|Repair|Start AwakenBot|Free up|Quit|Open Docker Desktop|Stop your Podman machine|Wait|update|copy the logs|Copy the logs/.test(
         text,
       ),
     }).toEqual({ beat, next: true });
@@ -1941,7 +1943,7 @@ test("a failed install brings the window to the front with its failure", async (
 });
 
 const APPS_UNAVAILABLE = {
-  said: "OpenBot couldn't connect your apps. Check your connection, then choose Connect apps. If it keeps happening, ask an admin.",
+  said: "AwakenBot couldn't connect your apps. Check your connection, then choose Connect apps. If it keeps happening, ask an admin.",
 };
 
 test("apps that could not be connected at sign-in say so, and Connect apps tries again", async () => {
@@ -1966,7 +1968,7 @@ test("apps that could not be connected at sign-in say so, and Connect apps tries
   expect(view.getByRole("heading", { name: "Connect your apps" })).toBeTruthy();
   expect(
     view.getByText(
-      "You can continue without them. OpenBot tries again each time it starts.",
+      "You can continue without them. AwakenBot tries again each time it starts.",
     ),
   ).toBeTruthy();
   // Intelligence waits for the account step, and nothing of the key reaches the window.
@@ -2050,10 +2052,10 @@ test("the local sequence starts when installation completes and survives the pro
   expectBehind(
     view,
     3,
-    "Setting up OpenBot on this computer. This takes a few minutes the first time.",
+    "Setting up AwakenBot on this computer. This takes a few minutes the first time.",
   );
   expect(
-    view.queryByRole("listitem", { name: "Setting up OpenBot" }),
+    view.queryByRole("listitem", { name: "Setting up AwakenBot" }),
   ).toBeNull();
   expect(view.queryByRole("alert", { name: "Setup" })).toBeNull();
   // A local first run has nothing behind this screen to go back to.
@@ -2066,11 +2068,11 @@ test("the local sequence starts when installation completes and survives the pro
       "connect_local_eval",
     ]),
   );
-  expect(view.queryByText(/Connecting OpenBot/)).toBeNull();
+  expect(view.queryByText(/Connecting AwakenBot/)).toBeNull();
   expectBehind(
     view,
     3,
-    "Setting up OpenBot on this computer. This takes a few minutes the first time.",
+    "Setting up AwakenBot on this computer. This takes a few minutes the first time.",
   );
   expect(invokeCalls.some((call) => call.command === "cancel_local_eval")).toBe(
     false,
@@ -2078,7 +2080,7 @@ test("the local sequence starts when installation completes and survives the pro
   expectPlain(view);
 });
 
-test("Continue during setup shows Finishing setup, which starts and opens OpenBot by itself", async () => {
+test("Continue during setup shows Finishing setup, which starts and opens AwakenBot by itself", async () => {
   setupRootConfiguration("/tmp/local-eval-auto", async () =>
     emptyConfiguration(),
   );
@@ -2093,7 +2095,7 @@ test("Continue during setup shows Finishing setup, which starts and opens OpenBo
   await chooseOpenAi(view);
   await view.findByRole("heading", { name: "Finishing setup" });
   expect(stepLabel(view)).toBe("Start");
-  const row = view.getByRole("listitem", { name: "Setting up OpenBot" });
+  const row = view.getByRole("listitem", { name: "Setting up AwakenBot" });
   expect(row.textContent).toContain("Step 1 of 4");
   expectPlain(view);
   await act(async () => setUp.resolve(localStatus("starting", "valid")));
@@ -2151,14 +2153,16 @@ test("Finishing setup has a usage-data checkbox, checked by default, that turns 
   await chooseOpenAi(view);
   await view.findByRole("heading", { name: "Finishing setup" });
   const box = (await view.findByRole("checkbox", {
-    name: /^Help make OpenBot better by sharing diagnostics/,
+    name: /^Help make AwakenBot better by sharing diagnostics/,
   })) as HTMLInputElement;
   expect(box.checked).toBe(true);
   expect(box.labels?.[0]?.textContent).toBe(
-    "Help make OpenBot better by sharing diagnostics like errors, hangs, updates and available memory, never any content. OpenBot is built to respect your privacy.",
+    "Help make AwakenBot better by sharing diagnostics like errors, hangs, updates and available memory, never any content. AwakenBot is built to respect your privacy.",
   );
   expect(
-    view.getByRole("link", { name: "What OpenBot sends" }).getAttribute("href"),
+    view
+      .getByRole("link", { name: "What AwakenBot sends" })
+      .getAttribute("href"),
   ).toBe(
     "https://github.com/CopilotKit/OpenBot/blob/main/desktop/TELEMETRY.md",
   );
@@ -2188,7 +2192,7 @@ function intelligenceCalls() {
   );
 }
 
-test("a first local run offers the backend dashboard to the app page and opens OpenBot", async () => {
+test("a first local run offers the backend dashboard to the app page and opens AwakenBot", async () => {
   setupRootConfiguration("/tmp/local-eval-view", async () =>
     emptyConfiguration(),
   );
@@ -2211,7 +2215,7 @@ test("a first local run offers the backend dashboard to the app page and opens O
   ]);
 });
 
-test("Continue after Intelligence is already ready starts OpenBot with the AI just chosen", async () => {
+test("Continue after Intelligence is already ready starts AwakenBot with the AI just chosen", async () => {
   setupRootConfiguration("/tmp/local-eval-ready-first", async () =>
     emptyConfiguration(),
   );
@@ -2296,7 +2300,7 @@ test("a Claude plan signed in on the provider screen reaches Start with its toke
   });
 });
 
-test("a development double mount runs each local step and opens OpenBot once", async () => {
+test("a development double mount runs each local step and opens AwakenBot once", async () => {
   setupRootConfiguration("/tmp/local-eval-strict", async () =>
     emptyConfiguration(),
   );
@@ -2318,7 +2322,7 @@ test("a development double mount runs each local step and opens OpenBot once", a
   ]);
 });
 
-test("Continue after Intelligence is ready starts OpenBot with the chosen model", async () => {
+test("Continue after Intelligence is ready starts AwakenBot with the chosen model", async () => {
   setupRootConfiguration("/tmp/local-eval-ready-first", async () =>
     emptyConfiguration(),
   );
@@ -2367,7 +2371,7 @@ test("while a CLI step runs only Cancel is offered, and Cancel stops the call an
   ).toEqual({
     attempt: (setup?.args as { attempt: string } | undefined)?.attempt,
   });
-  const row = view.getByRole("listitem", { name: "Setting up OpenBot" });
+  const row = view.getByRole("listitem", { name: "Setting up AwakenBot" });
   await waitFor(() =>
     expect(row.textContent).toContain(
       "Stopped at your request before it finished.",
@@ -2407,15 +2411,15 @@ test("a blocked setup stops at its row in plain words and Retry resumes there", 
   const alert = await view.findByRole("alert", { name: "Setup" });
   expect(alert.textContent).toContain("Setup stopped");
   expect(alert.textContent).toContain(
-    "The software OpenBot runs on isn't running. Retry to start it.",
+    "The software AwakenBot runs on isn't running. Retry to start it.",
   );
   await chooseOpenAi(view);
   await view.findByRole("heading", { name: "Finishing setup" });
   // Continue does not retry a blocked step: Retry does.
   expect(setups).toBe(1);
-  const row = view.getByRole("listitem", { name: "Setting up OpenBot" });
+  const row = view.getByRole("listitem", { name: "Setting up AwakenBot" });
   expect(row.textContent).toContain(
-    "The software OpenBot runs on isn't running. Retry to start it.",
+    "The software AwakenBot runs on isn't running. Retry to start it.",
   );
   expectPlain(view);
   expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
@@ -2426,7 +2430,7 @@ test("a blocked setup stops at its row in plain words and Retry resumes there", 
   expect(setups).toBe(2);
 });
 
-test("a recorded, connected stack that never launched starts by itself and opens OpenBot", async () => {
+test("a recorded, connected stack that never launched starts by itself and opens AwakenBot", async () => {
   setupRootConfiguration("/tmp/local-eval-recorded", async () => ({
     ...savedOpenAiConfiguration(),
     saved: { ...savedOpenAiConfiguration().saved, model: "open-ai-api-key" },
@@ -2461,16 +2465,16 @@ test("relaunch says it is starting while it starts, and never offers a CopilotKi
   invokeHandler = async (command, args) =>
     command === "run_local_eval" ? status.promise : previous(command, args);
   const view = await renderApp();
-  await view.findByRole("heading", { name: "Starting OpenBot" });
+  await view.findByRole("heading", { name: "Starting AwakenBot" });
   expect(
-    view.queryByRole("heading", { name: "OpenBot is stopped" }),
+    view.queryByRole("heading", { name: "AwakenBot is stopped" }),
   ).toBeNull();
   expect(buttons(view)).toEqual(["Cancel"]);
   expectPlain(view);
   await act(async () => status.resolve(localStatus("ready", "valid")));
-  await view.findByRole("heading", { name: "OpenBot is running" });
-  await userEvent.click(view.getByRole("button", { name: "Stop OpenBot" }));
-  await view.findByRole("heading", { name: "OpenBot is stopped" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
+  await userEvent.click(view.getByRole("button", { name: "Stop AwakenBot" }));
+  await view.findByRole("heading", { name: "AwakenBot is stopped" });
   expect(
     view.queryByRole("button", { name: "Change CopilotKit connection" }),
   ).toBeNull();
@@ -2513,15 +2517,15 @@ test("the stopped window's update check asks the update feed and says this versi
     return previous(command, args);
   };
   const view = await renderApp();
-  await view.findByRole("heading", { name: "OpenBot is running" });
-  await userEvent.click(view.getByRole("button", { name: "Stop OpenBot" }));
-  await view.findByRole("heading", { name: "OpenBot is stopped" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
+  await userEvent.click(view.getByRole("button", { name: "Stop AwakenBot" }));
+  await view.findByRole("heading", { name: "AwakenBot is stopped" });
   await userEvent.click(view.getByRole("button", { name: /^Check/ }));
   await waitFor(() =>
-    expect(view.getByText("OpenBot 0.3.2 is up to date.")).toBeTruthy(),
+    expect(view.getByText("AwakenBot 0.3.2 is up to date.")).toBeTruthy(),
   );
   expect(view.queryByText(/not configured/)).toBeNull();
-  expect(view.getByText(/^OpenBot updates itself/)).toBeTruthy();
+  expect(view.getByText(/^AwakenBot updates itself/)).toBeTruthy();
   expect(
     invokeCalls.filter(
       (call) =>
@@ -2532,8 +2536,8 @@ test("the stopped window's update check asks the update feed and says this versi
 
 /*
  * The bug, on an internal build on Windows: the stopped window's Updates section opened with
- * "OpenBot updates itself with signed updates from its publisher", and Check for updates then said
- * "This version of OpenBot doesn't update itself" in the same box. A build that never updates
+ * "AwakenBot updates itself with signed updates from its publisher", and Check for updates then said
+ * "This version of AwakenBot doesn't update itself" in the same box. A build that never updates
  * itself now says so up front, with no promise and nothing to check.
  */
 test("the stopped window on a build that never updates itself says so and promises no updates", async () => {
@@ -2555,11 +2559,11 @@ test("the stopped window on a build that never updates itself says so and promis
     return previous(command, args);
   };
   const view = await renderApp();
-  await view.findByRole("heading", { name: "OpenBot is running" });
-  await userEvent.click(view.getByRole("button", { name: "Stop OpenBot" }));
-  await view.findByRole("heading", { name: "OpenBot is stopped" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
+  await userEvent.click(view.getByRole("button", { name: "Stop AwakenBot" }));
+  await view.findByRole("heading", { name: "AwakenBot is stopped" });
   await view.findByText(
-    "This version of OpenBot doesn't update itself. Install a released version of OpenBot to get updates.",
+    "This version of AwakenBot doesn't update itself. Install a released version of AwakenBot to get updates.",
   );
   expect(view.queryByText(/updates itself with|signed updates/)).toBeNull();
   expect(view.queryByRole("button", { name: /^Check/ })).toBeNull();
@@ -2574,17 +2578,19 @@ test("Quit shows Shutting down with each part's row as it starts and ends", asyn
     localStatus("ready", "valid"),
   );
   const view = await renderApp();
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
   const callsBefore = invokeCalls.length;
 
   await emitQuit({ seq: 2, steps: [running("stop-openbot")] });
-  const heading = view.getByRole("heading", { name: "Shutting down OpenBot" });
+  const heading = view.getByRole("heading", {
+    name: "Shutting down AwakenBot",
+  });
   expectStandardSheet(heading);
   expect(
-    rowStatus(view, "Stopping OpenBot").getByText("In progress"),
+    rowStatus(view, "Stopping AwakenBot").getByText("In progress"),
   ).toBeTruthy();
   expect(
-    view.queryByRole("listitem", { name: "Stopping OpenBot's services" }),
+    view.queryByRole("listitem", { name: "Stopping AwakenBot's services" }),
   ).toBeNull();
   // Nothing to press: the app exits by itself.
   expect(view.queryAllByRole("button")).toHaveLength(0);
@@ -2594,15 +2600,15 @@ test("Quit shows Shutting down with each part's row as it starts and ends", asyn
     steps: [complete("stop-openbot"), running("stop-intelligence")],
   });
   expect(
-    rowStatus(view, "Stopping OpenBot").getByText("Complete"),
+    rowStatus(view, "Stopping AwakenBot").getByText("Complete"),
   ).toBeTruthy();
   expect(
-    rowStatus(view, "Stopping OpenBot's services").getByText("In progress"),
+    rowStatus(view, "Stopping AwakenBot's services").getByText("In progress"),
   ).toBeTruthy();
   // An older copy arriving late never undoes a newer one.
   await emitQuit({ seq: 3, steps: [complete("stop-openbot")] });
   expect(
-    rowStatus(view, "Stopping OpenBot's services").getByText("In progress"),
+    rowStatus(view, "Stopping AwakenBot's services").getByText("In progress"),
   ).toBeTruthy();
 
   await emitQuit({
@@ -2610,10 +2616,10 @@ test("Quit shows Shutting down with each part's row as it starts and ends", asyn
     steps: [complete("stop-openbot"), failed("stop-intelligence")],
   });
   expect(
-    rowStatus(view, "Stopping OpenBot's services").getByText("Failed"),
+    rowStatus(view, "Stopping AwakenBot's services").getByText("Failed"),
   ).toBeTruthy();
   expect(view.getByRole("status").textContent).toBe(
-    "Part of it could not be stopped. OpenBot says what happened the next time it opens.",
+    "Part of it could not be stopped. AwakenBot says what happened the next time it opens.",
   );
   // The window only shows; it never asks anything of the native side while it quits.
   expect(invokeCalls.slice(callsBefore)).toEqual([]);
@@ -2635,29 +2641,29 @@ test("a window sent to the Shutting down page catches up, then follows the rows"
     view = render(<ShuttingDownWindow />);
   });
   const heading = await view.findByRole("heading", {
-    name: "Shutting down OpenBot",
+    name: "Shutting down AwakenBot",
   });
   expectStandardSheet(heading);
   await waitFor(() =>
     expect(
-      rowStatus(view, "Stopping OpenBot").getByText("Complete"),
+      rowStatus(view, "Stopping AwakenBot").getByText("Complete"),
     ).toBeTruthy(),
   );
   expect(view.getByRole("status").textContent).toBe(
-    "OpenBot is stopping what it started on this computer, then it closes.",
+    "AwakenBot is stopping what it started on this computer, then it closes.",
   );
   await emitQuit({
     seq: 4,
     steps: [complete("stop-openbot"), complete("stop-intelligence")],
   });
   expect(
-    rowStatus(view, "Stopping OpenBot's services").getByText("Complete"),
+    rowStatus(view, "Stopping AwakenBot's services").getByText("Complete"),
   ).toBeTruthy();
   // Only the catch-up call; nothing that starts or stops anything.
   expect(invokeCalls.map((call) => call.command)).toEqual(["quit_status"]);
 });
 
-test("Stop OpenBot and Show OpenBot say what they are doing at once", async () => {
+test("Stop AwakenBot and Show AwakenBot say what they are doing at once", async () => {
   setupConnectedLocalStack(
     "/tmp/local-eval-stop-status",
     localStatus("ready", "valid"),
@@ -2673,22 +2679,22 @@ test("Stop OpenBot and Show OpenBot say what they are doing at once", async () =
     return previous(command, args);
   };
   const view = await renderApp();
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
 
-  await userEvent.click(view.getByRole("button", { name: "Show OpenBot" }));
-  expectWorking(view, "Loading OpenBot…");
+  await userEvent.click(view.getByRole("button", { name: "Show AwakenBot" }));
+  expectWorking(view, "Loading AwakenBot…");
   await act(async () => showing.resolve(null));
-  expect(view.queryByText("Loading OpenBot…")).toBeNull();
+  expect(view.queryByText("Loading AwakenBot…")).toBeNull();
 
-  await userEvent.click(view.getByRole("button", { name: "Stop OpenBot" }));
-  expectWorking(view, "Stopping OpenBot…");
-  expect(view.getByRole("button", { name: "Stop OpenBot" })).toHaveProperty(
+  await userEvent.click(view.getByRole("button", { name: "Stop AwakenBot" }));
+  expectWorking(view, "Stopping AwakenBot…");
+  expect(view.getByRole("button", { name: "Stop AwakenBot" })).toHaveProperty(
     "disabled",
     true,
   );
   await act(async () => stopping.resolve(null));
-  await view.findByRole("heading", { name: "OpenBot is stopped" });
-  expect(view.queryByText("Stopping OpenBot…")).toBeNull();
+  await view.findByRole("heading", { name: "AwakenBot is stopped" });
+  expect(view.queryByText("Stopping AwakenBot…")).toBeNull();
 });
 
 test("relaunch's Starting and Opening screens use the standard setup column", async () => {
@@ -2702,7 +2708,7 @@ test("relaunch's Starting and Opening screens use the standard setup column", as
     command === "run_local_eval" ? status.promise : previous(command, args);
   const view = await renderApp();
   const starting = await view.findByRole("heading", {
-    name: "Starting OpenBot",
+    name: "Starting AwakenBot",
   });
   expectStandardSheet(starting);
   const sheet = starting.closest(".sheet") as HTMLElement;
@@ -2711,10 +2717,10 @@ test("relaunch's Starting and Opening screens use the standard setup column", as
   ).toBeTruthy();
   expect(within(sheet).getByRole("button", { name: "Cancel" })).toBeTruthy();
   await act(async () => status.resolve(localStatus("ready", "valid")));
-  await view.findByRole("heading", { name: "OpenBot is running" });
-  await userEvent.click(view.getByRole("button", { name: "Stop OpenBot" }));
+  await view.findByRole("heading", { name: "AwakenBot is running" });
+  await userEvent.click(view.getByRole("button", { name: "Stop AwakenBot" }));
   expectStandardSheet(
-    await view.findByRole("heading", { name: "OpenBot is stopped" }),
+    await view.findByRole("heading", { name: "AwakenBot is stopped" }),
   );
   cleanup();
 
@@ -2726,7 +2732,7 @@ test("relaunch's Starting and Opening screens use the standard setup column", as
     command === "selected_root" ? reopened : reopening(command, args);
   const opening = await renderApp();
   expectStandardSheet(
-    opening.getByRole("heading", { name: "Getting OpenBot ready" }),
+    opening.getByRole("heading", { name: "Getting AwakenBot ready" }),
   );
   await act(async () => configuration.resolve(savedOpenAiConfiguration()));
 });
@@ -2762,7 +2768,7 @@ test("relaunch starts a connected local stack that reports ready and valid", asy
     localStatus("ready", "valid"),
   );
   const view = await renderApp();
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
   // A recorded, connected stack goes straight to waiting.
   expect(localSequence()).toEqual([
     "run_local_eval",
@@ -2775,13 +2781,13 @@ test("relaunch starts a connected local stack that reports ready and valid", asy
   });
   expect(getStartStackPayload()).not.toHaveProperty("apiKey");
   // Stopped by choice: nothing starts again on its own in this session.
-  await userEvent.click(view.getByRole("button", { name: "Stop OpenBot" }));
-  await view.findByRole("heading", { name: "OpenBot is stopped" });
+  await userEvent.click(view.getByRole("button", { name: "Stop AwakenBot" }));
+  await view.findByRole("heading", { name: "AwakenBot is stopped" });
   await new Promise((resolve) => setTimeout(resolve, 20));
   expect(
     invokeCalls.filter((call) => call.command === "start_stack"),
   ).toHaveLength(1);
-  expect(view.getByRole("button", { name: "Start OpenBot" })).toBeTruthy();
+  expect(view.getByRole("button", { name: "Start AwakenBot" })).toBeTruthy();
 });
 
 const DOCKER_DID_NOT_START = {
@@ -2838,16 +2844,16 @@ test("relaunch with Docker Desktop quit opens it, says so, and starts once it an
   const view = await renderApp();
   // Docker is opened first, before any CLI call, and the screen says what to do.
   await waitFor(() => expect(docker.wakes).toBe(1));
-  await view.findByRole("heading", { name: "Starting OpenBot" });
+  await view.findByRole("heading", { name: "Starting AwakenBot" });
   await emitDockerHandOff();
   expectJourney(view, DOCKER_HAND_OFF);
-  const row = view.getByRole("listitem", { name: "Getting OpenBot ready" });
+  const row = view.getByRole("listitem", { name: "Getting AwakenBot ready" });
   expect(row.textContent).toContain("Step 3 of 4");
   expect(localSequence()).toEqual([]);
-  // Docker answers: the hand-off goes, and the back end and OpenBot start.
+  // Docker answers: the hand-off goes, and the back end and AwakenBot start.
   await emitDockerSettled(true, "Docker Desktop is running.");
   await act(async () => docker.wake.resolve(null));
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
   expect(view.queryByText(DOCKER_HAND_OFF)).toBeNull();
   expect(localSequence()).toEqual([
     "run_local_eval",
@@ -2856,7 +2862,7 @@ test("relaunch with Docker Desktop quit opens it, says so, and starts once it an
   ]);
   expect(
     view.queryByText(
-      "The software OpenBot runs on isn't running. Retry to start it.",
+      "The software AwakenBot runs on isn't running. Retry to start it.",
     ),
   ).toBeNull();
 });
@@ -2874,30 +2880,32 @@ test("relaunch with the engine machine stopped says it is starting it, in plain 
   invokeHandler = async (command, args) =>
     command === "wake_engine" ? machine.promise : previous(command, args);
   const view = await renderApp();
-  await view.findByRole("heading", { name: "Starting OpenBot" });
+  await view.findByRole("heading", { name: "Starting AwakenBot" });
   // As `wake_installation_engine` reports it, before the machine answers.
   await emitProgress({
     step: "start-machine",
     ok: true,
     running: true,
-    detail: "Starting the software OpenBot runs on.",
+    detail: "Starting the software AwakenBot runs on.",
   });
   // Said as the journey's other lines are: a phrase, with no full stop.
-  expectJourney(view, "Starting the software OpenBot runs on");
+  expectJourney(view, "Starting the software AwakenBot runs on");
   await emitProgress({
     step: "start-machine",
     ok: true,
     running: false,
     detail: "The engine machine is running.",
   });
-  expect(view.queryByText("Starting the software OpenBot runs on.")).toBeNull();
+  expect(
+    view.queryByText("Starting the software AwakenBot runs on."),
+  ).toBeNull();
   await act(async () => machine.resolve(null));
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
 });
 
-test("relaunch while OpenBot sets its machine's network up again says so, before the backend starts", async () => {
-  // A live Windows run: for two minutes the screen said only "Checking OpenBot's settings" while
-  // OpenBot set its machine's network up again, and it did that after the backend had started.
+test("relaunch while AwakenBot sets its machine's network up again says so, before the backend starts", async () => {
+  // A live Windows run: for two minutes the screen said only "Checking AwakenBot's settings" while
+  // AwakenBot set its machine's network up again, and it did that after the backend had started.
   // The wake does it now, before any CLI call, and says so on the journey.
   setupConnectedLocalStack(
     "/tmp/local-eval-machine-network",
@@ -2908,28 +2916,28 @@ test("relaunch while OpenBot sets its machine's network up again says so, before
   invokeHandler = async (command, args) =>
     command === "wake_engine" ? machine.promise : previous(command, args);
   const view = await renderApp();
-  await view.findByRole("heading", { name: "Starting OpenBot" });
+  await view.findByRole("heading", { name: "Starting AwakenBot" });
   // As `machine_before_back_end` reports it, once the network has not answered at once.
   await emitProgress({
     step: "start-machine",
     ok: true,
     running: true,
     detail:
-      "Reconnecting OpenBot to the internet. This can take a minute or two.",
+      "Reconnecting AwakenBot to the internet. This can take a minute or two.",
   });
   expectJourney(
     view,
-    "Reconnecting OpenBot to the internet. This can take a minute or two.",
+    "Reconnecting AwakenBot to the internet. This can take a minute or two.",
   );
   expect(localSequence()).toEqual([]);
   await emitProgress({
     step: "start-machine",
     ok: true,
     running: false,
-    detail: "The software OpenBot runs on is ready.",
+    detail: "The software AwakenBot runs on is ready.",
   });
   await act(async () => machine.resolve(null));
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
   expect(localSequence()[0]).toBe("run_local_eval");
 });
 
@@ -2942,7 +2950,7 @@ test("relaunch whose machine's network only a Windows restart fixes offers the r
   invokeHandler = async (command, args) => {
     if (command === "wake_engine") {
       throw {
-        said: "Windows needs to restart to finish setting up the software OpenBot runs on. Restart Windows, then open OpenBot again.",
+        said: "Windows needs to restart to finish setting up the software AwakenBot runs on. Restart Windows, then open AwakenBot again.",
         detail:
           "user-mode networking is not working in the openbot VM: host.containers.internal did not resolve in the openbot VM within 30s: podman machine ssh openbot timeout 3 getent ahostsv4 host.containers.internal exited with status 124",
         restart_windows: true,
@@ -2955,14 +2963,14 @@ test("relaunch whose machine's network only a Windows restart fixes offers the r
     await view.findByRole("heading", { name: "Restart Windows to finish" }),
   ).toBeTruthy();
   expect(view.container.textContent).toContain(
-    "Windows needs to restart to finish setting up the software OpenBot runs on.",
+    "Windows needs to restart to finish setting up the software AwakenBot runs on.",
   );
   expect(localSequence()).toEqual([]);
 });
 
 test("the running screen shows none of Start's own steps, and names the system tray on Windows", async () => {
-  // Seen on Windows: "OpenBot is running" flashed "settings written, credentials stored" and
-  // "containers up" for the moment before OpenBot opened, and sent the person to "the menu bar",
+  // Seen on Windows: "AwakenBot is running" flashed "settings written, credentials stored" and
+  // "containers up" for the moment before AwakenBot opened, and sent the person to "the menu bar",
   // which Windows does not have.
   Object.defineProperty(navigator, "userAgent", {
     configurable: true,
@@ -2982,21 +2990,25 @@ test("the running screen shows none of Start's own steps, and names the system t
         : previous(command, args);
     const view = await renderApp();
     await waitFor(() => expect(localSequence()).toContain("start_stack"));
-    // What the native side reports as it starts OpenBot.
+    // What the native side reports as it starts AwakenBot.
     for (const progress of [
       { step: "env", ok: true, detail: "Your settings are saved." },
       {
         step: "services",
         ok: true,
         running: true,
-        detail: "Starting OpenBot's services.",
+        detail: "Starting AwakenBot's services.",
       },
-      { step: "services", ok: true, detail: "OpenBot's services are running." },
-      { step: "answering", ok: true, detail: "OpenBot is ready." },
+      {
+        step: "services",
+        ok: true,
+        detail: "AwakenBot's services are running.",
+      },
+      { step: "answering", ok: true, detail: "AwakenBot is ready." },
     ])
       await emitProgress(progress);
     await act(async () => started.resolve(null));
-    await view.findByRole("heading", { name: "OpenBot is running" });
+    await view.findByRole("heading", { name: "AwakenBot is running" });
     const screen = document.body.textContent ?? "";
     expect(view.queryByRole("list", { name: "Setup progress" })).toBeNull();
     for (const internal of [
@@ -3008,7 +3020,7 @@ test("the running screen shows none of Start's own steps, and names the system t
       expect(screen).not.toContain(internal);
     expect(
       view.getByText(
-        "OpenBot is open in this window. You can also show it or stop it from its icon in the system tray.",
+        "AwakenBot is open in this window. You can also show it or stop it from its icon in the system tray.",
       ),
     ).toBeTruthy();
   } finally {
@@ -3018,7 +3030,7 @@ test("the running screen shows none of Start's own steps, and names the system t
 
 /*
  * Seen on Windows: with Start's rows gone from the running screen, the card opened on a divider
- * and "Updates", with nothing above the line, and "OpenBot is running" under them. The heading
+ * and "Updates", with nothing above the line, and "AwakenBot is running" under them. The heading
  * comes first; Updates sits under the buttons, as on the stopped screen.
  */
 test("the running screen opens on its heading, with Updates under the buttons, with and without a failure", async () => {
@@ -3030,7 +3042,7 @@ test("the running screen opens on its heading, with Updates under the buttons, w
   const previous = invokeHandler;
   invokeHandler = async (command, args) => {
     if (command === "show_openbot" && showFails)
-      throw "OpenBot is not answering on port 3010 yet, so there is nothing to show.";
+      throw "AwakenBot is not answering on port 3010 yet, so there is nothing to show.";
     return previous(command, args);
   };
   const view = await renderApp();
@@ -3040,7 +3052,7 @@ test("the running screen opens on its heading, with Updates under the buttons, w
     step: "services",
     ok: true,
     running: true,
-    detail: "Starting OpenBot's services.",
+    detail: "Starting AwakenBot's services.",
   });
 
   /** The card's own children in order, by what each one is. */
@@ -3058,7 +3070,7 @@ test("the running screen opens on its heading, with Updates under the buttons, w
     );
 
   const heading = await view.findByRole("heading", {
-    name: "OpenBot is running",
+    name: "AwakenBot is running",
   });
   const sheet = heading.closest(".sheet") as HTMLElement;
   expect(order(sheet)).toEqual(["heading", "p", "buttons", "details:Updates"]);
@@ -3066,8 +3078,10 @@ test("the running screen opens on its heading, with Updates under the buttons, w
   expect(view.queryByRole("list", { name: "Setup progress" })).toBeNull();
 
   showFails = true;
-  await userEvent.click(view.getByRole("button", { name: "Show OpenBot" }));
-  const stopped = await view.findByRole("heading", { name: "OpenBot stopped" });
+  await userEvent.click(view.getByRole("button", { name: "Show AwakenBot" }));
+  const stopped = await view.findByRole("heading", {
+    name: "AwakenBot stopped",
+  });
   const failedSheet = stopped.closest(".sheet") as HTMLElement;
   // The rows still show where it stopped, between the heading and the buttons.
   const rows = view.getByRole("list", { name: "Setup progress" });
@@ -3081,7 +3095,7 @@ test("the running screen opens on its heading, with Updates under the buttons, w
   ]);
   expect(failedSheet.firstElementChild === stopped).toBe(true);
   expect(view.getByRole("alert").textContent).toContain(
-    "OpenBot is not answering on port 3010 yet",
+    "AwakenBot is not answering on port 3010 yet",
   );
 });
 
@@ -3104,7 +3118,7 @@ test("relaunch says when Docker Desktop did not start, and Retry opens it again"
   await userEvent.click(view.getByRole("button", { name: "Retry" }));
   await waitFor(() => expect(docker.wakes).toBe(2));
   await act(async () => docker.wake.resolve(null));
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
 });
 
 /** What `docker_desktop::start` says as it opens Docker Desktop. */
@@ -3134,7 +3148,7 @@ function withOlderDeployment(outcome: unknown) {
   };
 }
 
-test("relaunch upgrades an older installation to this app's release as part of Start, then opens OpenBot", async () => {
+test("relaunch upgrades an older installation to this app's release as part of Start, then opens AwakenBot", async () => {
   setupConnectedLocalStack(
     "/tmp/local-eval-older-release",
     localStatus("ready", "valid"),
@@ -3149,19 +3163,21 @@ test("relaunch upgrades an older installation to this app's release as part of S
   );
   // Said while the upgrade runs, which can take minutes.
   const said =
-    "Updating OpenBot. Your Bots, sign-ins and data stay as they are.";
+    "Updating AwakenBot. Your Bots, sign-ins and data stay as they are.";
   await emitProgress({
     step: "release",
     ok: true,
     running: true,
     detail: said,
   });
-  expect(view.getByRole("heading", { name: "Starting OpenBot" })).toBeTruthy();
+  expect(
+    view.getByRole("heading", { name: "Starting AwakenBot" }),
+  ).toBeTruthy();
   expect(view.getByText(said)).toBeTruthy();
   await act(async () =>
     moving.resolve({ from: "v0.3.0", to: "v0.3.1", moved: true }),
   );
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
   await expectHandover();
   const sequence = invokeCalls
     .map((call) => call.command)
@@ -3190,10 +3206,10 @@ test("relaunch upgrades an older installation to this app's release as part of S
 });
 
 /*
- * Start updating OpenBot itself, in the Start journey: what the update is doing now, said from the
+ * Start updating AwakenBot itself, in the Start journey: what the update is doing now, said from the
  * step running now (`upgrade::now_said`), on the one bar that covers every row. The install and the
  * start report rows of their own as well, and those never take the line over. On Windows the line
- * said "Stopping OpenBot." through a whole start, under a list where every step but the last was
+ * said "Stopping AwakenBot." through a whole start, under a list where every step but the last was
  * complete; later a second row under the journey carried a bar of its own and said the same thing.
  */
 test("the journey says the update step running now, never one that finished, on its one bar", async () => {
@@ -3223,12 +3239,12 @@ test("the journey says the update step running now, never one that finished, on 
     [
       [
         release(
-          "Updating OpenBot. Your Bots, sign-ins and data stay as they are.",
+          "Updating AwakenBot. Your Bots, sign-ins and data stay as they are.",
         ),
       ],
       "Getting the update ready",
     ],
-    [[release("Stopping OpenBot.")], "Getting the update ready"],
+    [[release("Stopping AwakenBot.")], "Getting the update ready"],
     [[release("Backing up your data.")], "Getting the update ready"],
     [[release("Downloading the update.")], "Downloading the update"],
     [
@@ -3238,7 +3254,7 @@ test("the journey says the update step running now, never one that finished, on 
           step: "engine",
           ok: true,
           running: true,
-          detail: "Checking the software OpenBot needs.",
+          detail: "Checking the software AwakenBot needs.",
         },
         {
           step: "engine",
@@ -3276,7 +3292,7 @@ test("the journey says the update step running now, never one that finished, on 
     ],
     [
       [
-        release("Starting OpenBot."),
+        release("Starting AwakenBot."),
         {
           step: "services",
           ok: true,
@@ -3288,17 +3304,17 @@ test("the journey says the update step running now, never one that finished, on 
           step: "answering",
           ok: true,
           running: true,
-          detail: "Waiting for OpenBot to answer.",
+          detail: "Waiting for AwakenBot to answer.",
         },
       ],
-      "Starting the updated OpenBot",
+      "Starting the updated AwakenBot",
     ],
   ];
   let fraction = 0;
   for (const [events, said, bytes] of upgrade) {
     for (const event of events) await emitProgress(event);
     expect(
-      view.getByRole("heading", { name: "Starting OpenBot" }),
+      view.getByRole("heading", { name: "Starting AwakenBot" }),
     ).toBeTruthy();
     expect(journey().querySelector(".journey-said")?.textContent).toBe(said);
     expect(journey().querySelector(".journey-bytes")?.textContent ?? null).toBe(
@@ -3313,14 +3329,14 @@ test("the journey says the update step running now, never one that finished, on 
     // No row of its own for the update: the start's row says what this part is.
     expect(view.queryByRole("list", { name: "Update progress" })).toBeNull();
     expect(
-      view.getByRole("listitem", { name: "Opening OpenBot" }).textContent,
+      view.getByRole("listitem", { name: "Opening AwakenBot" }).textContent,
     ).toContain(
-      "Updating OpenBot. Your Bots, sign-ins and data stay as they are.",
+      "Updating AwakenBot. Your Bots, sign-ins and data stay as they are.",
     );
   }
   // Nothing an earlier step said is left on the screen.
   for (const finished of [
-    "Stopping OpenBot.",
+    "Stopping AwakenBot.",
     "Backing up your data.",
     "Downloading the update.",
     "Installing the update.",
@@ -3329,8 +3345,8 @@ test("the journey says the update step running now, never one that finished, on 
   await act(async () =>
     moving.resolve({ from: "v0.3.0", to: "v0.3.1", moved: true }),
   );
-  await view.findByRole("heading", { name: "OpenBot is running" });
-  expect(view.queryByText("Starting OpenBot.")).toBeNull();
+  await view.findByRole("heading", { name: "AwakenBot is running" });
+  expect(view.queryByText("Starting AwakenBot.")).toBeNull();
 });
 
 test("an upgrade that could not put the previous version back is retried from the Retry its sentence names", async () => {
@@ -3339,7 +3355,7 @@ test("an upgrade that could not put the previous version back is retried from th
     localStatus("ready", "valid"),
   );
   const said =
-    "OpenBot couldn't update to v0.3.1 or put v0.3.0 back. Choose Retry to try putting it back again.";
+    "AwakenBot couldn't update to v0.3.1 or put v0.3.0 back. Choose Retry to try putting it back again.";
   let attempts = 0;
   withOlderDeployment(() => {
     attempts += 1;
@@ -3354,7 +3370,7 @@ test("an upgrade that could not put the previous version back is retried from th
       to: "v0.3.1",
       moved: false,
       notice: {
-        said: "OpenBot couldn't update to v0.3.1, so it's still on v0.3.0, with your data as it was.",
+        said: "AwakenBot couldn't update to v0.3.1, so it's still on v0.3.0, with your data as it was.",
       },
     };
   });
@@ -3364,7 +3380,7 @@ test("an upgrade that could not put the previous version back is retried from th
   expect(view.queryByRole("button", { name: /^Start/ })).toBeNull();
   await userEvent.click(view.getByRole("button", { name: "Retry" }));
   await view.findByText(
-    "OpenBot couldn't update to v0.3.1, so it's still on v0.3.0, with your data as it was.",
+    "AwakenBot couldn't update to v0.3.1, so it's still on v0.3.0, with your data as it was.",
   );
   expect(
     invokeCalls.filter((call) => call.command === "upgrade_and_start"),
@@ -3381,7 +3397,7 @@ test("an upgrade that did not finish says so on the running screen before handin
     localStatus("ready", "valid"),
   );
   const said =
-    "OpenBot couldn't update to v0.3.1, so it's still on v0.3.0, with your data as it was.";
+    "AwakenBot couldn't update to v0.3.1, so it's still on v0.3.0, with your data as it was.";
   withOlderDeployment({
     from: "v0.3.0",
     to: "v0.3.1",
@@ -3391,7 +3407,7 @@ test("an upgrade that did not finish says so on the running screen before handin
   const view = await renderApp();
   await view.findByText(said);
   expect(
-    view.getByRole("heading", { name: "OpenBot is running" }),
+    view.getByRole("heading", { name: "AwakenBot is running" }),
   ).toBeTruthy();
   expect(view.getByText("Technical details")).toBeTruthy();
   expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
@@ -3401,7 +3417,7 @@ test("an upgrade that did not finish says so on the running screen before handin
   expect(invokeCalls.some((call) => call.command === "show_openbot")).toBe(
     false,
   );
-  await userEvent.click(view.getByRole("button", { name: "Show OpenBot" }));
+  await userEvent.click(view.getByRole("button", { name: "Show AwakenBot" }));
   await waitFor(() =>
     expect(invokeCalls.some((call) => call.command === "show_openbot")).toBe(
       true,
@@ -3414,13 +3430,13 @@ test("relaunch never starts a local stack that is not exactly ready and valid", 
     [
       "unknown",
       "unknown",
-      "OpenBot started, and hasn't said yet whether it's ready.",
+      "AwakenBot started, and hasn't said yet whether it's ready.",
     ],
     ["ready", "expired", "The evaluation licence has expired."],
     [
       "degraded",
       "valid",
-      "OpenBot is running but not working properly. Retry to start it again.",
+      "AwakenBot is running but not working properly. Retry to start it again.",
     ],
   ]) {
     setupConnectedLocalStack(
@@ -3454,7 +3470,7 @@ const pinnedCli = JSON.parse(
   ),
 );
 const KEPT_RELEASE =
-  "The OpenBot update didn't finish downloading, so OpenBot is running the version it had. It tries again the next time it starts.";
+  "The AwakenBot update didn't finish downloading, so AwakenBot is running the version it had. It tries again the next time it starts.";
 
 /** `local update` as the CLI answers when it stops at the image download again. */
 const updateFailed = {
@@ -3485,7 +3501,7 @@ function localActions() {
     .map((call) => (call.args as { action: string }).action);
 }
 
-/** OpenBot started on the back end's own addresses, said why on the running screen, and waits. */
+/** AwakenBot started on the back end's own addresses, said why on the running screen, and waits. */
 async function startedOnKeptRelease(
   view: Awaited<ReturnType<typeof renderApp>>,
 ) {
@@ -3494,25 +3510,25 @@ async function startedOnKeptRelease(
   expect(view.queryByRole("alert")).toBeNull();
   expect(view.queryByRole("link", { name: "Get setup help" })).toBeNull();
   expect(
-    view.getByRole("heading", { name: "OpenBot is running" }),
+    view.getByRole("heading", { name: "AwakenBot is running" }),
   ).toBeTruthy();
   expect(
     view.queryByText(
-      "OpenBot is running but not working properly. Retry to start it again.",
+      "AwakenBot is running but not working properly. Retry to start it again.",
     ),
   ).toBeNull();
   expect(
-    view.queryByRole("heading", { name: "OpenBot is stopped" }),
+    view.queryByRole("heading", { name: "AwakenBot is stopped" }),
   ).toBeNull();
   expect(getStartStackPayload()).toMatchObject({
     apiUrl: "http://localhost:18082",
     gatewayWsUrl: "ws://localhost:14401",
   });
-  // The person reads the notice, then opens OpenBot on the release it has.
+  // The person reads the notice, then opens AwakenBot on the release it has.
   expect(invokeCalls.some((call) => call.command === "show_openbot")).toBe(
     false,
   );
-  await userEvent.click(view.getByRole("button", { name: "Show OpenBot" }));
+  await userEvent.click(view.getByRole("button", { name: "Show AwakenBot" }));
   await waitFor(() =>
     expect(invokeCalls.some((call) => call.command === "show_openbot")).toBe(
       true,
@@ -3524,9 +3540,9 @@ async function startedOnKeptRelease(
  * Found on 0.3.3 on a slow connection. Start began updating the back end from 0.16.0-rc.5 to
  * 0.16.0-rc.9; the CLI stopped downloading one image at its own limit and kept the update on
  * record. Nothing in the cluster had changed and every check passed, but the CLI said `degraded`,
- * and the window said "OpenBot is running but not working properly. Retry to start it again." and stopped OpenBot.
+ * and the window said "AwakenBot is running but not working properly. Retry to start it again." and stopped AwakenBot.
  */
-test("an update that did not finish opens OpenBot on the release the backend runs, and says so", async () => {
+test("an update that did not finish opens AwakenBot on the release the backend runs, and says so", async () => {
   const after = pinnedCli.updateDidNotFinish;
   // The same stack before the update: ready on rc.5, with rc.9 to install.
   const before = {
@@ -3578,10 +3594,10 @@ test("a backend whose check fails is still not healthy, with an update on record
   ]);
   const view = await renderApp();
   await view.findByText(
-    "OpenBot is running but not working properly. Retry to start it again.",
+    "AwakenBot is running but not working properly. Retry to start it again.",
   );
   expect(
-    view.getByRole("heading", { name: "OpenBot is stopped" }),
+    view.getByRole("heading", { name: "AwakenBot is stopped" }),
   ).toBeTruthy();
   expect(view.getByRole("button", { name: "Retry" })).toBeTruthy();
   expect(view.queryByText(KEPT_RELEASE)).toBeNull();
@@ -3605,7 +3621,7 @@ test("relaunch waits for Start when auto-start is off, interrupted, or the stack
       },
       null,
     ],
-    ["interrupted", {}, { said: "OpenBot stopped unexpectedly." }],
+    ["interrupted", {}, { said: "AwakenBot stopped unexpectedly." }],
   ] as const) {
     setupConnectedLocalStack(
       `/tmp/local-eval-${name}`,
@@ -3618,10 +3634,12 @@ test("relaunch waits for Start when auto-start is off, interrupted, or the stack
         command === "last_failure" ? failure : previous(command, args);
     }
     const view = await renderApp();
-    await view.findByRole("heading", { name: "OpenBot is stopped" });
+    await view.findByRole("heading", { name: "AwakenBot is stopped" });
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(localSequence()).toEqual([]);
-    await userEvent.click(view.getByRole("button", { name: "Start OpenBot" }));
+    await userEvent.click(
+      view.getByRole("button", { name: "Start AwakenBot" }),
+    );
     await waitFor(() => expect(localSequence()).toContain("start_stack"));
     cleanup();
     invokeCalls = [];
@@ -3693,7 +3711,7 @@ test("a provider sign-in can be tried again on the AI step without installing ag
   await userEvent.click(
     view.getByRole("button", { name: "Sign in with OpenAI" }),
   );
-  // Signed in, so on by itself after a second showing the tick, and OpenBot opens once started.
+  // Signed in, so on by itself after a second showing the tick, and AwakenBot opens once started.
   await expectHandover(4000);
   expect(signIns).toBe(2);
   expect(installationCalls()).toHaveLength(1);
@@ -3730,7 +3748,7 @@ test("a failed automatic reopen offers recovery without retrying or installing",
   await userEvent.click(
     view.getByRole("button", { name: "Change installation" }),
   );
-  expect(view.getByRole("button", { name: "Install OpenBot" })).toBeTruthy();
+  expect(view.getByRole("button", { name: "Install AwakenBot" })).toBeTruthy();
 });
 
 test("menu Stop retains the installed root for explicit Start without the wizard", async () => {
@@ -3739,11 +3757,11 @@ test("menu Stop retains the installed root for explicit Start without the wizard
     autoStart: false,
   });
   const view = await renderApp();
-  await view.findByRole("heading", { name: "OpenBot is stopped" });
+  await view.findByRole("heading", { name: "AwakenBot is stopped" });
   expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
     false,
   );
-  await userEvent.click(view.getByRole("button", { name: "Start OpenBot" }));
+  await userEvent.click(view.getByRole("button", { name: "Start AwakenBot" }));
   await waitFor(() =>
     expect(invokeCalls).toContainEqual({ command: "show_openbot" }),
   );
@@ -3799,7 +3817,9 @@ test("an installation an earlier app connected to hosted Intelligence starts at 
   );
   withLocalCli(readyLocal());
   const view = await renderApp();
-  await view.findByRole("heading", { name: "Set up OpenBot (self-contained)" });
+  await view.findByRole("heading", {
+    name: "Set up AwakenBot (self-contained)",
+  });
   expect(buttons(view)).toEqual(["Install"]);
   await new Promise((resolve) => setTimeout(resolve, 20));
   // Nothing hosted is started, and nothing local either, until Install.
@@ -3840,7 +3860,9 @@ test("a previously hosted installation of another Bot installs the default Bot",
   );
   withLocalCli(readyLocal());
   const view = await renderApp();
-  await view.findByRole("heading", { name: "Set up OpenBot (self-contained)" });
+  await view.findByRole("heading", {
+    name: "Set up AwakenBot (self-contained)",
+  });
   expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
     false,
   );
@@ -3899,7 +3921,7 @@ test.each(["model", "intelligence"])(
           said:
             connection === "model"
               ? "That saved OpenAI API key is no longer available."
-              : "OpenBot's connection to its backend on this computer is no longer available. Set up the backend again.",
+              : "AwakenBot's connection to its backend on this computer is no longer available. Set up the backend again.",
           connection,
         };
       return previous(command, args);
@@ -3946,7 +3968,7 @@ test.each(["model", "intelligence"])(
 );
 
 const INSTALL_AGAIN = {
-  said: "Finish installing OpenBot's local software before signing in or starting. Return to Install and try again.",
+  said: "Finish installing AwakenBot's local software before signing in or starting. Return to Install and try again.",
   connection: "installation",
 };
 
@@ -3955,9 +3977,9 @@ const INSTALL_AGAIN = {
  * its deployment is one this app cannot start, so Start is refused until Install lays out the new
  * one, and the window installs again by itself.
  *
- * Seen on a Mac replacing OpenBot 0.3.1: Starting OpenBot, then Installing OpenBot under an alert
- * "OpenBot did not start", then "Refresh your AI connection", though nothing about the sign-in had
- * changed and Continue with it started OpenBot at once. The Start was only waiting on the install,
+ * Seen on a Mac replacing AwakenBot 0.3.1: Starting AwakenBot, then Installing AwakenBot under an alert
+ * "AwakenBot did not start", then "Refresh your AI connection", though nothing about the sign-in had
+ * changed and Continue with it started AwakenBot at once. The Start was only waiting on the install,
  * and after the install it carries on with the saved sign-in.
  */
 async function reopenAfterUpdate(
@@ -3979,7 +4001,7 @@ async function reopenAfterUpdate(
     return previous(command, args);
   };
   const view = await renderApp();
-  await view.findByRole("heading", { name: "Installing OpenBot" });
+  await view.findByRole("heading", { name: "Installing AwakenBot" });
   return { view, installed };
 }
 
@@ -4001,7 +4023,7 @@ test("a Start that waits for the install it asked for carries on with the saved 
   ).toMatchObject({ root });
 
   await act(async () => installed.resolve(null));
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
   // Never asked to pick the AI it already had.
   expect(
     view.queryByRole("heading", { name: /AI connection|Connect your AI/ }),
@@ -4041,14 +4063,14 @@ test("a saved sign-in refused after the install sends the person to refresh it",
 });
 
 /**
- * Box I, step E: OpenBot's machine was made again, and the backend went with the old one. Start
+ * Box I, step E: AwakenBot's machine was made again, and the backend went with the old one. Start
  * fresh set the backend up again, then Start was refused, because the new machine had none of
- * OpenBot's own software: "Finish installing OpenBot's local software…", an ERROR in the log, and
- * the window went back from Starting OpenBot to Installing OpenBot before it carried on by itself.
+ * AwakenBot's own software: "Finish installing AwakenBot's local software…", an ERROR in the log, and
+ * the window went back from Starting AwakenBot to Installing AwakenBot before it carried on by itself.
  * Start fresh now installs first, then sets up and starts: one journey forward, Install's rows and
  * then Starting's, with nothing refused and no going back.
  */
-test("Start fresh after a lost backend installs OpenBot's software first, then sets up and starts, never going back", async () => {
+test("Start fresh after a lost backend installs AwakenBot's software first, then sets up and starts, never going back", async () => {
   const root = "/tmp/lost-backend";
   setupConnectedLocalStack(root, localStatus("ready", "valid"));
   const lost = {
@@ -4069,7 +4091,7 @@ test("Start fresh after a lost backend installs OpenBot's software first, then s
       installedNow = true;
       return null;
     }
-    // As the native side does: the new machine has none of OpenBot's software until Install.
+    // As the native side does: the new machine has none of AwakenBot's software until Install.
     if (command === "start_stack" && !installedNow) throw INSTALL_AGAIN;
     return previous(command, args);
   };
@@ -4089,13 +4111,15 @@ test("Start fresh after a lost backend installs OpenBot's software first, then s
   );
   // Install's rows first, on the screen the person was on.
   await view.findByText("Preparing this computer");
-  expect(view.getByRole("heading", { name: "Starting OpenBot" })).toBeTruthy();
+  expect(
+    view.getByRole("heading", { name: "Starting AwakenBot" }),
+  ).toBeTruthy();
   expect(localCliCalls().map((call) => call.command)).toEqual([
     "run_local_eval",
   ]);
 
   await act(async () => installed.resolve(null));
-  await view.findByRole("heading", { name: "OpenBot is running" });
+  await view.findByRole("heading", { name: "AwakenBot is running" });
   watch.disconnect();
   expect(
     invokeCalls
@@ -4119,7 +4143,7 @@ test("Start fresh after a lost backend installs OpenBot's software first, then s
     "start_stack",
     "show_openbot",
   ]);
-  expect([...headings]).not.toContain("Installing OpenBot");
+  expect([...headings]).not.toContain("Installing AwakenBot");
   expect(view.queryByRole("alert")).toBeNull();
 });
 
@@ -4131,7 +4155,7 @@ test("a Start refused again straight after its install says so, and does not ins
     },
   );
   await act(async () => installed.resolve(null));
-  await view.findByRole("alert", { name: "OpenBot" });
+  await view.findByRole("alert", { name: "AwakenBot" });
   // The second install the refusal asks for goes to the AI screen, from which Start runs again.
   await view.findByRole("heading", { name: /AI connection|Connect your AI/ });
   await new Promise((resolve) => setTimeout(resolve, 20));
@@ -4199,7 +4223,7 @@ test("reopening a retained root waits for its saved setup without flashing the w
   };
   const view = await renderApp();
   expect(
-    view.getByRole("heading", { name: "Getting OpenBot ready" }),
+    view.getByRole("heading", { name: "Getting AwakenBot ready" }),
   ).toBeTruthy();
   expect(view.queryByRole("button", { name: "Install" })).toBeNull();
   await act(async () => configuration.resolve(savedOpenAiConfiguration()));
@@ -4212,7 +4236,7 @@ test("reopening a retained root waits for its saved setup without flashing the w
 
 function useInterruptedShutdownSetup() {
   const root = "/tmp/interrupted-shutdown-root";
-  const notice = "OpenBot had trouble shutting down last time.";
+  const notice = "AwakenBot had trouble shutting down last time.";
   setupConnectedLocalStack("/tmp/default-root", localStatus("ready", "valid"));
   const previous = invokeHandler;
   invokeHandler = async (command, args) => {
@@ -4226,7 +4250,7 @@ function useInterruptedShutdownSetup() {
 test("a local Intelligence stack left running at Quit is shown without holding auto-start", async () => {
   useInterruptedShutdownSetup();
   const notice = {
-    said: "When OpenBot last quit, some of its services didn't stop. They may still be running. Stopping OpenBot again asks them to stop.",
+    said: "When AwakenBot last quit, some of its services didn't stop. They may still be running. Stopping AwakenBot again asks them to stop.",
     detail: "Backend stop failed: the CLI timed out",
   };
   const previous = invokeHandler;
@@ -4244,7 +4268,7 @@ test("a local Intelligence stack left running at Quit is shown without holding a
   expect(view.getByRole("alert").textContent).toContain(notice.said);
 });
 
-test("Stop that fails only for the local Intelligence stack still stops OpenBot", async () => {
+test("Stop that fails only for the local Intelligence stack still stops AwakenBot", async () => {
   useInterruptedShutdownSetup();
   const previous = invokeHandler;
   invokeHandler = async (command, args) => {
@@ -4255,17 +4279,17 @@ test("Stop that fails only for the local Intelligence stack still stops OpenBot"
   };
   const view = await renderApp();
   await userEvent.click(
-    await view.findByRole("button", { name: "Stop OpenBot" }),
+    await view.findByRole("button", { name: "Stop AwakenBot" }),
   );
   await waitFor(() =>
-    expect(view.queryByRole("button", { name: "Stop OpenBot" })).toBeNull(),
+    expect(view.queryByRole("button", { name: "Stop AwakenBot" })).toBeNull(),
   );
   expect(view.getByRole("alert").textContent).toContain(
-    "OpenBot stopped, but some of its services didn't. They may still be running.",
+    "AwakenBot stopped, but some of its services didn't. They may still be running.",
   );
 });
 
-test("Stop that fails for OpenBot itself keeps OpenBot running", async () => {
+test("Stop that fails for AwakenBot itself keeps AwakenBot running", async () => {
   useInterruptedShutdownSetup();
   const previous = invokeHandler;
   invokeHandler = async (command, args) => {
@@ -4276,14 +4300,14 @@ test("Stop that fails for OpenBot itself keeps OpenBot running", async () => {
   };
   const view = await renderApp();
   await userEvent.click(
-    await view.findByRole("button", { name: "Stop OpenBot" }),
+    await view.findByRole("button", { name: "Stop AwakenBot" }),
   );
   await waitFor(() =>
     expect(view.getByRole("alert").textContent).toContain(
       "Compose down failed: busy",
     ),
   );
-  expect(view.getByRole("button", { name: "Stop OpenBot" })).toBeTruthy();
+  expect(view.getByRole("button", { name: "Stop AwakenBot" })).toBeTruthy();
 });
 
 test("an interrupted shutdown restores saved setup for explicit recovery", async () => {
@@ -4292,9 +4316,9 @@ test("an interrupted shutdown restores saved setup for explicit recovery", async
   expect(view.getByRole("alert").textContent).toContain(notice);
   expect(view.queryByRole("button", { name: "Install" })).toBeNull();
   expect(
-    view.getByRole("heading", { name: "OpenBot is stopped" }),
+    view.getByRole("heading", { name: "AwakenBot is stopped" }),
   ).toBeTruthy();
-  const start = view.getByRole("button", { name: "Start OpenBot" });
+  const start = view.getByRole("button", { name: "Start AwakenBot" });
   expect(start).toHaveProperty("disabled", false);
   expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
     false,
@@ -4325,8 +4349,8 @@ test("an interrupted shutdown restores saved setup for explicit recovery", async
 
 /*
  * The report: somebody on 1.0.0 could not find which AI they had signed in with, or change it.
- * Settings' AI model row has a Change, which stops OpenBot and brings this window back. It opens at
- * the AI screen, the one Change AI connection opens, and the new choice is what starts OpenBot.
+ * Settings' AI model row has a Change, which stops AwakenBot and brings this window back. It opens at
+ * the AI screen, the one Change AI connection opens, and the new choice is what starts AwakenBot.
  */
 test("Settings' Change AI connection opens setup at the AI screen and starts with the new choice", async () => {
   setupConnectedLocalStack(
@@ -4348,7 +4372,7 @@ test("Settings' Change AI connection opens setup at the AI screen and starts wit
   const view = await renderApp();
   await view.findByLabelText("OpenAI API key");
   expect(
-    view.queryByRole("heading", { name: "OpenBot is stopped" }),
+    view.queryByRole("heading", { name: "AwakenBot is stopped" }),
   ).toBeNull();
   expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
     false,
@@ -4375,13 +4399,13 @@ test("Back from Settings' Change AI connection shows the stopped screen with Sta
   const view = await renderApp();
   await view.findByLabelText("OpenAI API key");
   await userEvent.click(view.getByRole("button", { name: "Back" }));
-  await view.findByRole("heading", { name: "OpenBot is stopped" });
+  await view.findByRole("heading", { name: "AwakenBot is stopped" });
   expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
     false,
   );
 });
 
-test("changing the saved model during recovery still opens OpenBot after Start", async () => {
+test("changing the saved model during recovery still opens AwakenBot after Start", async () => {
   useInterruptedShutdownSetup();
   const view = await renderApp();
   await userEvent.click(
@@ -4476,7 +4500,7 @@ test("setup records telemetry without a consent gate and deduplicates viewed ste
   expect(new Set(viewed).size).toBe(viewed.length);
 });
 
-test("setup records only model categories and opens OpenBot when telemetry is unavailable", async () => {
+test("setup records only model categories and opens AwakenBot when telemetry is unavailable", async () => {
   useCompatibleEndpointSetup({});
   const previous = invokeHandler;
   invokeHandler = async (command, args) => {
@@ -4495,7 +4519,7 @@ test("setup records only model categories and opens OpenBot when telemetry is un
       custom_base_url: true,
     },
   });
-  // Continue starts OpenBot, and it opens even though no event could be recorded.
+  // Continue starts AwakenBot, and it opens even though no event could be recorded.
   await expectHandover();
   const serialized = JSON.stringify(setupEvents());
   for (const privateValue of [
@@ -4582,7 +4606,7 @@ test("leftover database is offered as a fresh start that carries on into Start",
   invokeHandler = async (command, args) => {
     if (command === "start_stack" && ++starts === 1)
       throw {
-        said: "A previous OpenBot database remains without its encryption key.",
+        said: "A previous AwakenBot database remains without its encryption key.",
         database_reset: "fixture_postgres-data",
         leftover_reset: ["fixture_postgres-data"],
       };
@@ -4648,7 +4672,7 @@ test("starting fresh says in plain words what it deletes and removes only that l
   invokeHandler = async (command, args) => {
     if (command === "start_stack")
       throw {
-        said: "OpenBot found data from a previous installation.",
+        said: "AwakenBot found data from a previous installation.",
         leftover_reset: volumes,
         leftover_containers: containers,
       };
@@ -4697,7 +4721,7 @@ test("starting fresh says in plain words what it deletes and removes only that l
 
 /*
  * Windows F: the leftover data's notice sat above the card's own header, pushing "Finishing setup"
- * down 300 px, and the rows said "Opening OpenBot · Failed · OpenBot did not start" with Retry. It
+ * down 300 px, and the rows said "Opening AwakenBot · Failed · AwakenBot did not start" with Retry. It
  * is a choice for the person: the notice sits in the card under its rows, and the step waits on it.
  */
 test("leftover data is a choice the Start step waits on, in the card under its header", async () => {
@@ -4706,7 +4730,7 @@ test("leftover data is a choice the Start step waits on, in the card under its h
   invokeHandler = async (command, args) => {
     if (command === "start_stack")
       throw {
-        said: "OpenBot found data from a previous installation.",
+        said: "AwakenBot found data from a previous installation.",
         database_reset: "openbot-desktop_postgres-data",
         leftover_reset: [
           "openbot-desktop_agent-profiles",
@@ -4729,7 +4753,7 @@ test("leftover data is a choice the Start step waits on, in the card under its h
       ? "heading"
       : child.querySelector("#start-fresh-title")
         ? "notice"
-        : child.getAttribute("aria-label") === "OpenBot on this computer"
+        : child.getAttribute("aria-label") === "AwakenBot on this computer"
           ? "rows"
           : child.matches(".setup-header")
             ? "header"
@@ -4742,10 +4766,10 @@ test("leftover data is a choice the Start step waits on, in the card under its h
     "notice",
   ]);
   const opening = within(
-    view.getByRole("listitem", { name: "Opening OpenBot" }),
+    view.getByRole("listitem", { name: "Opening AwakenBot" }),
   );
   expect(opening.queryByText("Failed")).toBeNull();
-  expect(opening.queryByText("OpenBot did not start.")).toBeNull();
+  expect(opening.queryByText("AwakenBot did not start.")).toBeNull();
   expect(opening.getByText("Waiting for you")).toBeTruthy();
   expect(
     opening.getByText(
@@ -4780,7 +4804,7 @@ test("a fresh start that cannot delete the leftovers is shown without starting",
       };
     if (command === "reset_leftover_database")
       throw {
-        said: "The database is still in use. Close the other OpenBot installation first.",
+        said: "The database is still in use. Close the other AwakenBot installation first.",
       };
     return previous(command, args);
   };
@@ -4862,7 +4886,7 @@ test("Windows detection failure blocks setup and displays its diagnostic", async
   );
   const setupHandler = invokeHandler;
   const problem = {
-    said: "OpenBot could not check Windows virtualization support.",
+    said: "AwakenBot could not check Windows virtualization support.",
     detail: "powershell exited with 17: synthetic CIM access denied",
   };
   invokeHandler = async (command, args) => {
@@ -4876,7 +4900,7 @@ test("Windows detection failure blocks setup and displays its diagnostic", async
   await userEvent.click(view.getByText("Technical details"));
   expect(alert.textContent).toContain(problem.detail);
   expect(view.queryByRole("button", { name: "Install" })).toBeNull();
-  expect(view.queryByRole("button", { name: "Start OpenBot" })).toBeNull();
+  expect(view.queryByRole("button", { name: "Start AwakenBot" })).toBeNull();
   expect(
     view.queryByText(/firmware settings|wsl --install|wsl --update/),
   ).toBeNull();
@@ -4929,7 +4953,7 @@ test("a successfully detected missing WSL feature keeps its setup instruction", 
   );
   const setupHandler = invokeHandler;
   const instruction =
-    "Run `wsl --install`, restart Windows, and start OpenBot again.";
+    "Run `wsl --install`, restart Windows, and start AwakenBot again.";
   invokeHandler = async (command, args) => {
     if (command === "windows_blocker") return "wsl-absent";
     if (command === "windows_blocker_instruction") return instruction;
@@ -4951,7 +4975,7 @@ test("disabled Virtual Machine Platform displays its feature-specific fix and bl
   );
   const setupHandler = invokeHandler;
   const instruction =
-    "Virtual Machine Platform is switched off. Open Windows Terminal or PowerShell as an administrator, run `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`, restart Windows, and start OpenBot again.";
+    "Virtual Machine Platform is switched off. Open Windows Terminal or PowerShell as an administrator, run `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`, restart Windows, and start AwakenBot again.";
   invokeHandler = async (command, args) => {
     if (command === "windows_blocker")
       return "virtual-machine-platform-disabled";
@@ -4972,7 +4996,7 @@ test("disabled Virtual Machine Platform displays its feature-specific fix and bl
   ).toBeTruthy();
   expect(view.queryByRole("alert")).toBeNull();
   expect(view.queryByRole("button", { name: "Install" })).toBeNull();
-  expect(view.queryByRole("button", { name: "Start OpenBot" })).toBeNull();
+  expect(view.queryByRole("button", { name: "Start AwakenBot" })).toBeNull();
   expect(
     invokeCalls.some((call) =>
       ["prepare_installation", "prepare_engine", "start_stack"].includes(
@@ -5064,7 +5088,7 @@ async function startWithCompatibleEndpoint(
     endpointKey,
     containerBaseUrl,
   );
-  // The go-ahead: OpenBot starts once local Intelligence reports ready.
+  // The go-ahead: AwakenBot starts once local Intelligence reports ready.
   await userEvent.click(view.getByRole("button", { name: "Continue" }));
   await waitForStart();
 }
@@ -5163,7 +5187,7 @@ test.each([
       true,
     );
     await userEvent.click(view.getByRole("button", { name: "Continue" }));
-    expect(view.queryByRole("button", { name: "Start OpenBot" })).toBeNull();
+    expect(view.queryByRole("button", { name: "Start AwakenBot" })).toBeNull();
     expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
       false,
     );
@@ -5183,13 +5207,13 @@ test("an unsupported saved model kind does not become a startable endpoint", asy
     "disabled",
     true,
   );
-  expect(view.queryByRole("button", { name: "Start OpenBot" })).toBeNull();
+  expect(view.queryByRole("button", { name: "Start AwakenBot" })).toBeNull();
   expect(invokeCalls.some((call) => call.command === "start_stack")).toBe(
     false,
   );
 });
 
-test("mount navigates to OpenBot only when the selected root is already owned and running", async () => {
+test("mount navigates to AwakenBot only when the selected root is already owned and running", async () => {
   const root = "/tmp/openbot-owned-running-root";
   setupRootConfiguration(root, async () => emptyConfiguration());
   const setupHandler = invokeHandler;
@@ -5226,7 +5250,7 @@ for (const staleProbe of [false, true]) {
     );
     const setupHandler = invokeHandler;
     const failure = {
-      said: "Part of OpenBot (worker) stopped and could not be started again. Try starting OpenBot once more.",
+      said: "Part of AwakenBot (worker) stopped and could not be started again. Try starting AwakenBot once more.",
     };
     invokeHandler = async (command, args) => {
       if (command === "already_running") return staleProbe;
@@ -5249,7 +5273,7 @@ for (const staleProbe of [false, true]) {
     }
     expect(view.getByRole("button", { name: "Install" })).toBeTruthy();
     expect(view.getByRole("alert").textContent).toContain(failure.said);
-    expect(view.queryByRole("button", { name: "Stop OpenBot" })).toBeNull();
+    expect(view.queryByRole("button", { name: "Stop AwakenBot" })).toBeNull();
   });
 }
 
@@ -5317,7 +5341,7 @@ test.each([
   expect(continueButton).toHaveProperty("disabled", true);
   await userEvent.click(continueButton);
   expect(view.getByRole("heading", { name: "Connect your AI" })).toBeTruthy();
-  expect(view.queryByRole("button", { name: "Start OpenBot" })).toBeNull();
+  expect(view.queryByRole("button", { name: "Start AwakenBot" })).toBeNull();
   expect(invokeCalls.filter((call) => call.command === "start_stack")).toEqual(
     [],
   );
@@ -5648,7 +5672,7 @@ test("Start credential failures do not expose a restore action", async () => {
           setting: "INTELLIGENCE_API_KEY",
           label: "Restore access to saved setup",
           explanation:
-            "This Mac is protecting a credential from your saved OpenBot setup. Restoring access may ask macOS to confirm this app. Your saved data stays in place.",
+            "This Mac is protecting a credential from your saved AwakenBot setup. Restoring access may ask macOS to confirm this app. Your saved data stays in place.",
         },
       };
     return previous(command, args);
@@ -5676,7 +5700,7 @@ test("Start credential failures do not expose a restore action", async () => {
 });
 
 const INSTALL_REQUIRED =
-  "Finish installing OpenBot's local software before signing in or starting. Return to Install and try again.";
+  "Finish installing AwakenBot's local software before signing in or starting. Return to Install and try again.";
 
 function withAnthropicPlan(begin: () => unknown) {
   withLocalCli({
@@ -5723,7 +5747,9 @@ test("a plan sign-in refused for a stale installation goes back to Install and r
   );
   expect(stepLabel(view)).toContain("Install");
   refused = false;
-  await userEvent.click(view.getByRole("button", { name: "Install OpenBot" }));
+  await userEvent.click(
+    view.getByRole("button", { name: "Install AwakenBot" }),
+  );
   const radio = await view.findByRole("radio", { name: /Anthropic/ });
   expect((radio as HTMLInputElement).checked).toBe(true);
   expect(stepLabel(view)).toContain("AI");

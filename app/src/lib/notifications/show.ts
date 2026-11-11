@@ -1,14 +1,14 @@
 import { desktopShell } from "@/lib/desktop/shell";
 
-/** A notification OpenBot raises, and the page of OpenBot a click on it opens. */
+/** A notification AwakenBot raises, and the page of AwakenBot a click on it opens. */
 export type Notice = {
   title: string;
   body: string;
   /** Two tabs raising the same notice show it once. */
   tag: string;
-  /** An OpenBot path: `/channel/c-1`, `/bots/expenses`. */
+  /** An AwakenBot path: `/channel/c-1`, `/bots/expenses`. */
   path: string;
-  /** In a browser, what a click does. OpenBot Desktop opens `path` itself. */
+  /** In a browser, what a click does. AwakenBot Desktop opens `path` itself. */
   onClick?: () => void;
 };
 
@@ -21,7 +21,7 @@ export function conversationTag(channelId: string): string {
   return `openbot-${channelId}`;
 }
 
-/** Whether the person can see OpenBot now, in which case what is on screen says it all. */
+/** Whether the person can see AwakenBot now, in which case what is on screen says it all. */
 export function inSight(): boolean {
   return document.visibilityState === "visible" && document.hasFocus();
 }
@@ -30,7 +30,7 @@ export function inSight(): boolean {
  * Raises `notice`, if notifications may be shown (the caller asks `notificationsAllowed` first).
  *
  * IN OPENBOT DESKTOP the desktop app shows it (`notify`, desktop/src-tauri/src/notice.rs). On
- * Windows only a toast it builds can bring OpenBot back at `path` from the notification centre: an
+ * Windows only a toast it builds can bring AwakenBot back at `path` from the notification centre: an
  * app installed without a package has to be opened by a link there, which the notification plugin's
  * toasts cannot carry. A desktop app from before that command shows it through the plugin, whose
  * script stands in for `Notification`, with the page in `extra.path`.

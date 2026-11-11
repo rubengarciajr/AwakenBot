@@ -27,7 +27,7 @@ import {
  */
 const DEV_ACTOR_EMAIL = "dev@openbot.local";
 
-/** Who a component's data grant names when OpenBot Personal gave it, not a person. */
+/** Who a component's data grant names when AwakenBot Personal gave it, not a person. */
 export const PERSONAL_GRANTED_BY = "openbot:personal-defaults";
 
 /**
@@ -177,8 +177,8 @@ export function createComponentRoutes(
 
     const { added } = await store.syncCatalogue(valid);
     // Only arrivals are recorded. Announcing happens on every page load, and a row per load would
-    // bury the trail it is written into. Started by OpenBot: a build's component is published on
-    // arrival by OpenBot's own rule, and whoever's page happened to announce it decided nothing.
+    // bury the trail it is written into. Started by AwakenBot: a build's component is published on
+    // arrival by AwakenBot's own rule, and whoever's page happened to announce it decided nothing.
     for (const name of added) {
       await audit(
         context,
@@ -204,7 +204,7 @@ export function createComponentRoutes(
         "component.description_updated",
         name,
         {
-          note: "Its description follows this version of OpenBot. Nobody had edited it here.",
+          note: "Its description follows this version of AwakenBot. Nobody had edited it here.",
         },
         DEPLOYMENT_INITIATOR,
       );
@@ -235,7 +235,7 @@ export function createComponentRoutes(
             name,
             {
               functions: given,
-              note: "Given by OpenBot Personal, where everything it reads is yours.",
+              note: "Given by AwakenBot Personal, where everything it reads is yours.",
             },
             DEPLOYMENT_INITIATOR,
           );

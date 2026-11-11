@@ -961,7 +961,7 @@ test("a key app asks for what the app asked for, with its own help text", async 
 /**
  * THE DIALOG SAYS WHY IT ASKS FOR A KEY AND WHERE TO GET ONE, ABOVE THE BOXES.
  *
- * Reported from OpenBot Desktop 0.3.3: Connect on a key-only app opened a form with the provider's
+ * Reported from AwakenBot Desktop 0.3.3: Connect on a key-only app opened a form with the provider's
  * developer wording and nothing else, and the person, who expected a sign-in, had nowhere to go.
  * The guide is the server's answer for 1Password (see `server/src/plugins/key-guides.ts`).
  */
@@ -1171,7 +1171,7 @@ test("a consent app's Connect leaves for the vendor's own page", async () => {
   }
 });
 
-test("in OpenBot Desktop, the page asks again once the window is back in front", async () => {
+test("in AwakenBot Desktop, the page asks again once the window is back in front", async () => {
   /*
    * The window sends the sign-in to the person's browser and this page stays where it is, so it
    * never arrives here again to confirm on load. The browser hands the person back to the window

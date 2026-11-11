@@ -76,15 +76,15 @@ const trustedClick = () => {
   return event;
 };
 
-test("a recorded tab says OpenBot is recording it, with one button that leaves its site out", () => {
+test("a recorded tab says AwakenBot is recording it, with one button that leaves its site out", () => {
   const choices: boolean[] = [];
   const mark = show(RECORDING, (recorded) => choices.push(recorded));
   expect(document.querySelector(INDICATOR_TAG)).toBe(mark.host);
   expect(text(mark)).toBe(
-    "OpenBot is recording this tab Don't record example.test Stop",
+    "AwakenBot is recording this tab Don't record example.test Stop",
   );
   expect(mark.root.querySelector("[role=status]")?.textContent).toContain(
-    "OpenBot is recording this tab",
+    "AwakenBot is recording this tab",
   );
   buttonOf(mark).click();
   expect(choices).toEqual([false]);
@@ -93,11 +93,11 @@ test("a recorded tab says OpenBot is recording it, with one button that leaves i
 test("while the Recorder hears the person, the mark says so", () => {
   const mark = show({ ...RECORDING, narrating: true });
   expect(text(mark)).toBe(
-    "OpenBot is recording this tab · Listening to you Don't record example.test Stop",
+    "AwakenBot is recording this tab · Listening to you Don't record example.test Stop",
   );
   mark.update({ ...RECORDING, narrating: false });
   expect(text(mark)).toBe(
-    "OpenBot is recording this tab Don't record example.test Stop",
+    "AwakenBot is recording this tab Don't record example.test Stop",
   );
 });
 
@@ -112,7 +112,7 @@ test("a site left out says it is not recorded, and its button records it again",
   // The same mark turns back when the background says the site is recorded again.
   mark.update(RECORDING);
   expect(text(mark)).toBe(
-    "OpenBot is recording this tab Don't record example.test Stop",
+    "AwakenBot is recording this tab Don't record example.test Stop",
   );
   buttonOf(mark).click();
   expect(choices).toEqual([true, false]);
@@ -158,7 +158,7 @@ test("Keep recording takes the question away, and the mark is as it was", () => 
   actionOf(mark, "stop").click();
   actionOf(mark, "back").click();
   expect(text(mark)).toBe(
-    "OpenBot is recording this tab Don't record example.test Stop",
+    "AwakenBot is recording this tab Don't record example.test Stop",
   );
   expect(stops).toEqual([]);
 });
@@ -182,7 +182,7 @@ test("a page script clicking the mark does nothing", () => {
   // Nor can it stop the recording, or answer for the person.
   actionOf(mark, "stop").click();
   expect(text(mark)).toBe(
-    "OpenBot is recording this tab Don't record example.test Stop",
+    "AwakenBot is recording this tab Don't record example.test Stop",
   );
   actionOf(mark, "discard").click();
   expect(stops).toEqual([]);
@@ -210,7 +210,7 @@ test("a click on the mark is never one of the person's steps", () => {
   }
 });
 
-test("the mark sits above the page, in OpenBot's colours, and removes itself", () => {
+test("the mark sits above the page, in AwakenBot's colours, and removes itself", () => {
   const mark = show(RECORDING);
   const css = mark.root.querySelector("style")?.textContent ?? "";
   expect(css).toContain("2147483647");
@@ -228,7 +228,7 @@ test("the mark sits above the page, in OpenBot's colours, and removes itself", (
 
 // ---- Where the mark hangs ------------------------------------------------------------------------------------------
 //
-// On OpenBot's own tab the mark, when it hung bottom-left, covered the sidebar's account row. What a person can use along the edges of OpenBot's home page, measured in Chromium 151 (headless, 2026-10-27,
+// On AwakenBot's own tab the mark, when it hung bottom-left, covered the sidebar's account row. What a person can use along the edges of AwakenBot's home page, measured in Chromium 151 (headless, 2026-10-27,
 // the self-host bar shown, as a new install shows it), at the sizes of a laptop and a desktop screen.
 
 type Usable = { what: string; tag: "a" | "button" | "input"; box: Box };
@@ -240,7 +240,7 @@ const OPENBOT_HOME: Record<
     page: { width: 1280, height: 860 },
     usable: [
       {
-        what: "OpenBot",
+        what: "AwakenBot",
         tag: "a",
         box: { left: 8, top: 8, width: 285, height: 34 },
       },
@@ -305,7 +305,7 @@ const OPENBOT_HOME: Record<
     page: { width: 1920, height: 1080 },
     usable: [
       {
-        what: "OpenBot",
+        what: "AwakenBot",
         tag: "a",
         box: { left: 8, top: 8, width: 285, height: 34 },
       },
@@ -342,7 +342,7 @@ const OPENBOT_HOME: Record<
     ],
   },
 };
-/** The mark on OpenBot's own tab, "OpenBot is recording this tab | Don't record 127.0.0.1", as Chromium drew it. */
+/** The mark on AwakenBot's own tab, "AwakenBot is recording this tab | Don't record 127.0.0.1", as Chromium drew it. */
 const MARK_SIZE = { width: 361, height: 28 };
 
 const inside = (box: Box, x: number, y: number) =>
@@ -372,7 +372,7 @@ function pageOf(usable: Usable[]) {
       )[0]?.element ?? background;
 }
 
-test("on OpenBot's own page the mark hangs where it covers nothing the person can use: not the account row, not the self-host bar's link or close button", () => {
+test("on AwakenBot's own page the mark hangs where it covers nothing the person can use: not the account row, not the self-host bar's link or close button", () => {
   for (const [size, { page, usable }] of Object.entries(OPENBOT_HOME)) {
     const under = pageOf(usable);
     const spot = chooseSpot((candidate) =>

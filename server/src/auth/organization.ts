@@ -54,7 +54,7 @@ export function organizationCookieExpiresAt(
   );
 }
 
-/** Explicit customer OpenBot authority, never inferred from an Intelligence endpoint. */
+/** Explicit customer AwakenBot authority, never inferred from an Intelligence endpoint. */
 export function organizationAuthority(value: string): string {
   const url = new URL(value);
   const loopback = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
@@ -67,7 +67,7 @@ export function organizationAuthority(value: string): string {
     url.pathname !== "/"
   ) {
     throw new Error(
-      "Organization sign-in requires an HTTPS OpenBot origin (HTTP is allowed only on loopback).",
+      "Organization sign-in requires an HTTPS AwakenBot origin (HTTP is allowed only on loopback).",
     );
   }
   return url.origin;
@@ -221,7 +221,7 @@ export function createOrganizationAuth(options: {
     if (verdict.kind === "actor") return verdict.actor;
     if (verdict.kind === "refused") return null;
     throw new AuthorityUnavailable(
-      "The organization gave an answer OpenBot could not read. Try again.",
+      "The organization gave an answer AwakenBot could not read. Try again.",
     );
   }
 
@@ -372,7 +372,7 @@ export function createOrganizationAuth(options: {
           );
         }
         return json(
-          { error: "Use the OpenBot organization sign-in screen." },
+          { error: "Use the AwakenBot organization sign-in screen." },
           404,
         );
       } catch (error) {

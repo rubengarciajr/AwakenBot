@@ -277,7 +277,7 @@ test("a failed run says why, not only that it failed", async () => {
   review = body(true);
   const first = review.sources[0];
   const why =
-    "Learning couldn't reach OpenBot to use your model plan. Quit OpenBot and open it again, then choose Learn now.";
+    "Learning couldn't reach AwakenBot to use your model plan. Quit AwakenBot and open it again, then choose Learn now.";
   if (first)
     first.latestRun = {
       id: "run-1",

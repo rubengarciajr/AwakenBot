@@ -1868,7 +1868,7 @@ export function connectionMethods(context: StoreContext) {
           outcome: "unreachable",
           probe: null,
           attempted: candidate.name,
-          sentence: `OpenBot can't check this kind of connection yet. Nothing was asked about it, so nothing is recorded about it.`,
+          sentence: `AwakenBot can't check this kind of connection yet. Nothing was asked about it, so nothing is recorded about it.`,
         };
       }
 

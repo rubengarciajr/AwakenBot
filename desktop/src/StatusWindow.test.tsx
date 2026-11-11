@@ -80,11 +80,13 @@ test("each part shows its state and memory, and the backend its CLI readiness", 
   const view = render(<StatusWindow readEveryMs={60_000} />);
   const bots = await view.findByRole("region", { name: "App" });
   expect(bots.textContent).toContain("Running · 400 MB");
-  const intelligence = view.getByRole("region", { name: "OpenBot's services" });
+  const intelligence = view.getByRole("region", {
+    name: "AwakenBot's services",
+  });
   await waitFor(() =>
     expect(intelligence.textContent).toContain("Ready · 2.4 GB"),
   );
-  // Each row says which part of OpenBot it is. Docker's names are for Copy diagnostics only.
+  // Each row says which part of AwakenBot it is. Docker's names are for Copy diagnostics only.
   const rows = (part: HTMLElement) =>
     [...part.querySelectorAll(".status-list li")].map(
       (row) => row.firstElementChild?.textContent,
@@ -97,11 +99,11 @@ test("each part shows its state and memory, and the backend its CLI readiness", 
   ).toMatchObject({ action: "status", stack: "local-abc" });
 });
 
-test("Restart OpenBot restarts its processes; Stop Intelligence stops only the stack", async () => {
+test("Restart AwakenBot restarts its processes; Stop Intelligence stops only the stack", async () => {
   invokeHandler = answers();
   const view = render(<StatusWindow readEveryMs={60_000} />);
   const intelligence = await view.findByRole("region", {
-    name: "OpenBot's services",
+    name: "AwakenBot's services",
   });
   await userEvent.click(
     within(intelligence).getByRole("button", { name: "Stop" }),
@@ -121,7 +123,7 @@ test("Restart OpenBot restarts its processes; Stop Intelligence stops only the s
 });
 
 test("Open log folder asks the desktop app to open its own log folder", async () => {
-  const logFolder = "/Users/someone/Library/Logs/ai.copilotkit.openbot.desktop";
+  const logFolder = "/Users/someone/Library/Logs/org.awakenbot.desktop";
   invokeHandler = answers({ desktop_status: { ...running, logFolder } });
   const view = render(<StatusWindow readEveryMs={60_000} />);
   await userEvent.click(
@@ -191,7 +193,7 @@ test("the back end's stack id goes only to Copy diagnostics", async () => {
     },
   });
   const view = render(<StatusWindow readEveryMs={60_000} />);
-  await view.findByRole("region", { name: "OpenBot's services" });
+  await view.findByRole("region", { name: "AwakenBot's services" });
   expect(view.container.textContent).not.toContain("local-08ff56ec9469e95e");
   await userEvent.click(view.getByRole("button", { name: "Copy diagnostics" }));
   await waitFor(() =>
@@ -201,7 +203,7 @@ test("the back end's stack id goes only to Copy diagnostics", async () => {
 
 test("diagnostics carry versions, places and memory, and nothing secret", () => {
   const text = diagnostics(running, "ready");
-  expect(text).toContain("OpenBot Desktop 0.2.0");
+  expect(text).toContain("AwakenBot Desktop 0.2.0");
   expect(text).toContain(
     "Installed in /Users/someone/OpenBot, app on port 3010",
   );
@@ -267,7 +269,7 @@ test("every label and value on the Status window is in plain words, and the tech
       },
     ],
     build: "Built 2026-11-09 18:30 UTC from 795f619 on main",
-    logFolder: "/Users/someone/Library/Logs/ai.copilotkit.openbot.desktop",
+    logFolder: "/Users/someone/Library/Logs/org.awakenbot.desktop",
   };
   const allStopped = {
     ...onAMac,
@@ -306,11 +308,11 @@ test("every label and value on the Status window is in plain words, and the tech
     expect({ state, technical }).toEqual({ state, technical: [] });
     // Each part has its place and says what it is, in the words setup uses.
     expect(
-      view.getByRole("region", { name: "Software OpenBot runs on" })
+      view.getByRole("region", { name: "Software AwakenBot runs on" })
         .textContent,
     ).toContain(state === "running" ? "Running" : "Not running");
     expect(
-      view.queryByRole("region", { name: "OpenBot's services" }),
+      view.queryByRole("region", { name: "AwakenBot's services" }),
     ).not.toBeNull();
     expect(
       view.container.querySelector(".status-details")?.textContent,

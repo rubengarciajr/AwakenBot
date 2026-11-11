@@ -109,7 +109,7 @@ export type ActorAgentResolverDependencies = {
 };
 
 /**
- * Resolves the coworkers available to one OpenBot actor.
+ * Resolves the coworkers available to one AwakenBot actor.
  *
  * Every surface enters through this boundary so it shares the same visibility, grants, assertions,
  * skill selection, and endpoint dial policy for a person.
@@ -142,10 +142,10 @@ export function createActorAgentResolver(
     /*
      * A CHECK-IN RUNS EVERY BOT ON OPENBOT'S OWN RUNNER, and offers it everything it may read.
      *
-     * A Bot on another framework is built as OpenBot would build it (`onOpenBotRunner`), so its own
-     * endpoint, and any tool that endpoint holds out of OpenBot's sight, is never called while nobody
+     * A Bot on another framework is built as AwakenBot would build it (`onOpenBotRunner`), so its own
+     * endpoint, and any tool that endpoint holds out of AwakenBot's sight, is never called while nobody
      * is watching. And its tools are not narrowed by skill: narrowing picks tools from the latest
-     * message, which for a check-in is OpenBot's own instruction, and its reads are already only what
+     * message, which for a check-in is AwakenBot's own instruction, and its reads are already only what
      * the person connected (`proactive/scope.ts`), so a narrowing could only drop an app.
      */
     const checkIn = isProactiveInitiator(context?.initiator);

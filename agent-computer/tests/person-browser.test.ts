@@ -45,7 +45,7 @@ import { browsersOnProfile } from "./fixtures/browser-process";
  * Skipped cleanly where no Chrome or Edge is installed.
  *
  * The Recorder is `fixtures/recorder`, which implements its launcher API exactly as the contract types
- * it and reports every call it receives to the OpenBot it was connected to, so what these tests read
+ * it and reports every call it receives to the AwakenBot it was connected to, so what these tests read
  * is the Recorder's side of the call. The real Recorder replaces it once both are built.
  *
  * Asked for by name, as the other real-browser tests are:
@@ -71,10 +71,10 @@ type FixtureCall = {
 };
 
 const calls: FixtureCall[] = [];
-/** Recorder tokens OpenBot has revoked, which it answers are signed out. */
+/** Recorder tokens AwakenBot has revoked, which it answers are signed out. */
 const revoked = new Set<string>();
 
-/** The OpenBot the fixture reports to, and the pages the tests browse. */
+/** The AwakenBot the fixture reports to, and the pages the tests browse. */
 const openbot = asked
   ? Bun.serve({
       hostname: "127.0.0.1",
@@ -85,7 +85,7 @@ const openbot = asked
           calls.push((await request.json()) as FixtureCall);
           return new Response("");
         }
-        // Who a Recorder connection is for, as OpenBot answers it: signed out once it was revoked.
+        // Who a Recorder connection is for, as AwakenBot answers it: signed out once it was revoked.
         if (url.pathname === "/api/recorder/me") {
           const token = (request.headers.get("authorization") ?? "").replace(
             /^Bearer /,
@@ -95,7 +95,7 @@ const openbot = asked
             ? Response.json(
                 {
                   error:
-                    "This browser is no longer connected to OpenBot. Connect it again.",
+                    "This browser is no longer connected to AwakenBot. Connect it again.",
                   code: RECORDER_SIGNED_OUT,
                   reason: "revoked",
                 },
@@ -346,7 +346,7 @@ for (const variant of VARIANTS) {
       const { createBrowserHost } = await import("../src/browser-host");
       for (const [dir, says] of [
         [undefined, "OPENBOT_RECORDER_DIR"],
-        [join(REPO, "extension"), "not a built OpenBot Recorder"],
+        [join(REPO, "extension"), "not a built AwakenBot Recorder"],
       ] as const) {
         const refusing = serve(
           createBrowserHost({
@@ -487,11 +487,11 @@ for (const variant of VARIANTS) {
     }, 60_000);
 
     test.skipIf(variant.window !== "native")(
-      "tabs behind the one in front are behind it, as in any browser, and the tab the person brings to front is the one OpenBot acts on",
+      "tabs behind the one in front are behind it, as in any browser, and the tab the person brings to front is the one AwakenBot acts on",
       async () => {
         // The fifth end-to-end run: every tab of the Desktop window said it was visible and focused,
         // background ones included, so sites behind the tab in front behaved as if in front, and
-        // OpenBot could not tell which tab the person had in front: it named and navigated another.
+        // AwakenBot could not tell which tab the person had in front: it named and navigated another.
         const person = profiles.person(PERSON);
         if (!person) throw new Error("The browser should be open.");
         const behind = activeTab(
@@ -534,17 +534,17 @@ for (const variant of VARIANTS) {
           await tab("/page/behind").goto(`${ORIGIN}/page/behind-again`);
           expect(await seen(tab("/page/behind-again"))).toEqual(atTheBack);
 
-          // The person brings it to front in the window itself, which OpenBot is not told of.
+          // The person brings it to front in the window itself, which AwakenBot is not told of.
           await person.session.send("Target.activateTarget", {
             targetId: behind.id,
           });
           await until(
             async () => activeTab(await state())?.id === behind.id,
-            "OpenBot to name the tab the person has in front",
+            "AwakenBot to name the tab the person has in front",
           );
           expect(await seen(tab("/page/behind-again"))).toEqual(inFront);
           expect(await seen(tab("/page/front"))).toEqual(atTheBack);
-          // And what OpenBot does next acts on that tab, not the one it opened last.
+          // And what AwakenBot does next acts on that tab, not the one it opened last.
           const went = (
             await api("/browser/navigate", { url: `${ORIGIN}/page/went` })
           ).json as BrowserState;
@@ -695,7 +695,7 @@ for (const variant of VARIANTS) {
 
       const stopped = await api("/browser/recording", { action: "stop" });
       expect((stopped.json as BrowserState).recorder?.phase).toBe("idle");
-      // The recording Stop ended, so OpenBot can say where it went.
+      // The recording Stop ended, so AwakenBot can say where it went.
       const recordingId = (started.json as BrowserState).recorder?.recordingId;
       expect(
         (stopped.json as BrowserState).recorder?.lastStopped,
@@ -728,7 +728,7 @@ for (const variant of VARIANTS) {
       expect((await api("/browser/disconnect", {})).status).toBe(200);
       expect((await state()).recorder?.connected).toBe(false);
 
-      // The next open connects it again with what OpenBot hands it then.
+      // The next open connects it again with what AwakenBot hands it then.
       const reopened = await api("/browser/open", { connection: CONNECTION });
       expect((reopened.json as BrowserState).recorder?.connected).toBe(true);
     }, 60_000);
@@ -822,7 +822,7 @@ for (const variant of VARIANTS) {
 
     /*
      * A browser that stops answering DevTools: in the end-to-end run a key forwarded to the person's Chromium on macOS
-     * left its main thread spinning, and the state route waited for it as long as OpenBot did, 45 s, after OpenBot's own
+     * left its main thread spinning, and the state route waited for it as long as AwakenBot did, 45 s, after AwakenBot's own
      * server had closed the person's request with an empty reply at 10. The Browser page had nothing to show and no
      * sentence, and the sidebar lost its Browser button. Stopped here with SIGSTOP, which is the same browser from
      * outside: alive, connected, and silent.
@@ -840,7 +840,7 @@ for (const variant of VARIANTS) {
           `http://127.0.0.1:${server.port}/browser/state`,
           {
             headers: { "x-openbot-bot-id": PERSON },
-            // Well short of OpenBot's own server closing the person's request, at 10 s.
+            // Well short of AwakenBot's own server closing the person's request, at 10 s.
             signal: AbortSignal.timeout(8_000),
           },
         );
@@ -1146,10 +1146,10 @@ for (const variant of VARIANTS) {
     }, 60_000);
 
     /*
-     * OpenBot keeps a connection that stands rather than making one at every open: in the end-to-end run each visit to
+     * AwakenBot keeps a connection that stands rather than making one at every open: in the end-to-end run each visit to
      * the Browser page revoked the browser's connection and made another, a `recorder.revoked` and a `recorder.connected`
      * row each time. So an open that brings no connection leaves the Recorder holding its own, and says which it holds
-     * (`recorder.connectionId`), for OpenBot to decide whether it stands.
+     * (`recorder.connectionId`), for AwakenBot to decide whether it stands.
      */
     /*
      * One browser on the profile from the moment it is opened again, read every few milliseconds. Google Chrome on
@@ -1369,8 +1369,8 @@ for (const variant of VARIANTS) {
 /**
  * Opens that arrive together, and opens that fail.
  *
- * Every open carries the connection OpenBot minted for it, and minting one revokes the one before:
- * OpenBot holds one connection per browser. The third end-to-end run: the Browser page, loaded again
+ * Every open carries the connection AwakenBot minted for it, and minting one revokes the one before:
+ * AwakenBot holds one connection per browser. The third end-to-end run: the Browser page, loaded again
  * while it was opening, sent a second open; the first open's connection, revoked by then, was handed
  * to the Recorder, which refused it; the computer closed the browser it had just launched, under the
  * second open too, and both answered 502. Neither the computer's log nor the server's said why.
@@ -1462,13 +1462,13 @@ for (const variant of VARIANTS) {
         await close();
       }, 60_000);
 
-      test("an open whose connection OpenBot revoked says why and at which step, and closes the browser it launched", async () => {
+      test("an open whose connection AwakenBot revoked says why and at which step, and closes the browser it launched", async () => {
         said.mockClear();
         const refused = connection("revoked");
         revoked.add(refused.token);
         const answer = await openWith(refused);
         const sentence =
-          "The Recorder could not be connected: OpenBot did not accept this browser's connection. Open the browser from OpenBot again.";
+          "The Recorder could not be connected: AwakenBot did not accept this browser's connection. Open the browser from AwakenBot again.";
         expect(answer.status).toBe(502);
         expect(await answer.json()).toEqual({ error: sentence });
         expect(logged("computer-browser-open-failed")).toEqual([

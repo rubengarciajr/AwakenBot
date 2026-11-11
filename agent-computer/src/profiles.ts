@@ -362,7 +362,7 @@ const IDLE_SWEEP_MS = 60_000;
  *
  * Eighty-five leaves room for the launch that asked, and for a page that grows after the check,
  * before the limit is reached. Zero switches it off, as it does for the idle sweep. A computer with no
- * cgroup of its own (OpenBot Desktop's, on a person's Mac) has no limit to read and closes nothing
+ * cgroup of its own (AwakenBot Desktop's, on a person's Mac) has no limit to read and closes nothing
  * for memory either way. In the all-in-one image the share counts the database and the API server as
  * well, deliberately: the OOM kill counts them too, and a browser closed first is what keeps them up.
  */
@@ -956,7 +956,7 @@ export function createProfiles(
       dir,
       runtime,
       recorder: open.recorder,
-      // A hosted browser runs on OpenBot's network, so it goes through the egress filter like any
+      // A hosted browser runs on AwakenBot's network, so it goes through the egress filter like any
       // other browser here. A native window is the person's own browser on their own machine, and
       // reaches the network the way their everyday browser does.
       proxy: window === "screen" ? egressFor(botId, process.env) : null,

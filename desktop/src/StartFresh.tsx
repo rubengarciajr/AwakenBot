@@ -40,7 +40,7 @@ export function StartFresh({
   busy: boolean;
   /** Stopped containers that still hold the volumes. Starting fresh removes them first. */
   containers: string[];
-  /** Whether the local OpenBot database is one of the volumes. */
+  /** Whether the local AwakenBot database is one of the volumes. */
   database: boolean;
   /** Exactly the volumes native setup verified, and the only ones starting fresh removes. */
   volumes: string[];
@@ -58,11 +58,11 @@ export function StartFresh({
     // the alert a failure gets.
     <section className="local-alert needs" aria-labelledby="start-fresh-title">
       <h2 id="start-fresh-title">
-        A previous OpenBot installation left data here
+        A previous AwakenBot installation left data here
       </h2>
       <p>
         It includes {left}. A new installation does not reuse it. Start fresh
-        permanently deletes that data, then starts OpenBot.
+        permanently deletes that data, then starts AwakenBot.
       </p>
       <div className="row">
         <button

@@ -5,7 +5,7 @@ import {
   botAttentionQueryOptions,
   lastPingQueryOptions,
 } from "@/lib/bot-lifecycle/queries";
-// Whether this browser, or OpenBot Desktop, lets OpenBot interrupt: the same answer the offer to
+// Whether this browser, or AwakenBot Desktop, lets AwakenBot interrupt: the same answer the offer to
 // turn notifications on reads, so the two cannot disagree.
 import { notificationsAllowed } from "@/lib/notifications/permission";
 import { conversationTag, inSight, showNotice } from "@/lib/notifications/show";
@@ -149,7 +149,7 @@ export function noticePath(bot: BotAttention): string {
  */
 function useAttentionNotifications(bots: BotAttention[] | undefined) {
   const seen = useRef<Map<string, number> | null>(null);
-  // Asks OpenBot Desktop now, while OpenBot is in front, so its answer is in before anything needs
+  // Asks AwakenBot Desktop now, while AwakenBot is in front, so its answer is in before anything needs
   // the person.
   useEffect(() => {
     void notificationsAllowed();
@@ -166,7 +166,7 @@ function useAttentionNotifications(bots: BotAttention[] | undefined) {
     );
     if (rose.length === 0) return;
     void notificationsAllowed().then((allowed) => {
-      // Someone looking at OpenBot sees the badge and the conversation; a notice is for when they are not.
+      // Someone looking at AwakenBot sees the badge and the conversation; a notice is for when they are not.
       if (!allowed || inSight()) return;
       for (const bot of rose)
         showNotice({

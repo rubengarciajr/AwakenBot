@@ -2,7 +2,7 @@ import type { ListShape } from "./result-fit";
 
 /**
  * Composio actions whose call, as a model writes it, brings back more than a model can read, and
- * how OpenBot asks for and hands back each one instead.
+ * how AwakenBot asks for and hands back each one instead.
  *
  * WHAT THIS IS FOR. Composio's `beforeExecute` and `afterExecute` modifiers exist for this: an
  * action's own defaults are the vendor's, and some of them assume a caller who wants everything.
@@ -186,7 +186,7 @@ const SHAPES: Record<string, ActionShape> = {
   },
 };
 
-/** How OpenBot asks for and reads one action, or null for an action it passes through as it is. */
+/** How AwakenBot asks for and reads one action, or null for an action it passes through as it is. */
 export function shapeOf(toolName: string): ActionShape | null {
   return Object.hasOwn(SHAPES, toolName)
     ? (SHAPES[toolName] as ActionShape)

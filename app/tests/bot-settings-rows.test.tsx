@@ -203,7 +203,7 @@ test("the rows for goals, reach, memory and rules say what this Bot has and open
   await row("Approval rules", "1 rule", "approvals");
 });
 
-/** The personal starter on the harness picked at setup, as OpenBot Desktop on Windows starts it. */
+/** The personal starter on the harness picked at setup, as AwakenBot Desktop on Windows starts it. */
 const ON_HARNESS: AgentProfile = {
   ...BOT,
   endpoint: "http://agent-harness:4206/ag-ui",

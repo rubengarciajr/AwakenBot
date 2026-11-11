@@ -15,7 +15,7 @@ import {
 } from "@/components/desktop/desktop-return";
 
 /**
- * The page an app's sign-in started in OpenBot Desktop comes back to, in the person's own browser.
+ * The page an app's sign-in started in AwakenBot Desktop comes back to, in the person's own browser.
  *
  * It confirms the account, as the account's page does on arrival, and then follows `openbot://open`
  * to bring the Desktop window forward. Loaded in the window itself, it goes to the account's page.
@@ -71,16 +71,16 @@ function show(
   return { asked, opened, router, view };
 }
 
-test("in the browser, it confirms the account and then brings OpenBot Desktop forward", async () => {
+test("in the browser, it confirms the account and then brings AwakenBot Desktop forward", async () => {
   const { asked, opened, view } = show("gmail");
 
   expect(
-    await view.findByRole("heading", { name: "Back to OpenBot" }),
+    await view.findByRole("heading", { name: "Back to AwakenBot" }),
   ).toBeTruthy();
   await waitFor(() => expect(opened).toEqual([DESKTOP_LINK]));
   expect(asked).toContain("POST /api/plugins/servers/gmail/connection/confirm");
   expect(
-    view.getByRole("link", { name: "Open OpenBot" }).getAttribute("href"),
+    view.getByRole("link", { name: "Open AwakenBot" }).getAttribute("href"),
   ).toBe("openbot://open");
 });
 

@@ -90,8 +90,8 @@ export function TroubleshootingLogs({
     <div className="troubleshooting">
       <p>
         Paste these logs into the AI assistant you use, such as Claude or
-        ChatGPT, and ask what went wrong. OpenBot takes out keys, passwords and
-        your email address first.
+        ChatGPT, and ask what went wrong. AwakenBot takes out keys, passwords
+        and your email address first.
       </p>
       <div className="row">
         <button

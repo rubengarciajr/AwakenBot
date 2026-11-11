@@ -15,7 +15,7 @@ import type { Profiles } from "../src/profiles";
 /**
  * Record pressed in a person's hosted browser that has just started, before any page has loaded.
  *
- * The Recorder asks OpenBot for its capture pass from its offscreen document, through the computer's
+ * The Recorder asks AwakenBot for its capture pass from its offscreen document, through the computer's
  * egress filter, whose browser listener answers 407 until the browser sends its credentials.
  * Playwright answers that 407 for the pages and workers it attaches to, and never attaches to an
  * offscreen document, so the document's request goes with only what the browser itself holds for the
@@ -44,10 +44,10 @@ const RUNTIME: BrowserRuntime = {
   allowExec: true,
 };
 
-/** The capture passes OpenBot was asked for. */
+/** The capture passes AwakenBot was asked for. */
 const passes: string[] = [];
 
-/** The OpenBot the person's browser may reach. */
+/** The AwakenBot the person's browser may reach. */
 const openbot = asked
   ? Bun.serve({
       hostname: "127.0.0.1",
@@ -101,7 +101,7 @@ describe.skipIf(!asked)(
       await startEgressFilter({ env: {} });
       // Chromium asks names of its own (www.google.com among them), which a test must not reach.
       setEgressResolver(async () => ["127.0.0.1"]);
-      // A person's hosted browser may reach its OpenBot and nothing else, as the server pushes it.
+      // A person's hosted browser may reach its AwakenBot and nothing else, as the server pushes it.
       setEgressPolicy(PERSON, {
         mode: "allowlist_only",
         rules: [
@@ -177,7 +177,7 @@ describe.skipIf(!asked)(
       );
     };
 
-    /** What OpenBot's answer to the offscreen document's capture pass was, as the document saw it. */
+    /** What AwakenBot's answer to the offscreen document's capture pass was, as the document saw it. */
     const passStatus = async (): Promise<unknown> => {
       const browser = profiles.person(PERSON);
       const worker = browser?.context
@@ -192,12 +192,12 @@ describe.skipIf(!asked)(
       );
     };
 
-    test("Record before any page has loaded, in a browser opened again on its profile, reaches OpenBot", async () => {
-      // The computer's first start: the Recorder is handed its connection and asks OpenBot about it.
+    test("Record before any page has loaded, in a browser opened again on its profile, reaches AwakenBot", async () => {
+      // The computer's first start: the Recorder is handed its connection and asks AwakenBot about it.
       await open(true);
-      // The computer starts again: the browser closes, and OpenBot opens it on the same profile with
+      // The computer starts again: the browser closes, and AwakenBot opens it on the same profile with
       // no connection, since the one the Recorder holds stands (browser-host.ts), so the Recorder
-      // asks OpenBot nothing.
+      // asks AwakenBot nothing.
       expect((await person("/browser/close", {})).status).toBe(200);
       expect(profiles.isLive(PERSON)).toBe(false);
       await open(false);
@@ -207,7 +207,7 @@ describe.skipIf(!asked)(
         title: "Right after the computer started",
       });
       expect(started.status).toBe(200);
-      // OpenBot's own answer, not the filter's 407.
+      // AwakenBot's own answer, not the filter's 407.
       expect(await passStatus()).toBe(200);
       expect(passes).toHaveLength(1);
       expect(

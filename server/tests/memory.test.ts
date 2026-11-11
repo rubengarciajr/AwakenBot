@@ -145,7 +145,7 @@ test("every memory tool can be offered to a remote Bot as JSON Schema", async ()
 });
 
 test("a Bot in the personal edition is offered no memory tools, and in the team edition all four", () => {
-  // OpenBot Desktop's local Intelligence isn't licensed for memory, and its screens show none.
+  // AwakenBot Desktop's local Intelligence isn't licensed for memory, and its screens show none.
   const options = {
     store: {} as MemoryStore,
     ingestion: {} as MemoryIngestion,

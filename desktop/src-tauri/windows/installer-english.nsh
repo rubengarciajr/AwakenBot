@@ -1,10 +1,10 @@
-; OpenBot's English text for the Windows installer: bundle.windows.nsis.customLanguageFiles in tauri.conf.json.
+; AwakenBot's English text for the Windows installer: bundle.windows.nsis.customLanguageFiles in tauri.conf.json.
 ; https://v2.tauri.app/reference/config/#customlanguagefiles
 ;
 ; Tauri's own English.nsh from tauri-cli v2.11.4
 ; (crates/tauri-bundler/src/bundle/windows/nsis/languages/English.nsh), which this file replaces whole, with the
-; three messages for a running OpenBot rewritten: appRunningOkKill, appRunning and failedToKillApp. The installer and
-; the uninstaller both show them, in a box with OK and Cancel; OK closes OpenBot, Cancel stops. Every other string is
+; three messages for a running AwakenBot rewritten: appRunningOkKill, appRunning and failedToKillApp. The installer and
+; the uninstaller both show them, in a box with OK and Cancel; OK closes AwakenBot, Cancel stops. Every other string is
 ; Tauri's, unchanged. desktop/scripts/installer-language.test.ts holds the list of strings to the Tauri CLI version.
 LangString addOrReinstall ${LANG_ENGLISH} "Add/Reinstall components"
 LangString alreadyInstalled ${LANG_ENGLISH} "Already Installed"

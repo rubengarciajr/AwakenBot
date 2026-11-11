@@ -99,7 +99,7 @@ const STORED = [
   "computer.policy_loaded",
 ];
 
-/** What Activity's query leaves out: OpenBot's own working. */
+/** What Activity's query leaves out: AwakenBot's own working. */
 const LEFT_OUT = new Set<string>(OPENBOT_WORKING_EVENT_TYPES);
 
 /** Each row's words and stored name, for the rows Activity is answered with. */
@@ -121,7 +121,7 @@ async function renderAs(edition: "team" | "personal", rows = ROWS) {
     localEvaluation: edition === "personal",
     edition,
   });
-  // Activity asks without OpenBot's own working, and the server answers without it.
+  // Activity asks without AwakenBot's own working, and the server answers without it.
   if (edition === "personal")
     seedAuditPage(queryClient, withoutOpenBotWorking(""), {
       events: rows.filter((row) => !LEFT_OUT.has(row.eventType)),
@@ -152,7 +152,7 @@ const whats = (container: HTMLElement) =>
 test("each row says in words what it was about, and no stored name shows in Activity", async () => {
   const view = await renderAs("personal");
   const lines = whats(view.container);
-  // Every row but OpenBot's own working (choosing tools, choosing a Bot, starting the computer).
+  // Every row but AwakenBot's own working (choosing tools, choosing a Bot, starting the computer).
   expect(lines.map((line) => line.textContent)).toEqual(
     ACTIVITY.map((row) => row.words),
   );

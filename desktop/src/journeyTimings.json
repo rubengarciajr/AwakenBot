@@ -76,11 +76,11 @@
   },
   "release": {
     "begins": [
-      ["stopping", "Stopping OpenBot.", 2],
+      ["stopping", "Stopping AwakenBot.", 2],
       ["backing_up", "Backing up your data.", 8],
       ["downloading", "Downloading the update.", 21],
       ["installing", "Installing the update.", 71],
-      ["starting", "Starting OpenBot.", 73]
+      ["starting", "Starting AwakenBot.", 73]
     ],
     "length": 108,
     "download": [21, 71]

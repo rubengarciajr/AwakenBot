@@ -11,7 +11,7 @@
 //!   `server/src/config.ts` only throws on it under `NODE_ENV=production`. A desktop install is not
 //!   production, so it would land in the warn branch and encrypt the credential vault with a key
 //!   printed in a public repository, objected to by a `console.warn` nobody running a window reads.
-//! - **The personal edition, always.** This app runs OpenBot for one person, so it writes
+//! - **The personal edition, always.** This app runs AwakenBot for one person, so it writes
 //!   `OPENBOT_EDITION=personal` and the settings that edition requires: its own package, one computer
 //!   and no supervisor. Unset, the server runs the team edition.
 
@@ -105,8 +105,8 @@ impl Ports {
     previous run left behind (`own`, from [`Ports::recorded`]) are free again, for at most
     `patience`.
 
-    WHY. Quitting OpenBot takes its containers down, and the engine's port forwarder lets their
-    host ports go a moment later, not at once. OpenBot opened again in that moment found its own
+    WHY. Quitting AwakenBot takes its containers down, and the engine's port forwarder lets their
+    host ports go a moment later, not at once. AwakenBot opened again in that moment found its own
     app port held, took it for somebody else's, and moved the app off it: 3010 became 49381 on a
     plain quit and reopen, with nothing else on the machine using 3010 (Docker Desktop, macOS,
     2026-11-08). Everything that dials the app
@@ -189,7 +189,7 @@ impl Ports {
     /// Hold the probes until every port is chosen so allocations cannot collide with each other.
     /// Existing containers from this exact Compose project are reusable, never foreign listeners.
     /// The app and the API are among them: both are host ports of the one `server` container, so
-    /// a running OpenBot keeps its own ports across a Start rather than being moved off them.
+    /// a running AwakenBot keeps its own ports across a Start rather than being moved off them.
     pub fn available(
         self,
         ours: &std::collections::HashSet<u16>,
@@ -307,7 +307,7 @@ Bind one address the way a port check must: without `SO_REUSEADDR`.
 
 `std::net::TcpListener::bind` sets `SO_REUSEADDR` on Unix, and on macOS that lets a bind to
 `127.0.0.1:3001` succeed while another program listens on `*:3001`. A developer's own server on the
-wildcard address then looked free, OpenBot chose its port, and its server could not start.
+wildcard address then looked free, AwakenBot chose its port, and its server could not start.
 */
 fn bind_exclusive(address: std::net::SocketAddr) -> std::io::Result<std::net::TcpListener> {
     use socket2::{Domain, Protocol, Socket, Type};
@@ -384,7 +384,7 @@ fn written_as_given(url: &reqwest::Url, address: &str) -> String {
 What the one computer relays from its own loopback (`COMPUTER_LOOPBACK_RELAYS`, read by
 agent-computer's `loopback-relay.ts`), as `<port>=<host>:<port>`, comma-separated.
 
-The Recorder in a browser there reaches OpenBot only at https or at loopback, so it is handed the
+The Recorder in a browser there reaches AwakenBot only at https or at loopback, so it is handed the
 address the person's window uses, `http://127.0.0.1:<app port>`, and a local Intelligence gateway at
 `ws://127.0.0.1:<port>`. Inside the computer's container both are the container. The app's and the
 server's ports go to the server's container on the Compose network, and a gateway on this machine's
@@ -599,7 +599,7 @@ mod port_tests {
 
     #[test]
     fn a_quit_and_reopen_keeps_the_app_port_its_last_run_is_still_letting_go_of() {
-        // 2026-11-08: OpenBot quit and opened again at once moved its app from 3010 to 49381,
+        // 2026-11-08: AwakenBot quit and opened again at once moved its app from 3010 to 49381,
         // because the last run's port was still held when Start chose.
         let _ports = crate::test_support::hold_ports();
         // One listener from choosing the port to letting it go: never given back in between.
@@ -733,7 +733,7 @@ pub fn compose(
     // Absent means no harness was picked, and the package's gated rows stay dropped.
     harness: Option<&PickedHarness>,
     // What a previous run of THIS deployment already minted, so it is not minted again. Empty on a
-    // machine that has never run OpenBot, which is exactly when generating is right.
+    // machine that has never run AwakenBot, which is exactly when generating is right.
     kept: &BTreeMap<String, String>,
 ) -> BTreeMap<String, String> {
     let mut env = BTreeMap::new();
@@ -1153,7 +1153,7 @@ pub fn compose(
      * The computer is started as the person's (`COMPUTER_PERSON_ID`, as `scripts/start.sh` does for
      * the personal edition), which is what lets them record in a Bot's browser.
      *
-     * The person's own browser runs there too, shown in the OpenBot window as hosted OpenBot shows
+     * The person's own browser runs there too, shown in the AwakenBot window as hosted AwakenBot shows
      * it, so no `OPENBOT_BROWSER_URL` is written: that would send the server to a browser on this
      * machine's desktop, a separate Chrome window, which Desktop no longer runs. Start takes out
      * the one an earlier Desktop wrote ([`REMOVED_WHEN_UNSET`]).
@@ -1190,7 +1190,7 @@ pub fn compose(
     // arrives as an Unauthorized wrapped in a 500, which names neither the address nor the rule.
     env.insert("AGENT_COMPUTER_ALLOW_PRIVATE_HOSTS".into(), "true".into());
 
-    // The personal edition: one person on their own machine, which is who this app installs OpenBot
+    // The personal edition: one person on their own machine, which is who this app installs AwakenBot
     // for. Unset, the server runs the team edition, with its admin screens, its fintech Bots and a
     // computer per Bot. See docs/personal-edition.md.
     env.insert("OPENBOT_EDITION".into(), "personal".into());
@@ -1365,7 +1365,7 @@ pub const NO_KEY_NEEDED: &str = "no-key-needed";
 ///
 /// Named rather than written inline, because `write` has to recognise its own from a previous start
 /// as well as put one down.
-const BANNER: &str = "# Written by OpenBot Desktop. Anything else in this file is left alone.";
+const BANNER: &str = "# Written by AwakenBot Desktop. Anything else in this file is left alone.";
 
 /// The secrets this deployment mints for itself, once.
 pub const MINTED: [&str; 7] = [
@@ -1392,22 +1392,22 @@ pub const REMOVED_WHEN_UNSET: [&str; 9] = [
     // What earlier Desktops wrote for the host-side Chrome they ran beside the server: its port, its
     // address (the host's and the server container's), and why there was none. Desktop runs no such
     // browser now, and a server still pointed at one shows the person a separate window, or a port
-    // nothing answers on, rather than their browser in the OpenBot window.
+    // nothing answers on, rather than their browser in the AwakenBot window.
     "BROWSER_PORT",
     "OPENBOT_BROWSER_URL",
     "OPENBOT_BROWSER_CONTAINER_URL",
     "OPENBOT_BROWSER_ABSENT",
     // A machine that moves from rootless Podman to Docker must go back to `host-gateway`.
     HOST_GATEWAY_ENV,
-    // Written by earlier apps that could sign in through an organization's OpenBot. This app runs
-    // OpenBot for one person, so a Start takes it out rather than leave the server expecting it.
+    // Written by earlier apps that could sign in through an organization's AwakenBot. This app runs
+    // AwakenBot for one person, so a Start takes it out rather than leave the server expecting it.
     "OPENBOT_ORGANIZATION_AUTH_URL",
 ];
 
 /// What `docker-compose.yml` maps `host.docker.internal` to, in place of `host-gateway`.
 pub const HOST_GATEWAY_ENV: &str = "OPENBOT_HOST_GATEWAY";
 
-/// The name OpenBot's containers reach this machine by. Every engine gets there through it: Docker
+/// The name AwakenBot's containers reach this machine by. Every engine gets there through it: Docker
 /// Desktop and the Podman machines forward it, and under rootless Podman `docker-compose.yml` maps it
 /// to [`crate::engine::ROOTLESS_HOST_LOOPBACK`] through [`HOST_GATEWAY_ENV`].
 pub const CONTAINER_HOST: &str = "host.docker.internal";
@@ -1594,7 +1594,7 @@ pub fn write(
     {
         return Err(std::io::Error::new(
             std::io::ErrorKind::InvalidInput,
-            "OpenBot setting names and values must not contain line breaks.",
+            "AwakenBot setting names and values must not contain line breaks.",
         ));
     }
     let existing = match std::fs::read_to_string(path) {
@@ -2167,7 +2167,7 @@ HTTPS_PROXY=http://proxy:8080
     }
 
     /// The Recorder in a browser on the one computer is handed this machine's loopback addresses
-    /// for OpenBot and a local gateway, which in the computer's container are the container. Before
+    /// for AwakenBot and a local gateway, which in the computer's container are the container. Before
     /// these relays Record there connected and reached nothing; the computer now relays each port
     /// to where its container reaches it.
     #[test]
@@ -2197,7 +2197,7 @@ HTTPS_PROXY=http://proxy:8080
                 .map(String::as_str),
             Some("3011=server:3001,3002=server:3001,14401=host.docker.internal:14401")
         );
-        // A gateway elsewhere is reached at its own address: only OpenBot is relayed.
+        // A gateway elsewhere is reached at its own address: only AwakenBot is relayed.
         assert_eq!(
             compose_with("wss://realtime.example")
                 .get("COMPUTER_LOOPBACK_RELAYS")
@@ -2291,7 +2291,7 @@ HTTPS_PROXY=http://proxy:8080
         std::fs::remove_dir_all(dir).unwrap();
     }
 
-    /// The person's browser is shown in the OpenBot window, on the one computer, as hosted OpenBot
+    /// The person's browser is shown in the AwakenBot window, on the one computer, as hosted AwakenBot
     /// shows it: Desktop runs no Chrome of its own beside the server. A Start over a file an earlier
     /// Desktop wrote, which ran one, points the server at no host-side browser (it would show the
     /// person a separate Chrome window for Teach a Bot) and leaves none of that browser's settings.
@@ -2777,7 +2777,7 @@ HTTPS_PROXY=http://proxy:8080
     /// After the person approves an app in their browser, Composio sends them back to the app's
     /// own address, which the server takes from the first of `TRUSTED_ORIGINS` (`appUrl` in
     /// server/src/config.ts). That was `http://localhost:3010`: `localhost` may resolve to the
-    /// address the engine did not publish, and OpenBot names this machine by number everywhere
+    /// address the engine did not publish, and AwakenBot names this machine by number everywhere
     /// else. The first is 127.0.0.1, and the other two names are still trusted.
     #[test]
     fn the_app_s_own_address_is_127_0_0_1_and_never_localhost() {

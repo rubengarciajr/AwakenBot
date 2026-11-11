@@ -137,7 +137,7 @@ export function saidItWentAhead(result: unknown, marker: string): boolean {
  * The text of a failure wrapped as the Claude Agent SDK harness wraps one, or undefined.
  *
  * `ag-ui-claude-sdk` has nowhere in an AG-UI result to put Claude Code's `is_error`, so it wraps a
- * failed result as `{"error": true, "content": "..."}`, and OpenBot's harness keeps that wrapper in
+ * failed result as `{"error": true, "content": "..."}`, and AwakenBot's harness keeps that wrapper in
  * the history a reloaded conversation draws (`agent-claude-sdk/src/adapter.py`).
  *
  * ONLY THAT EXACT SHAPE: `error: true` and a string `content`, and nothing else. The harness also

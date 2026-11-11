@@ -44,7 +44,7 @@ async function renderAs(edition: "team" | "personal", Page: ComponentType) {
     localEvaluation: edition === "personal",
     edition,
   });
-  // Activity asks without OpenBot's own working; Admin asks for everything.
+  // Activity asks without AwakenBot's own working; Admin asks for everything.
   seedAuditPage(
     queryClient,
     edition === "personal" ? withoutOpenBotWorking("") : "",

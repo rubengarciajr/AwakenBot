@@ -70,10 +70,10 @@ function browserVoice(): Pick<VoiceDeps, "Recognition" | "getUserMedia"> {
 const RECONNECT_DELAYS_MS = [500, 1_000, 2_000, 4_000];
 /** The live status of a recording whose streamer could not be created (its storage did not open, say). */
 const NOT_STARTED =
-  "The Recorder could not start sending this recording to OpenBot's backend.";
+  "The Recorder could not start sending this recording to AwakenBot's backend.";
 /** What the service worker shows after Stop for such a recording: none of it was stored, so none of it can be sent. */
 const NOT_SENT =
-  "Nothing of this recording reached OpenBot's backend: the Recorder could not start sending it. Try recording again.";
+  "Nothing of this recording reached AwakenBot's backend: the Recorder could not start sending it. Try recording again.";
 /** The sequencer's last issued seq, in the outbox's meta store. */
 const SEQ_META_KEY = "seq";
 /** Answers the service worker must not miss: one that could not be delivered is posted again once the port is back. */
@@ -101,7 +101,7 @@ type Stream = {
   /** Recordings it still sends; one leaves when it is done, replaced by Start over, or discarded. */
   recordings: Set<string>;
   signedOut: boolean;
-  /** The bearer the pass OpenBot answered "signed out" to used. */
+  /** The bearer the pass AwakenBot answered "signed out" to used. */
   failedToken?: string;
   streamer?: Streamer;
 };
@@ -256,7 +256,7 @@ export function createOffscreenController(deps: OffscreenControllerDeps): void {
   const streams: Stream[] = [];
   /** Which recording each trajectory belongs to; kept in memory, since a discard clears the meta. */
   const owners = new Map<string, string>();
-  /** Tokens OpenBot answered "signed out" for, with the guard's reason: nothing more is sent with them. */
+  /** Tokens AwakenBot answered "signed out" for, with the guard's reason: nothing more is sent with them. */
   const signedOutTokens = new Map<string, SignedOutReason>();
   let live: Live | null = null;
   let work: Promise<void> = Promise.resolve();
@@ -312,7 +312,7 @@ export function createOffscreenController(deps: OffscreenControllerDeps): void {
     }
   }
 
-  /** A token OpenBot already signed out: the request is refused here, without reaching OpenBot. */
+  /** A token AwakenBot already signed out: the request is refused here, without reaching AwakenBot. */
   function signedOutReason(
     stream: Stream,
     token: string,
@@ -910,7 +910,7 @@ export function createOffscreenController(deps: OffscreenControllerDeps): void {
   }
 
   /** The service worker says this token's connection is gone: no stream sends with it any more, and a pass asked
-   * with it is refused here, so nothing reaches OpenBot or Intelligence for it. The events stay in the outbox. */
+   * with it is refused here, so nothing reaches AwakenBot or Intelligence for it. The events stay in the outbox. */
   async function halt(token: string): Promise<void> {
     if (!signedOutTokens.has(token)) signedOutTokens.set(token, "revoked");
     const halting: Promise<void>[] = [];

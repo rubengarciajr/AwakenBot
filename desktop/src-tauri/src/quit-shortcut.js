@@ -1,4 +1,4 @@
-// Ctrl+Q in OpenBot's window on Windows quits OpenBot, as the tray's Quit does.
+// Ctrl+Q in AwakenBot's window on Windows quits AwakenBot, as the tray's Quit does.
 //
 // The tray menu shows "Quit  Ctrl+Q", but on Windows that is only a label: Tauri answers a menu's
 // shortcuts only for a menu bar on the window, and this window has none (`install_menus`).
@@ -33,7 +33,7 @@
       const internals = window.__TAURI_INTERNALS__;
       if (typeof internals?.invoke !== "function") return;
       internals.invoke("plugin:openbot-desktop|quit").catch((error) => {
-        console.error("[quit] Ctrl+Q could not quit OpenBot:", error);
+        console.error("[quit] Ctrl+Q could not quit AwakenBot:", error);
       });
     },
     // Capture, on the window: before any handler on the page can stop it.

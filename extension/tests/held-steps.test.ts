@@ -86,7 +86,7 @@ async function until(check: () => boolean | Promise<boolean>, label: string) {
   }
 }
 
-// ---- The fake OpenBot and Intelligence --------------------------------------------------------
+// ---- The fake AwakenBot and Intelligence --------------------------------------------------------
 
 let gateway: FakeGateway;
 function route(request: Request): Response | null {

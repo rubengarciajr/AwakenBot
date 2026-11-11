@@ -1,6 +1,6 @@
 """Every new Antigravity session answers from the thread the server sent, in the Bot's role.
 
-OpenBot restores a thread from Intelligence and sends all of it in `input.messages`, on every run,
+AwakenBot restores a thread from Intelligence and sends all of it in `input.messages`, on every run,
 behind two system messages: the Bot's standing role and the summary of the tools it holds.
 `ag_ui_antigravity` (0.2.1) keeps the conversation inside the Go harness instead, and forwards to
 it only the newest user message it has not sent before (`AntigravityAgent._extract_prompt`). It

@@ -36,7 +36,7 @@ type UpdatesItself = boolean | "unknown" | null;
  * found: up to date, or the newer version with Update and restart.
  *
  * The same feed and the same install as the offer at the top of this window, the banner in
- * OpenBot's own page, and Check for Updates… in the menus. Asked for, a newer version is named even
+ * AwakenBot's own page, and Check for Updates… in the menus. Asked for, a newer version is named even
  * if this person closed the offer on it before.
  *
  * A build that never updates itself (internal, candidate, or without the updater) says so up front,
@@ -150,7 +150,7 @@ export function CheckForUpdates() {
       <summary>Updates</summary>
       {updatesItself === true && (
         <p>
-          OpenBot updates itself with signed updates from its publisher. The
+          AwakenBot updates itself with signed updates from its publisher. The
           next Start after an update brings this installation to the same
           version and keeps your data.
         </p>
@@ -178,17 +178,18 @@ export function CheckForUpdates() {
           </button>
           {installFailure && (
             <p className="caution" role="alert">
-              OpenBot could not install the update: {installFailure}
+              AwakenBot could not install the update: {installFailure}
             </p>
           )}
         </>
       )}
       {checked?.found === "upToDate" && (
-        <p role="status">OpenBot {checked.current} is up to date.</p>
+        <p role="status">AwakenBot {checked.current} is up to date.</p>
       )}
       {checked?.found === "installing" && (
         <p role="status">
-          OpenBot is downloading {checked.version} and restarts when it's done.
+          AwakenBot is downloading {checked.version} and restarts when it's
+          done.
         </p>
       )}
       {checked?.found === "notOffered" && (

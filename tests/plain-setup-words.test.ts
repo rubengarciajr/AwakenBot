@@ -4,13 +4,13 @@ import { join, relative } from "node:path";
 import ts from "typescript";
 
 /**
- * Guard: what OpenBot Desktop says while it sets up, starts or updates, and when that stops, is in
+ * Guard: what AwakenBot Desktop says while it sets up, starts or updates, and when that stops, is in
  * plain words. A tester waited minutes on "Preparing the engine machine" and could not tell
  * whether setup was stuck, and a failure read "The back end's disk is nearly full. Podman has…".
  * The log keeps the technical parts; the screen says what happened and what to do. The Status
  * window, opened from the tray or the menu, is held to the same: it said "Back end" and "Container
  * engine" on a live Windows run. So is Settings > This computer in the app (`THIS_COMPUTER`), which
- * shows the same parts inside OpenBot Desktop.
+ * shows the same parts inside AwakenBot Desktop.
  *
  * Read are the sentences of the desktop window (string literals, template text and JSX text with a
  * space in them, so identifiers and command names are not) and the native side's sentences that
@@ -67,7 +67,7 @@ const ALLOWED: { file: string; word: RegExp; why: string }[] = [
   {
     file: "desktop/src/localReadiness.ts",
     word: /Podman|\brootful\b/,
-    why: "the Podman commands the person runs to give OpenBot more room or root",
+    why: "the Podman commands the person runs to give AwakenBot more room or root",
   },
   {
     file: "desktop/src-tauri/src/install.rs",
@@ -77,12 +77,12 @@ const ALLOWED: { file: string; word: RegExp; why: string }[] = [
   {
     file: "desktop/src-tauri/src/engine_versions.rs",
     word: /Podman/,
-    why: "the person updates or removes a Podman they installed, which OpenBot can't update for them, or is told the Podman OpenBot updated isn't answering",
+    why: "the person updates or removes a Podman they installed, which AwakenBot can't update for them, or is told the Podman AwakenBot updated isn't answering",
   },
   {
     file: "desktop/src-tauri/src/own_machine.rs",
     word: /Podman/,
-    why: "the person's own Podman, which OpenBot pauses on a Mac only once they say yes, and starts again on Quit",
+    why: "the person's own Podman, which AwakenBot pauses on a Mac only once they say yes, and starts again on Quit",
   },
   {
     file: "desktop/src/PodmanGoAhead.tsx",
@@ -107,12 +107,12 @@ const ALLOWED: { file: string; word: RegExp; why: string }[] = [
   {
     file: "desktop/src/ProviderPicker.tsx",
     word: /\bcontainers?\b/i,
-    why: "an advanced field for a model the person hosts: the address OpenBot's containers use",
+    why: "an advanced field for a model the person hosts: the address AwakenBot's containers use",
   },
   {
     file: "desktop/src/Welcome.tsx",
     word: /\bbackend\b/i,
-    why: "the first screen says OpenBot's backend runs on this computer too, which is what self-contained means",
+    why: "the first screen says AwakenBot's backend runs on this computer too, which is what self-contained means",
   },
   {
     file: "desktop/src/localEvalCli.ts",
@@ -277,21 +277,21 @@ function technical(said: Said): string[] {
     );
 }
 
-test("what OpenBot Desktop says while it sets up, starts or updates, when that stops, on its Status window and on This computer, is plain words", () => {
+test("what AwakenBot Desktop says while it sets up, starts or updates, when that stops, on its Status window and on This computer, is plain words", () => {
   expect(sentences().flatMap(technical)).toEqual([]);
 });
 
 /**
- * The company alone. Product copy says OpenBot, and OpenBot by CopilotKit where the company has to
+ * The company alone. Product copy says AwakenBot, and AwakenBot by CopilotKit where the company has to
  * be named (see .claude/skills/openbot-copy). An address is not read: `github.com/CopilotKit/...`.
  */
-const COMPANY_ALONE = /(?<!OpenBot\s+by\s+)(?<![\w/.-])CopilotKit(?![\w/-])/;
+const COMPANY_ALONE = /(?<!AwakenBot\s+by\s+)(?<![\w/.-])CopilotKit(?![\w/-])/;
 
-/** "by CopilotKit" in the lockup, where it follows OpenBot's name on screen (`Lockup`). */
+/** "by CopilotKit" in the lockup, where it follows AwakenBot's name on screen (`Lockup`). */
 const BESIDE_THE_NAME = (said: Said) =>
   said.file === "desktop/src/Sections.tsx" && said.text === "by CopilotKit";
 
-test("OpenBot Desktop and This computer say OpenBot, or OpenBot by CopilotKit, never CopilotKit alone", () => {
+test("AwakenBot Desktop and This computer say AwakenBot, or AwakenBot by CopilotKit, never CopilotKit alone", () => {
   const all = sentences();
   expect(
     all

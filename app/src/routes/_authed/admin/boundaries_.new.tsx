@@ -342,7 +342,7 @@ function NewRulePage() {
                 <Field>
                   <FieldLabel htmlFor="rule-expression">Rule</FieldLabel>
                   <FieldDescription>
-                    Written in CEL. OpenBot checks the rule before it's added,
+                    Written in CEL. AwakenBot checks the rule before it's added,
                     so a typo can't stop every action.
                   </FieldDescription>
                   <Textarea

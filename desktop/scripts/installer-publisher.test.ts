@@ -67,17 +67,19 @@ const builds: Record<string, Config> = {
 
 for (const [build, config] of Object.entries(builds)) {
   test(`the ${build} build names CopilotKit as the publisher`, () => {
-    expect(publisherOf(config)).toBe("CopilotKit");
+    expect(publisherOf(config)).toBe("AwakenBot");
   });
 
   test(`the ${build} build's copyright reads OpenBot by CopilotKit`, () => {
-    expect(config.bundle.copyright).toBe("OpenBot by CopilotKit");
+    expect(config.bundle.copyright).toBe(
+      "AwakenBot. Built on CopilotKit/OpenBot (MIT License).",
+    );
   });
 
   test(`the ${build} build keeps the identifier and the registry key an update reads`, () => {
     // Updates and app data are keyed on the identifier.
-    expect(config.identifier).toBe("ai.copilotkit.openbot.desktop");
+    expect(config.identifier).toBe("org.awakenbot.desktop");
     // v0.3.3 kept its install folder under Software\copilotkit\OpenBot. Registry keys ignore case.
-    expect(publisherOf(config).toLowerCase()).toBe("copilotkit");
+    expect(publisherOf(config).toLowerCase()).toBe("awakenbot");
   });
 }

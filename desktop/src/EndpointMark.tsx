@@ -1,7 +1,7 @@
 import { IconCloud } from "@tabler/icons-react";
 
 /**
- * The tile for "Any OpenAI-compatible endpoint": Tabler's cloud, the icon OpenBot's admin page gives
+ * The tile for "Any OpenAI-compatible endpoint": Tabler's cloud, the icon AwakenBot's admin page gives
  * the same source.
  *
  * An endpoint is nobody's, so no vendor's mark belongs here (see shared/marks/README.md). Without a

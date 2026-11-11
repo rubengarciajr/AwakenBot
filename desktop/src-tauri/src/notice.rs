@@ -1,13 +1,13 @@
-//! A Bot's notification from OpenBot's page, shown by the system, and the link a click on it opens.
+//! A Bot's notification from AwakenBot's page, shown by the system, and the link a click on it opens.
 //!
 //! WINDOWS. A toast from an app installed without an MSIX package can only bring the app back from
 //! the notification centre through a protocol: "ToastGeneric Foreground | Unpackaged: Not
 //! supported" without a COM activator, "ToastGeneric Protocol | Unpackaged: Supported" (Microsoft,
-//! "Activating toast notifications from desktop apps"). MEASURED on Windows: a click on OpenBot's
+//! "Activating toast notifications from desktop apps"). MEASURED on Windows: a click on AwakenBot's
 //! toast in the notification centre only removed it. So the toast is built here with
-//! `activationType="protocol"` and `launch="openbot://open?path=…"`. Windows starts OpenBot.exe with
+//! `activationType="protocol"` and `launch="openbot://open?path=…"`. Windows starts AwakenBot.exe with
 //! that link (the installer registers the scheme, `plugins.deep-link` in tauri.conf.json), the
-//! single-instance plugin hands it to the running OpenBot, and `open_link` opens the page. A click
+//! single-instance plugin hands it to the running AwakenBot, and `open_link` opens the page. A click
 //! on the toast while it is still on screen takes the same way.
 //!
 //! The notification plugin cannot send such a toast: it builds its own through notify-rust, which
@@ -36,7 +36,7 @@ pub fn path_of(link: &tauri::Url) -> Option<String> {
 }
 
 /**
-The script that opens `path` in OpenBot's page as a route change: it dispatches `openbot:open`,
+The script that opens `path` in AwakenBot's page as a route change: it dispatches `openbot:open`,
 which the page's router handles and cancels (`app/src/lib/desktop/open-requests.ts`). A page that
 leaves it uncancelled, from before that, is loaded at `url` instead.
 */
@@ -49,8 +49,8 @@ pub fn open_script(path: &str, url: &str) -> String {
 }
 
 /**
-Whether this launch of OpenBot is Windows opening a notification's link: a click on a toast starts
-OpenBot.exe with `openbot://…`, and the single-instance plugin hands it to the OpenBot already
+Whether this launch of AwakenBot is Windows opening a notification's link: a click on a toast starts
+AwakenBot.exe with `openbot://…`, and the single-instance plugin hands it to the AwakenBot already
 running.
 */
 #[cfg_attr(not(windows), allow(dead_code))]
@@ -62,12 +62,12 @@ pub fn launched_by_link<I: IntoIterator<Item = String>>(args: I) -> bool {
 
 /**
 WINDOWS' FOREGROUND LOCK. Only the process the person last acted in may bring a window to the front.
-MEASURED: after a click on a toast, OpenBot opened the page but stayed behind the app in front, or,
+MEASURED: after a click on a toast, AwakenBot opened the page but stayed behind the app in front, or,
 minimised, came back with a grey title bar, inactive; the foreground stayed with the shell's
-notification host. The launch Windows starts for the click has the right, and the OpenBot already
+notification host. The launch Windows starts for the click has the right, and the AwakenBot already
 running does not, so the launch passes it on before it hands its link over and exits
 (`AllowSetForegroundWindow`, "a process that can set the foreground window can enable another
-process to set the foreground window"). The running OpenBot then restores and activates its window
+process to set the foreground window"). The running AwakenBot then restores and activates its window
 (`bring_to_front`).
 */
 #[cfg(windows)]
@@ -77,14 +77,14 @@ pub fn let_running_openbot_come_forward() {
         Ok(()) => "passed the foreground on".to_owned(),
         Err(error) => format!("could not pass the foreground on: {error}"),
     };
-    // This launch exits before it has a log; the running OpenBot logs it (`take_handoff`).
+    // This launch exits before it has a log; the running AwakenBot logs it (`take_handoff`).
     let _ = std::fs::write(handoff_record(), outcome);
 }
 
-/// Where a notification's launch leaves how its hand-off went, for the running OpenBot's log.
+/// Where a notification's launch leaves how its hand-off went, for the running AwakenBot's log.
 #[cfg(windows)]
 fn handoff_record() -> std::path::PathBuf {
-    std::env::temp_dir().join("ai.copilotkit.openbot.desktop-foreground-handoff.txt")
+    std::env::temp_dir().join("org.awakenbot.desktop-foreground-handoff.txt")
 }
 
 /// How the last notification's launch fared passing the foreground on, once.
@@ -111,7 +111,7 @@ pub enum Forward {
 /**
 The ways to the front, tried in order until one works: each later one is a fallback the earlier one
 did not need. MEASURED on Windows (0.3.4, 8fb4cf53c): `SetForegroundWindow` alone was refused after a
-click on a toast, though the click's launch had passed the foreground on, and OpenBot stayed behind
+click on a toast, though the click's launch had passed the foreground on, and AwakenBot stayed behind
 Edge. Mozilla met the same with Thunderbird: the process that takes the click holds the right, and
 handing it on to the running instance "is heuristic and can break" (bugzilla 1863798).
 */
@@ -311,11 +311,11 @@ mod tests {
     }
 
     /// Only a launch Windows makes for a toast's link passes the foreground on: a person opening
-    /// OpenBot from the Start menu, or the Desktop restarting itself, does not.
+    /// AwakenBot from the Start menu, or the Desktop restarting itself, does not.
     #[test]
     fn only_a_launch_for_a_notices_link_passes_the_foreground_on() {
         let args = |rest: &[&str]| {
-            std::iter::once("C:\\OpenBot\\OpenBot.exe")
+            std::iter::once("C:\\AwakenBot\\AwakenBot.exe")
                 .chain(rest.iter().copied())
                 .map(String::from)
                 .collect::<Vec<_>>()
@@ -326,7 +326,9 @@ mod tests {
         assert!(!launched_by_link(args(&[])));
         assert!(!launched_by_link(args(&["--restarted"])));
         // The executable's own path is never the link, whatever folder it is in.
-        assert!(!launched_by_link(vec!["openbot:\\OpenBot.exe".to_owned()]));
+        assert!(!launched_by_link(
+            vec!["openbot:\\AwakenBot.exe".to_owned()]
+        ));
     }
 
     /// The launch Windows makes for a toast's link passes the foreground on first thing in `main`,

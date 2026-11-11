@@ -197,7 +197,7 @@ describe("what the person's browser is started with", () => {
 });
 
 describe("finding the person's own browsers", () => {
-  test("where the OpenBot browser finds them, in its order, on each OS", async () => {
+  test("where the AwakenBot browser finds them, in its order, on each OS", async () => {
     const at = (files: string[]) => async (path: string) =>
       files.includes(path);
     expect(
@@ -817,7 +817,7 @@ beforeAll(async () => {
   if (!canRunLocal) return;
   root = await mkdtemp(join(tmpdir(), "openbot-real-browser-computer-"));
   [local, managed] = await Promise.all([
-    // OpenBot Desktop's: people's browsers and no Bot.
+    // AwakenBot Desktop's: people's browsers and no Bot.
     startComputer("local", {
       COMPUTER_BROWSER_BACKEND: "local-chrome",
       COMPUTER_BROWSER_MODE: "headed",

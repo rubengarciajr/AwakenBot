@@ -14,8 +14,8 @@
 //! accepts Podman only in rootful mode, because k3d's node needs privileges a rootless engine
 //! cannot grant. A rootful machine is the same VM with three things changed: its default
 //! connection is `<name>-root`, `/var/run/docker.sock` inside it is the rootful socket, and the API
-//! socket it forwards to this computer is the rootful one. OpenBot's own containers are addressed
-//! through `<name>-root` as well (see `connection_for`), so OpenBot and Intelligence share one
+//! socket it forwards to this computer is the rootful one. AwakenBot's own containers are addressed
+//! through `<name>-root` as well (see `connection_for`), so AwakenBot and Intelligence share one
 //! engine and the supervisor's mount of `/var/run/docker.sock` is the engine it was started by.
 
 use crate::quiet::said as command_said;
@@ -113,9 +113,9 @@ const ROOTFUL_HOST_GATEWAY_CONFIG: &str = "/etc/containers/containers.conf.d/90-
 /// which logs in as the machine's user and reaches the rootless engine, and `<name>-root`, which
 /// reaches the rootful one. The machine's own mode decides only which of the two is the default,
 /// which socket `/var/run/docker.sock` is inside it, and which API it forwards to this computer.
-/// Addressing a rootful machine by its bare name would put OpenBot's containers in the rootless
+/// Addressing a rootful machine by its bare name would put AwakenBot's containers in the rootless
 /// engine beside a rootful one, with the supervisor mounting a socket it cannot open. The one
-/// exception is an OpenBot that already lives there (see `connection_keeping_openbot`).
+/// exception is an AwakenBot that already lives there (see `connection_keeping_openbot`).
 pub fn connection_for(machine: &str, rootful: bool) -> String {
     if rootful {
         format!("{machine}-root")
@@ -124,11 +124,11 @@ pub fn connection_for(machine: &str, rootful: bool) -> String {
     }
 }
 
-/// The connection to address a running machine through: the one for its mode, unless OpenBot's
+/// The connection to address a running machine through: the one for its mode, unless AwakenBot's
 /// database is only in the other one's storage.
 ///
 /// The two engines in one machine keep separate containers and volumes. Releases up to 0.2.0
-/// reached every machine by its bare name, so an OpenBot that adopted somebody's rootful machine,
+/// reached every machine by its bare name, so an AwakenBot that adopted somebody's rootful machine,
 /// or whose own machine was switched to rootful since, has its database in the rootless engine's
 /// storage. Moving it to `<name>-root` would open it on an empty database with the old one
 /// unreachable beside it, so it stays where it is. Only a rootful machine is asked: a rootless one
@@ -145,7 +145,7 @@ fn connection_keeping_openbot(
     own
 }
 
-/// Whether OpenBot's database volume is in the engine behind `connection`.
+/// Whether AwakenBot's database volume is in the engine behind `connection`.
 ///
 /// By Compose's own label for the volume rather than by its full name, which carries the
 /// deployment folder's name. Any project's `postgres-data` counts: a false yes keeps the
@@ -217,7 +217,7 @@ pub fn machine_behind(connection: &str) -> Result<MachineFacts, String> {
     machine_facts(&podman(&["machine", "inspect", machine])?, machine)
 }
 
-/// The connection for a machine found by name, in the mode it runs in, or where its OpenBot
+/// The connection for a machine found by name, in the mode it runs in, or where its AwakenBot
 /// already is (see `connection_keeping_openbot`).
 ///
 /// A machine that cannot be inspected keeps its bare name, which is how it was addressed before
@@ -249,7 +249,7 @@ fn podman_with(
     args: &[&str],
     run: impl FnOnce() -> std::io::Result<std::process::Output>,
 ) -> Result<String, String> {
-    // Resolved, not named: right after OpenBot installs it, `podman` is not yet on this process's
+    // Resolved, not named: right after AwakenBot installs it, `podman` is not yet on this process's
     // PATH. See the PATH rule in `engine.rs`.
     let output = run().map_err(|error| format!("could not run podman: {error}"))?;
     if output.status.success() {
@@ -310,12 +310,12 @@ pub fn machine_exists() -> Result<bool, String> {
 ///
 /// AN EXISTING MACHINE IS NEVER SWITCHED TO ROOTFUL, OURS INCLUDED. `podman machine set --rootful`
 /// would do it, on a stopped machine, which is the person's to stop. A machine of the person's own
-/// that OpenBot can't run on is passed over instead, and this one made beside it (see
+/// that AwakenBot can't run on is passed over instead, and this one made beside it (see
 /// `own_machine`). A rootless machine keeps its containers and volumes in the rootless engine's
 /// storage, and the rootful engine in the same VM does not see them. Releases up to 0.2.0 created
 /// this machine rootless, so "ours" is not "empty". Ours, made rootless, is left as it is and
-/// OpenBot keeps running on it; local Intelligence then declines to start there with a sentence
-/// that names the switch (see `local_eval::Failure::RootlessPodman`). After the switch OpenBot
+/// AwakenBot keeps running on it; local Intelligence then declines to start there with a sentence
+/// that names the switch (see `local_eval::Failure::RootlessPodman`). After the switch AwakenBot
 /// stays in the rootless storage its database is in (see `connection_keeping_openbot`), and
 /// Intelligence runs on the rootful engine of the same machine.
 ///
@@ -418,7 +418,7 @@ fn prepare_user_mode_networking_before_start(
     let networking = owned_machine_networking(&listing)?;
     if networking.state.eq_ignore_ascii_case("running") && !networking.user_mode {
         return Err(format!(
-            "{MACHINE} is already running without Podman user-mode networking. Stop the OpenBot engine machine and start OpenBot again so host callbacks can be configured."
+            "{MACHINE} is already running without Podman user-mode networking. Stop the AwakenBot engine machine and start AwakenBot again so host callbacks can be configured."
         ));
     }
     if networking.state.eq_ignore_ascii_case("stopped") && !networking.user_mode {
@@ -472,7 +472,7 @@ const HOST_GATEWAY_LOOKUP: [&str; 8] = [
 const MACHINE_NETWORK: [&str; 4] = ["machine", "ssh", MACHINE, "ip route; cat /etc/resolv.conf"];
 /// The network device Podman's user-mode networking gives the machine: gvforwarder's tap device,
 /// started with `-iface podman-usermode` in the `podman-net-usermode` distribution. WSL 2
-/// distributions share one network, so OpenBot's machine has it too, with the routes to gvproxy at
+/// distributions share one network, so AwakenBot's machine has it too, with the routes to gvproxy at
 /// 192.168.127.1, its DNS server.
 const USER_MODE_DEVICE: &str = "podman-usermode";
 /// How long the machine gets for that name to resolve, before it is restarted and again after.
@@ -527,9 +527,9 @@ fn configure_host_gateway_after_start_with<H>(
     }
 
     let ip = host_gateway_restarting_once(run, clock, hold_docker_pipe)?;
-    // After the machine's last start, its restart above included, and before any of OpenBot's
+    // After the machine's last start, its restart above included, and before any of AwakenBot's
     // containers start: every WSL distro shares one network namespace, where a stopped machine's
-    // port rules stay. Every start of OpenBot's machine on Windows comes through here, and so does
+    // port rules stay. Every start of AwakenBot's machine on Windows comes through here, and so does
     // Start before Compose. A Mac's machine has a kernel of its own, and its rules go with it. See
     // `netavark_rules`.
     clear_dead_port_rules(run);
@@ -555,7 +555,7 @@ fn configure_owned_windows_podman_for_compose<H>(
     let networking = owned_machine_networking(&listing)?;
     if !networking.user_mode {
         return Err(format!(
-            "{MACHINE} is running without Podman user-mode networking. Stop the OpenBot engine machine and start OpenBot again so host callbacks can be configured."
+            "{MACHINE} is running without Podman user-mode networking. Stop the AwakenBot engine machine and start AwakenBot again so host callbacks can be configured."
         ));
     }
     configure_host_gateway_after_start_with(
@@ -568,13 +568,13 @@ fn configure_owned_windows_podman_for_compose<H>(
 }
 
 /// Run before Compose even when an existing engine skipped the install/start steps, and before
-/// the images are downloaded: on OpenBot's own machine on Windows, its network has to work first.
+/// the images are downloaded: on AwakenBot's own machine on Windows, its network has to work first.
 pub fn prepare_for_compose(address: &Address) -> Result<(), crate::problem::Problem> {
     prepare_for_compose_saying(address, || {}).map(|_| ())
 }
 
 /// `prepare_for_compose`, calling `say` once if the machine's network makes it wait, and saying
-/// whether OpenBot restarted its machine to set the network up again. A restart stops everything
+/// whether AwakenBot restarted its machine to set the network up again. A restart stops everything
 /// running in the machine, the back end's cluster included.
 pub fn prepare_for_compose_saying(
     address: &Address,
@@ -595,16 +595,16 @@ pub fn prepare_for_compose_saying(
     Ok(Network::restarted(restarted.get()))
 }
 
-/// Said on the running step while OpenBot waits for its machine's network or sets it up again.
+/// Said on the running step while AwakenBot waits for its machine's network or sets it up again.
 pub const RECONNECTING: &str =
-    "Reconnecting OpenBot to the internet. This can take a minute or two.";
+    "Reconnecting AwakenBot to the internet. This can take a minute or two.";
 
-/// What checking OpenBot's machine's network did.
+/// What checking AwakenBot's machine's network did.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Network {
-    /// It answered, at once or after a wait, or it isn't OpenBot's machine to check.
+    /// It answered, at once or after a wait, or it isn't AwakenBot's machine to check.
     Answered,
-    /// OpenBot restarted its machine to set the network up again, and it answers now. Whatever was
+    /// AwakenBot restarted its machine to set the network up again, and it answers now. Whatever was
     /// running in the machine stopped with it.
     RestartedMachine,
 }
@@ -619,7 +619,7 @@ impl Network {
     }
 }
 
-/// OpenBot's own machine on Windows, made ready before the back end starts in it.
+/// AwakenBot's own machine on Windows, made ready before the back end starts in it.
 ///
 /// First its network: the same wait and restart as `prepare_for_compose`, without the gateway
 /// setting. Run before the back end, so a restart can never stop a back end that was started before
@@ -689,14 +689,14 @@ fn saying_once<N>(
 }
 
 /**
-OpenBot's own machine readied for the back end, then `start`: the call that starts it (`local start`
-or `local update`), or nothing, when OpenBot is only about to ask it (a relaunch's wake).
+AwakenBot's own machine readied for the back end, then `start`: the call that starts it (`local start`
+or `local update`), or nothing, when AwakenBot is only about to ask it (a relaunch's wake).
 
-OpenBot uses machines it did not start: one Quit left running, or that an older OpenBot, a crash or
+AwakenBot uses machines it did not start: one Quit left running, or that an older AwakenBot, a crash or
 a kill left behind, with the port rules of containers from before still ahead of the ones the back
 end's start makes. On the Windows test machine, `local start` then waited 4m50s on 127.0.0.1:55059
-and gave up, the k3d rules for an address from before ahead of the live one. So OpenBot's dead port
-rules are cleared first, on Windows and on OpenBot's own machine only. See `netavark_rules`.
+and gave up, the k3d rules for an address from before ahead of the live one. So AwakenBot's dead port
+rules are cleared first, on Windows and on AwakenBot's own machine only. See `netavark_rules`.
 */
 pub fn readied_for_backend<T>(address: Option<&Address>, start: impl FnOnce() -> T) -> T {
     readied_for_backend_with(address, podman, cfg!(target_os = "windows"), start)
@@ -736,7 +736,7 @@ fn owned_windows_podman_address(address: &Address, target_is_windows: bool) -> b
 /// Subsystem for Linux was turned on, the machine had no route to 192.168.127.1 at all, so every
 /// lookup timed out, while gvforwarder was still running and so Podman reused the network as it
 /// was for every later start. Podman takes that network down only when the last machine using it
-/// stops, and sets it up again from scratch on the next start, so OpenBot's machine is restarted
+/// stops, and sets it up again from scratch on the next start, so AwakenBot's machine is restarted
 /// once, if it is the only machine using it. A Podman machine of the person's own that shares it
 /// is never stopped. Still down after that, only a Windows restart has been seen to fix it, and the
 /// failure says so (`NETWORK_NOT_UP`).
@@ -766,7 +766,7 @@ fn host_gateway_restarting_once<H>(
     let listing = run(&["machine", "list", "--format", "json"])?;
     if shares_user_mode_network(&listing)? {
         log::warn!(
-            "[engine] another running Podman machine uses the same network, so OpenBot restarts no machine"
+            "[engine] another running Podman machine uses the same network, so AwakenBot restarts no machine"
         );
         return Err(format!("{NETWORK_NOT_UP}: {gave_up}\n{network}"));
     }
@@ -865,7 +865,7 @@ fn routes_through_user_mode_device(routes: &str) -> bool {
     })
 }
 
-/// Whether a running Podman machine other than OpenBot's uses user-mode networking, from
+/// Whether a running Podman machine other than AwakenBot's uses user-mode networking, from
 /// `podman machine list --format json`. There is one user-mode network for every machine on this
 /// computer, the `podman-net-usermode` distribution, and Podman keeps it as it is while any machine
 /// using it runs.
@@ -945,11 +945,11 @@ The named pipe Docker's clients use by default on Windows, `\\.\pipe\docker_engi
 Docker Desktop serves it, and so does the first Podman machine to start while it is free:
 `launchWinProxy` (Podman 6.1.1, `pkg/machine/machine_windows.go`) hands it to that machine's
 `win-sshproxy` whenever `PipeNameAvailable("docker_engine", 250ms)` finds no pipe by that name, and
-no setting turns that off. OpenBot's machine runs beside the person's on Windows (see
+no setting turns that off. AwakenBot's machine runs beside the person's on Windows (see
 `own_machine`). On a live Windows run it started first after a Podman update and took the pipe, so
-the person's Docker clients reached OpenBot's machine, and Docker Desktop would have found its pipe
-taken. So the name is held while OpenBot's machine starts, and Podman gives OpenBot's machine its
-own pipe only, `\\.\pipe\podman-openbot`, the one OpenBot uses (`MachineFacts::api`).
+the person's Docker clients reached AwakenBot's machine, and Docker Desktop would have found its pipe
+taken. So the name is held while AwakenBot's machine starts, and Podman gives AwakenBot's machine its
+own pipe only, `\\.\pipe\podman-openbot`, the one AwakenBot uses (`MachineFacts::api`).
 */
 pub const DOCKER_PIPE: &str = "docker_engine";
 
@@ -973,7 +973,7 @@ fn start_machine_with<H>(
         }
         Err(error) => return StepOutcome::stopped(Step::StartMachine, &error),
     };
-    // On Windows this also clears OpenBot's dead port rules, after any restart it makes.
+    // On Windows this also clears AwakenBot's dead port rules, after any restart it makes.
     if let Err(error) =
         configure_host_gateway_after_start(&mut run, target_is_windows, rootful, hold_docker_pipe)
     {
@@ -982,7 +982,7 @@ fn start_machine_with<H>(
     StepOutcome::went(Step::StartMachine, started)
 }
 
-/// OpenBot's dead port rules removed, said in the log. Never stops the start: a machine whose rules
+/// AwakenBot's dead port rules removed, said in the log. Never stops the start: a machine whose rules
 /// could not be read or removed still starts, as it did before.
 fn clear_dead_port_rules(run: &mut impl FnMut(&[&str]) -> Result<String, String>) {
     match crate::netavark_rules::clear_dead(run, MACHINE) {
@@ -1008,7 +1008,7 @@ pub fn start_machine() -> StepOutcome {
     start_machine_with(podman, cfg!(target_os = "windows"), hold_docker_pipe)
 }
 
-/// `DOCKER_PIPE`, held while OpenBot's machine starts, and said in the log.
+/// `DOCKER_PIPE`, held while AwakenBot's machine starts, and said in the log.
 fn hold_docker_pipe() -> impl Sized {
     let held = hold_pipe_name(DOCKER_PIPE);
     log::info!(
@@ -1083,31 +1083,31 @@ pub fn hold_pipe_name(_name: &str) -> Option<()> {
 /// putting them on the screen.
 fn explain_machine_error(error: &str) -> String {
     if error.contains(NETWORK_NOT_UP) {
-        return "Windows needs to restart to finish setting up the software OpenBot runs on. \
-                Restart Windows, then open OpenBot again."
+        return "Windows needs to restart to finish setting up the software AwakenBot runs on. \
+                Restart Windows, then open AwakenBot again."
             .into();
     }
     if error.contains("WSL_E_LOCAL_SYSTEM_NOT_SUPPORTED") {
-        return "OpenBot was opened as an administrator, and this step can't run that way. Quit \
-                OpenBot and open it again normally."
+        return "AwakenBot was opened as an administrator, and this step can't run that way. Quit \
+                AwakenBot and open it again normally."
             .into();
     }
     if error.contains("WSL_E_WSL_OPTIONAL_COMPONENT_REQUIRED") {
-        return "Windows needs a restart to finish turning on a feature OpenBot needs. Restart \
-                Windows, then open OpenBot again."
+        return "Windows needs a restart to finish turning on a feature AwakenBot needs. Restart \
+                Windows, then open AwakenBot again."
             .into();
     }
     if error.contains("without Podman user-mode networking") {
-        return "OpenBot needs to restart the software it runs on, and can't while it runs. Quit \
-                OpenBot, restart your computer, then open OpenBot again."
+        return "AwakenBot needs to restart the software it runs on, and can't while it runs. Quit \
+                AwakenBot, restart your computer, then open AwakenBot again."
             .into();
     }
     if error.contains("not enough space") || error.contains("no space left") {
-        return "There isn't enough disk space to prepare this computer for OpenBot. Free up \
+        return "There isn't enough disk space to prepare this computer for AwakenBot. Free up \
                 some space, then try again."
             .into();
     }
-    "OpenBot couldn't prepare this computer to run it. Try again.".into()
+    "AwakenBot couldn't prepare this computer to run it. Try again.".into()
 }
 
 /// How to reach the machine this app just started.
@@ -1192,7 +1192,7 @@ pub fn health_gate(address: &Address) -> StepOutcome {
 
 /// What to install, named, rather than seven errors about a file that is not there.
 ///
-/// A last resort, not the plan: OpenBot installs a Compose provider itself, so somebody only reads
+/// A last resort, not the plan: AwakenBot installs a Compose provider itself, so somebody only reads
 /// this when that copy is missing or is not being found. The restart comes first for that reason,
 /// and the platform's own instruction is behind it.
 ///
@@ -1216,7 +1216,7 @@ pub fn missing_compose(_binary: &str) -> String {
     };
     // Which engine has no Compose is for the logs, which name it: the sentence says what to do.
     format!(
-        "OpenBot is missing a piece it needs to start its software. Quit OpenBot, open it again \
+        "AwakenBot is missing a piece it needs to start its software. Quit AwakenBot, open it again \
          and try again. If this comes back: {install}"
     )
 }
@@ -1247,7 +1247,7 @@ pub fn download_dir(cache: &Path) -> std::path::PathBuf {
  * running are started again with it, so the machine comes back as it was.
  */
 
-/// The machines running now, by name: OpenBot's and the person's own alike.
+/// The machines running now, by name: AwakenBot's and the person's own alike.
 pub fn running_machines() -> Result<Vec<String>, String> {
     running_in(&podman(&["machine", "list", "--format", "json"])?)
 }
@@ -1319,12 +1319,12 @@ pub fn machine_in(listing: &str, name: &str) -> Result<Option<bool>, String> {
 }
 
 /**
-Every container in OpenBot's machine `name` stopped, before the machine is removed (`uninstall`).
+Every container in AwakenBot's machine `name` stopped, before the machine is removed (`uninstall`).
 
 Stopping a container is what takes its port rules out of WSL's shared network namespace (netavark's
 teardown). Removing the machine with them still running leaves its rules behind, ahead of the next
-OpenBot machine's for the same ports. Box I's backend couldn't be stopped, its cluster's rules
-outlived the machine, and the next install failed at "Opening OpenBot". Only OpenBot's own rootful
+AwakenBot machine's for the same ports. Box I's backend couldn't be stopped, its cluster's rules
+outlived the machine, and the next install failed at "Opening AwakenBot". Only AwakenBot's own rootful
 connection, where its containers run and publish their ports, so nothing of the person's is touched.
 */
 pub fn stop_all_containers(name: &str) -> Result<(), String> {
@@ -1338,7 +1338,7 @@ fn stop_all_containers_with(
     run(&["--connection", &connection_for(name, true), "stop", "--all"]).map(|_| ())
 }
 
-/// When they couldn't be stopped: every one of OpenBot's port rules in the machine `name` removed
+/// When they couldn't be stopped: every one of AwakenBot's port rules in the machine `name` removed
 /// instead (`netavark_rules::clear_own`), while the machine can still be reached. Answers how many.
 pub fn clear_own_port_rules(name: &str) -> Result<usize, String> {
     clear_own_port_rules_with(podman, name)
@@ -1360,7 +1360,7 @@ fn clear_own_port_rules_with(
 }
 
 /// Remove the machine `name` and everything in it, stopping it first if it runs. `--force` because
-/// `podman machine rm` otherwise asks at a terminal, and OpenBot's commands have none.
+/// `podman machine rm` otherwise asks at a terminal, and AwakenBot's commands have none.
 pub fn remove_machine_named(name: &str) -> Result<(), String> {
     remove_machine_with(name, podman)
 }
@@ -1374,8 +1374,8 @@ pub(crate) fn remove_machine_with(
 
 /// Start the machine `name`, then the containers that were running in it.
 ///
-/// OpenBot's own machine starts as `start_machine` starts it, which also sets up its networking. A
-/// container that will not start again is the log's: the machine and its API are what OpenBot
+/// AwakenBot's own machine starts as `start_machine` starts it, which also sets up its networking. A
+/// container that will not start again is the log's: the machine and its API are what AwakenBot
 /// needs, and the person's container is still there to start.
 pub fn start_machine_named(name: &str, containers: &Containers) -> Result<(), String> {
     if name == MACHINE {
@@ -1482,7 +1482,7 @@ fn api_answers_in(
 ) -> Result<(), String> {
     let machines: Vec<Value> = serde_json::from_str(listing)
         .map_err(|error| format!("could not read podman machine inspect JSON: {error}"))?;
-    // A machine inspect does not list is not one OpenBot knows to be broken: nothing is restarted
+    // A machine inspect does not list is not one AwakenBot knows to be broken: nothing is restarted
     // on a guess.
     if !machines
         .iter()
@@ -1497,7 +1497,7 @@ fn api_answers_in(
     }
     match machine_facts(listing, machine)?.api {
         Some(api) => ping(&api),
-        // An API inspect does not name is not one OpenBot can ask, nor one Compose can find.
+        // An API inspect does not name is not one AwakenBot can ask, nor one Compose can find.
         None => Ok(()),
     }
 }
@@ -1551,7 +1551,7 @@ fn ask_api(api: &str) -> Result<String, String> {
         // `npipe:////./pipe/name` is `\\.\pipe\name`: see `pipe_address`.
         return ask_pipe(&pipe.replace('/', "\\")).map_err(failed);
     }
-    Err(format!("{api}: not an API address OpenBot can ask"))
+    Err(format!("{api}: not an API address AwakenBot can ask"))
 }
 
 #[cfg(unix)]
@@ -1697,8 +1697,8 @@ mod tests {
         }
     }
 
-    /// What the uninstaller reads of OpenBot's machine (`uninstall`), from `podman machine list
-    /// --format json` as Podman 6.1.1 on Windows prints it: OpenBot's beside the person's own.
+    /// What the uninstaller reads of AwakenBot's machine (`uninstall`), from `podman machine list
+    /// --format json` as Podman 6.1.1 on Windows prints it: AwakenBot's beside the person's own.
     #[test]
     fn the_uninstaller_finds_openbots_machine_by_name_among_the_persons() {
         let listing = r#"[
@@ -1933,7 +1933,7 @@ mod tests {
         );
     }
 
-    /// Nothing switches a machine that already exists, ours included: its OpenBot lives in the
+    /// Nothing switches a machine that already exists, ours included: its AwakenBot lives in the
     /// rootless engine's storage. Creating is skipped, and nothing else is run.
     #[test]
     fn an_existing_rootless_machine_is_not_switched_to_rootful() {
@@ -2029,8 +2029,8 @@ mod tests {
         assert!(!script.contains("--user"), "{script}");
     }
 
-    /// The live Windows run: OpenBot's machine started first after a Podman update and Podman gave
-    /// it `\\.\pipe\docker_engine`, so the person's Docker clients reached OpenBot's machine. The
+    /// The live Windows run: AwakenBot's machine started first after a Podman update and Podman gave
+    /// it `\\.\pipe\docker_engine`, so the person's Docker clients reached AwakenBot's machine. The
     /// name is held for exactly the `machine start`, and only on Windows.
     #[test]
     fn docker_pipe_is_held_for_exactly_the_machine_start_on_windows() {
@@ -2080,24 +2080,24 @@ mod tests {
     }
 
     /*
-     * OpenBot's machine on Windows, its WSL namespace shared with the person's own Podman machine
+     * AwakenBot's machine on Windows, its WSL namespace shared with the person's own Podman machine
      * and Docker Desktop. Each listing is `nft -a list ruleset` as the machine prints it (stdout:
      * nft's iptables-nft warnings go to stderr), and each networks file is `podman network inspect`
-     * in OpenBot's machine at the same moment:
+     * in AwakenBot's machine at the same moment:
      *
-     * - machine D: the Windows test machine at D80-Q-01, its first Start after OpenBot restarted its
-     *   machine. Every DNAT rule and every OpenBot jump rule is the evidence's own, in its order, in
+     * - machine D: the Windows test machine at D80-Q-01, its first Start after AwakenBot restarted its
+     *   machine. Every DNAT rule and every AwakenBot jump rule is the evidence's own, in its order, in
      *   netavark 1.17.2's iptables-nft layout; the running containers are its "live container IPs".
      *   The 60501-60505 rules sit apart from the 64953-64957 ones, in a chain no network on
-     *   OpenBot's machine hashes to now (named here for the earlier cluster in D80-00): not
-     *   provably OpenBot's, so left alone.
+     *   AwakenBot's machine hashes to now (named here for the earlier cluster in D80-00): not
+     *   provably AwakenBot's, so left alone.
      * - Podman 5.8.9 (netavark 1.17.2, iptables, as Podman forces it on WSL before 6.0) and Podman
      *   6.1.3 (netavark 2.1.0, nftables): captured verbatim from `netavark_rules::live`'s
      *   reproduction. The server ran on both networks, the machine was stopped as WSL stops it and
      *   started again, and the server came back on new addresses behind its old rules.
      *
      * In all three the person's machine has `myapp_default` (8081) and a container on its default
-     * network (8082), and Docker has its own DNAT (8080), none of them on OpenBot's machine.
+     * network (8082), and Docker has its own DNAT (8080), none of them on AwakenBot's machine.
      */
     const MACHINE_D: &str = include_str!("../test-fixtures/netavark-rules/machine-d.nft");
     const MACHINE_D_NETWORKS: &str =
@@ -2111,19 +2111,19 @@ mod tests {
     const PODMAN_6_1_3_NETWORKS: &str =
         include_str!("../test-fixtures/netavark-rules/podman-6.1.3-nftables-inspect.json");
     /// Machine D at the first launch of a build with the cleanup (D90 NV-12): left running by the
-    /// release before it, with nothing of OpenBot's running and every rule of its containers from
+    /// release before it, with nothing of AwakenBot's running and every rule of its containers from
     /// before still there, the k3d network's for `local start` among them. NV-12's own rules and
     /// handles; the live k3d rules it also lists came after the wake, from `local start`.
     const MACHINE_D_WAKE: &str = include_str!("../test-fixtures/netavark-rules/machine-d-wake.nft");
     const MACHINE_D_WAKE_NETWORKS: &str =
         include_str!("../test-fixtures/netavark-rules/machine-d-wake-inspect.json");
 
-    /// OpenBot's WSL machine as `podman machine ssh` answers for it. A rule deleted by handle is
+    /// AwakenBot's WSL machine as `podman machine ssh` answers for it. A rule deleted by handle is
     /// gone from the listing, as nft does it, and one that is not there fails, as nft fails.
     struct WslMachine {
         listing: String,
         networks: String,
-        /// `ip route` in the namespace, and `podman ps -a --format json` on OpenBot's machine, when
+        /// `ip route` in the namespace, and `podman ps -a --format json` on AwakenBot's machine, when
         /// the case has them.
         routes: String,
         published: String,
@@ -2312,9 +2312,9 @@ table ip nat { # handle 5
 }
 ";
 
-    /// Before OpenBot's machine is removed with its containers still running (their stop failed),
+    /// Before AwakenBot's machine is removed with its containers still running (their stop failed),
     /// every one of its own port rules goes: 11 in box I's capture, in the backend's cluster's
-    /// network and OpenBot's two. Its dead-rule cleanup alone removes none, since every container
+    /// network and AwakenBot's two. Its dead-rule cleanup alone removes none, since every container
     /// still runs. The removed machine's chains, a person's machine's and Docker's stay as listed.
     #[test]
     fn before_openbots_machine_is_removed_its_port_rules_go_and_no_one_elses() {
@@ -2356,7 +2356,7 @@ table ip nat { # handle 5
             .contains("dnat to 172.17.0.2:3001 # handle 3"));
     }
 
-    /// The containers are stopped on OpenBot's own rootful connection, where its stack and the
+    /// The containers are stopped on AwakenBot's own rootful connection, where its stack and the
     /// backend's cluster run, and nowhere else.
     #[test]
     fn openbots_containers_are_stopped_on_its_own_connection_only() {
@@ -2395,7 +2395,7 @@ table ip nat { # handle 5
     }
 
     /*
-     * Box I (I-evidence I2-F-12): a ticked uninstall removed OpenBot's machine with its service stop
+     * Box I (I-evidence I2-F-12): a ticked uninstall removed AwakenBot's machine with its service stop
      * failing, the person's rootless machine kept WSL up, and an install made a new `openbot`. The
      * removed machine's chains, for 10.89.1.0/24 and 10.89.2.0/24, sit ahead of the new machine's,
      * and no network anywhere maps to them now. The ruleset is the capture's, verbatim; the
@@ -2408,7 +2408,7 @@ table ip nat { # handle 5
     const BOX_I_ROUTES: &str = include_str!("../test-fixtures/netavark-rules/box-i-routes.txt");
     const BOX_I_PS: &str = include_str!("../test-fixtures/netavark-rules/box-i-ps.json");
     /// Box I with a rootful machine of the person's beside it, publishing 127.0.0.1:5432, one of
-    /// OpenBot's ports, to a postgres of theirs that runs, and Docker publishing 3001.
+    /// AwakenBot's ports, to a postgres of theirs that runs, and Docker publishing 3001.
     const BOX_I_WITH_PERSON: &str =
         include_str!("../test-fixtures/netavark-rules/box-i-with-person-and-docker.nft");
     const BOX_I_WITH_PERSON_ROUTES: &str =
@@ -2472,7 +2472,7 @@ table ip nat { # handle 5
     /// Box I after #1482's cleanup: `nv_9251097f_…_dnat` and `nv_6bd7ac84_…_dnat`, the removed
     /// machine's chains, stayed with only netavark's SETMARK jumps in them, and the jumps to them
     /// stayed first in `NETAVARK-HOSTPORT-DNAT`, so every connection fell through them. They go
-    /// now, chain and jumps, and nothing else does: OpenBot's machine's own chains, the removed
+    /// now, chain and jumps, and nothing else does: AwakenBot's machine's own chains, the removed
     /// machine's other chains, and a person's machine's chain and the jump to it stay as they were.
     #[test]
     fn the_chains_a_removed_machine_left_go_with_the_jumps_to_them_and_nothing_else() {
@@ -2517,7 +2517,7 @@ table ip nat { # handle 5
             assert!(machine
                 .listing
                 .contains("chain nv_9251097f_10_89_1_0_nm24 {"));
-            // The first jump for 3010 is now OpenBot's own machine's.
+            // The first jump for 3010 is now AwakenBot's own machine's.
             let first = after
                 .iter()
                 .find(|rule| {
@@ -2533,8 +2533,8 @@ table ip nat { # handle 5
     }
 
     /// The same, with a rootful machine of the person's beside it that publishes 127.0.0.1:5432,
-    /// one of OpenBot's own ports, to a postgres of theirs that runs, and Docker publishing 3001.
-    /// OpenBot can't see that machine's containers, but their bridge is up, so their chain is not
+    /// one of AwakenBot's own ports, to a postgres of theirs that runs, and Docker publishing 3001.
+    /// AwakenBot can't see that machine's containers, but their bridge is up, so their chain is not
     /// taken for a removed machine's; Docker's is not netavark's. Both stay as they were.
     #[test]
     fn a_persons_machine_on_one_of_openbots_ports_is_not_taken_for_a_removed_one() {
@@ -2573,13 +2573,13 @@ table ip nat { # handle 5
                 rule.text
             );
         }
-        // Their 5432 comes first, as it did: OpenBot changes nothing of theirs.
+        // Their 5432 comes first, as it did: AwakenBot changes nothing of theirs.
         let ip = |address: &str| address.parse::<std::net::IpAddr>().unwrap();
         assert_eq!(reaches(&machine.listing, 5432), Some(ip("10.89.6.2")));
     }
 
-    /// The bug on a Windows machine: OpenBot's machine stopped and started again, and its ports
-    /// still sent to the addresses its containers had before. Started now, only OpenBot's dead
+    /// The bug on a Windows machine: AwakenBot's machine stopped and started again, and its ports
+    /// still sent to the addresses its containers had before. Started now, only AwakenBot's dead
     /// DNAT rules go, before any of its containers start, and every other rule in the shared
     /// namespace, the person's machine's and Docker's among them, is listed as before.
     #[test]
@@ -2667,7 +2667,7 @@ table ip nat { # handle 5
                     "{name}: 127.0.0.1:{port}"
                 );
             }
-            // The person's machine and Docker, whose addresses OpenBot's machine does not hold.
+            // The person's machine and Docker, whose addresses AwakenBot's machine does not hold.
             assert_eq!(
                 reaches(&machine.listing, 8081),
                 Some(ip("10.89.5.2")),
@@ -2740,7 +2740,7 @@ table ip nat { # handle 5
         assert_eq!(older.reads, 1);
         assert_eq!(older.listing, MACHINE_D);
 
-        // Readied for the back end, an engine that is not OpenBot's own machine is not touched:
+        // Readied for the back end, an engine that is not AwakenBot's own machine is not touched:
         // Docker, or a machine of the person's.
         for address in [
             Address::new(Engine::Docker, None),
@@ -2752,10 +2752,10 @@ table ip nat { # handle 5
         }
     }
 
-    /// The order a relaunch now runs in, on a machine found running with OpenBot's containers in
+    /// The order a relaunch now runs in, on a machine found running with AwakenBot's containers in
     /// it: the network checked and set up again with a restart (`owned_machine_before_back_end`),
     /// then the port rules that restart left cleared, still in that step, then the back end started
-    /// (`readied_for_backend`, around `local start`). Nothing of OpenBot's is left by then to send
+    /// (`readied_for_backend`, around `local start`). Nothing of AwakenBot's is left by then to send
     /// a port to an address from before, and the person's and Docker's rules stay.
     #[test]
     fn network_check_then_restart_then_dead_rules_then_local_start() {
@@ -2837,11 +2837,11 @@ table ip nat { # handle 5
         assert!(at_local_start.contains("dnat to 172.17.0.2:80"));
     }
 
-    /// The gap machine D found (D90 NV-12): the release before left OpenBot's machine running, so
+    /// The gap machine D found (D90 NV-12): the release before left AwakenBot's machine running, so
     /// the next launch only woke it, nothing started it, and nothing cleared its dead rules. `local
     /// start` then waited 4m50s on 127.0.0.1:55059 behind the k3d rules for 10.89.0.4 and gave up.
     /// The back end's start is now readied first: the machine is not stopped or started, and when
-    /// `local start` runs, none of OpenBot's dead rules is left, the k3d network's included, while
+    /// `local start` runs, none of AwakenBot's dead rules is left, the k3d network's included, while
     /// the person's machine's rule on the shared default network stays.
     #[test]
     fn a_running_machine_openbot_did_not_start_loses_its_dead_port_rules_before_the_back_end_starts(
@@ -2884,11 +2884,11 @@ table ip nat { # handle 5
         assert_eq!(removed, [111, 115, 127, 130, 86, 89, 92, 95, 107, 119, 122]);
     }
 
-    /// The network check's own restart (`host_gateway_restarting_once`): OpenBot's machine's
-    /// network did not come up, so OpenBot stopped and started its machine once, here with its
+    /// The network check's own restart (`host_gateway_restarting_once`): AwakenBot's machine's
+    /// network did not come up, so AwakenBot stopped and started its machine once, here with its
     /// containers running, as Start finds them before Compose. That stop is what leaves their rules
     /// behind, so the dead ones are cleared after the restart, and before Compose starts the
-    /// containers again on new addresses: no rule of OpenBot's is left to send a port to an address
+    /// containers again on new addresses: no rule of AwakenBot's is left to send a port to an address
     /// from before it. Cleared before the restart, the server's rules from before it would stay.
     #[test]
     fn dead_port_rules_are_cleared_after_the_network_check_restarts_the_machine() {
@@ -2945,7 +2945,7 @@ table ip nat { # handle 5
             .expect("the rules were read");
         assert!(restart < cleared, "{calls:#?}");
         assert_eq!(machine.reads, 1);
-        // Nothing of OpenBot's runs until Compose starts it, so no port of its goes anywhere yet.
+        // Nothing of AwakenBot's runs until Compose starts it, so no port of its goes anywhere yet.
         assert_eq!(reaches(&machine.listing, 3010), None);
         assert_eq!(reaches(&machine.listing, 3001), None);
         let ip = |address: &str| address.parse::<std::net::IpAddr>().unwrap();
@@ -3111,7 +3111,7 @@ table ip nat { # handle 5
                 .into_iter()
                 .map(str::to_string)
                 .collect::<Vec<_>>(),
-                // OpenBot's dead port rules looked for, once its network answers, before its containers start.
+                // AwakenBot's dead port rules looked for, once its network answers, before its containers start.
                 vec![
                     "machine".to_string(),
                     "ssh".to_string(),
@@ -3179,7 +3179,7 @@ table ip nat { # handle 5
     /// The time one lookup took when it timed out.
     const LOOKUP_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(3);
 
-    /// `podman machine list --format json`, with OpenBot's machine and, when asked, one of the
+    /// `podman machine list --format json`, with AwakenBot's machine and, when asked, one of the
     /// person's own, both on user-mode networking.
     fn machine_list(person_running: bool) -> String {
         let machine = |name: &str, running: bool| {
@@ -3262,7 +3262,7 @@ table ip nat { # handle 5
     }
 
     /// The same computer, as it was: the machine's network never came up, the image downloads
-    /// failed on DNS after a Retry, and only a Windows restart fixed it. OpenBot's machine is
+    /// failed on DNS after a Retry, and only a Windows restart fixed it. AwakenBot's machine is
     /// restarted once, the only machine using that network, and then the person is asked to restart
     /// Windows, not to try again. The same check runs before the downloads.
     #[test]
@@ -3321,8 +3321,8 @@ table ip nat { # handle 5
         assert!(problem.restart_windows);
         assert_eq!(
             problem.said,
-            "Windows needs to restart to finish setting up the software OpenBot runs on. Restart \
-             Windows, then open OpenBot again."
+            "Windows needs to restart to finish setting up the software AwakenBot runs on. Restart \
+             Windows, then open AwakenBot again."
         );
         // And the same from the start step, which is where setup shows it.
         let stopped = StepOutcome::stopped(Step::StartMachine, &error);
@@ -3382,7 +3382,7 @@ table ip nat { # handle 5
     }
 
     /// There is one user-mode network for every Podman machine on the computer. While a machine
-    /// of the person's own runs on it, restarting OpenBot's would change nothing, and theirs is
+    /// of the person's own runs on it, restarting AwakenBot's would change nothing, and theirs is
     /// never stopped: straight to the Windows restart.
     #[test]
     fn a_network_shared_with_the_persons_machine_is_left_alone() {
@@ -3415,9 +3415,9 @@ table ip nat { # handle 5
         assert!(!shares_user_mode_network(&machine_list(false)).unwrap());
     }
 
-    /// A live Windows run broke OpenBot's machine's network the way the brand-new Windows Server
+    /// A live Windows run broke AwakenBot's machine's network the way the brand-new Windows Server
     /// had it. The check before the back end starts finds it, says it is reconnecting once, and
-    /// restarts OpenBot's machine, with nothing else written to the machine: the gateway setting is
+    /// restarts AwakenBot's machine, with nothing else written to the machine: the gateway setting is
     /// Start's (`prepare_for_compose`).
     #[test]
     fn the_check_before_the_back_end_sets_the_network_up_again_and_says_so_once() {
@@ -3466,7 +3466,7 @@ table ip nat { # handle 5
         );
         assert_eq!(
             RECONNECTING,
-            "Reconnecting OpenBot to the internet. This can take a minute or two."
+            "Reconnecting AwakenBot to the internet. This can take a minute or two."
         );
     }
 
@@ -3538,7 +3538,7 @@ table ip nat { # handle 5
             &mut real_clock(),
             || (),
         )
-        .expect("borrowed Podman machines are outside OpenBot's provisioning scope");
+        .expect("borrowed Podman machines are outside AwakenBot's provisioning scope");
 
         assert!(!called);
     }
@@ -3655,7 +3655,7 @@ table ip nat { # handle 5
         let addressed = address_with(|| Ok(inspect(true)), nowhere);
         assert_eq!(addressed.connection.as_deref(), Some("openbot-root"));
         assert_eq!(addressed.engine, Engine::Podman);
-        // Rootless, as releases up to 0.2.0 created it: its bare name, where its OpenBot is.
+        // Rootless, as releases up to 0.2.0 created it: its bare name, where its AwakenBot is.
         let addressed = address_with(|| Ok(inspect(false)), nowhere);
         assert_eq!(addressed.connection.as_deref(), Some(MACHINE));
         // Not inspectable: as this app creates it.
@@ -3666,7 +3666,7 @@ table ip nat { # handle 5
         assert_eq!(addressed.connection.as_deref(), Some(MACHINE));
     }
 
-    /// An OpenBot is never moved away from its database by the machine's mode.
+    /// An AwakenBot is never moved away from its database by the machine's mode.
     #[test]
     fn a_rootful_machine_keeps_an_openbot_whose_database_is_in_rootless_storage() {
         let in_rootless: fn(&str) -> bool = |connection| connection == "podman-machine-default";
@@ -4025,7 +4025,7 @@ table ip nat { # handle 5
         let explained = explain_machine_error("some novel failure");
         assert_eq!(
             explained,
-            "OpenBot couldn't prepare this computer to run it. Try again."
+            "AwakenBot couldn't prepare this computer to run it. Try again."
         );
         let stopped = StepOutcome::stopped(Step::CreateMachine, "some novel failure");
         assert_eq!(stopped.detail.as_deref(), Some("some novel failure"));

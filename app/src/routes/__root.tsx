@@ -120,7 +120,7 @@ export function useUnclaimedDropGuard() {
 
 function RootComponent() {
   useUnclaimedDropGuard();
-  // OpenBot Desktop opens a notice's page here, as a route change. See `lib/desktop/open-requests.ts`.
+  // AwakenBot Desktop opens a notice's page here, as a route change. See `lib/desktop/open-requests.ts`.
   useDesktopOpenRequests();
   return (
     <div className="min-h-dvh w-full antialiased">

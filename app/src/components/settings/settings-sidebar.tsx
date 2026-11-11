@@ -43,7 +43,7 @@ type SettingsSidebarItem = {
    * everywhere else, so an entry stays lit on the pages beneath it.
    */
   exact?: boolean;
-  /** Shown only inside OpenBot Desktop, which is what the page reads from. */
+  /** Shown only inside AwakenBot Desktop, which is what the page reads from. */
   desktopOnly?: boolean;
   icon: React.ComponentType<{ className?: string }>;
   linkOptions: LinkOptions;
@@ -97,7 +97,7 @@ export const SETTINGS_SIDEBAR_ITEMS: SettingsSidebarItem[] = [
     linkOptions: { to: "/settings/passwords" },
   },
   {
-    /* What OpenBot runs here and the memory it takes, with Restart and Stop. */
+    /* What AwakenBot runs here and the memory it takes, with Restart and Stop. */
     title: "This computer",
     icon: IconDeviceDesktop,
     desktopOnly: true,

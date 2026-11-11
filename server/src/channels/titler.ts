@@ -29,7 +29,7 @@ export type TitlerOptions = {
   /** The model to ask, from the tenant package. */
   model: string;
   /**
-   * The plan the deployment signed in to instead of a key (a Claude or ChatGPT plan on OpenBot
+   * The plan the deployment signed in to instead of a key (a Claude or ChatGPT plan on AwakenBot
    * Desktop). Present, the title is asked of the plan's own harness, as the built-in Bots are
    * answered: there is no key to ask a provider with, and without this no conversation was named.
    */

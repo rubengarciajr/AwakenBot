@@ -11,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
  *
  * The real window (`main.tsx` and `styles.css`), bundled as the app is, in a real Chromium, because
  * where a field lands is the browser's layout to decide. Only the native side is scripted, as it
- * answers on a first run: install done, the account passed, the rest of OpenBot setting up behind
+ * answers on a first run: install done, the account passed, the rest of AwakenBot setting up behind
  * the step, its download arriving and ending.
  *
  *   OPENBOT_APP_BROWSER=1 bun test src/setupLayout.browser.test.ts
@@ -72,7 +72,7 @@ type Chromium = {
 /**
  * `@tauri-apps/api/core`, scripted. The page's `__fake.download` is what the download poll answers,
  * and `__fake.emit` sends setup progress as the native side does. `#start` is a relaunch whose
- * Start updates OpenBot; otherwise it is a first run.
+ * Start updates AwakenBot; otherwise it is a first run.
  */
 const FAKE_CORE = `
 const fake = (globalThis.__fake ??= { listeners: {}, download: null });
@@ -143,11 +143,11 @@ export async function invoke(command) {
       ];
     case "prepare_installation":
       if (pausing) {
-        // A Mac whose own Podman OpenBot can't use: Install waits for the person's yes.
-        emit("setup:progress", { step: "pause-podman", ok: true, running: true, asks: true, detail: "Your Podman is set up in a way OpenBot can't use. OpenBot will use its own, and pause yours while OpenBot is running. Yours starts again when you quit OpenBot." });
+        // A Mac whose own Podman AwakenBot can't use: Install waits for the person's yes.
+        emit("setup:progress", { step: "pause-podman", ok: true, running: true, asks: true, detail: "Your Podman is set up in a way AwakenBot can't use. AwakenBot will use its own, and pause yours while AwakenBot is running. Yours starts again when you quit AwakenBot." });
         return new Promise(() => {});
       }
-      emit("setup:progress", { step: "engine", ok: true, running: false, detail: "The software OpenBot runs on is ready." });
+      emit("setup:progress", { step: "engine", ok: true, running: false, detail: "The software AwakenBot runs on is ready." });
       return installing ? installed : new Promise((resolve) => setTimeout(() => resolve(null), 50));
     case "sign_in_to_copilotkit":
       if (slowCheck) return new Promise((resolve) => setTimeout(() => resolve({ signedIn: true }), 1500));
@@ -299,31 +299,31 @@ async function measure(page: Page) {
  */
 const LONGEST_ROW_LINES: [string, boolean][] = [
   [
-    "The Docker Desktop on this computer is too old for OpenBot, so OpenBot is updating it. Windows will ask for your approval.",
+    "The Docker Desktop on this computer is too old for AwakenBot, so AwakenBot is updating it. Windows will ask for your approval.",
     true,
   ],
   [
-    "The Docker Desktop on this computer is too old for OpenBot, so OpenBot is updating it. Your Mac will ask for your password.",
+    "The Docker Desktop on this computer is too old for AwakenBot, so AwakenBot is updating it. Your Mac will ask for your password.",
     true,
   ],
   [
-    "The Docker Desktop on this computer is too old for OpenBot, so OpenBot is updating it. About 25 minutes left.",
+    "The Docker Desktop on this computer is too old for AwakenBot, so AwakenBot is updating it. About 25 minutes left.",
     false,
   ],
   [
-    "The Podman on this computer is too old for OpenBot, so OpenBot is updating it. Your Mac will ask for your password.",
+    "The Podman on this computer is too old for AwakenBot, so AwakenBot is updating it. Your Mac will ask for your password.",
     true,
   ],
   [
-    "Docker Desktop is starting in its own window. If it asks you to accept its terms or sign in, do that there. OpenBot comes back when Docker is ready.",
+    "Docker Desktop is starting in its own window. If it asks you to accept its terms or sign in, do that there. AwakenBot comes back when Docker is ready.",
     true,
   ],
   [
-    "Docker Desktop hasn't started yet. It may be waiting for you in its own window. Accept its terms or sign in there, and OpenBot carries on by itself.",
+    "Docker Desktop hasn't started yet. It may be waiting for you in its own window. Accept its terms or sign in there, and AwakenBot carries on by itself.",
     true,
   ],
   [
-    "Preparing this computer to run OpenBot. If a window asks to install a Windows feature OpenBot needs, allow it. Windows then asks for your approval and a restart.",
+    "Preparing this computer to run AwakenBot. If a window asks to install a Windows feature AwakenBot needs, allow it. Windows then asks for your approval and a restart.",
     true,
   ],
 ];
@@ -377,13 +377,13 @@ describe.skipIf(!asked)("the window through a first run", () => {
 
 /*
  * Seen on Windows F (a 1016x839 window): "Connect your AI" was taller than the window and scrolled
- * in its card, and the "Installing OpenBot in the background" row sat below the fold at y 822-839,
+ * in its card, and the "Installing AwakenBot in the background" row sat below the fold at y 822-839,
  * seen only by scrolling. It is pinned to the bottom of the card's visible area now, and Continue
  * still scrolls into view above it.
  */
 /*
  * Seen on Windows F (a 1016x839 window): "Connect your AI" was taller than the window and scrolled
- * in its card. First the "Installing OpenBot in the background" row sat below the fold; then, with
+ * in its card. First the "Installing AwakenBot in the background" row sat below the fold; then, with
  * only that row pinned, Continue sat under it with a grey sliver showing until the person
  * scrolled. A step's foot is pinned now: its action and the background row, both in view, with the
  * step scrolling above them.
@@ -407,7 +407,7 @@ describe.skipIf(!asked)("a setup step's foot", () => {
           page,
           await page
             .getByRole("listitem", {
-              name: "Installing OpenBot in the background",
+              name: "Installing AwakenBot in the background",
             })
             .boundingBox(),
           "the background row",
@@ -567,10 +567,10 @@ describe.skipIf(!asked)(
             step: "images",
             ok: true,
             running: true,
-            detail: "Checking what OpenBot needs to download.",
+            detail: "Checking what AwakenBot needs to download.",
           });
           await licence
-            .getByText("Checking what OpenBot needs to download.")
+            .getByText("Checking what AwakenBot needs to download.")
             .waitFor();
           seen.push(await top(licence, "Accept"));
           // Downloading, with its bar and bytes.
@@ -578,7 +578,7 @@ describe.skipIf(!asked)(
             step: "images",
             ok: true,
             running: true,
-            detail: "Downloading OpenBot.",
+            detail: "Downloading AwakenBot.",
             downloads: {
               done: 1,
               total: 5,
@@ -596,7 +596,7 @@ describe.skipIf(!asked)(
             step: "images",
             ok: true,
             running: true,
-            detail: "Downloading OpenBot.",
+            detail: "Downloading AwakenBot.",
             downloads: {
               done: 3,
               total: 5,
@@ -604,7 +604,7 @@ describe.skipIf(!asked)(
               size: 1_100_000_000,
             },
           });
-          await licence.getByText(/Unpacking OpenBot/).waitFor();
+          await licence.getByText(/Unpacking AwakenBot/).waitFor();
           seen.push(await top(licence, "Accept"));
           // Installed, and the rest waiting for the person.
           await licence.evaluate(() =>
@@ -634,7 +634,9 @@ describe.skipIf(!asked)(
           await page.waitForTimeout(1200);
           const seen: (number | undefined)[] = [];
           // A plain line: setting up, with nothing downloading.
-          await page.getByText(/Setting up OpenBot on this computer/).waitFor();
+          await page
+            .getByText(/Setting up AwakenBot on this computer/)
+            .waitFor();
           seen.push(await top(page, "Continue"));
           // Downloading the rest, with its bar and bytes.
           await page.evaluate(() => {
@@ -650,7 +652,7 @@ describe.skipIf(!asked)(
               globalThis as unknown as { __fake: { finishSetUp: () => void } }
             ).__fake.finishSetUp(),
           );
-          await page.getByText("OpenBot is installed").waitFor();
+          await page.getByText("AwakenBot is installed").waitFor();
           seen.push(await top(page, "Continue"));
           expect(seen.every((y) => y !== undefined && y === seen[0])).toBe(
             true,
@@ -718,7 +720,7 @@ describe.skipIf(!asked)("the background row under the step's button", () => {
 
 /*
  * Seen on Windows F: on the first screen the download line shrank about 40px when the download
- * finished ("Downloading OpenBot." with its bar and bytes, then a line saying it was downloaded),
+ * finished ("Downloading AwakenBot." with its bar and bytes, then a line saying it was downloaded),
  * and the text under it moved up. The line holds its tallest height in every state, and before it
  * says anything, so the card's bottom edge stays where it is.
  */
@@ -732,7 +734,7 @@ describe.skipIf(!asked)("the first screen while its downloads run", () => {
       try {
         await open(page);
         await page
-          .getByRole("heading", { name: "Set up OpenBot (self-contained)" })
+          .getByRole("heading", { name: "Set up AwakenBot (self-contained)" })
           .waitFor();
         await page.waitForTimeout(400);
         // The card's bottom edge: nothing under the line moves, and the card does not shrink.
@@ -785,78 +787,85 @@ describe.skipIf(!asked)("the first screen while its downloads run", () => {
   }
 });
 
-describe.skipIf(!asked)("the AI step while OpenBot installs behind it", () => {
-  for (const [width, height] of [
-    [1000, 800],
-    [720, 560],
-  ] as const) {
-    test(`at ${width}x${height}, the form does not move and the page does not grow as the download comes and goes`, async () => {
-      const page = await browser.newPage({ viewport: { width, height } });
-      try {
-        await open(page);
-        await page
-          .getByRole("button", { name: "Install", exact: true })
-          .click();
-        await page.getByRole("heading", { name: "Connect your AI" }).waitFor();
-        await page.getByText("Any OpenAI-compatible endpoint").click();
-        await page.getByLabel("Base URL", { exact: true }).waitFor();
-        // The entrance animation settles before anything is measured.
-        await page.waitForTimeout(600);
-        const before = await measure(page);
-        expect(before.field).toBeGreaterThan(0);
+describe.skipIf(!asked)(
+  "the AI step while AwakenBot installs behind it",
+  () => {
+    for (const [width, height] of [
+      [1000, 800],
+      [720, 560],
+    ] as const) {
+      test(`at ${width}x${height}, the form does not move and the page does not grow as the download comes and goes`, async () => {
+        const page = await browser.newPage({ viewport: { width, height } });
+        try {
+          await open(page);
+          await page
+            .getByRole("button", { name: "Install", exact: true })
+            .click();
+          await page
+            .getByRole("heading", { name: "Connect your AI" })
+            .waitFor();
+          await page.getByText("Any OpenAI-compatible endpoint").click();
+          await page.getByLabel("Base URL", { exact: true }).waitFor();
+          // The entrance animation settles before anything is measured.
+          await page.waitForTimeout(600);
+          const before = await measure(page);
+          expect(before.field).toBeGreaterThan(0);
 
-        // The rest of OpenBot starts downloading, while the person types in the form.
-        await page.evaluate(() => {
-          (
-            globalThis as unknown as { __fake: { download: unknown } }
-          ).__fake.download = { done: 400_000_000, total: 1_600_000_000 };
-        });
-        await page.getByText("400.0 MB of 1.6 GB").waitFor();
-        expect(await measure(page)).toEqual(before);
+          // The rest of AwakenBot starts downloading, while the person types in the form.
+          await page.evaluate(() => {
+            (
+              globalThis as unknown as { __fake: { download: unknown } }
+            ).__fake.download = { done: 400_000_000, total: 1_600_000_000 };
+          });
+          await page.getByText("400.0 MB of 1.6 GB").waitFor();
+          expect(await measure(page)).toEqual(before);
 
-        // The download ends.
-        await page.evaluate(() => {
-          (
-            globalThis as unknown as { __fake: { download: unknown } }
-          ).__fake.download = null;
-        });
-        await page.getByText("400.0 MB of 1.6 GB").waitFor({ state: "hidden" });
-        expect(await measure(page)).toEqual(before);
+          // The download ends.
+          await page.evaluate(() => {
+            (
+              globalThis as unknown as { __fake: { download: unknown } }
+            ).__fake.download = null;
+          });
+          await page
+            .getByText("400.0 MB of 1.6 GB")
+            .waitFor({ state: "hidden" });
+          expect(await measure(page)).toEqual(before);
 
-        // Everything is installed, and the row says so.
-        await page.evaluate(() =>
-          (
-            globalThis as unknown as { __fake: { finishSetUp: () => void } }
-          ).__fake.finishSetUp(),
-        );
-        await page.getByText("OpenBot is installed").waitFor();
-        expect(await measure(page)).toEqual(before);
-      } finally {
-        await page.close();
-      }
-    }, 30_000);
-  }
-});
+          // Everything is installed, and the row says so.
+          await page.evaluate(() =>
+            (
+              globalThis as unknown as { __fake: { finishSetUp: () => void } }
+            ).__fake.finishSetUp(),
+          );
+          await page.getByText("AwakenBot is installed").waitFor();
+          expect(await measure(page)).toEqual(before);
+        } finally {
+          await page.close();
+        }
+      }, 30_000);
+    }
+  },
+);
 
 /** Where the step's heading and its first row are: what a person is reading. */
 async function anchors(page: Page) {
   const heading = await page
-    .getByRole("heading", { name: "Starting OpenBot" })
+    .getByRole("heading", { name: "Starting AwakenBot" })
     .boundingBox();
   const first = await page
-    .getByRole("listitem", { name: "Setting up OpenBot" })
+    .getByRole("listitem", { name: "Setting up AwakenBot" })
     .boundingBox();
   return { heading: heading?.y, first: first?.y };
 }
 
 /*
- * Seen on Windows: Start's card re-centred as rows came and went while OpenBot updated, so the
+ * Seen on Windows: Start's card re-centred as rows came and went while AwakenBot updated, so the
  * heading and the rows jumped up 31px when the update's row appeared, up 20px when its download
  * bar did, and down 20px when the bar went. The card is held from the top now, and the update is
  * the Start journey's: its download's measure sits on the journey's time line, so neither the
  * heading nor the rows move as it comes and goes.
  */
-describe.skipIf(!asked)("the Start screen while OpenBot updates", () => {
+describe.skipIf(!asked)("the Start screen while AwakenBot updates", () => {
   for (const [width, height] of [
     [1000, 800],
     [720, 560],
@@ -865,7 +874,9 @@ describe.skipIf(!asked)("the Start screen while OpenBot updates", () => {
       const page = await browser.newPage({ viewport: { width, height } });
       try {
         await open(page, "#start");
-        await page.getByRole("listitem", { name: "Opening OpenBot" }).waitFor();
+        await page
+          .getByRole("listitem", { name: "Opening AwakenBot" })
+          .waitFor();
         await page.waitForTimeout(600);
         const before = await anchors(page);
         expect(before.heading).toBeGreaterThan(0);
@@ -934,8 +945,8 @@ describe.skipIf(!asked)("the Start screen while OpenBot updates", () => {
 });
 
 /*
- * David's decision for 1.0.2: on a Mac whose own Podman OpenBot can't use, the account step says
- * OpenBot needs its own and offers to pause theirs, with one button. The card, its button and the
+ * David's decision for 1.0.2: on a Mac whose own Podman AwakenBot can't use, the account step says
+ * AwakenBot needs its own and offers to pause theirs, with one button. The card, its button and the
  * background row are all in the window at the setup window's sizes, without the page growing.
  * `OPENBOT_APP_SHOTS=<folder>` keeps a screenshot of each size for a look.
  */
@@ -955,14 +966,14 @@ describe.skipIf(!asked)("the offer to pause the person's Podman", () => {
           .getByRole("heading", { name: "Setting up this computer" })
           .waitFor();
         const card = page.getByRole("region", {
-          name: "OpenBot needs its own Podman",
+          name: "AwakenBot needs its own Podman",
         });
         await card.waitFor();
         await page.waitForTimeout(400);
         const button = page.getByRole("button", { name: "Pause my Podman" });
         const box = await button.boundingBox();
         const behind = page.getByRole("listitem", {
-          name: "Installing OpenBot in the background",
+          name: "Installing AwakenBot in the background",
         });
         const foot = await page.locator(".step-footer").boundingBox();
         expect(box).not.toBeNull();
@@ -1108,7 +1119,7 @@ describe.skipIf(!asked)("Connect your AI with every provider", () => {
 });
 
 /*
- * Seen on Windows G: the background row read "Installing OpenBot in the backgr..." beside its
+ * Seen on Windows G: the background row read "Installing AwakenBot in the backgr..." beside its
  * "Step 3 of 4 · 4m 18s elapsed" badge. Its name is whole now, the badge on a line of its own, and
  * the row still fits the height its slot holds in every state.
  */
@@ -1153,11 +1164,13 @@ describe.skipIf(!asked)(
               };
             });
           // Setting up, then downloading the rest with its bar and bytes, then installed.
-          await page.getByText(/Setting up OpenBot on this computer/).waitFor();
+          await page
+            .getByText(/Setting up AwakenBot on this computer/)
+            .waitFor();
           await page.waitForTimeout(1100);
           const plain = await read();
           expect(plain).toEqual({
-            name: "Installing OpenBot in the background",
+            name: "Installing AwakenBot in the background",
             cut: false,
             badge: expect.stringMatching(/^Step 3 of 4 · 4m \d+s elapsed$/),
             fits: true,
@@ -1233,10 +1246,10 @@ describe.skipIf(!asked)(
   },
 );
 
-/** Opens a relaunch whose Start updates OpenBot, at its last step, OpenBot opening. */
+/** Opens a relaunch whose Start updates AwakenBot, at its last step, AwakenBot opening. */
 async function toStart(page: Page) {
   await open(page, "#start");
-  await page.getByRole("listitem", { name: "Opening OpenBot" }).waitFor();
+  await page.getByRole("listitem", { name: "Opening AwakenBot" }).waitFor();
   await page.waitForTimeout(600);
 }
 
@@ -1253,7 +1266,7 @@ const emitProgress = (page: Page, payload: Record<string, unknown>) =>
 
 describe.skipIf(!asked)("the Start screen's words and card", () => {
   /*
-   * Seen on Windows G: "Starting OpenBot" said "This usually takes a minute or two" over a card
+   * Seen on Windows G: "Starting AwakenBot" said "This usually takes a minute or two" over a card
    * that said "About 3 minutes left", and the start took four. The card's time comes from how long
    * each part takes; the heading gives none of its own.
    */
@@ -1268,8 +1281,8 @@ describe.skipIf(!asked)("the Start screen's words and card", () => {
         lede: document.querySelector("main .lede")?.textContent ?? "",
         card: document.querySelector(".journey-time")?.textContent ?? "",
       }));
-      expect(said.heading).toBe("Starting OpenBot");
-      expect(said.lede).toBe("OpenBot is getting ready and opens by itself.");
+      expect(said.heading).toBe("Starting AwakenBot");
+      expect(said.lede).toBe("AwakenBot is getting ready and opens by itself.");
       expect(said.lede).not.toMatch(/minute|second|hour/i);
       expect(said.card).toMatch(/left/);
     } finally {
@@ -1305,7 +1318,7 @@ describe.skipIf(!asked)("the Start screen's words and card", () => {
           return {
             card: card?.height ?? 0,
             row: document
-              .querySelector('[aria-label="Setting up OpenBot"]')
+              .querySelector('[aria-label="Setting up AwakenBot"]')
               ?.getBoundingClientRect().top,
             // The padding above what it says, and under the bar.
             above: (words?.top ?? 0) - (card?.top ?? 0),
@@ -1322,7 +1335,7 @@ describe.skipIf(!asked)("the Start screen's words and card", () => {
           detail: "Downloading local software.",
           downloads,
         });
-      // OpenBot updating itself, its download under way, as on Windows G.
+      // AwakenBot updating itself, its download under way, as on Windows G.
       await emitProgress(page, {
         step: "release",
         ok: true,
@@ -1395,7 +1408,7 @@ describe.skipIf(!asked)("the Start screen's words and card", () => {
         return card();
       };
       const starting = await handOff(
-        "Docker Desktop is starting in its own window. If it asks you to accept its terms or sign in, do that there. OpenBot comes back when Docker is ready.",
+        "Docker Desktop is starting in its own window. If it asks you to accept its terms or sign in, do that there. AwakenBot comes back when Docker is ready.",
       );
       const waiting = await handOff(
         "Docker Desktop hasn't started yet. It may be waiting for you. Accept its terms there.",
@@ -1409,7 +1422,7 @@ describe.skipIf(!asked)("the Start screen's words and card", () => {
 
   /*
    * Seen on Windows G: Cancel went at step 4 and the card shrank. Cancel stops the setup's own
-   * steps; the last, OpenBot starting or updating, can't be stopped partway. Its place says so, in
+   * steps; the last, AwakenBot starting or updating, can't be stopped partway. Its place says so, in
    * a button's height.
    */
   test("at its last step, the place of Cancel says why it can't be cancelled", async () => {
@@ -1423,10 +1436,10 @@ describe.skipIf(!asked)("the Start screen's words and card", () => {
       );
       const note = page.locator(".cannot-cancel");
       expect(await note.textContent()).toBe(
-        "You can't cancel this last step. Stopping it partway could leave OpenBot half started.",
+        "You can't cancel this last step. Stopping it partway could leave AwakenBot half started.",
       );
       expect((await note.boundingBox())?.height).toBe(40);
-      // OpenBot updating itself, as on Windows G.
+      // AwakenBot updating itself, as on Windows G.
       await emitProgress(page, {
         step: "release",
         ok: true,
@@ -1449,7 +1462,7 @@ describe.skipIf(!asked)(
     /*
      * Seen on Windows G: for two seconds before the license agreement, a signed-in person saw the
      * signed-out pitch ("It requires a free license key", "does NOT send traffic data") over
-     * "Checking your OpenBot account". The step says only that it is checking, until it knows.
+     * "Checking your AwakenBot account". The step says only that it is checking, until it knows.
      */
     test("while the sign-in is checked, the screen says so and nothing about signing in", async () => {
       const page = await browser.newPage({
@@ -1461,13 +1474,13 @@ describe.skipIf(!asked)(
           .getByRole("button", { name: "Install", exact: true })
           .click();
         await page
-          .getByRole("heading", { name: "Your OpenBot account" })
+          .getByRole("heading", { name: "Your AwakenBot account" })
           .waitFor();
         const text = await page.evaluate(
           () =>
             (document.querySelector("main > .sheet") as HTMLElement).innerText,
         );
-        expect(text).toContain("Checking your OpenBot account");
+        expect(text).toContain("Checking your AwakenBot account");
         expect(text).not.toMatch(
           /license key|traffic data|Self-contained|sign in/i,
         );
@@ -1496,7 +1509,7 @@ describe.skipIf(!asked)(
           .getByRole("heading", { name: "Accept the license agreement" })
           .waitFor();
         const row = page.getByRole("listitem", {
-          name: "Installing OpenBot in the background",
+          name: "Installing AwakenBot in the background",
         });
         await page.getByText(/The rest of the install starts/).waitFor();
         const said = (await row.textContent()) ?? "";

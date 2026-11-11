@@ -170,21 +170,21 @@ async function providerStartup(botProvider: string) {
   return { exitCode, stderr };
 }
 
-describe("OpenBot Mastra receiver instructions", () => {
+describe("AwakenBot Mastra receiver instructions", () => {
   test("delivers the learned catalog after the standing role and tool guidance", () => {
     expect(
       buildOpenBotInstructions({
         requestContext: requestContextWith([
           {
-            description: "OpenBot learned skills",
+            description: "AwakenBot learned skills",
             value: "Published skill: refunds",
           },
           {
-            description: "OpenBot signed run assertion",
+            description: "AwakenBot signed run assertion",
             value: "secret-assertion",
           },
           {
-            description: "OpenBot standing role",
+            description: "AwakenBot standing role",
             value: "Follow company policy.",
           },
         ]),
@@ -197,19 +197,19 @@ describe("OpenBot Mastra receiver instructions", () => {
       ].join("\n\n"),
     );
   });
-  test("adds model-visible OpenBot role context in receiver order", () => {
+  test("adds model-visible AwakenBot role context in receiver order", () => {
     const instructions = buildOpenBotInstructions({
       requestContext: requestContextWith([
         {
-          description: "OpenBot granted tools guidance",
+          description: "AwakenBot granted tools guidance",
           value: "Use only the granted Slack tool.",
         },
         {
-          description: "OpenBot standing role",
+          description: "AwakenBot standing role",
           value: "Use MODEL_BOUNDARY_MANAGED_ROLE in the answer.",
         },
         {
-          description: "OpenBot Bot id",
+          description: "AwakenBot Bot id",
           value: "packaged-mastra-managed",
         },
       ]),
@@ -224,7 +224,7 @@ describe("OpenBot Mastra receiver instructions", () => {
     );
   });
 
-  test("delivers the caller's context after OpenBot's, and never OpenBot's machine-only entries", () => {
+  test("delivers the caller's context after AwakenBot's, and never AwakenBot's machine-only entries", () => {
     // The server forwards whatever context the surface sent (`callerMastraContext` in
     // server/src/copilot.ts). Every other harness puts it in front of the model; dropping it here
     // left a Mastra Bot without, say, the component catalogue the surface asked it to draw from.
@@ -235,17 +235,17 @@ describe("OpenBot Mastra receiver instructions", () => {
           value: "CALLER_CATALOG_MARKER",
         },
         {
-          description: "OpenBot standing role",
+          description: "AwakenBot standing role",
           value: "Follow company policy.",
         },
         {
-          description: "OpenBot signed run assertion",
+          description: "AwakenBot signed run assertion",
           value: "secret-assertion",
         },
-        { description: "OpenBot Bot id", value: "packaged-mastra-managed" },
-        { description: "OpenBot deployment tools", value: '["message_bot"]' },
+        { description: "AwakenBot Bot id", value: "packaged-mastra-managed" },
+        { description: "AwakenBot deployment tools", value: '["message_bot"]' },
         // Untrusted data: it reaches the model as a quoted conversation row, never as instructions.
-        { description: "OpenBot personal memory", value: "QUOTED_MEMORY" },
+        { description: "AwakenBot personal memory", value: "QUOTED_MEMORY" },
         { description: "Blank", value: "   " },
       ]),
     });
@@ -269,7 +269,7 @@ describe("OpenBot Mastra receiver instructions", () => {
   });
 });
 
-describe("OpenBot Mastra model configuration", () => {
+describe("AwakenBot Mastra model configuration", () => {
   const modelCases: ModelCase[] = [
     { name: "absent", expected: "gpt-4o-mini" },
     { name: "empty", value: "", expected: "gpt-4o-mini" },
@@ -292,7 +292,7 @@ describe("OpenBot Mastra model configuration", () => {
  * A provider this Bot cannot answer for is refused before it can fall into the OpenAI branch and
  * quietly answer with somebody else's model.
  */
-describe("OpenBot Mastra provider configuration", () => {
+describe("AwakenBot Mastra provider configuration", () => {
   test("refuses a provider it loads no module for", async () => {
     const { exitCode, stderr } = await providerStartup("google");
 
@@ -308,7 +308,7 @@ describe("OpenBot Mastra provider configuration", () => {
   });
 });
 
-describe("OpenBot Mastra listen port configuration", () => {
+describe("AwakenBot Mastra listen port configuration", () => {
   const validPortCases: PortCase[] = [
     { name: "absent", expected: 4213 },
     { name: "empty", value: "", expected: 4213 },
@@ -353,7 +353,7 @@ describe("OpenBot Mastra listen port configuration", () => {
   }
 });
 
-describe("OpenBot Mastra provider requests", () => {
+describe("AwakenBot Mastra provider requests", () => {
   const choices: {
     provider: string;
     base: string;

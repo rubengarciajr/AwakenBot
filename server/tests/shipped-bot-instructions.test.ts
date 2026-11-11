@@ -5,12 +5,12 @@ import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 
 /**
- * The words every Bot OpenBot ships runs on, read from the files that ship them.
+ * The words every Bot AwakenBot ships runs on, read from the files that ship them.
  *
- * A Bot's own instructions sit beside OpenBot's prompt in the same run, and two kinds of sentence in
+ * A Bot's own instructions sit beside AwakenBot's prompt in the same run, and two kinds of sentence in
  * them undo it. Capitals for emphasis: a model applies an emphatic rule further than it was meant,
  * and picks it over the plain one it contradicts. And a sign-in asked for in words ("ask the person
- * to sign in, and wait for them"), which the starter Personal Assistant carried for months: OpenBot
+ * to sign in, and wait for them"), which the starter Personal Assistant carried for months: AwakenBot
  * hands a sign-in to the person with a tool call, so a Bot told to ask and wait stops with nothing
  * handed over, and the page stays where it was.
  *
@@ -110,7 +110,7 @@ test("the rules catch the wording the starter shipped with", () => {
   expect(shouting("Read the PDF at the URL.")).toEqual([]);
 });
 
-test("OpenBot ships the Bots this reads", () => {
+test("AwakenBot ships the Bots this reads", () => {
   const ids = shippedBots().map(({ id }) => id);
   for (const id of [
     "personal-assistant",
@@ -122,7 +122,7 @@ test("OpenBot ships the Bots this reads", () => {
     expect(ids).toContain(id);
 });
 
-test("no Bot OpenBot ships is told anything in capitals for emphasis", () => {
+test("no Bot AwakenBot ships is told anything in capitals for emphasis", () => {
   const found = shippedBots().flatMap(({ file, id, texts }) =>
     texts.flatMap((text) =>
       shouting(text).map((word) => `${file} ${id}: ${word}`),
@@ -131,7 +131,7 @@ test("no Bot OpenBot ships is told anything in capitals for emphasis", () => {
   expect(found).toEqual([]);
 });
 
-test("no Bot OpenBot ships is told to ask for a sign-in and wait", () => {
+test("no Bot AwakenBot ships is told to ask for a sign-in and wait", () => {
   const found = shippedBots().flatMap(({ file, id, texts }) =>
     texts.flatMap((text) =>
       asksToSignInAndWait(text).map((sentence) => `${file} ${id}: ${sentence}`),

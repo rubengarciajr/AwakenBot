@@ -18,7 +18,7 @@ const DENY: &str = "Deny";
 /// on the Computer page and under the step in the conversation, so it names no "owner": the person
 /// at this computer is the one reading it. The server knows this sentence (`DENIED_ON_DESKTOP` in
 /// `server/src/host-access/tools.ts`) and records it as the person declining; change both together.
-const DECLINED: &str = "Declined in OpenBot Desktop.";
+const DECLINED: &str = "Declined in AwakenBot Desktop.";
 
 pub struct NativeApproval<R: tauri::Runtime>(pub tauri::AppHandle<R>);
 
@@ -57,7 +57,7 @@ fn bot_label(name: Option<&str>, id: &str) -> String {
 /// Settings → Computer, the page's name in that edition.
 fn folder_access_message(bot: &str, folder: &str) -> String {
     format!(
-        "Bot: {bot}\n\nFolder: {folder}\n\nAllow this Bot to read this folder for this OpenBot session? Each edit and command asks separately. You can revoke access in Settings → Computer."
+        "Bot: {bot}\n\nFolder: {folder}\n\nAllow this Bot to read this folder for this AwakenBot session? Each edit and command asks separately. You can revoke access in Settings → Computer."
     )
 }
 
@@ -118,7 +118,7 @@ impl<R: tauri::Runtime> NativeApproval<R> {
         let window = self
             .0
             .get_webview_window("main")
-            .ok_or_else(|| refused("The local OpenBot window is closed."))?;
+            .ok_or_else(|| refused("The local AwakenBot window is closed."))?;
         window.show().map_err(|error| refused(error.to_string()))?;
         window
             .set_focus()
@@ -130,7 +130,7 @@ impl<R: tauri::Runtime> NativeApproval<R> {
         let window = self
             .0
             .get_webview_window("main")
-            .ok_or_else(|| refused("The local OpenBot window is closed."))?;
+            .ok_or_else(|| refused("The local AwakenBot window is closed."))?;
         window.show().map_err(|error| refused(error.to_string()))?;
         window
             .set_focus()
@@ -161,7 +161,7 @@ impl<R: tauri::Runtime> HostApprovalUi for NativeApproval<R> {
         let window = self
             .0
             .get_webview_window("main")
-            .ok_or_else(|| refused("The local OpenBot window is closed."))?;
+            .ok_or_else(|| refused("The local AwakenBot window is closed."))?;
         window.show().map_err(|error| refused(error.to_string()))?;
         window
             .set_focus()
@@ -188,7 +188,7 @@ impl<R: tauri::Runtime> HostApprovalUi for NativeApproval<R> {
         reviewable(&request.content)?;
         let bot = bot_label(request.bot_name.as_deref(), &request.bot_id);
         self.confirm("Allow this file change?", format!(
-            "Bot: {bot}\nFolder: {}\nFile: {}\n\nNew content:\n{}\n\nAllow this exact change once? OpenBot keeps the previous contents when replacing a file.",
+            "Bot: {bot}\nFolder: {}\nFile: {}\n\nNew content:\n{}\n\nAllow this exact change once? AwakenBot keeps the previous contents when replacing a file.",
             folder(&request.root), request.relative_path, request.content
         ))
     }
@@ -213,17 +213,17 @@ impl<R: tauri::Runtime> HostApprovalUi for NativeApproval<R> {
         };
         let setting = if offer_always {
             format!(
-                "Your OpenBot setting: {}. Choose \"{ALWAYS_HERE}\" to stop asking about {bot}'s read-only commands in this folder on this computer.",
+                "Your AwakenBot setting: {}. Choose \"{ALWAYS_HERE}\" to stop asking about {bot}'s read-only commands in this folder on this computer.",
                 request.command_policy.label()
             )
         } else if request.writable && request.command_policy == CommandPolicy::Allow {
             format!(
-                "Your OpenBot setting: {}. Commands that can edit files still ask every time.",
+                "Your AwakenBot setting: {}. Commands that can edit files still ask every time.",
                 request.command_policy.label()
             )
         } else {
             format!(
-                "Your OpenBot setting: {}. Change it in Settings → Approvals.",
+                "Your AwakenBot setting: {}. Change it in Settings → Approvals.",
                 request.command_policy.label()
             )
         };
@@ -313,7 +313,7 @@ mod tests {
     fn folder_access_names_no_internal_requester_and_the_page_as_it_is_called() {
         assert_eq!(
             folder_access_message("Personal Assistant", r"C:\acc\share"),
-            "Bot: Personal Assistant\n\nFolder: C:\\acc\\share\n\nAllow this Bot to read this folder for this OpenBot session? Each edit and command asks separately. You can revoke access in Settings → Computer."
+            "Bot: Personal Assistant\n\nFolder: C:\\acc\\share\n\nAllow this Bot to read this folder for this AwakenBot session? Each edit and command asks separately. You can revoke access in Settings → Computer."
         );
     }
 
@@ -326,7 +326,7 @@ mod tests {
         let inner = root.join("reports");
         std::fs::create_dir_all(&inner).unwrap();
         let access = "The approved folder stays read-only. The command can write only to its temporary workspace.";
-        let setting = "Your OpenBot setting: ask every time. Change it in Settings → Approvals.";
+        let setting = "Your AwakenBot setting: ask every time. Change it in Settings → Approvals.";
 
         assert_eq!(
             command_message("Personal Assistant", &root, None, "dir", access, setting),
@@ -378,7 +378,7 @@ mod tests {
     /// Computer page and under the step: about themselves, as somebody else.
     #[test]
     fn a_denial_says_where_it_was_declined_and_names_no_owner() {
-        assert_eq!(DECLINED, "Declined in OpenBot Desktop.");
+        assert_eq!(DECLINED, "Declined in AwakenBot Desktop.");
         assert!(!DECLINED.to_lowercase().contains("owner"));
     }
 

@@ -8,7 +8,7 @@ import { TEST_POOL, testDatabaseUrl } from "./support/database";
  * The migration that gives an existing deployment its answer, run against a real database.
  *
  * `stampSignIn` only records sign-ins that happen after the upgrade, so on every machine that
- * already has OpenBot the column starts empty and the People screen would say nobody had ever
+ * already has AwakenBot the column starts empty and the People screen would say nobody had ever
  * signed in until each of them came back. The backfill is what prevents that, it runs exactly once
  * per deployment, and nothing else in the suite executes it.
  *

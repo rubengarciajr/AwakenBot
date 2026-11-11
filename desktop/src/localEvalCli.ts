@@ -57,7 +57,7 @@ export type LocalReason =
   | "browser-open-failed"
   // The CLI's resource check failed: the report's `shortfall` says which resource is short.
   | "resources-short"
-  // Not the CLI's: OpenBot's own finding that the backend it set up here is gone, cluster and all
+  // Not the CLI's: AwakenBot's own finding that the backend it set up here is gone, cluster and all
   // (`local_eval::Reason::StackLost`). Start fresh sets it up again.
   | "stack-lost"
   | "unrecognized";
@@ -94,7 +94,7 @@ export type Shortfall = {
   memoryGb?: string;
   diskGb?: string;
   /**
-   * OpenBot's own check after a start that failed: the back end's disk is nearly full, and how
+   * AwakenBot's own check after a start that failed: the back end's disk is nearly full, and how
    * large it is beside `diskGb`.
    */
   nearlyFull?: boolean;
@@ -116,7 +116,7 @@ export type LocalReport = {
   outcome: LocalOutcome;
   /**
    * With the reason `resources-short`: which resources the CLI found short. With readiness
-   * `degraded`: a disk OpenBot found short, or recovering, behind a back end that does not answer.
+   * `degraded`: a disk AwakenBot found short, or recovering, behind a back end that does not answer.
    */
   shortfall?: Shortfall;
   stack: null | {
@@ -221,8 +221,8 @@ export function listLocalEval(): {
 }
 
 /**
- * `local setup` for this installation. A stack it completes is recorded as OpenBot's, so it
- * starts and stops with OpenBot. Blocked is an answer, not an error: the first is usually the
+ * `local setup` for this installation. A stack it completes is recorded as AwakenBot's, so it
+ * starts and stops with AwakenBot. Blocked is an answer, not an error: the first is usually the
  * evaluation terms. A stack that was set up but could not be recorded rejects with a `Problem`.
  */
 export function setUpLocalEval(
@@ -257,7 +257,7 @@ export function localEvalRoom(): Promise<Shortfall | null> {
 
 /**
  * A setup the native side did not start, because the drive that holds the engine's disk is short
- * of what OpenBot needs (`local_eval::checked_call`). Not a failure: it waits for room.
+ * of what AwakenBot needs (`local_eval::checked_call`). Not a failure: it waits for room.
  */
 export function heldForRoom(report: LocalReport): Shortfall | null {
   return report.reason === "resources-short" &&
@@ -308,7 +308,7 @@ export type LocalDownload = { done: number; total: number };
 
 /**
  * How far the download before the setup or update `attempt` has got, while it downloads,
- * or null. OpenBot downloads the back end's images itself before the CLI pulls them, so a slow
+ * or null. AwakenBot downloads the back end's images itself before the CLI pulls them, so a slow
  * line can be told apart from a stuck one.
  */
 export async function localEvalDownload(
@@ -350,11 +350,11 @@ export async function localEvalSteps(
  * them (`local_update::UpdateStep`), in the CLI's own words for them.
  */
 const UPDATE_STEPS = {
-  "update-quiesce": "Pausing OpenBot's services",
-  "dependencies-install": "Updating where OpenBot keeps your data",
-  "dependencies-wait": "Waiting for where OpenBot keeps your data",
+  "update-quiesce": "Pausing AwakenBot's services",
+  "dependencies-install": "Updating where AwakenBot keeps your data",
+  "dependencies-wait": "Waiting for where AwakenBot keeps your data",
   jobs: "Updating your data",
-  "services-start": "Starting OpenBot's services",
+  "services-start": "Starting AwakenBot's services",
 } as const;
 
 export type LocalUpdateStep = {
@@ -421,16 +421,16 @@ export function updateStepSaid(step: string): string {
   if (/^(cluster-|kubeconfig|ownership-check|running-check)/.test(step))
     return "preparing this computer";
   if (step === "secrets-apply") return "applying your settings";
-  if (step.startsWith("update-")) return "pausing OpenBot's services";
+  if (step.startsWith("update-")) return "pausing AwakenBot's services";
   if (step === "dependencies-install")
-    return "updating where OpenBot keeps your data";
+    return "updating where AwakenBot keeps your data";
   if (step === "dependencies-wait")
-    return "waiting for where OpenBot keeps your data";
+    return "waiting for where AwakenBot keeps your data";
   if (step.startsWith("migration-")) return "updating your data";
   if (/^(hook-|bootstrap-)/.test(step))
     return "preparing your organization and project";
   if (/^(services-|stack-|service-status)/.test(step))
-    return "starting OpenBot's services";
+    return "starting AwakenBot's services";
   return "updating";
 }
 
@@ -460,7 +460,7 @@ export function connectCopilotKitApps(root: string): {
 
 /** What the native side says when apps could not be connected (`composio::setup_problem`). */
 export const APPS_UNAVAILABLE =
-  "OpenBot couldn't connect your apps. Check your connection, then choose Connect apps. If it keeps happening, ask an admin.";
+  "AwakenBot couldn't connect your apps. Check your connection, then choose Connect apps. If it keeps happening, ask an admin.";
 
 /** The evaluation agreement, as the CLI reports it: what the person reads before Accept. */
 export type LocalTerms =
@@ -485,7 +485,7 @@ export type LocalTerms =
       said?: string;
       switchEngine?: boolean;
     }
-  /** OpenBot's own check: the engine has fewer CPUs or less memory than local setup needs. */
+  /** AwakenBot's own check: the engine has fewer CPUs or less memory than local setup needs. */
   | ({ status: "engine-too-small" } & Shortfall);
 
 export function localEvalTerms(): {
@@ -502,8 +502,8 @@ export function localEvalTerms(): {
 }
 
 /**
- * `local connect` for this installation, after the person chose to connect OpenBot. The native
- * side keeps the key the CLI wrote as OpenBot's Intelligence key. A connection it would not take
+ * `local connect` for this installation, after the person chose to connect AwakenBot. The native
+ * side keeps the key the CLI wrote as AwakenBot's Intelligence key. A connection it would not take
  * up rejects with a `Problem`.
  */
 export function connectLocalEval(root: string): {
@@ -524,7 +524,7 @@ export function connectLocalEval(root: string): {
 }
 
 /**
- * The installation's engine answering before any CLI call: Docker Desktop opened, or OpenBot's
+ * The installation's engine answering before any CLI call: Docker Desktop opened, or AwakenBot's
  * Podman machine started, when either is stopped. What the native side says meanwhile, such as
  * Docker's hand-off, arrives as setup progress (see `handOffNow`). Rejects with a `Problem` when
  * the engine would not start.
@@ -542,7 +542,7 @@ export function backEndWaitEnded(why: string): void {
   invoke("back_end_wait_ended", { why }).catch(() => {});
 }
 
-/** Whether the OpenBot app's page may offer the back end dashboard for `root`. */
+/** Whether the AwakenBot app's page may offer the back end dashboard for `root`. */
 export function offerLocalIntelligence(
   root: string,
   offered: boolean,
@@ -637,8 +637,8 @@ export function licenceExpiresSoon(
 export const intelligenceStopFailed = "Backend stop failed: ";
 
 /**
- * Splits a Stop failure into OpenBot's own lines and the local Intelligence stack's. OpenBot has
- * stopped when only the second is present. Anything not in the native line format is OpenBot's.
+ * Splits a Stop failure into AwakenBot's own lines and the local Intelligence stack's. AwakenBot has
+ * stopped when only the second is present. Anything not in the native line format is AwakenBot's.
  */
 export function splitStopFailure(thrown: unknown): {
   openBot: string | null;
@@ -660,7 +660,7 @@ export function splitStopFailure(thrown: unknown): {
 
 export function intelligenceStopProblem(line: string): Problem {
   return {
-    said: "OpenBot stopped, but some of its services didn't. They may still be running.",
+    said: "AwakenBot stopped, but some of its services didn't. They may still be running.",
     detail: line,
   };
 }

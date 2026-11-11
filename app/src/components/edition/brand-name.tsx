@@ -1,8 +1,8 @@
 /**
  * The names that carry the trademark sign where they stand as a brand: beside the logo, as a
- * heading, as a menu entry. Prose that mentions OpenBot ("OpenBot is ready") stays plain.
+ * heading, as a menu entry. Prose that mentions AwakenBot ("AwakenBot is ready") stays plain.
  */
-const TRADEMARKED = new Set(["OpenBot", "OpenBot for Business"]);
+const TRADEMARKED = new Set(["AwakenBot", "AwakenBot for Business"]);
 
 /**
  * The trademark sign as open.bot sets it: a small superscript in the word's own colour, at 45% of
@@ -23,7 +23,7 @@ export function Trademark() {
 }
 
 /**
- * A product name as a brand mark: OpenBot and OpenBot for Business get the trademark sign, and any
+ * A product name as a brand mark: AwakenBot and AwakenBot for Business get the trademark sign, and any
  * other name (a deployment's own product name from brand.yaml, a Bot, a page) is drawn as it is.
  */
 export function BrandName({ children }: { children: string }) {

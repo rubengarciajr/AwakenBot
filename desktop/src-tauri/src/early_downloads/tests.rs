@@ -300,7 +300,7 @@ fn a_partial_download_that_is_not_the_file_is_refused_then_downloaded_whole() {
 
     let refused = fetch_waiting(&pin, &cache, &(), &NO_WAIT).expect_err("a wrong file");
     assert!(
-        refused.contains("is not what OpenBot expected"),
+        refused.contains("is not what AwakenBot expected"),
         "{refused}"
     );
     assert!(!cache.join("f").exists());
@@ -504,7 +504,7 @@ fn with_too_little_free_disk_nothing_downloads_until_there_is_room() {
 }
 
 /**
-Windows F, filled to 15.0 GB free. The first screen said OpenBot "needs about 44 GB", and the
+Windows F, filled to 15.0 GB free. The first screen said AwakenBot "needs about 44 GB", and the
 account step after Install said "It needs 40 GB free". Both were the back end's 40 GiB: the first
 screen added the downloads and counted in billions of bytes, the account step counted in GiB. The
 window is told the two figures apart now, the back end's being the account step's own constant.
@@ -512,7 +512,7 @@ window is told the two figures apart now, the back end's being the account step'
 #[test]
 fn on_windows_f_the_first_screen_says_the_account_steps_40_and_the_download_apart() {
     let _table = table_to_myself();
-    // F's plan, from its log: OpenBot's machine from the WSL image, Compose, and OpenBot's images
+    // F's plan, from its log: AwakenBot's machine from the WSL image, Compose, and AwakenBot's images
     // downloaded before an engine answers.
     let needed = needed_for(&Plan {
         machine_image: machine_image_for("windows", "x86_64"),
@@ -732,8 +732,8 @@ fn what_downloads_early_depends_on_the_engine_install_will_use() {
             installed_before: false,
             machine_image: if os == "macos" { mac } else { None },
         };
-    // A new Mac with no engine: everything Install will need, OpenBot's images included, named by
-    // the Compose OpenBot downloads, to load once the engine answers.
+    // A new Mac with no engine: everything Install will need, AwakenBot's images included, named by
+    // the Compose AwakenBot downloads, to load once the engine answers.
     assert_eq!(
         plan(&facts("macos", Choice::InstallPodman, None, false, None)),
         Plan {
@@ -746,7 +746,7 @@ fn what_downloads_early_depends_on_the_engine_install_will_use() {
         }
     );
     // Docker Desktop answering: the images go straight into it, and no engine is downloaded. Their
-    // list comes from OpenBot's own Compose, which an old Docker Desktop's may not read.
+    // list comes from AwakenBot's own Compose, which an old Docker Desktop's may not read.
     assert_eq!(
         plan(&facts(
             "macos",
@@ -762,7 +762,7 @@ fn what_downloads_early_depends_on_the_engine_install_will_use() {
             ..Plan::default()
         }
     );
-    // Windows D: a person's Podman answering with no Compose installed. OpenBot's own Compose
+    // Windows D: a person's Podman answering with no Compose installed. AwakenBot's own Compose
     // downloads too, to name the images, since `podman compose` has no provider to run.
     let podman = Address::new(Engine::Podman, Some("podman-machine-default".into()));
     let answering = plan(&facts(
@@ -774,7 +774,7 @@ fn what_downloads_early_depends_on_the_engine_install_will_use() {
     ));
     assert!(answering.compose, "{answering:?}");
     assert_eq!(answering.images, Some(podman));
-    // Podman 6.1 is here without OpenBot's machine: the machine image only.
+    // Podman 6.1 is here without AwakenBot's machine: the machine image only.
     assert_eq!(
         plan(&facts(
             "macos",
@@ -791,7 +791,7 @@ fn what_downloads_early_depends_on_the_engine_install_will_use() {
             ..Plan::default()
         }
     );
-    // Another Podman pulls its own machine-os, and OpenBot's machine already there needs none.
+    // Another Podman pulls its own machine-os, and AwakenBot's machine already there needs none.
     for (version, exists) in [
         ("podman version 5.7.0", false),
         ("podman version 6.1.1", true),
@@ -809,7 +809,7 @@ fn what_downloads_early_depends_on_the_engine_install_will_use() {
             "{version} {exists}"
         );
     }
-    // A Podman too old for OpenBot is updated over with OpenBot's installer: it downloads early too.
+    // A Podman too old for AwakenBot is updated over with AwakenBot's installer: it downloads early too.
     let old = plan(&facts(
         "macos",
         Choice::UsePodman,
@@ -819,7 +819,7 @@ fn what_downloads_early_depends_on_the_engine_install_will_use() {
     ));
     assert!(old.podman, "{old:?}");
     assert_eq!(old.machine_image, None);
-    // A Docker Desktop that is stopped is not opened before Install: OpenBot's own Compose names
+    // A Docker Desktop that is stopped is not opened before Install: AwakenBot's own Compose names
     // the images, which download to load once it answers.
     assert_eq!(
         plan(&facts(
@@ -1043,7 +1043,7 @@ fn live_the_first_screen_pulls_the_images_install_would() {
 }
 
 /**
-With no engine on the computer, OpenBot's own Compose, downloaded and run on its own, names the same
+With no engine on the computer, AwakenBot's own Compose, downloaded and run on its own, names the same
 images Install pulls for the default Bot. Downloads Compose (about 30 MB) and runs `docker compose`
 for Install's list to compare with.
 */
@@ -1077,7 +1077,7 @@ fn live_openbots_own_compose_names_the_images_with_no_engine() {
         &root,
         Some(&harness),
     )
-    .expect("the images, from OpenBot's own Compose");
+    .expect("the images, from AwakenBot's own Compose");
     let docker = default_bot_images(&Address::new(Engine::Docker, None), &root).expect("Docker's");
     assert_eq!(own, docker);
     assert_eq!(own.len(), 5, "{own:#?}");
@@ -1088,7 +1088,7 @@ fn live_openbots_own_compose_names_the_images_with_no_engine() {
 /**
 Windows D: Podman answered with no Compose installed, and the first screen said "Some downloads
 didn't finish" because the image list asked `podman compose`, which had no provider to run. The list
-waits for OpenBot's own Compose (here a stand-in that arrives a moment later, as a download still
+waits for AwakenBot's own Compose (here a stand-in that arrives a moment later, as a download still
 running does) and asks it, and nothing else.
 */
 #[cfg(unix)]
@@ -1126,7 +1126,7 @@ fn the_image_list_waits_for_openbots_own_compose_and_asks_it() {
         std::fs::set_permissions(&compose, std::fs::Permissions::from_mode(0o755)).unwrap();
         Ok(compose.clone())
     })
-    .expect("the images, named by OpenBot's own Compose");
+    .expect("the images, named by AwakenBot's own Compose");
     assert!(started.elapsed() >= Duration::from_millis(300));
     let said = std::fs::read_to_string(&asked).unwrap();
     assert!(said.contains("config --images"), "{said}");
@@ -1146,7 +1146,7 @@ fn the_image_list_waits_for_openbots_own_compose_and_asks_it() {
 
 /**
 Live: a Podman whose `compose` has no provider to run, as on Windows D. Asking it for the image list
-fails, as the first screen did; OpenBot's own Compose, downloaded (about 30 MB), names the five
+fails, as the first screen did; AwakenBot's own Compose, downloaded (about 30 MB), names the five
 images Install pulls.
 */
 #[test]
@@ -1173,7 +1173,7 @@ fn live_podman_with_no_compose_still_has_its_images_named() {
     assert!(through_podman.is_err(), "{through_podman:?}");
     eprintln!("podman compose: {}", through_podman.unwrap_err());
     let cache = temp_root("early-no-compose-cache");
-    let images = named_images(&release, own_compose(&cache)).expect("named by OpenBot's own");
+    let images = named_images(&release, own_compose(&cache)).expect("named by AwakenBot's own");
     assert_eq!(images.len(), 5, "{images:#?}");
     let _ = std::fs::remove_dir_all(&release);
     let _ = std::fs::remove_dir_all(&cache);

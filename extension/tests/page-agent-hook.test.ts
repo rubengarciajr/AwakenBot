@@ -149,8 +149,8 @@ const pathOf = (url: string) => {
   return `${parsed.pathname}${parsed.search}`;
 };
 
-/** The OpenBot a recording of OpenBot's own page is connected to: the page's origin. The page hook knows nothing of
- * OpenBot, and the debugger capture follows only OpenBot's chat and its runtime's `info`, so the two still agree. */
+/** The AwakenBot a recording of AwakenBot's own page is connected to: the page's origin. The page hook knows nothing of
+ * AwakenBot, and the debugger capture follows only AwakenBot's chat and its runtime's `info`, so the two still agree. */
 const openbotOf = (fixture: Fixture): string | null =>
   fixture === loadFixture("openbot-chat")
     ? new URL(String(marks(fixture, "navigate")[0]?.data?.url)).origin
@@ -423,7 +423,7 @@ const COPILOTKIT_PAGES = new Map([
   ["single-route-sse", 1],
   ["rest-sse", 1],
   ["intelligence-websocket", 1],
-  // OpenBot's own chat asks when it loads and again after the run.
+  // AwakenBot's own chat asks when it loads and again after the run.
   ["openbot-chat", 2],
 ]);
 

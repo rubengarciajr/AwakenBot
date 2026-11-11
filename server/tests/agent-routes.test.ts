@@ -674,7 +674,7 @@ describe("agent route composition", () => {
       user: {
         id: actor.id,
         email: actor.email,
-        name: "OpenBot Member",
+        name: "AwakenBot Member",
         image: "https://example.test/member.png",
       },
     };
@@ -686,7 +686,7 @@ describe("agent route composition", () => {
         "list",
         {
           ...actor,
-          name: "OpenBot Member",
+          name: "AwakenBot Member",
           image: "https://example.test/member.png",
         },
         false,

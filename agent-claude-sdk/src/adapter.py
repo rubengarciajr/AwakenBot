@@ -63,11 +63,11 @@ AG_UI_TOOL_PREFIX = "mcp__ag_ui__"
 # `puppeteer` server").
 AG_UI_TOOLS = f"{AG_UI_TOOL_PREFIX}*"
 
-# How large a result of one of OpenBot's tools Claude Code keeps in the conversation, in characters.
+# How large a result of one of AwakenBot's tools Claude Code keeps in the conversation, in characters.
 #
 # Claude Code keeps a tool result over 50,000 characters out of the conversation: it saves it to a
 # file (`<config>/projects/<cwd>/<session>/tool-results/`) and shows the model a 2 KB preview and the
-# path. Every OpenBot tool reaches this harness as an MCP tool, so a page of email, an app's tool
+# path. Every AwakenBot tool reaches this harness as an MCP tool, so a page of email, an app's tool
 # list or a file the Bot read from its computer (up to 64,000 bytes) crossed it, and the turn's
 # history then kept the preview in place of the result. Claude Code lets an MCP tool raise its own
 # threshold, to at most 500,000, with `anthropic/maxResultSizeChars` (`ToolAnnotations` in the SDK).
@@ -80,7 +80,7 @@ INLINE_RESULT_CHARS = RESULT_CHARS
 #
 # The Claude Code this harness ships (2.1.259, in claude-agent-sdk 0.2.152) predates Opus 5.5,
 # Sonnet 5.5 and Haiku 5.5 (added in 2.1.280, 2.1.284 and 2.1.293), so it does not know the model
-# OpenBot runs it on. Since 2.1.223 it holds a session on an unknown ID to the window it assumes for
+# AwakenBot runs it on. Since 2.1.223 it holds a session on an unknown ID to the window it assumes for
 # one, 200K tokens, and those models have 1M ("prompt is too long: … tokens > 1000000 maximum",
 # measured on each). A Bot holding a few apps' tools and its instructions was near 200K before its
 # first tool result came back, so the request after it was refused by Claude Code itself, without
@@ -105,12 +105,12 @@ READ_TOOL = "Read"
 # model looks for it (code.claude.com/docs/en/mcp, "Scale with MCP tool search").
 #
 # Left out of `--tools`, Claude Code loads every MCP tool upfront (same page, "Configure tool
-# search"), and every one of OpenBot's tools is an MCP tool here. A run carries up to 128 of a Bot's
+# search"), and every one of AwakenBot's tools is an MCP tool here. A run carries up to 128 of a Bot's
 # app tools (`MODEL_TOOL_LIMIT` in shared/model-tool-limit.ts), so a Bot holding a few apps sent all
 # their definitions with every request: measured on the API with 128 real Composio tools and a 50 KB
 # standing role, 133,798 input tokens for the first request of a conversation, and 27,932 with this
 # tool offered. It runs nothing and reaches nothing outside the session: what it finds is a tool the
-# run was already given, called through OpenBot as before.
+# run was already given, called through AwakenBot as before.
 TOOL_SEARCH = "ToolSearch"
 
 # What a full Bot is told `Read` is for. Its own description says it reads any file on "the local
@@ -124,7 +124,7 @@ READ_TOOL_NOTE = (
 # What a person is told when Claude Code never started, in place of the process error.
 START_FAILED = (
     "This Bot couldn't start, so it didn't answer. Send your message again, and restart "
-    "OpenBot if it keeps happening."
+    "AwakenBot if it keeps happening."
 )
 
 
@@ -522,7 +522,7 @@ async def own_tool_results_only(input_data, tool_use_id, context):
     """Let `Read` open a tool result Claude Code saved for this session, and nothing else.
 
     A full Bot is given no built-in tools (see `build_options`): its files and commands are on its
-    own computer, under OpenBot's policy. Claude Code saves a tool result larger than its threshold
+    own computer, under AwakenBot's policy. Claude Code saves a tool result larger than its threshold
     to a file and tells the model to read it, and the model had nothing that could. `Read` is the
     tool Claude Code expects it to use, and this hook keeps it to this session's own saved results:
     any other path, in this container or anywhere else, is refused.
@@ -668,23 +668,23 @@ class OpenBotClaudeAgentAdapter(ClaudeAgentAdapter):
                     "hookSpecificOutput": {
                         "hookEventName": "PreToolUse",
                         "permissionDecision": "deny",
-                        "permissionDecisionReason": "Built-in Bots may only call tools supplied by the OpenBot server.",
+                        "permissionDecisionReason": "Built-in Bots may only call tools supplied by the AwakenBot server.",
                     }
                 }
 
             options.hooks["PreToolUse"] = [HookMatcher(hooks=[only_offered])]
         else:
-            # A full Bot acts through what OpenBot grants it: its computer, its apps, web search,
+            # A full Bot acts through what AwakenBot grants it: its computer, its apps, web search,
             # Routines and `run_subagent`, each under the deployment's policy and audit trail.
             # Claude Code's own versions (WebSearch, Bash, Read, CronCreate, Agent, RemoteTrigger
             # and the rest) run in this container instead, ungoverned and unapproved. Left in
             # view, Claude reached for its own WebSearch, was refused, and told the person to
-            # grant it. No built-ins, as on the model endpoint; OpenBot's tools still load.
+            # grant it. No built-ins, as on the model endpoint; AwakenBot's tools still load.
             #
             # Except `Read`, held to the tool results Claude Code saves to a file for this session
             # (`own_tool_results_only`), which is the tool Claude Code tells the model to open one
             # with: a result over `INLINE_RESULT_CHARS`. With no `Read`, the Bot tried its
-            # computer's `Read file` on the path, which OpenBot refused for a path outside the Bot's
+            # computer's `Read file` on the path, which AwakenBot refused for a path outside the Bot's
             # workspace, then `grep` on its computer, a different machine, and lost the result.
             #
             # And `ToolSearch`, which only finds and loads the definitions of the tools this run
@@ -1018,7 +1018,7 @@ class OpenBotClaudeAgentAdapter(ClaudeAgentAdapter):
             else:
                 # A tool result whose query is no longer running is answered by a fresh query that
                 # replays the thread, the call and its result included, as a replaced model step is.
-                # A query is bounded (`run_replayed_query`), and the person deciding a step OpenBot
+                # A query is bounded (`run_replayed_query`), and the person deciding a step AwakenBot
                 # asked them about routinely takes longer than that bound; a restart ends one too.
                 # Refused, the run ended with an error nobody was shown and the Bot never answered
                 # the person's decision.

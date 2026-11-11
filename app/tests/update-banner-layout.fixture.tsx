@@ -5,7 +5,7 @@ import { type DesktopAppUpdate, desktopKeys } from "@/lib/desktop/queries";
 import { queryClient } from "@/query-client";
 
 /**
- * The update banner over the page it sits on, at the width of OpenBot's content column, as a page
+ * The update banner over the page it sits on, at the width of AwakenBot's content column, as a page
  * of its own for update-banner-layout.test.tsx to bundle and load in Chromium. The desktop app is
  * the IPC Tauri injects (`__TAURI_INTERNALS__`), answering `update_offer` with `window.__offer`;
  * `window.__show(offer)` changes that answer and has the banner ask again, as its poll does.

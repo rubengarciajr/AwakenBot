@@ -114,10 +114,10 @@ test("gives every row a credential the type actually names", () => {
  * The Personal Assistant on an install seeded before LangChain was renamed still read "Everyday life.
  * Powered by LangChain (LangGraph)." on its profile, because a starter's subtitle is written once
  * and a Bot whose connection the person saved is never moved again. Its seed now reads the way the
- * starter is seeded today; other subtitles OpenBot wrote read by the current name; the person's own
+ * starter is seeded today; other subtitles AwakenBot wrote read by the current name; the person's own
  * words are not touched.
  */
-test("reads a subtitle OpenBot wrote under earlier names the way it writes it now", () => {
+test("reads a subtitle AwakenBot wrote under earlier names the way it writes it now", () => {
   const langchain =
     "Everyday life agent. (powered by a LangChain agent; you can bring your own agent from any stack.)";
   expect(starterSubtitle("LangChain")).toBe(langchain);
@@ -143,7 +143,7 @@ test("reads a subtitle OpenBot wrote under earlier names the way it writes it no
   // Already current, a Bot that runs here, or the person's own words: left as they are.
   for (const title of [
     langchain,
-    "Everyday life. Powered by OpenBot.",
+    "Everyday life. Powered by AwakenBot.",
     "Everyday life.",
     "Errands. Powered by LangChain.",
     "I like LangGraph for research.",

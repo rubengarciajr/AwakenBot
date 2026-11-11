@@ -7,7 +7,7 @@ fn digest_of(bytes: &[u8]) -> String {
     format!("sha256:{}", sha256_hex(bytes))
 }
 
-/// A registry with one image on two platforms and an attestation, as ghcr.io serves OpenBot's: an
+/// A registry with one image on two platforms and an attestation, as ghcr.io serves AwakenBot's: an
 /// index, a manifest per platform, and each one's config and layers.
 struct Published {
     index: Vec<u8>,
@@ -291,7 +291,7 @@ fn a_loaded_image_has_the_name_its_pull_would_give_it() {
 }
 
 /**
-OpenBot's images downloaded with no engine, loaded into a real one, then Install's own pull: it
+AwakenBot's images downloaded with no engine, loaded into a real one, then Install's own pull: it
 finds the image's layers and config there and moves only manifests.
 
 `OPENBOT_LIVE_LOAD_ENGINE=docker`, or `podman:<connection>` for a Podman machine's (a throwaway one:
@@ -300,7 +300,7 @@ it is removed afterwards. `OPENBOT_LIVE_LOAD_SKIP=1` leaves the load out, as Ins
 then the pull moves the whole image, and this fails.
 */
 #[test]
-#[ignore = "downloads an OpenBot image and loads it into a real engine"]
+#[ignore = "downloads an AwakenBot image and loads it into a real engine"]
 fn live_an_image_downloaded_before_the_engine_loads_and_its_pull_moves_no_layers() {
     let engine = match std::env::var("OPENBOT_LIVE_LOAD_ENGINE").as_deref() {
         Ok("docker") => Address::new(crate::engine::Engine::Docker, None),

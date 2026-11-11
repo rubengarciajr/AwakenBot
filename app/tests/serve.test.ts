@@ -77,7 +77,7 @@ describe("serving port configuration", () => {
       expect(result.stdout).toContain(
         'PORT_PROBE:{"port":3010,"target":"http://127.0.0.1:3001/api/port-check"}',
       );
-      expect(result.stdout).toContain("OpenBot app on http://127.0.0.1:3010");
+      expect(result.stdout).toContain("AwakenBot app on http://127.0.0.1:3010");
     },
   );
 
@@ -108,7 +108,7 @@ describe("serving port configuration", () => {
           `${name} must be a whole number from 1 to 65535`,
         );
         expect(result.stdout).not.toContain("PORT_PROBE:");
-        expect(result.stdout).not.toContain("OpenBot app on");
+        expect(result.stdout).not.toContain("AwakenBot app on");
       },
     );
   }
@@ -119,7 +119,7 @@ describe("serving port configuration", () => {
  *
  * The failure that made this necessary: `vite preview` under `bun --bun` dies on the first proxied
  * call with `TypeError: socket.destroySoon is not a function`, so the app served its page, exited,
- * and the shell's window went on saying "OpenBot is running" with nothing listening.
+ * and the shell's window went on saying "AwakenBot is running" with nothing listening.
  */
 describe("what answers a request", () => {
   test("the server answers its own prefix, and nothing near it", () => {

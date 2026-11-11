@@ -254,14 +254,14 @@ test("Create fills in what was left blank, then hands over", async () => {
 
   expect(await view.findByText("Expense Review is ready")).toBeTruthy();
   expect(creates).toHaveLength(1);
-  // Its subtitle says what runs it: OpenBot itself.
+  // Its subtitle says what runs it: AwakenBot itself.
   expect(creates[0]).toMatchObject({
     name: "Expense Review",
-    title: "Powered by OpenBot",
+    title: "Powered by AwakenBot",
     visibility: "private",
     endpoint: "",
   });
-  // It runs on OpenBot, which the server knows without being told.
+  // It runs on AwakenBot, which the server knows without being told.
   expect(creates[0]).not.toHaveProperty("harness");
   // For a Bot that runs here this is its system prompt, so it has to be something it can act on.
   expect(String(creates[0]?.roleDescription)).toStartWith(
@@ -483,7 +483,7 @@ test("personal Bot creation hides team visibility and isolation controls and lin
   expect(
     view
       .getByRole("link", {
-        name: "Give each Bot its own computer with OpenBot for Business.",
+        name: "Give each Bot its own computer with AwakenBot for Business.",
       })
       .getAttribute("href"),
   ).toBe("https://open.bot/business");

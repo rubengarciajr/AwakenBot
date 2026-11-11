@@ -166,7 +166,7 @@ test.each([
   [
     { enabled: true, defaultTarget: { containerId: "openbot" }, agents: {} },
     { state: "assigned", containerId: "openbot" },
-    'OpenBot assigned this project\'s "openbot" container automatically',
+    'AwakenBot assigned this project\'s "openbot" container automatically',
   ],
   [
     { enabled: true, defaultTarget: null, agents: {} },
@@ -196,7 +196,7 @@ test("a deployment that chose its own container hears nothing about automatic as
   await waitFor(() =>
     expect(view.queryByText("Loading Learning settings…")).toBeNull(),
   );
-  expect(view.queryByText("OpenBot assigned", { exact: false })).toBeNull();
+  expect(view.queryByText("AwakenBot assigned", { exact: false })).toBeNull();
   expect(
     view.queryByText("Learning container yet", { exact: false }),
   ).toBeNull();
@@ -317,7 +317,7 @@ describe("reviewing proposed skills", () => {
   };
   const noDashboard: LearningOverview = {
     configuration: "configured",
-    container: { id: "openbot", name: "OpenBot" },
+    container: { id: "openbot", name: "AwakenBot" },
     pendingThreadCount: null,
     pendingCandidateCount: 1,
     publishedSkillCount: null,
@@ -1187,7 +1187,7 @@ describe("reviewing proposed skills", () => {
 
   test("a sign-in Learning can't use is said on the page, before anyone presses Learn now", async () => {
     const said =
-      "Learning can't run on the model you signed in with. To use it, sign OpenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan.";
+      "Learning can't run on the model you signed in with. To use it, sign AwakenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan.";
     intelligence({ ...noDashboard, modelProblem: said });
     const view = shared();
     expect((await view.findByText(said)).getAttribute("role")).toBe("alert");
@@ -1195,14 +1195,14 @@ describe("reviewing proposed skills", () => {
     queryClient.clear();
     intelligence();
     const fine = shared();
-    await fine.findByText("OpenBot (openbot)");
+    await fine.findByText("AwakenBot (openbot)");
     expect(fine.queryByText(said)).toBeNull();
   });
 
   test("with no dashboard there is no link into one, and with one the links stay", async () => {
     intelligence();
     const without = shared();
-    await without.findByText("OpenBot (openbot)");
+    await without.findByText("AwakenBot (openbot)");
     expect(
       without.queryByText("Manage Learning in the backend dashboard"),
     ).toBeNull();

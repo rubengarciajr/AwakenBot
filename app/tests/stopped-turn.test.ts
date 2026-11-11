@@ -23,8 +23,8 @@ describe("the reason a turn ended", () => {
     ).toBe("The endpoint refused the connection");
   });
 
-  test("says OpenBot couldn't reach its backend, not the raw request failure", () => {
-    // The exact text a teammate saw on OpenBot 1.0.0, built by CopilotKit's Intelligence agent when
+  test("says AwakenBot couldn't reach its backend, not the raw request failure", () => {
+    // The exact text a teammate saw on AwakenBot 1.0.0, built by CopilotKit's Intelligence agent when
     // the run request to the runtime fails.
     const run = stoppedReason(
       new Error(
@@ -32,7 +32,7 @@ describe("the reason a turn ended", () => {
       ),
     );
     expect(run).toBe(
-      "OpenBot couldn't reach its backend, so your message wasn't sent. Try again, or quit and reopen OpenBot.",
+      "AwakenBot couldn't reach its backend, so your message wasn't sent. Try again, or quit and reopen AwakenBot.",
     );
 
     // The same failure on joining a thread, which sends nothing.
@@ -40,7 +40,7 @@ describe("the reason a turn ended", () => {
       "REST connect request failed: Failed to fetch",
     );
     expect(connect).toBe(
-      "OpenBot couldn't reach its backend. Try again, or quit and reopen OpenBot.",
+      "AwakenBot couldn't reach its backend. Try again, or quit and reopen AwakenBot.",
     );
 
     for (const shown of [run, connect]) {

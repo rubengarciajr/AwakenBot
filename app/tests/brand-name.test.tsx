@@ -4,7 +4,7 @@ import { cleanup, render } from "@testing-library/react";
 import { BrandName } from "@/components/edition/brand-name";
 
 /**
- * OpenBot's brand marks carry the trademark sign the way open.bot sets it: a small superscript the
+ * AwakenBot's brand marks carry the trademark sign the way open.bot sets it: a small superscript the
  * screen reader skips, so the name is read once and plainly. Any other name stays as it is.
  */
 
@@ -22,7 +22,7 @@ function drawLink(name: string) {
   );
 }
 
-test.each(["OpenBot", "OpenBot for Business"])(
+test.each(["AwakenBot", "AwakenBot for Business"])(
   "%s is drawn with a superscript trademark sign that is not read aloud",
   (name) => {
     const view = drawLink(name);
@@ -34,7 +34,7 @@ test.each(["OpenBot", "OpenBot for Business"])(
   },
 );
 
-test.each(["Acme Assistant", "OpenBot is ready", "Bots"])(
+test.each(["Acme Assistant", "AwakenBot is ready", "Bots"])(
   "%s is drawn as it is, with no trademark sign",
   (name) => {
     const view = drawLink(name);

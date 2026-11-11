@@ -1,4 +1,4 @@
-// A person's own OpenBot browser, through the real routes and the real database: opening it mints the person's Recorder
+// A person's own AwakenBot browser, through the real routes and the real database: opening it mints the person's Recorder
 // connection with no Connect step, the connection resolves through the Recorder guard as that person, each open
 // replaces the last, organization mode seals the session from the request, and nobody else (an admin included) reaches
 // the browser or its live screen. The computer is a stand-in that answers its routes exactly as the contract types them
@@ -104,12 +104,12 @@ const NOTHING_PORT = 7764;
 const REAL_COMPUTER_PORT = 7815;
 /** The real shared computer another runs. */
 const SHARED_COMPUTER_PORT = 7816;
-/** What the person is told when their browser cannot open for OpenBot's own setup. */
+/** What the person is told when their browser cannot open for AwakenBot's own setup. */
 const NOT_SET_UP =
-  "Your browser can't open right now. Ask an admin to check OpenBot's setup.";
-/** The same, on a single-user OpenBot (OpenBot Desktop), where the person is the admin. */
+  "Your browser can't open right now. Ask an admin to check AwakenBot's setup.";
+/** The same, on a single-user AwakenBot (AwakenBot Desktop), where the person is the admin. */
 const NOT_SET_UP_SINGLE_USER =
-  "Your browser can't open right now. Quit OpenBot, open it again, and try once more.";
+  "Your browser can't open right now. Quit AwakenBot, open it again, and try once more.";
 
 // ---- The stand-in computer --------------------------------------------------------------------
 
@@ -152,16 +152,16 @@ let refuseNextDisconnect: { status: number } | { never: Promise<void> } | null =
 let silentState: { answers: true } | { never: Promise<void> } | null = null;
 /** What the real computer answers when the browser did not answer (agent-computer's NOT_ANSWERING). */
 const COMPUTER_NOT_ANSWERING = "The browser did not answer within 5 s.";
-/** The window an open shows its browser in: a screen (hosted OpenBot) unless a test opens a native one (Desktop). */
+/** The window an open shows its browser in: a screen (hosted AwakenBot) unless a test opens a native one (Desktop). */
 let openAs: "screen" | "native" = "screen";
 /**
  * When a test says so, the Recorder takes a connection as the real one does (extension/src/background/launcher.ts): it
- * asks OpenBot who the connection is for, `askMs` after it was handed it, and refuses one OpenBot answers is signed out,
+ * asks AwakenBot who the connection is for, `askMs` after it was handed it, and refuses one AwakenBot answers is signed out,
  * with its own sentence, which the computer answers as a Recorder that could not be connected.
  */
 let confirmOpens: {
   askMs: number;
-  /** OpenBot's status for `/api/recorder/me` with this token. */
+  /** AwakenBot's status for `/api/recorder/me` with this token. */
   me: (token: string) => Promise<number>;
 } | null = null;
 
@@ -239,7 +239,7 @@ const computer = Bun.serve<{ bot: string }>({
             return Response.json(
               {
                 error:
-                  "The Recorder could not be connected: OpenBot did not accept this browser's connection. Open the browser from OpenBot again.",
+                  "The Recorder could not be connected: AwakenBot did not accept this browser's connection. Open the browser from AwakenBot again.",
               },
               { status: 502 },
             );
@@ -286,7 +286,7 @@ const computer = Bun.serve<{ bot: string }>({
           // The Recorder's own refusals, in its words (extension/src/background/launcher.ts, recording.ts).
           if (!recorder.connected)
             return Response.json(
-              { error: "Connect this browser to OpenBot first." },
+              { error: "Connect this browser to AwakenBot first." },
               { status: 409 },
             );
           if (recorder.phase !== "idle")
@@ -357,7 +357,7 @@ const computer = Bun.serve<{ bot: string }>({
         return Response.json(opened.state);
       }
       case "/browser/disconnect": {
-        // A POST with no body. The Recorder forgets its connection as it does when OpenBot answers that its token is
+        // A POST with no body. The Recorder forgets its connection as it does when AwakenBot answers that its token is
         // gone, and reports what it reports then (extension/src/background/launcher.ts): a recording under it stopped.
         if (request.method !== "POST" || sent !== "")
           return Response.json({ error: "Bad request." }, { status: 400 });
@@ -390,7 +390,7 @@ const computer = Bun.serve<{ bot: string }>({
       case "/browser/clear":
         // A POST with no body. As the computer clears it (agent-computer's browser-host.ts): the browser closed and its
         // whole profile deleted, the Recorder's storage with it, so the connection the Recorder kept goes too. It stays
-        // closed: only OpenBot can hand the Recorder a connection again.
+        // closed: only AwakenBot can hand the Recorder a connection again.
         if (request.method !== "POST" || sent !== "")
           return Response.json({ error: "Bad request." }, { status: 400 });
         browsers.delete(id);
@@ -407,7 +407,7 @@ const computer = Bun.serve<{ bot: string }>({
   },
 });
 
-// ---- OpenBot, as index.ts builds it ------------------------------------------------------------
+// ---- AwakenBot, as index.ts builds it ------------------------------------------------------------
 
 const audits: AuditEventInput[] = [];
 const auditStore = {
@@ -441,14 +441,14 @@ const better = {
   },
 };
 
-/** One OpenBot: the Bots' computer provider carrying people's browsers, the gateway over it, and the browser routes. */
+/** One AwakenBot: the Bots' computer provider carrying people's browsers, the gateway over it, and the browser routes. */
 function build(
   environment: Record<string, string | undefined> = {},
   options: {
     auth?: typeof better | ReturnType<typeof createOrganizationAuth>;
     organizationAuth?: ReturnType<typeof createOrganizationAuth>;
     computers?: false;
-    /** The deployment's computer token as this OpenBot was given it, in place of the right one. */
+    /** The deployment's computer token as this AwakenBot was given it, in place of the right one. */
     token?: string;
     /** The Bots' computer provider, in place of the stand-in computer as a computer of each one's own. */
     provider?: ComputerProvider;
@@ -540,7 +540,7 @@ function build(
   return { app: createApp(...args), gateway, config };
 }
 
-type OpenBot = ReturnType<typeof build>;
+type AwakenBot = ReturnType<typeof build>;
 
 /**
  * The stand-in computer as a provider that gives every computer named its own, as a supervisor or a Sandbox does: where
@@ -558,7 +558,7 @@ function ownComputers(): ComputerProvider {
 }
 
 const call = (
-  { app }: OpenBot,
+  { app }: AwakenBot,
   path: string,
   init: RequestInit & { json?: unknown; as?: keyof typeof PEOPLE } = {},
 ) => {
@@ -584,7 +584,7 @@ const handed = (userId: string) =>
   };
 
 async function open(
-  openbot: OpenBot,
+  openbot: AwakenBot,
   as: keyof typeof PEOPLE,
   headers: Record<string, string> = {},
 ) {
@@ -597,7 +597,7 @@ async function open(
   return (await response.json()) as BrowserOpenResponse;
 }
 
-let openbot: OpenBot;
+let openbot: AwakenBot;
 beforeAll(async () => {
   await database.insert(users).values([ada, ben, admin]);
   openbot = build();
@@ -628,7 +628,7 @@ describe("opening a person's own browser", () => {
       tabs: [],
     } satisfies BrowserApiState);
     expect((await call(openbot, "/api/browser")).status).toBe(401);
-    // An OpenBot with no way to run a person's browser says so, and the app hides the button.
+    // An AwakenBot with no way to run a person's browser says so, and the app hides the button.
     const without = build({}, { computers: false });
     expect(
       await (await call(without, "/api/browser", { as: "ada" })).json(),
@@ -831,7 +831,7 @@ describe("opening a person's own browser", () => {
     );
     expect(mine).toEqual([
       expect.objectContaining({
-        label: "OpenBot browser",
+        label: "AwakenBot browser",
         via: "openbot-browser",
         extensionId: RECORDER_EXTENSION_ID,
         installId: computerId.slice("person-".length),
@@ -843,9 +843,9 @@ describe("opening a person's own browser", () => {
           event.eventType === "recorder.connected" &&
           event.targetId === connection.connectionId,
       )?.payload,
-    ).toMatchObject({ via: "openbot-browser", label: "OpenBot browser" });
+    ).toMatchObject({ via: "openbot-browser", label: "AwakenBot browser" });
 
-    // The browser's network policy went to its computer ahead of the browser: the open web and this OpenBot and the
+    // The browser's network policy went to its computer ahead of the browser: the open web and this AwakenBot and the
     // Intelligence gateway by name on their own ports, nothing inside the deployment.
     const policy = policies.get(computerId) as {
       mode: string;
@@ -926,7 +926,7 @@ describe("opening a person's own browser", () => {
   test("a Recorder that does not hold the connection that stands is handed a new one, which replaces it", async () => {
     await open(openbot, "ada");
     const first = handed(ada.id);
-    // The Recorder in the open browser holds some other connection than the one OpenBot holds for it.
+    // The Recorder in the open browser holds some other connection than the one AwakenBot holds for it.
     const opened = browsers.get(personBrowserId(ada.id));
     if (!opened?.state.recorder) throw new Error("Ada's browser is open.");
     opened.state.recorder = {
@@ -995,7 +995,7 @@ describe("opening a person's own browser", () => {
     ).toHaveLength(1);
   });
 
-  test("the OpenBot browser's connection is disconnected from Settings, Browsers like any other", async () => {
+  test("the AwakenBot browser's connection is disconnected from Settings, Browsers like any other", async () => {
     await open(openbot, "ada");
     const connection = handed(ada.id);
     const removed = await call(
@@ -1118,7 +1118,7 @@ describe("opening a person's own browser", () => {
   });
 
   test("the computer's refusals reach the person as theirs, and its own failings never read as the person's", async () => {
-    // No Chrome or Edge here, in the computer's own words (agent-computer's browser-host.ts answers it 503): OpenBot's
+    // No Chrome or Edge here, in the computer's own words (agent-computer's browser-host.ts answers it 503): AwakenBot's
     // setup, which the person is told is why their browser cannot open, and who can see to it.
     refuseNextOpen = { status: 503, error: NO_INSTALLED_BROWSER };
     const { result: unavailable, warned } = await logged(() =>
@@ -1126,7 +1126,7 @@ describe("opening a person's own browser", () => {
     );
     expect(unavailable.status).toBe(503);
     expect(await unavailable.json()).toEqual({ error: NOT_SET_UP });
-    // The computer's sentence is in the server's log, for whoever runs OpenBot.
+    // The computer's sentence is in the server's log, for whoever runs AwakenBot.
     expect(
       warned
         .map((line) => JSON.parse(line) as Record<string, unknown>)
@@ -1143,7 +1143,7 @@ describe("opening a person's own browser", () => {
     refuseNextOpen = {
       status: 409,
       error:
-        "Your organization's Recorder policy does not allow this OpenBot. Ask your IT team.",
+        "Your organization's Recorder policy does not allow this AwakenBot. Ask your IT team.",
     };
     const refused = await call(openbot, "/api/browser/open", {
       method: "POST",
@@ -1163,7 +1163,7 @@ describe("opening a person's own browser", () => {
     expect(await failed.json()).toEqual({
       error: "The Recorder in your browser does not offer its launcher.",
     });
-    // OpenBot calling its computer with the wrong token is not the person signed out.
+    // AwakenBot calling its computer with the wrong token is not the person signed out.
     const misconfigured = build({}, { token: "not-the-computer-token" });
     const wrong = await call(misconfigured, "/api/browser/open", {
       method: "POST",
@@ -1238,7 +1238,7 @@ describe("opening a person's own browser", () => {
       expect(result.status).toBe(503);
       expect(await result.json()).toEqual({ error: NOT_SET_UP });
 
-      // The computer's own sentence, for whoever runs OpenBot, in the server's log and in the computer's.
+      // The computer's own sentence, for whoever runs AwakenBot, in the server's log and in the computer's.
       const failures = warned
         .map((line) => JSON.parse(line) as Record<string, unknown>)
         .filter((line) => line.type === "browser-computer-failed");
@@ -1586,7 +1586,7 @@ describe("clearing a person's own browser", () => {
     await open(openbot, "ben");
     const held = handed(ben.id);
     await call(openbot, "/api/browser/close", { method: "POST", as: "ben" });
-    // Closed, the browser keeps its connection in its profile, and OpenBot keeps it live for the next open.
+    // Closed, the browser keeps its connection in its profile, and AwakenBot keeps it live for the next open.
     expect(
       (await call(openbot, "/api/recorder/me", { headers: bearer(held.token) }))
         .status,
@@ -1771,7 +1771,7 @@ describe("narration on the server's clock", () => {
 });
 
 describe("a slow page, and a browser that cannot be reached", () => {
-  test("OpenBot waits longer for its computer than the computer waits for a page", async () => {
+  test("AwakenBot waits longer for its computer than the computer waits for a page", async () => {
     // The computer's own navigation timeout, as it sets it (agent-computer/src/index.ts).
     const source = await Bun.file(
       new URL("../../agent-computer/src/index.ts", import.meta.url),
@@ -1860,7 +1860,7 @@ describe("a slow page, and a browser that cannot be reached", () => {
     expect(STATE_TIMEOUT_MS).toBeLessThan(10_000);
   });
 
-  test("a slow open and a slow page answer through OpenBot's own server, never with an empty reply", async () => {
+  test("a slow open and a slow page answer through AwakenBot's own server, never with an empty reply", async () => {
     // Bun.serve closes a request that has sent nothing for 10 s, and these waited on the computer for up to 45 s, or 90
     // for an open: a cold open or a slow page reached the person as an empty reply, and the app said only its fallback.
     await call(openbot, "/api/browser/close", { method: "POST", as: "ada" });
@@ -1992,7 +1992,7 @@ describe("a slow page, and a browser that cannot be reached", () => {
 });
 
 describe("a browser that is open and not answering", () => {
-  /** What the person is told, on an OpenBot with sign-in. */
+  /** What the person is told, on an AwakenBot with sign-in. */
   const NOT_ANSWERING =
     "Your browser isn't answering. If it doesn't come back soon, ask an admin for help.";
   /** How many requests the computer took that start with `line` (`<method> <path>`). */
@@ -2035,7 +2035,7 @@ describe("a browser that is open and not answering", () => {
     expect(back.problem).toBeUndefined();
   });
 
-  test("a computer that does not answer at all still gets the person an answer, before OpenBot's own server would close the request", async () => {
+  test("a computer that does not answer at all still gets the person an answer, before AwakenBot's own server would close the request", async () => {
     // The end-to-end run: the state waited 45 s, Bun.serve closed the person's request with an empty reply at 10, the
     // Browser page had nothing to say and the sidebar lost its Browser button.
     await open(openbot, "ada");
@@ -2078,7 +2078,7 @@ describe("a browser that is open and not answering", () => {
   }, 30_000);
 });
 
-describe("Record after the OpenBot browser is disconnected", () => {
+describe("Record after the AwakenBot browser is disconnected", () => {
   const record = (title: string) =>
     call(openbot, "/api/browser/recording", {
       method: "POST",
@@ -2106,12 +2106,12 @@ describe("Record after the OpenBot browser is disconnected", () => {
       .length;
   const disconnects = (id = computerId()) =>
     asked.filter((line) => line === `POST /browser/disconnect ${id}`).length;
-  const state = async (on: OpenBot = openbot, as: "ada" | "ben" = "ada") =>
+  const state = async (on: AwakenBot = openbot, as: "ada" | "ben" = "ada") =>
     (await (await call(on, "/api/browser", { as })).json()) as BrowserApiState;
 
   test("Disconnect in Settings, Browsers tells the person's open browser at once, and its Recorder and the state say it is signed out", async () => {
     // The second end-to-end run: after Disconnect the Recorder went on saying it was connected for minutes (90 s on
-    // Desktop, 125 s hosted, before the run stopped looking), until its next call to OpenBot.
+    // Desktop, 125 s hosted, before the run stopped looking), until its next call to AwakenBot.
     await open(openbot, "ada");
     const revoked = handed(ada.id);
     expect((await state()).recorder).toMatchObject({
@@ -2260,7 +2260,7 @@ describe("Record after the OpenBot browser is disconnected", () => {
     expect(unreachable.status).toBe(204);
     expect(typesOf(failed)).toEqual(["browser-computer-unreachable"]);
 
-    // A computer that takes the request and does not answer: the revoke answers once OpenBot stops waiting.
+    // A computer that takes the request and does not answer: the revoke answers once AwakenBot stops waiting.
     const impatient = build({}, { callTimeoutMs: 300 });
     await open(openbot, "ada");
     const slow = handed(ada.id);
@@ -2294,7 +2294,7 @@ describe("Record after the OpenBot browser is disconnected", () => {
       ).toBe(401);
   });
 
-  test("only the OpenBot browser's own connection reaches it: not another browser's, and not the Recorder's own Disconnect", async () => {
+  test("only the AwakenBot browser's own connection reaches it: not another browser's, and not the Recorder's own Disconnect", async () => {
     await open(openbot, "ada");
     const browser = handed(ada.id);
     const before = disconnects();
@@ -2326,7 +2326,7 @@ describe("Record after the OpenBot browser is disconnected", () => {
       userId: ada.id,
     });
 
-    // The Recorder in the OpenBot browser disconnecting itself from its own popup: it forgets the connection itself, as
+    // The Recorder in the AwakenBot browser disconnecting itself from its own popup: it forgets the connection itself, as
     // the person's own Disconnect, so it is not told it was signed out.
     expect(
       (
@@ -2343,7 +2343,7 @@ describe("Record after the OpenBot browser is disconnected", () => {
     await open(openbot, "ada");
     const revoked = handed(ada.id);
     await disconnect(revoked.connectionId);
-    // OpenBot told the Recorder at once, and it says it is signed out.
+    // AwakenBot told the Recorder at once, and it says it is signed out.
     expect(browsers.get(computerId())?.state.recorder?.connected).toBe(false);
 
     const started = await record("Look up Charles Babbage");
@@ -2355,13 +2355,13 @@ describe("Record after the OpenBot browser is disconnected", () => {
     expect(now.connectionId).not.toBe(revoked.connectionId);
     const recordedUnder = browsers.get(computerId())?.recordedUnder as string;
     expect(recordedUnder).toBe(now.token);
-    // Its capture passes carry a token OpenBot takes as the person's.
+    // Its capture passes carry a token AwakenBot takes as the person's.
     const me = await call(openbot, "/api/recorder/me", {
       headers: bearer(recordedUnder),
     });
     expect(me.status).toBe(200);
     expect(await me.json()).toMatchObject({ user: { id: ada.id } });
-    // One OpenBot browser in Settings, Browsers again, the new one.
+    // One AwakenBot browser in Settings, Browsers again, the new one.
     const listed = (await (
       await call(openbot, "/api/recorder/connections", { as: "ada" })
     ).json()) as RecorderConnectionsResponse;
@@ -2404,7 +2404,7 @@ describe("Record after the OpenBot browser is disconnected", () => {
     await open(openbot, "ada");
     await disconnect(handed(ada.id).connectionId);
     const sentence =
-      "The Recorder could not be connected: Your organization's Recorder policy does not allow this OpenBot. Ask your IT team.";
+      "The Recorder could not be connected: Your organization's Recorder policy does not allow this AwakenBot. Ask your IT team.";
     refuseNextOpen = { status: 502, error: sentence };
     const recordings = () =>
       asked.filter((line) => line === `POST /browser/recording ${computerId()}`)
@@ -2681,7 +2681,7 @@ describe("a person's browser on the computer routes and the live screen", () => 
   });
 });
 
-describe("where the browser reaches this OpenBot", () => {
+describe("where the browser reaches this AwakenBot", () => {
   test("the configured public origin, else this machine's own window, else the app's address; never another site", () => {
     const at = (environment: { publicUrl?: string; appUrl?: string }) =>
       openbotAddress({
@@ -2691,7 +2691,7 @@ describe("where the browser reaches this OpenBot", () => {
     expect(at({ publicUrl: "https://openbot.example.com/" })(undefined)).toBe(
       "https://openbot.example.com",
     );
-    // OpenBot Desktop: no public URL, and its window found its own loopback address.
+    // AwakenBot Desktop: no public URL, and its window found its own loopback address.
     const desktop = at({ appUrl: "http://localhost:3010" });
     expect(desktop("http://[::1]:3010")).toBe("http://[::1]:3010");
     expect(desktop("http://127.0.0.1:3010")).toBe("http://127.0.0.1:3010");
@@ -2708,7 +2708,7 @@ describe("where the browser reaches this OpenBot", () => {
   });
 
   test("with no address the Recorder would connect to, the person is told their browser cannot open, and the setting to fix is in the log", async () => {
-    // The person used to be told to set OPENBOT_PUBLIC_URL, which only whoever runs OpenBot can do.
+    // The person used to be told to set OPENBOT_PUBLIC_URL, which only whoever runs AwakenBot can do.
     const nowhere = build({
       OPENBOT_PUBLIC_URL: "http://openbot.internal:3001",
       BETTER_AUTH_URL: "http://openbot.internal:3001",
@@ -2730,13 +2730,13 @@ describe("where the browser reaches this OpenBot", () => {
       {
         type: "browser-open-no-address",
         error:
-          "This OpenBot has no address a person's browser can reach it at, so the Recorder in it cannot be connected. Set OPENBOT_PUBLIC_URL to this OpenBot's https address.",
+          "This AwakenBot has no address a person's browser can reach it at, so the Recorder in it cannot be connected. Set OPENBOT_PUBLIC_URL to this AwakenBot's https address.",
       },
     ]);
   });
 });
 
-describe("a single-user OpenBot, where the person is its admin", () => {
+describe("a single-user AwakenBot, where the person is its admin", () => {
   /** One person and no sign-in, and no address anybody else reaches. */
   const SINGLE_USER = {
     OPENBOT_SINGLE_USER: "true",
@@ -2756,11 +2756,11 @@ describe("a single-user OpenBot, where the person is its admin", () => {
       ...SINGLE_USER,
       OPENBOT_BROWSER_URL: `http://127.0.0.1:${COMPUTER_PORT}`,
     });
-  /** The address OpenBot Desktop's window uses, which the Recorder is handed. */
+  /** The address AwakenBot Desktop's window uses, which the Recorder is handed. */
   const WINDOW = { origin: "http://127.0.0.1:3010" };
 
-  test("OpenBot Desktop's personal edition shows the person's browser in the page, on its one computer", async () => {
-    // David, 2026-11-06: Teach a Bot on OpenBot Desktop opened a separate Chrome window, because Desktop pointed the
+  test("AwakenBot Desktop's personal edition shows the person's browser in the page, on its one computer", async () => {
+    // David, 2026-11-06: Teach a Bot on AwakenBot Desktop opened a separate Chrome window, because Desktop pointed the
     // server at a host-side Chrome (OPENBOT_BROWSER_URL). Desktop now runs the personal edition's one computer and no
     // host-side browser, and the person's browser runs on that computer and shows in the page, as a hosted one does.
     const personal = build(
@@ -2810,9 +2810,9 @@ describe("a single-user OpenBot, where the person is its admin", () => {
   test("a Recorder kept at the app's old port is handed a connection at the new one", async () => {
     // David, 2026-11-07: a new Desktop build installed while port 3010 was held moved APP_PORT to 58092
     // (desktop/src-tauri/src/env.rs, `Ports::available`). The Recorder in the person's browser still held its
-    // connection at 3010, OpenBot kept that connection as one that stands, and every capture pass went to a port
+    // connection at 3010, AwakenBot kept that connection as one that stands, and every capture pass went to a port
     // nothing relayed any more, so no recording was saved.
-    /** OpenBot as one Desktop Start runs it: the personal edition, with its app on `port`. */
+    /** AwakenBot as one Desktop Start runs it: the personal edition, with its app on `port`. */
     const startedOn = (port: number) =>
       build(
         {
@@ -2829,7 +2829,7 @@ describe("a single-user OpenBot, where the person is its admin", () => {
       );
     const computerId = personBrowserId(DEV_ACTOR.id);
     /** Browser in the window at `port`, then the connection the Recorder holds and whether it was handed a new one. */
-    const browseAt = async (openbot: OpenBot, port: number) => {
+    const browseAt = async (openbot: AwakenBot, port: number) => {
       const before = recorderKeeps.get(computerId);
       const origin = `http://127.0.0.1:${port}`;
       const opening = await call(openbot, "/api/browser/open", {
@@ -2867,8 +2867,8 @@ describe("a single-user OpenBot, where the person is its admin", () => {
       .where(eq(recorderConnections.userId, DEV_ACTOR.id));
   });
 
-  test("a browser the computer cannot run is OpenBot's setup, which the person is told to check themselves, not to ask an admin about", async () => {
-    // Run 7, on OpenBot Desktop: the person was told to ask an admin, and on Desktop there is nobody else.
+  test("a browser the computer cannot run is AwakenBot's setup, which the person is told to check themselves, not to ask an admin about", async () => {
+    // Run 7, on AwakenBot Desktop: the person was told to ask an admin, and on Desktop there is nobody else.
     const single = desktop();
     expect(single.config.singleUser).toBe(true);
     expect(
@@ -2894,7 +2894,7 @@ describe("a single-user OpenBot, where the person is its admin", () => {
       },
     ]);
 
-    // On an OpenBot with sign-in, the same refusal still sends the person to an admin.
+    // On an AwakenBot with sign-in, the same refusal still sends the person to an admin.
     refuseNextOpen = { status: 503, error: NO_INSTALLED_BROWSER };
     const { result: multi } = await logged(() =>
       call(openbot, "/api/browser/open", { method: "POST", as: "ada" }),
@@ -2916,7 +2916,7 @@ describe("a single-user OpenBot, where the person is its admin", () => {
       ).toMatchObject({
         available: true,
         problem:
-          "Your browser isn't answering. If it doesn't come back soon, quit OpenBot and open it again.",
+          "Your browser isn't answering. If it doesn't come back soon, quit AwakenBot and open it again.",
       });
     } finally {
       silentState = null;
@@ -2924,7 +2924,7 @@ describe("a single-user OpenBot, where the person is its admin", () => {
   });
 
   test("with no address the Recorder would connect to, the single person is told the same, and the setting is in the log", async () => {
-    // A request with no Origin, and nothing configured: OpenBot has no address to hand the Recorder.
+    // A request with no Origin, and nothing configured: AwakenBot has no address to hand the Recorder.
     const { result: refused, warned } = await logged(() =>
       call(desktop(), "/api/browser/open", { method: "POST" }),
     );

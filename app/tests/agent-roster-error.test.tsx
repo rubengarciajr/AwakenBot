@@ -183,7 +183,7 @@ test("a failed REFETCH on / keeps the roster and does not disclaim the composer"
   // evidence that the composer is not the disabled, nothing-to-send-to state its alert describes.
   expect(
     await view.findByText(
-      "OpenBot picks the right Bot.",
+      "AwakenBot picks the right Bot.",
       { exact: false },
       HOME_FIND_TIMEOUT,
     ),
@@ -250,7 +250,7 @@ test("on the personal edition, an empty Explore Bots says nothing about sharing"
   // The composer has a Bot to send to: Home has drawn with the roster loaded.
   expect(
     await view.findByText(
-      "OpenBot picks the right Bot.",
+      "AwakenBot picks the right Bot.",
       { exact: false },
       HOME_FIND_TIMEOUT,
     ),

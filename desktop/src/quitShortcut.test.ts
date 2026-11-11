@@ -57,7 +57,7 @@ function load() {
   globalThis.eval(SHIM);
 }
 
-test("Ctrl+Q while typing in OpenBot asks the shell to quit, as the tray's Quit does", () => {
+test("Ctrl+Q while typing in AwakenBot asks the shell to quit, as the tray's Quit does", () => {
   const event = press({ key: "q", code: "KeyQ", ctrlKey: true });
   expect(asked).toEqual(["plugin:openbot-desktop|quit"]);
   expect(event.defaultPrevented).toBe(true);
@@ -83,7 +83,7 @@ test("Ctrl and the Q key quit on a layout that writes another script there", () 
   expect(asked).toEqual(["plugin:openbot-desktop|quit"]);
 });
 
-test("other keys, and Q with other modifiers, leave OpenBot running", () => {
+test("other keys, and Q with other modifiers, leave AwakenBot running", () => {
   const left = [
     press({ key: "q", code: "KeyQ" }),
     press({ key: "Q", code: "KeyQ", shiftKey: true }),

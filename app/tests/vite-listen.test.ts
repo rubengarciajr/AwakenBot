@@ -73,7 +73,7 @@ for (const host of ["127.0.0.1", "::1", process.env.LAN_ADDRESS])
     const text = await ask(host, path);
     answers[host + " " + path] = {
       status: Number(/^HTTP\\/1\\.1 (\\d{3})/.exec(text)?.[1] ?? 0),
-      thisMachineOnly: text.includes("This OpenBot only answers on the computer it runs on."),
+      thisMachineOnly: text.includes("This AwakenBot only answers on the computer it runs on."),
     };
   }
 console.log("ANSWERS " + JSON.stringify(answers));

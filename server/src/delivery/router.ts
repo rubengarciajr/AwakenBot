@@ -586,7 +586,7 @@ export function createDeliveryRouter(deps: {
         const [title, body] =
           row.kind === "attention"
             ? headedText(row.text)
-            : ["OpenBot", row.text];
+            : ["AwakenBot", row.text];
         result = await deps.providers.push.send({
           token: device.token,
           title,

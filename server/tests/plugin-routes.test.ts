@@ -2341,11 +2341,11 @@ describe("connecting a brokered app", () => {
     ]);
   });
 
-  test("a sign-in started in OpenBot Desktop comes back to the page that hands the person back to it", async () => {
+  test("a sign-in started in AwakenBot Desktop comes back to the page that hands the person back to it", async () => {
     /*
      * The Desktop window opens the sign-in in the person's browser, so Composio's redirect lands
-     * there. Sent to the account's page, the person was left on OpenBot in a browser tab. The page
-     * this names confirms the account and brings the window forward. Still a page of this OpenBot,
+     * there. Sent to the account's page, the person was left on AwakenBot in a browser tab. The page
+     * this names confirms the account and brings the window forward. Still a page of this AwakenBot,
      * on its own origin: `from` names where the press was made, never where to go.
      */
     const { authorized, connect } = brokeredApp();
@@ -2448,7 +2448,7 @@ describe("connecting a brokered app", () => {
 
   test("a refusal written for the operator never tells the person who the broker is", async () => {
     /*
-     * A person connects their apps through OpenBot and is never told which company sits behind
+     * A person connects their apps through AwakenBot and is never told which company sits behind
      * it. The broker layer's own refusals were written for an operator who can open that company's
      * dashboard, so they name it. Passed through as they were, the person pressing Connect read
      * "Composio would not mint a connect link" and a remedy in a dashboard they cannot open. They
@@ -2985,7 +2985,7 @@ describe("connecting an app whose secret a person types", () => {
 
   test("a refused key whose sentence names the broker is said in the route's own words", async () => {
     // The same promise as the consent press: what a person reads about their own key never names
-    // the company OpenBot connects through.
+    // the company AwakenBot connects through.
     const { connectFields } = brokeredApp(null, AUTHORIZATION_URL, {
       storeThrows: new PluginRefusedError(
         "What you entered for firecrawl did not work, and Composio would not take the account back either.",

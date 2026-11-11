@@ -1,10 +1,10 @@
-//! Updating Docker Desktop for the person, when it is too old to run OpenBot.
+//! Updating Docker Desktop for the person, when it is too old to run AwakenBot.
 //!
 //! Docker documents one way to install Docker Desktop from outside it, and it installs over an
 //! existing one: the installer's own command line.
 //!
 //! - **macOS.** `Docker.app/Contents/MacOS/install` from the release's `Docker.dmg`, run as root
-//!   (https://docs.docker.com/desktop/setup/install/mac-install/). OpenBot raises macOS's own
+//!   (https://docs.docker.com/desktop/setup/install/mac-install/). AwakenBot raises macOS's own
 //!   password prompt for it, as it does for Podman. `--user=<name>` does the privileged setup once,
 //!   now, so the updated Docker Desktop does not ask for the password again when it starts.
 //! - **Windows.** `"Docker Desktop Installer.exe" install --quiet`
@@ -16,7 +16,7 @@
 //! **Docker's terms stay the person's.** `--accept-license` would accept Docker's Subscription
 //! Service Agreement for them, and it is never passed. Somebody updating a Docker Desktop they have
 //! used accepted the terms already; if Docker wants them accepted again, Docker Desktop shows them
-//! when it starts, in its own window, and OpenBot says so and waits (`docker_desktop::start`).
+//! when it starts, in its own window, and AwakenBot says so and waits (`docker_desktop::start`).
 //!
 //! **Nothing unverified is run.** The release is the newest one in Docker's own update feed
 //! (`appcast.xml` on desktop.docker.com, the feed Docker Desktop's updater reads). The installer
@@ -27,10 +27,10 @@
 //!
 //! **Only Docker's own installer touches Docker.** Quitting Docker Desktop stops the containers in
 //! it, as Docker's own updater does; images, containers and volumes stay on Docker's disk, which
-//! the installer leaves alone. OpenBot never removes or moves any of them.
+//! the installer leaves alone. AwakenBot never removes or moves any of them.
 //!
 //! **When it cannot be done unattended** (the installer stopped with an error), the verified
-//! installer is opened for the person, one plain line says what to do, and OpenBot carries on by
+//! installer is opened for the person, one plain line says what to do, and AwakenBot carries on by
 //! itself once Docker answers with a Compose new enough.
 
 // Linux has no Docker Desktop: only the parsing and the plan are used there, by the tests.
@@ -50,7 +50,7 @@ pub const TEAM_ID: &str = "9BNSXJN65R";
 /// Why Docker Desktop is updating, said first on every line while it does: it is the person's own
 /// app, and they see it close and come back.
 pub const UPDATING_WHY: &str =
-    "The Docker Desktop on this computer is too old for OpenBot, so OpenBot is updating it.";
+    "The Docker Desktop on this computer is too old for AwakenBot, so AwakenBot is updating it.";
 
 /// What a person reads while Docker updates. `minutes` is the estimate, when there is one.
 pub fn updating_line(minutes: Option<u64>) -> StepLine {
@@ -330,33 +330,33 @@ fn this_os_version(os: &str) -> Option<String> {
 pub fn plan(cache: &Path, os: &str, arch: &str) -> Result<Plan, Problem> {
     let feed = appcast_url(os, arch).ok_or_else(|| {
         Problem::with(
-            "Docker on this computer is too old to run OpenBot. Update Docker Desktop, then start \
-             OpenBot again.",
+            "Docker on this computer is too old to run AwakenBot. Update Docker Desktop, then start \
+             AwakenBot again.",
             format!("no Docker Desktop update feed for {os} on {arch}"),
         )
     })?;
     let body = crate::deployment::get(&feed).map_err(|error| {
         Problem::with(
-            "OpenBot couldn't check for a Docker update. Check the internet connection and try \
+            "AwakenBot couldn't check for a Docker update. Check the internet connection and try \
              again.",
             format!("{feed}: {error}"),
         )
     })?;
     let release = latest(&String::from_utf8_lossy(&body)).ok_or_else(|| {
         Problem::with(
-            "OpenBot couldn't check for a Docker update. Try again.",
-            format!("{feed} names no release OpenBot can read"),
+            "AwakenBot couldn't check for a Docker update. Try again.",
+            format!("{feed} names no release AwakenBot can read"),
         )
     })?;
     let this = this_os_version(os);
     if !os_supports(os, release.minimum_os.as_deref(), this.as_deref()) {
         return Err(Problem::with(
             if os == "macos" {
-                "Docker on this Mac is too old to run OpenBot, and the newest Docker needs a newer \
-                 macOS. Update macOS, then start OpenBot again."
+                "Docker on this Mac is too old to run AwakenBot, and the newest Docker needs a newer \
+                 macOS. Update macOS, then start AwakenBot again."
             } else {
-                "Docker on this computer is too old to run OpenBot, and the newest Docker needs a \
-                 newer Windows. Update Windows, then start OpenBot again."
+                "Docker on this computer is too old to run AwakenBot, and the newest Docker needs a \
+                 newer Windows. Update Windows, then start AwakenBot again."
             },
             format!(
                 "Docker Desktop {} needs {} and this computer has {}",
@@ -381,7 +381,7 @@ pub fn download(plan: &Plan, progress: &mut dyn FnMut(StepLine)) -> Result<(), P
     let checksums_url = plan.release.checksums_url();
     let checksums = crate::deployment::get(&checksums_url).map_err(|error| {
         Problem::with(
-            "OpenBot couldn't download the Docker update. Check the internet connection and try \
+            "AwakenBot couldn't download the Docker update. Check the internet connection and try \
              again.",
             format!("{checksums_url}: {error}"),
         )
@@ -389,7 +389,7 @@ pub fn download(plan: &Plan, progress: &mut dyn FnMut(StepLine)) -> Result<(), P
     let file = plan.release.file();
     let expected = checksum_for(&String::from_utf8_lossy(&checksums), &file).ok_or_else(|| {
         Problem::with(
-            "OpenBot couldn't download the Docker update. Try again.",
+            "AwakenBot couldn't download the Docker update. Try again.",
             format!("{checksums_url} has no checksum for {file}"),
         )
     })?;
@@ -424,7 +424,7 @@ pub fn download(plan: &Plan, progress: &mut dyn FnMut(StepLine)) -> Result<(), P
             }
             Err(error) => {
                 return Err(Problem::with(
-                    "OpenBot couldn't download the Docker update. Check the internet connection \
+                    "AwakenBot couldn't download the Docker update. Check the internet connection \
                      and try again.",
                     format!("{url}: {error} ({attempts} attempts)"),
                 ))
@@ -435,7 +435,7 @@ pub fn download(plan: &Plan, progress: &mut dyn FnMut(StepLine)) -> Result<(), P
     if got != expected {
         let _ = std::fs::remove_file(&plan.installer);
         return Err(Problem::with(
-            "The Docker update OpenBot downloaded is not what Docker published, so it has not \
+            "The Docker update AwakenBot downloaded is not what Docker published, so it has not \
              been run. Try again.",
             format!("{file} from {url}: expected sha256 {expected}, got {got}"),
         ));
@@ -456,7 +456,7 @@ pub fn minutes_left(received: u64, total: Option<u64>, elapsed: Duration) -> Opt
 
 fn unwritable(path: &Path, error: &std::io::Error) -> Problem {
     Problem::with(
-        "OpenBot couldn't save the Docker update. Check there is free disk space and try again.",
+        "AwakenBot couldn't save the Docker update. Check there is free disk space and try again.",
         format!("{}: {error}", path.display()),
     )
 }
@@ -632,7 +632,7 @@ pub fn verify_windows(installer: &Path) -> Result<(), Problem> {
 
 fn not_verified(detail: String) -> Problem {
     Problem::with(
-        "The Docker update OpenBot downloaded could not be checked, so it has not been run. Try \
+        "The Docker update AwakenBot downloaded could not be checked, so it has not been run. Try \
          again.",
         detail,
     )
@@ -661,20 +661,20 @@ fn docker_desktop_running() -> bool {
 
 /// Said when Docker Desktop has to be quit by the person.
 pub const QUIT_IT: &str =
-    "Quit Docker Desktop from its icon in the menu bar. OpenBot updates it once it has closed.";
+    "Quit Docker Desktop from its icon in the menu bar. AwakenBot updates it once it has closed.";
 
 /// Quit Docker Desktop the way it quits itself, and wait until it has.
 ///
 /// Docker's own command (`docker desktop stop`) where there is one. An older Docker Desktop on a Mac
 /// is asked to quit as its menu would (`quit app "Docker"`), which macOS may ask the person to allow.
-/// If it is still running after that, the person is asked to quit it, once, and OpenBot carries on
+/// If it is still running after that, the person is asked to quit it, once, and AwakenBot carries on
 /// when it has. On Windows an older Docker Desktop is left to its installer, which stops it.
 fn quit(progress: &mut dyn FnMut(StepLine), cancelled: &dyn Fn() -> bool) -> Result<(), Problem> {
     if !docker_desktop_running() {
         return Ok(());
     }
     progress(
-        StepLine::here("Closing Docker so OpenBot can update it.")
+        StepLine::here("Closing Docker so AwakenBot can update it.")
             .logged("Quitting Docker Desktop before installing the update."),
     );
     if has_desktop_cli() {
@@ -701,7 +701,7 @@ fn quit(progress: &mut dyn FnMut(StepLine), cancelled: &dyn Fn() -> bool) -> Res
         return Ok(());
     }
     Err(Problem::with(
-        "Docker is still running, so OpenBot couldn't update it. Quit Docker Desktop, then try \
+        "Docker is still running, so AwakenBot couldn't update it. Quit Docker Desktop, then try \
          again.",
         "Docker Desktop was still running 12 minutes after it was asked to quit",
     ))
@@ -721,7 +721,7 @@ fn wait_until(
         }
         if cancelled() {
             return Err(Problem::with(
-                "OpenBot stopped before Docker was updated. Start again when you're ready.",
+                "AwakenBot stopped before Docker was updated. Start again when you're ready.",
                 "stopped while updating Docker Desktop",
             ));
         }
@@ -732,7 +732,7 @@ fn wait_until(
     }
 }
 
-/// Whether Docker answers now with versions new enough for OpenBot.
+/// Whether Docker answers now with versions new enough for AwakenBot.
 fn docker_new_enough() -> bool {
     let address = Address::new(Engine::Docker, None);
     address.responds()
@@ -753,8 +753,8 @@ enum Installed {
     Failed(Problem),
 }
 
-/// The password prompt's words, under OpenBot's name.
-pub const PASSWORD_PROMPT: &str = "OpenBot needs your password to update Docker.";
+/// The password prompt's words, under AwakenBot's name.
+pub const PASSWORD_PROMPT: &str = "AwakenBot needs your password to update Docker.";
 
 #[cfg(target_os = "macos")]
 fn run_installer(mounted: &Mounted) -> Installed {
@@ -810,7 +810,7 @@ fn run_installer(installer: &Path, per_user: bool) -> Installed {
 
 /// Update Docker Desktop to Docker's newest release, and leave it running.
 ///
-/// `back` brings OpenBot's window to the front after the system's prompt or Docker's own window.
+/// `back` brings AwakenBot's window to the front after the system's prompt or Docker's own window.
 pub fn update(
     cache: &Path,
     progress: &mut dyn FnMut(StepLine),
@@ -891,7 +891,7 @@ fn running_containers() -> Vec<String> {
 }
 
 /// Start `ids` again in the updated Docker Desktop. One that will not start is the log's: Docker
-/// and OpenBot are what setup needs, and the person's container is still there to start.
+/// and AwakenBot are what setup needs, and the person's container is still there to start.
 fn start_again(ids: &[String]) {
     let started = Address::new(Engine::Docker, None)
         .command()
@@ -999,7 +999,7 @@ fn apply(
     _cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Problem> {
     Err(Problem::plain(
-        "Docker on this computer is too old to run OpenBot. Update Docker, then start OpenBot \
+        "Docker on this computer is too old to run AwakenBot. Update Docker, then start AwakenBot \
          again.",
     ))
 }
@@ -1007,7 +1007,7 @@ fn apply(
 #[cfg_attr(not(any(target_os = "macos", target_os = "windows")), allow(dead_code))]
 fn declined_line() -> StepLine {
     StepLine::asks(
-        "OpenBot needs your approval to update Docker. It asks again in a moment, or choose Try \
+        "AwakenBot needs your approval to update Docker. It asks again in a moment, or choose Try \
          again.",
     )
     .logged("The system prompt was closed, so Docker isn't updated yet; asking again.")
@@ -1022,7 +1022,7 @@ fn started(progress: &mut dyn FnMut(StepLine), back: &dyn Fn()) -> Result<(), Pr
 
 /// Said when the unattended update could not finish and the installer is opened for the person.
 pub const FINISH_BY_HAND: &str = "Docker couldn't update by itself. Finish the update in Docker's \
-                                  window, then open Docker Desktop. OpenBot carries on when Docker \
+                                  window, then open Docker Desktop. AwakenBot carries on when Docker \
                                   is ready.";
 
 /// The one plain step: open the verified installer for the person, and carry on by itself once
@@ -1288,12 +1288,12 @@ Internal requirements count=1 size=180
         assert_eq!(minutes_left(10, None, Duration::from_secs(60)), None);
         assert_eq!(
             updating_line(Some(5)).said,
-            "The Docker Desktop on this computer is too old for OpenBot, so OpenBot is updating \
+            "The Docker Desktop on this computer is too old for AwakenBot, so AwakenBot is updating \
              it. About 5 minutes left."
         );
         assert_eq!(
             updating_line(Some(1)).said,
-            "The Docker Desktop on this computer is too old for OpenBot, so OpenBot is updating \
+            "The Docker Desktop on this computer is too old for AwakenBot, so AwakenBot is updating \
              it. About a minute left."
         );
     }
@@ -1315,7 +1315,7 @@ Internal requirements count=1 size=180
     #[test]
     fn a_path_reaches_powershell_in_the_environment_not_after_the_command() {
         let installer = Path::new(
-            r"C:\Users\Administrator\OpenBot\openbot-engine\docker-desktop\245422\Docker Desktop Installer.exe",
+            r"C:\Users\Administrator\AwakenBot\openbot-engine\docker-desktop\245422\Docker Desktop Installer.exe",
         );
         let shape = |command: &std::process::Command, variable: &str| {
             let args: Vec<String> = command

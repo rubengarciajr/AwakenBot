@@ -6,6 +6,8 @@ import { isShuttingDownPage, ShuttingDownWindow } from "./ShuttingDown";
 import { isStatusPage, StatusWindow } from "./StatusWindow";
 import "@fontsource-variable/inter";
 import "./styles.css";
+// AwakenBot brand colors, after styles.css so they win (app/src/awaken/palette.css).
+import "./awaken.css";
 import { UpdateOffer } from "./UpdateOffer";
 
 /** The setup page's heartbeat while its setup, start and update screens show (`heartbeat.ts`). */

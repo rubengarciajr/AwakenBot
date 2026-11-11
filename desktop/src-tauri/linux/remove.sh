@@ -1,5 +1,5 @@
 #!/bin/sh
-# OpenBot Desktop's package removal on Linux: the .deb's postrm and the .rpm's %postun
+# AwakenBot Desktop's package removal on Linux: the .deb's postrm and the .rpm's %postun
 # (bundle.linux.deb.postRemoveScript and bundle.linux.rpm.postRemoveScript in tauri.conf.json).
 #
 # Uninstalling takes away what Desktop left in each person's home for the browser earlier versions

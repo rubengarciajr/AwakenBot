@@ -54,11 +54,11 @@ export function toolLimitFor(
 }
 
 /**
- * The `provider` of a limit that is OpenBot's own: the most tools tool search sends in one step,
+ * The `provider` of a limit that is AwakenBot's own: the most tools tool search sends in one step,
  * on a provider that documents no count. Recorded under this name so an admin reading the row is not
  * told a provider refused something it never saw.
  */
-export const OPENBOT_TOOL_LIMIT = "OpenBot";
+export const OPENBOT_TOOL_LIMIT = "AwakenBot";
 
 /**
  * What the person is shown: which Bot, how many, how many fit, and whose number that is.
@@ -74,7 +74,7 @@ export function toolLimitRefusal(
 ): string {
   const whose =
     limit.provider === OPENBOT_TOOL_LIMIT
-      ? `OpenBot sends at most ${limit.limit} at once`
+      ? `AwakenBot sends at most ${limit.limit} at once`
       : `its model takes at most ${limit.limit} at once`;
   return `${botName} can't answer. It needs ${count} tools on every step, and ${whose}. Ask an admin to check this Bot's setup.`;
 }

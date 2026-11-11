@@ -1,6 +1,6 @@
 //! The native messaging host the Recorder extension talks to.
 //!
-//! Chrome, Edge and Chromium start OpenBot Desktop's own binary as the host. Its first argument is
+//! Chrome, Edge and Chromium start AwakenBot Desktop's own binary as the host. Its first argument is
 //! the caller's origin, and on Windows a `--parent-window=<n>` argument follows. Each message, both
 //! ways, is UTF-8 JSON preceded by its length as a 32-bit integer in native byte order; a message
 //! from the host may be at most 1 MB. The browser closes the host's stdin when it is done with it.
@@ -9,17 +9,17 @@
 //! The host answers three messages, each within its own deadline ([`DEADLINES`]), which sits below the time the
 //! extension waits for the answer, so the extension always hears why instead of giving up.
 //!
-//! `ping` says, cheaply, whether a connect would work now: an OpenBot is installed and its app answers on its port. It
+//! `ping` says, cheaply, whether a connect would work now: an AwakenBot is installed and its app answers on its port. It
 //! reads two files and asks the app one question. It does not prove which process answers, sends nothing secret and
 //! mints nothing.
 //!
-//! `handoff` makes sure the deployment's own processes hold its ports, asks that OpenBot for a one-time connect code and
-//! returns it with the OpenBot's address, so the Recorder can connect without the person typing either.
+//! `handoff` makes sure the deployment's own processes hold its ports, asks that AwakenBot for a one-time connect code and
+//! returns it with the AwakenBot's address, so the Recorder can connect without the person typing either.
 //!
-//! `address` says which address this computer's OpenBot answers on, after the same ownership checks a handoff makes, and
+//! `address` says which address this computer's AwakenBot answers on, after the same ownership checks a handoff makes, and
 //! mints nothing. The Recorder takes a connect from a page with no Connect click only when the page's origin is exactly
 //! this address: any other program on this computer can serve a page on a loopback port, and only the host knows which
-//! one is OpenBot Desktop's.
+//! one is AwakenBot Desktop's.
 //!
 //! Every reply carries `ok`. `ok: false` comes with `error`, one of the stable codes of [`Refusal`]. A code is never
 //! written to a log.
@@ -33,8 +33,8 @@ use std::sync::mpsc::{self, RecvTimeoutError};
 use std::sync::Arc;
 use std::time::Duration;
 
-/// Tauri's bundle identifier for OpenBot Desktop (`tauri.conf.json` `identifier`).
-const APP_IDENTIFIER: &str = "ai.copilotkit.openbot.desktop";
+/// Tauri's bundle identifier for AwakenBot Desktop (`tauri.conf.json` `identifier`).
+const APP_IDENTIFIER: &str = "org.awakenbot.desktop";
 
 /// The largest message either way. Chrome refuses a host message over 1 MB, and the extension sends
 /// only a few bytes, so a longer length prefix is a broken or hostile pipe.
@@ -46,18 +46,18 @@ const MESSAGE_LIMIT: usize = 1024 * 1024;
 pub enum Refusal {
     /// `origin-not-allowed`: the caller is not the Recorder's own extension, under its fixed id or a store's.
     OriginNotAllowed,
-    /// `not-installed`: OpenBot Desktop has not set up an OpenBot on this computer.
+    /// `not-installed`: AwakenBot Desktop has not set up an AwakenBot on this computer.
     NotInstalled,
-    /// `not-running`: this computer's OpenBot is not running, its app does not answer, or a process that is not this
-    /// OpenBot's holds its port.
+    /// `not-running`: this computer's AwakenBot is not running, its app does not answer, or a process that is not this
+    /// AwakenBot's holds its port.
     NotRunning,
-    /// `not-signed-in`: the local OpenBot refused to give Desktop a connect code.
+    /// `not-signed-in`: the local AwakenBot refused to give Desktop a connect code.
     NotSignedIn,
-    /// `handoff-failed`: the local OpenBot answered the request for a connect code without one.
+    /// `handoff-failed`: the local AwakenBot answered the request for a connect code without one.
     HandoffFailed,
     /// `timed-out`: the host did not finish within its deadline.
     TimedOut,
-    /// `host-failed`: the host stopped before it could answer. A bug in OpenBot Desktop.
+    /// `host-failed`: the host stopped before it could answer. A bug in AwakenBot Desktop.
     HostFailed,
     /// `unknown-message`: a message the host does not know.
     UnknownMessage,
@@ -78,10 +78,10 @@ impl Refusal {
     }
 }
 
-/// One question main.rs answers about this computer's OpenBot. Asked from the host's worker thread.
+/// One question main.rs answers about this computer's AwakenBot. Asked from the host's worker thread.
 pub type Check<T> = Box<dyn Fn() -> T + Send + Sync>;
 
-/// What main.rs knows about this computer's OpenBot.
+/// What main.rs knows about this computer's AwakenBot.
 pub struct HostEnvironment {
     /// A selected root exists.
     pub installed: Check<bool>,
@@ -193,7 +193,7 @@ pub fn write_message(output: &mut impl Write, value: &Value) -> io::Result<()> {
     output.flush()
 }
 
-/// Tauri 2's app_config_dir for ai.copilotkit.openbot.desktop, derived without an AppHandle:
+/// Tauri 2's app_config_dir for org.awakenbot.desktop, derived without an AppHandle:
 /// macOS ~/Library/Application Support/<id>, Linux $XDG_CONFIG_HOME/<id> or ~/.config/<id>, Windows %APPDATA%\<id>.
 ///
 /// Tauri joins its identifier to the `dirs` crate's `config_dir`, which on Linux takes
@@ -238,7 +238,7 @@ fn ping(origin_allowed: bool, env: &HostEnvironment) -> Result<(), Refusal> {
     Ok(())
 }
 
-/// The address this computer's OpenBot answers on, once its own processes are proved to hold its ports (`app_url`). It
+/// The address this computer's AwakenBot answers on, once its own processes are proved to hold its ports (`app_url`). It
 /// sends nothing to the app beyond those checks, and mints nothing.
 fn address(origin_allowed: bool, env: &HostEnvironment) -> Result<String, Refusal> {
     if !origin_allowed {
@@ -270,7 +270,7 @@ fn handoff(
         .json(&json!({ "via": "desktop" }))
         .send()
         .map_err(|error| {
-            eprintln!("[recorder-host] the local OpenBot did not answer the handoff");
+            eprintln!("[recorder-host] the local AwakenBot did not answer the handoff");
             if error.is_timeout() {
                 Refusal::TimedOut
             } else {
@@ -279,7 +279,7 @@ fn handoff(
         })?;
     let status = response.status();
     if status != reqwest::StatusCode::CREATED {
-        eprintln!("[recorder-host] the local OpenBot answered the handoff with {status}");
+        eprintln!("[recorder-host] the local AwakenBot answered the handoff with {status}");
         return Err(
             if status == reqwest::StatusCode::UNAUTHORIZED
                 || status == reqwest::StatusCode::FORBIDDEN
@@ -297,7 +297,7 @@ fn handoff(
     {
         Some(code) if !code.is_empty() => Ok((app_url, code)),
         _ => {
-            eprintln!("[recorder-host] the local OpenBot answered the handoff without a code");
+            eprintln!("[recorder-host] the local AwakenBot answered the handoff without a code");
             Err(Refusal::HandoffFailed)
         }
     }
@@ -363,7 +363,7 @@ fn answer(
     }
 }
 
-/// The handoff's request for a connect code. The local OpenBot is on this computer; the deadline answers first if it
+/// The handoff's request for a connect code. The local AwakenBot is on this computer; the deadline answers first if it
 /// is slow, and this only stops the abandoned request.
 fn client() -> reqwest::Result<Client> {
     Client::builder()
@@ -431,7 +431,7 @@ mod tests {
     use std::time::Instant;
 
     const ID: &str = "icpcnhgjghecmklnjbccdgdicklblcgd";
-    const DESKTOP: &str = "ai.copilotkit.openbot.desktop";
+    const DESKTOP: &str = "org.awakenbot.desktop";
 
     fn args(list: &[&str]) -> Vec<OsString> {
         list.iter().map(OsString::from).collect()
@@ -671,7 +671,7 @@ mod tests {
         app_url: AtomicUsize,
     }
 
-    /// A computer's OpenBot as a test describes it.
+    /// A computer's AwakenBot as a test describes it.
     struct Computer {
         installed: bool,
         app_url: Option<String>,

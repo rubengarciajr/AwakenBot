@@ -398,7 +398,7 @@ export function PluginPage({
           : null;
       if (authorizationUrl === null) {
         setError(
-          "OpenBot got no consent link back, so nothing was connected. Try again, or check this connector's setup if it keeps happening.",
+          "AwakenBot got no consent link back, so nothing was connected. Try again, or check this connector's setup if it keeps happening.",
         );
         return;
       }
@@ -857,7 +857,7 @@ export function PluginPage({
             /* The personal edition has one person, so each sentence speaks to them and names nobody else. */
             auth === "user-oauth"
               ? personal
-                ? `Connect your ${title} account through OpenBot. OpenBot registers an OAuth client, and your Bots see only what you can see.`
+                ? `Connect your ${title} account through AwakenBot. AwakenBot registers an OAuth client, and your Bots see only what you can see.`
                 : "This vendor answers as whoever is asking. The deployment registers an OAuth client, and each person connects their own account. A Bot only sees what that person can see."
               : auth === "builtin"
                 ? `Built into ${paths.deploymentName}. There is no vendor to reach and no credential to keep. ${personal ? "A call runs as you." : "A call runs as whoever asked."}`
@@ -867,7 +867,7 @@ export function PluginPage({
                   : auth === "person-entra"
                     ? "This server answers as whoever is asking. Each call carries a token Microsoft Entra issues for that person, so a Bot only sees what they can see."
                     : personal
-                      ? `What OpenBot sends to ${title}. Your Bots all use it.`
+                      ? `What AwakenBot sends to ${title}. Your Bots all use it.`
                       : `What ${paths.deploymentName} sends to the vendor. One credential for everybody.`
           }
           title="Connection"
@@ -1165,7 +1165,7 @@ export function PluginPage({
                       ) : (
                         <>
                           <NotConnected />
-                          {/* The arrow says this leaves OpenBot for the vendor's consent page. It does. */}
+                          {/* The arrow says this leaves AwakenBot for the vendor's consent page. It does. */}
                           <Button
                             disabled={connectSelf.isPending}
                             onClick={() => {
@@ -1249,14 +1249,14 @@ export function PluginPage({
             <div className="mt-3 p-3">
               {server?.dynamicClient ? (
                 <p className="text-muted-foreground text-sm">
-                  {personal ? "OpenBot" : "The deployment"} registers its
+                  {personal ? "AwakenBot" : "The deployment"} registers its
                   redirect URI itself. There is nothing to add at the vendor.
                 </p>
               ) : (
                 <p className="text-muted-foreground text-sm">
                   Add this to the client's authorised redirect URIs at the
                   vendor, exactly as written. One wrong character fails there,
-                  with an error that doesn't mention OpenBot.
+                  with an error that doesn't mention AwakenBot.
                 </p>
               )}
               {!plugins.data?.redirectUri ? (

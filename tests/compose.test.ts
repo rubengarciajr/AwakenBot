@@ -787,8 +787,8 @@ test("starts the shared computer as one person's only when told whose it is", ()
  * (agent-computer's person-access.ts): the edition in `.env` has to reach it, as it reaches the server.
  */
 /**
- * A Recorder in the shared computer is handed the laptop's loopback addresses for OpenBot and a local gateway, which in
- * that container are the container: OpenBot Desktop names where each is reached instead, and the computer relays them
+ * A Recorder in the shared computer is handed the laptop's loopback addresses for AwakenBot and a local gateway, which in
+ * that container are the container: AwakenBot Desktop names where each is reached instead, and the computer relays them
  * (agent-computer's loopback-relay.ts). The setting, and the host the gateway's relay names, have to reach it.
  */
 test("hands the shared computer the loopback addresses it relays, and this machine by name", () => {
@@ -835,7 +835,7 @@ test("gives the selected harness the same governed callback as the framework Bot
 
 /**
  * Rootless Podman on Linux gives `host-gateway` an address that is not this machine's loopback, where
- * the person's browser and a local Intelligence listen. OpenBot Desktop sets `OPENBOT_HOST_GATEWAY`
+ * the person's browser and a local Intelligence listen. AwakenBot Desktop sets `OPENBOT_HOST_GATEWAY`
  * there, to the address its Podman configuration maps to loopback, and every service that calls the
  * host by name takes it.
  */
@@ -853,13 +853,13 @@ test("sends host.docker.internal where OPENBOT_HOST_GATEWAY says", () => {
 });
 
 /**
- * OpenBot's own server and worker, for an installed OpenBot, and out of a developer's way.
+ * AwakenBot's own server and worker, for an installed AwakenBot, and out of a developer's way.
  *
  * `scripts/start.sh` runs both on the host, so a plain `docker compose up -d` that also started them
  * would put a second server on port 3001 and a second worker on the routines. The profile is what
  * keeps that from happening; naming the service is still enough to start it.
  */
-test("keeps OpenBot's own server and worker behind a profile", () => {
+test("keeps AwakenBot's own server and worker behind a profile", () => {
   const services = composeServices();
 
   for (const name of ["server", "worker"]) {
@@ -913,14 +913,14 @@ test("gives the server container addresses, not the host's loopback", () => {
   for (const [name, value] of Object.entries(environment)) {
     expect(`${name}=${value}`).not.toMatch(/localhost|127\.0\.0\.1|\[::1\]/);
   }
-  // Production refuses `AGENT_COMPUTER_ALLOW_PRIVATE_HOSTS`, which a local OpenBot needs.
+  // Production refuses `AGENT_COMPUTER_ALLOW_PRIVATE_HOSTS`, which a local AwakenBot needs.
   expect(environment.NODE_ENV).toBe("");
 });
 
 /**
  * The supervisor by name unless the deployment says there is none.
  *
- * Unset is every deployment that predates the setting. Set empty is OpenBot Desktop, which runs the
+ * Unset is every deployment that predates the setting. Set empty is AwakenBot Desktop, which runs the
  * personal edition on one computer, and that edition refuses to start with a supervisor.
  */
 test("gives the server the supervisor unless the deployment empties it", () => {

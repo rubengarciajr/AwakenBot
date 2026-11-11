@@ -9,7 +9,7 @@
 //! vendor's command is the same call as reaching Mastra through Mastra's own bridge.
 //!
 //! AND NOTHING HAS TO BE INSTALLED FOR IT. The Claude Agent SDK ships a self-contained `claude`
-//! binary inside the Python package, so the harness image OpenBot already pulls has a working CLI
+//! binary inside the Python package, so the harness image AwakenBot already pulls has a working CLI
 //! at `_bundled/claude` and the person's machine needs no Node, no npm and no CLI of their own.
 //!
 //! The flow runs in that container, which is why the code is pasted rather than redirected. The
@@ -535,10 +535,10 @@ closes, and it fails the whole sign-in on a redirect whose `state` is not its ow
 come back more than once: a second tab opened from "Didn't open?", Back to OpenAI's page, a tab left
 over from an earlier attempt. So the relay reads each request line before forwarding it. A callback
 carrying another attempt's `state` gets a page saying the link is out of date, and never reaches the
-vendor's server. A second callback after the first gets a page saying OpenBot already has this
+vendor's server. A second callback after the first gets a page saying AwakenBot already has this
 sign-in. Before this, the first case failed a sign-in the person was in the middle of approving,
 and the second got a connection closed with nothing said. The `state` is read off the line the
-login prints its link on, the same line OpenBot reads the link from. If that line ever changes
+login prints its link on, the same line AwakenBot reads the link from. If that line ever changes
 shape the relay forwards everything, as it did before.
 */
 const CHATGPT_LOGIN: &str = r#"
@@ -635,7 +635,7 @@ def serve(client):
     state = (query.get("state") or [""])[0]
     if is_callback and link_state and not state.startswith(link_state[0]):
         answer(client, "400 Bad Request", "This sign-in link is out of date",
-               "OpenBot started a newer sign-in. Finish it in the newest tab OpenBot opened, or close this one.")
+               "AwakenBot started a newer sign-in. Finish it in the newest tab AwakenBot opened, or close this one.")
         return
     claimed = False
     if is_callback:
@@ -643,8 +643,8 @@ def serve(client):
             claimed = not received.is_set()
             received.set()
         if not claimed:
-            answer(client, "200 OK", "OpenBot already has this sign-in",
-                   "You can close this tab and go back to OpenBot.")
+            answer(client, "200 OK", "AwakenBot already has this sign-in",
+                   "You can close this tab and go back to AwakenBot.")
             return
     upstream = None
     waited = time.monotonic() + 5
@@ -655,12 +655,12 @@ def serve(client):
             # Some other request's callback went through and the vendor's server has closed. Not
             # when this is that callback: it waits for the server like any request.
             if received.is_set() and not claimed:
-                answer(client, "200 OK", "OpenBot already has this sign-in",
-                       "You can close this tab and go back to OpenBot.")
+                answer(client, "200 OK", "AwakenBot already has this sign-in",
+                       "You can close this tab and go back to AwakenBot.")
                 return
             if time.monotonic() > waited:
                 answer(client, "503 Service Unavailable", "This sign-in has ended",
-                       "OpenBot stopped waiting for it. Start the sign-in again from OpenBot.")
+                       "AwakenBot stopped waiting for it. Start the sign-in again from AwakenBot.")
                 return
             time.sleep(0.1)
     client.settimeout(None)
@@ -736,12 +736,12 @@ pub struct SigningInToChatGpt {
 const CHATGPT_CALLBACK_PATH: &str = "/auth/callback";
 
 /**
-How long OpenBot keeps answering the callback port after a sign-in ends.
+How long AwakenBot keeps answering the callback port after a sign-in ends.
 
 THE PORT OUTLIVES THE SIGN-IN, ON PURPOSE. The vendor's server takes one redirect and closes, and
 its container goes with it. A browser can still come back through OpenAI afterwards with a new code:
 a second tab, Back to OpenAI's page, a tab left over from an attempt given up on. With nothing
-listening that is "localhost refused to connect", which reads as a failed sign-in when OpenBot is in
+listening that is "localhost refused to connect", which reads as a failed sign-in when AwakenBot is in
 fact signed in. RFC 8252 section 8.3 says to close the port once the response is received, and the
 listener that redeems codes does exactly that. What stays is a page, not a listener: it never reads
 or uses a code, it answers on loopback only, and it gives the port up to any new sign-in, to the
@@ -829,7 +829,7 @@ Stop the ChatGPT sign-in in progress, if there is one.
 
 For when the person leaves it: another provider, Back, Escape. Left running, its container kept the
 callback port and its browser tab could still finish, and the browser then said "You're signed in"
-while the window had dropped the result. Stopped, that tab gets OpenBot's page saying the sign-in
+while the window had dropped the result. Stopped, that tab gets AwakenBot's page saying the sign-in
 ended. Whoever is waiting on `finish` gets an error, as the container is gone.
 */
 pub fn cancel_chatgpt_sign_in() {
@@ -887,15 +887,15 @@ impl SignInOutcome {
     fn page(self) -> String {
         let (heading, lines): (&str, &[&str]) = match self {
             SignInOutcome::SignedIn => (
-                "OpenBot is signed in to ChatGPT",
+                "AwakenBot is signed in to ChatGPT",
                 &[
-                    "This tab isn't needed. You can close it and go back to OpenBot.",
-                    "To use a different ChatGPT account, sign in again from OpenBot.",
+                    "This tab isn't needed. You can close it and go back to AwakenBot.",
+                    "To use a different ChatGPT account, sign in again from AwakenBot.",
                 ],
             ),
             SignInOutcome::Ended => (
                 "This sign-in has ended",
-                &["OpenBot stopped waiting for it. Start the sign-in again from OpenBot."],
+                &["AwakenBot stopped waiting for it. Start the sign-in again from AwakenBot."],
             ),
         };
         let lines: String = lines.iter().map(|line| format!("<p>{line}</p>")).collect();
@@ -1115,7 +1115,7 @@ impl SigningInToChatGpt {
                     port.live = None;
                 }
                 return Err(crate::problem::Problem::with(
-                    "OpenBot could not start the sign-in with OpenAI.",
+                    "AwakenBot could not start the sign-in with OpenAI.",
                     error.to_string(),
                 ));
             }
@@ -1171,7 +1171,7 @@ impl SigningInToChatGpt {
     not a thing to be almost sure about.
     */
     fn gave_up(&mut self) -> crate::problem::Problem {
-        let said = String::from("OpenBot could not start the sign-in with OpenAI.");
+        let said = String::from("AwakenBot could not start the sign-in with OpenAI.");
         let detail = self
             .output
             .lock()
@@ -1286,7 +1286,7 @@ pub fn chatgpt_store_in(output: &str) -> Option<String> {
 /// The address a browser has to open for the ChatGPT sign-in.
 ///
 /// Printed by the vendor's login as its fallback when `open_browser` is off, which is how this gets
-/// it: OpenBot opens the browser itself so the window can also show the link.
+/// it: AwakenBot opens the browser itself so the window can also show the link.
 pub fn openai_url_in(output: &str) -> Option<String> {
     plain(output)
         .split_whitespace()
@@ -1849,7 +1849,7 @@ def login_chatgpt(*, store_path=None, host="localhost", port=1455, callback_path
     serves, show "You're signed in" and then fail the sign-in the person was in the middle of. A
     second redirect after the first used to get a connection closed with nothing said.
 
-    The attempt's own redirect, arriving before that server listened, used to be told "OpenBot
+    The attempt's own redirect, arriving before that server listened, used to be told "AwakenBot
     already has this sign-in" and never reach it, so the sign-in never finished. And a page the
     relay answers itself used to close the connection with part of the request unread, which reset
     it: the browser showed a reset, not the page.
@@ -1930,7 +1930,7 @@ def login_chatgpt(*, store_path=None, host="localhost", port=1455, callback_path
 
         let again = callback_on(relay, "ac.again", &state).unwrap();
         assert!(
-            again.contains("OpenBot already has this sign-in"),
+            again.contains("AwakenBot already has this sign-in"),
             "{again}"
         );
         assert!(
@@ -1957,10 +1957,10 @@ def login_chatgpt(*, store_path=None, host="localhost", port=1455, callback_path
     }
 
     /**
-    THE BUG AS IT HAPPENED. The first redirect signed OpenBot in, the container exited and took the
+    THE BUG AS IT HAPPENED. The first redirect signed AwakenBot in, the container exited and took the
     callback port with it, and minutes later the browser came back through OpenAI with a new code
     and got "localhost refused to connect", which reads as a failed sign-in. A redirect that arrives
-    after the sign-in finished is answered, and says OpenBot is already signed in.
+    after the sign-in finished is answered, and says AwakenBot is already signed in.
     */
     #[test]
     fn a_redirect_after_the_sign_in_finished_is_answered_not_refused() {
@@ -1987,7 +1987,7 @@ def login_chatgpt(*, store_path=None, host="localhost", port=1455, callback_path
              ERR_CONNECTION_REFUSED and the person concludes the sign-in failed",
         );
         assert!(late.starts_with("HTTP/1.1 200"), "{late}");
-        assert!(late.contains("OpenBot is signed in to ChatGPT"), "{late}");
+        assert!(late.contains("AwakenBot is signed in to ChatGPT"), "{late}");
         assert!(
             !late.contains("ac.second"),
             "the page must never echo a code"

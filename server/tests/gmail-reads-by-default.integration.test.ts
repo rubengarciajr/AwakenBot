@@ -22,7 +22,7 @@ import captured from "./fixtures/composio-gmail-catalogue.json";
 import { TEST_POOL, testDatabaseUrl } from "./support/database";
 
 /**
- * Gmail connected in OpenBot Personal: every Bot holds every action, and can read its mail.
+ * Gmail connected in AwakenBot Personal: every Bot holds every action, and can read its mail.
  *
  * FOUND IN 1.0.0. The personal starter Bot, on an endpoint, told the person it could not read the
  * subjects or bodies of their mail: its Gmail was "get profile, send email, and POP settings", with no
@@ -167,11 +167,11 @@ test("cut to what a crowded request has room for, the Bot is still sent the acti
     botId: bot,
     actorId: owner,
   });
-  // OpenBot's own tools, sent on every step, leave room for eleven of Gmail's, as in the report.
+  // AwakenBot's own tools, sent on every step, leave room for eleven of Gmail's, as in the report.
   const own = Array.from({ length: 20 }, (_, index) => ({
     name: `own_tool_${index}`,
     ref: `openbot/own_${index}`,
-    description: `OpenBot tool ${index}`,
+    description: `AwakenBot tool ${index}`,
     parameters: held[0]?.parameters as never,
     execute: async () => "",
   }));

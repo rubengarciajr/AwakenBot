@@ -1,7 +1,7 @@
 /**
  * Which product this deployment is.
  *
- * `team` is OpenBot as an organization runs it. `personal` is one person on their own machine: no
+ * `team` is AwakenBot as an organization runs it. `personal` is one person on their own machine: no
  * sign-in, one shared computer, and none of the screens that govern other people. The governance
  * itself (the gateway, its policy, approvals and the audit trail) runs the same in both; the edition
  * only fixes what feeds it.
@@ -19,9 +19,9 @@ export type Edition = "team" | "personal";
  * else stays on, including the password manager, whose saved logins are only ever used after the
  * person picks one in the private sign-in form.
  *
- * Local computer access is on: folders on the person's own machine, through OpenBot Desktop. The
+ * Local computer access is on: folders on the person's own machine, through AwakenBot Desktop. The
  * person picks each folder in the desktop's native picker, a folder is read-only, the desktop asks
- * before each write or command, every call leaves an audit row, and access ends when OpenBot stops
+ * before each write or command, every call leaves an audit row, and access ends when AwakenBot stops
  * (`host-access/`, `desktop/src-tauri/src/desktop_host_access.rs`). Without the desktop there is no
  * host to reach: the folder routes refuse and Settings → Computer says it needs the desktop.
  */
@@ -82,12 +82,12 @@ export function parseEdition(raw: string | undefined): Edition {
 
 /**
  * Whether this edition has memory: what a person's Bots remember about them, the apps they learn it
- * from, and the background sync that reads them. Not the personal edition: OpenBot Desktop runs a
+ * from, and the background sync that reads them. Not the personal edition: AwakenBot Desktop runs a
  * local Intelligence whose licence leaves memory out, so there memory has no screens, no routes, no
  * tools, no sources and no place in a Bot's context.
  *
  * The edition, not Intelligence's memory entitlement: that answer only chooses where memory is kept
- * (Intelligence, or OpenBot's own tables when Intelligence is unlicensed or unreachable), and it
+ * (Intelligence, or AwakenBot's own tables when Intelligence is unlicensed or unreachable), and it
  * changes while Intelligence starts. The browser reads the same rule (`offersMemory` in the app's
  * `lib/deployment/queries.ts`).
  */

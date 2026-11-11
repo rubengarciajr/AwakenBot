@@ -16,7 +16,7 @@ import type { ShellIpc } from "@/lib/desktop/shell";
  *   `__TEMPLATE_windows__` with `false` on macOS (src/lib.rs). The commands it calls answer as the
  *   plugin's desktop side does (src/desktop.rs: "Desktop applications do not need to ask for this
  *   permission, so this always resolves to Granted"), and as the shell's test
- *   `only_the_owned_app_origin_can_turn_on_and_show_notifications` pins they do for OpenBot's page.
+ *   `only_the_owned_app_origin_can_turn_on_and_show_notifications` pins they do for AwakenBot's page.
  */
 const PLUGIN_SCRIPT =
   '!function(){"use strict";async function i(i,n={},t){return window.__TAURI_INTERNALS__.invoke(i,n,t)}"function"==typeof SuppressedError&&SuppressedError,function(){let n=!1,t="default";function o(i){n=!0,window.Notification.permission=i,n=!1}window.Notification=function(n,t){const o=t||{};!async function(n){"object"==typeof n&&Object.freeze(n),await i("plugin:notification|notify",{options:"string"==typeof n?{title:n}:n})}(Object.assign(o,{title:n}))},window.Notification.requestPermission=async function(){return await i("plugin:notification|request_permission").then(i=>(o("prompt"===i||"prompt-with-rationale"===i?"default":i),i))},Object.defineProperty(window.Notification,"permission",{enumerable:!0,get:()=>t,set:i=>{if(!n)throw new Error("Readonly property");t=i}}),async function(){return"default"!==window.Notification.permission?await Promise.resolve("granted"===window.Notification.permission):!!__TEMPLATE_windows__||await i("plugin:notification|is_permission_granted")}().then(function(i){o(null===i?"default":i?"granted":"denied")})}()}();';
@@ -43,7 +43,7 @@ function windowNotification() {
 }
 
 /**
- * Opens OpenBot's page in the Desktop window: Tauri's IPC, the window's own `Notification`, and,
+ * Opens AwakenBot's page in the Desktop window: Tauri's IPC, the window's own `Notification`, and,
  * when the desktop app carries it, the notification plugin's script over it. Each call is a launch:
  * the window's answer starts over, as WKWebView's does.
  */
@@ -181,9 +181,9 @@ export function launchDesktop(options: {
 }
 
 /**
- * The person is not looking at OpenBot: its tab is hidden, or another app is in front. Notices are
- * for then; a person looking at OpenBot sees the badge and the conversation instead. `look()` puts
- * OpenBot back in sight.
+ * The person is not looking at AwakenBot: its tab is hidden, or another app is in front. Notices are
+ * for then; a person looking at AwakenBot sees the badge and the conversation instead. `look()` puts
+ * AwakenBot back in sight.
  */
 export function awayFromOpenBot() {
   let visibility: DocumentVisibilityState = "hidden";

@@ -121,7 +121,7 @@ function sentence(status: Status, browser: Browser): string {
     case "dismissed":
       return "Not allowed yet. Choose Allow microphone and answer the browser's prompt.";
     case "denied":
-      return `Blocked. Open ${browser.settings}, allow OpenBot Recorder, then choose Allow microphone.`;
+      return `Blocked. Open ${browser.settings}, allow AwakenBot Recorder, then choose Allow microphone.`;
     case "no-microphone":
       return "No microphone was found, or another app is using it. Connect one, then choose Allow microphone.";
   }

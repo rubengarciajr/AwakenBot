@@ -5343,7 +5343,7 @@ test("an identity a model puts in the arguments does not change whose account th
       // not read from arguments at all.
       userId: "user_asker",
       // Passed through whole, minus nothing: the reserved version key is the only thing the call
-      // path removes, and the model sent none. The last three are OpenBot's own settings for a
+      // path removes, and the model sent none. The last three are AwakenBot's own settings for a
       // Gmail listing (`plugins/composio-shapes.ts`), added beside the model's, never read from them.
       args: {
         userId: "user_stranger",

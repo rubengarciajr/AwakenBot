@@ -1490,7 +1490,7 @@ function mergedRequirement(
 
 const unreadableRequirement = (toolkit: string) =>
   new BrokerRefusalError(
-    `OpenBot couldn't read what one of ${toolkit}'s actions asks for, so ${toolkit} can't be connected all at once. Nothing was asked of your account. Authorize the actions you want in Connections.`,
+    `AwakenBot couldn't read what one of ${toolkit}'s actions asks for, so ${toolkit} can't be connected all at once. Nothing was asked of your account. Authorize the actions you want in Connections.`,
   );
 
 /**
@@ -1650,7 +1650,7 @@ const verifierNames = (settings: VerifierSettings, address: string) =>
  */
 const verifierUnreadable = (subject: string, cause: unknown) =>
   new BrokerRefusalError(
-    `Couldn't start connecting ${subject}. OpenBot couldn't check where Arcade sends you back after you sign in. Try again, or ask an admin if it keeps happening.`,
+    `Couldn't start connecting ${subject}. AwakenBot couldn't check where Arcade sends you back after you sign in. Try again, or ask an admin if it keeps happening.`,
     { cause },
   );
 
@@ -1669,7 +1669,7 @@ const verifierElsewhere = (subject: string, address: string) =>
  */
 const verifierNotTaken = (subject: string, address: string, cause: unknown) =>
   new BrokerRefusalError(
-    `Couldn't start connecting ${subject}. OpenBot couldn't set Arcade to send you back here after you sign in. Set the custom verifier in Arcade's dashboard to ${address}`,
+    `Couldn't start connecting ${subject}. AwakenBot couldn't set Arcade to send you back here after you sign in. Set the custom verifier in Arcade's dashboard to ${address}`,
     { cause },
   );
 

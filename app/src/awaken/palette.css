@@ -1,0 +1,22 @@
+/*
+ * ============================================================================================
+ *  AWAKENBOT BRAND COLORS: the one place to change the app's colors.
+ * ============================================================================================
+ *
+ * Every surface in AwakenBot (web app and the desktop setup window) is mixed from these two:
+ *
+ *   --awaken-ink    the off-black: text and buttons in light mode, the background in dark mode
+ *   --awaken-paper  the off-white: the background in light mode, text and buttons in dark mode
+ *
+ * Cards, borders, hover states, muted text and the sidebar are all blends of the two
+ * (see app/src/awaken/theme.css and desktop/src/awaken.css), so these two values recolor the whole
+ * app.
+ *
+ * TO CHANGE THEM: edit `ink` and `paper` in scripts/awaken/brand.ts (6-digit hex), then run
+ * `bun scripts/awaken/apply.ts`. That rewrites the two lines below AND the macOS title-bar colors in
+ * desktop/src-tauri/src/main.rs, which are painted natively before any CSS loads.
+ */
+:root {
+  --awaken-ink: #1b1a18;
+  --awaken-paper: #f6f4ef;
+}

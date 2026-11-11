@@ -1,5 +1,5 @@
 /**
- * Nothing that reads OpenBot's database starts before that database can serve it, rendered by real
+ * Nothing that reads AwakenBot's database starts before that database can serve it, rendered by real
  * Helm from the real chart and then run against a real PostgreSQL.
  *
  * What must not regress, seen on a fresh vanilla install: the server pods started five seconds after
@@ -420,7 +420,7 @@ describe.skipIf(!helm || !databaseUrl)("the wait, against PostgreSQL", () => {
 
     await migrateAll(url);
     const ready = await runWait(url, 30);
-    expect(ready.output).toContain("OpenBot's database is ready");
+    expect(ready.output).toContain("AwakenBot's database is ready");
     expect(ready.code).toBe(0);
   }, 120_000);
 

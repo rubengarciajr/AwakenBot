@@ -36,7 +36,7 @@ const connectedAt = new Intl.DateTimeFormat(undefined, {
   timeStyle: "short",
 });
 
-/** The browsers signed in to this OpenBot as you, each with a Disconnect that revokes its sign-in. The row of the copy
+/** The browsers signed in to this AwakenBot as you, each with a Disconnect that revokes its sign-in. The row of the copy
  * in this browser (`thisInstallId`, from This browser) says so. */
 export function ConnectedBrowsers({
   thisInstallId,
@@ -97,7 +97,7 @@ function ConnectedBrowserRow({
   const which = here
     ? "this browser"
     : connection.via === "openbot-browser"
-      ? "your OpenBot browser"
+      ? "your AwakenBot browser"
       : connection.label;
   return (
     <>
@@ -109,16 +109,16 @@ function ConnectedBrowserRow({
           <ItemTitle>{name}</ItemTitle>
           <ItemDescription>
             {connection.via === "openbot-browser"
-              ? "Your OpenBot browser, connected "
+              ? "Your AwakenBot browser, connected "
               : "Connected "}
             {connectedAt.format(new Date(connection.createdAt))}
             {connection.via === "desktop"
-              ? " from OpenBot Desktop"
+              ? " from AwakenBot Desktop"
               : connection.via === "web"
-                ? " from OpenBot"
+                ? " from AwakenBot"
                 : ""}
             ,{" "}
-            {/* A recording streams to the gateway, not to OpenBot, so its last use lags: it says so instead. */}
+            {/* A recording streams to the gateway, not to AwakenBot, so its last use lags: it says so instead. */}
             {connection.recording
               ? "recording now"
               : connection.lastUsedAt
@@ -148,8 +148,8 @@ function ConnectedBrowserRow({
           </DialogHeader>
           <DialogBody className="mt-4 text-sm">
             <p>
-              OpenBot signs the Recorder in {which} out. It records nothing for
-              you until you connect it again, and a recording running there
+              AwakenBot signs the Recorder in {which} out. It records nothing
+              for you until you connect it again, and a recording running there
               stops.
             </p>
             {revoke.error ? (

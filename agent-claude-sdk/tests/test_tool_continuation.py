@@ -56,7 +56,7 @@ def request(thread="thread-a", run="run-1", results=(), tool_count=1, tool_name=
                     "parameters": {"type": "object", "properties": {}},
                 }
             ],
-            "context": [{"description": "OpenBot learned skills", "value": "LEARNED_CATALOG_MARKER"}],
+            "context": [{"description": "AwakenBot learned skills", "value": "LEARNED_CATALOG_MARKER"}],
             "forwardedProps": {},
         }
     )
@@ -455,7 +455,7 @@ def test_query_timeout_interrupts_sdk_before_abandoning_client_result(sdk, model
 
 @pytest.mark.parametrize("model_only", [False, True])
 def test_a_result_after_its_query_ended_is_answered_from_the_thread(sdk, model_only):
-    """The person decides a step OpenBot asked them about after the query that asked has ended.
+    """The person decides a step AwakenBot asked them about after the query that asked has ended.
 
     A query is bounded, and a hand-off or an approval routinely takes longer than the bound. The
     decision still reaches the Bot: a fresh query replays the thread, the call and the person's

@@ -26,25 +26,25 @@ import {
 } from "./SetupProgress";
 
 /**
- * OpenBot updating itself during Start (`upgrade::now_said`), by the line its row says as each step
+ * AwakenBot updating itself during Start (`upgrade::now_said`), by the line its row says as each step
  * begins, measured on Windows D updating 1.0.1-internal.1008 to 1012: getting it ready (stopping
- * OpenBot and backing up its data) about 20 seconds, the 944 MB download about 50, installing it a
- * moment, then starting it and waiting until it answers about 35. OpenBot's own start is the last of
- * it, so a Start that updates OpenBot has no separate leg for it.
+ * AwakenBot and backing up its data) about 20 seconds, the 944 MB download about 50, installing it a
+ * moment, then starting it and waiting until it answers about 35. AwakenBot's own start is the last of
+ * it, so a Start that updates AwakenBot has no separate leg for it.
  */
 export const RELEASE: Plan = {
   milestones: {
-    "Stopping OpenBot.": 2,
+    "Stopping AwakenBot.": 2,
     "Backing up your data.": 8,
     "Downloading the update.": 21,
     "Installing the update.": 71,
-    "Starting OpenBot.": 73,
+    "Starting AwakenBot.": 73,
   },
   stages: [
     { said: "Getting the update ready", until: 21 },
     { said: "Downloading the update", until: 71 },
     { said: "Installing the update", until: 73 },
-    { said: "Starting the updated OpenBot", until: 108 },
+    { said: "Starting the updated AwakenBot", until: 108 },
   ],
   download: { from: 21, to: 71 },
 };
@@ -78,8 +78,8 @@ export function downloadNow(
           downloads: sequence.download,
         }
       : {
-          said: "Downloading the rest of OpenBot",
-          unpacking: "Unpacking OpenBot",
+          said: "Downloading the rest of AwakenBot",
+          unpacking: "Unpacking AwakenBot",
           downloads: sequence.download,
         };
   const row = open.find((row) => row.running && row.downloads);
@@ -91,21 +91,21 @@ export function downloadNow(
         downloads: row.downloads,
       }
     : {
-        said: "Downloading the rest of OpenBot",
-        unpacking: "Unpacking OpenBot",
+        said: "Downloading the rest of AwakenBot",
+        unpacking: "Unpacking AwakenBot",
         downloads: row.downloads,
       };
 }
 
-/** What `startLegs` needs to know beyond the sequence and OpenBot's own rows. */
+/** What `startLegs` needs to know beyond the sequence and AwakenBot's own rows. */
 export type LegClocks = {
   /** Seconds the leg under way has spent waiting on a download: the download's, not its own. */
   held?: number;
-  /** When OpenBot's own start began. */
+  /** When AwakenBot's own start began. */
   opening?: number | null;
   /** The leg under way has had its download: what it stood in for is done. */
   downloaded?: boolean;
-  /** Start updates OpenBot itself (`upgrade_due`): its leg is in the journey from the start. */
+  /** Start updates AwakenBot itself (`upgrade_due`): its leg is in the journey from the start. */
   releaseDue?: boolean;
   /** Where the download under way is, with its parts as watched (`downloadWhere`). */
   where?: DownloadWhere;
@@ -115,7 +115,7 @@ export type LegClocks = {
 
 /**
  * The legs of one Start, as the screen shows it: the back end's setup and connection when this run
- * began there, its start or its update, then OpenBot's own start, or OpenBot updating itself, which
+ * began there, its start or its update, then AwakenBot's own start, or AwakenBot updating itself, which
  * ends with its start. A download under way is a leg of its own, in front of the one it holds up,
  * and stands in for that leg's own download stretch (`Plan.download`), so it is not counted twice.
  * `open` is what `start_stack` or `upgrade_and_start` reports (`setup:progress`).
@@ -194,8 +194,8 @@ export function startLegs(
     });
   }
   if (release || releaseDue) {
-    // OpenBot updating itself, which ends with its start: done once its row is, or once it says it
-    // is starting OpenBot, which is OpenBot's own start.
+    // AwakenBot updating itself, which ends with its start: done once its row is, or once it says it
+    // is starting AwakenBot, which is AwakenBot's own start.
     const running = release?.running === true;
     legs.push({
       plan: RELEASE,
@@ -328,7 +328,7 @@ export function journeyTick(
     next.last = now;
     next.downloaded = true;
   } else next.last = null;
-  // OpenBot's own start counts from when it began.
+  // AwakenBot's own start counts from when it began.
   if (sequence.at === "start" && next.opening === null) next.opening = now;
   let where: DownloadWhere | undefined;
   let steady = true;
@@ -390,7 +390,7 @@ export function journeyTick(
     clock: next,
     view: {
       // Every leg done, for the moment before the screen moves on.
-      said: plans.said || "Opening OpenBot",
+      said: plans.said || "Opening AwakenBot",
       fraction: next.best,
       left: left === null ? null : Math.round(left),
       bytes: download ? measured(download.downloads) : null,
@@ -416,10 +416,10 @@ export function StartJourney({
   open: readonly Progress[];
   /**
    * What the native side says is happening, when it says something the plan cannot know: Docker
-   * Desktop starting in its own window, or the software OpenBot runs on starting.
+   * Desktop starting in its own window, or the software AwakenBot runs on starting.
    */
   now?: string | null;
-  /** Start updates OpenBot itself (`upgrade_due`). */
+  /** Start updates AwakenBot itself (`upgrade_due`). */
   releaseDue?: boolean;
 }) {
   const [now, setNow] = useState(() => Date.now());

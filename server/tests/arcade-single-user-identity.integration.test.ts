@@ -859,7 +859,7 @@ describe("two single-user deployments on one Arcade key", () => {
 });
 
 describe("a single-user deployment that already holds Arcade grants under dev-local-user", () => {
-  /** Gmail approved the way every single-user OpenBot approved it before its own name existed. */
+  /** Gmail approved the way every single-user AwakenBot approved it before its own name existed. */
   async function approvedBeforeTheUpgrade() {
     const url = await freshDatabase();
     const before = open(url);
@@ -1208,7 +1208,7 @@ describe("a Bot's call on an action Arcade was never asked to allow", () => {
     expect(await listed(deployment)).toContain(ROW);
     expect((await deployment.call(READ)).text).toContain("me@example.test");
 
-    // The person removes OpenBot's access at Google: Arcade now holds nothing for Gmail here.
+    // The person removes AwakenBot's access at Google: Arcade now holds nothing for Gmail here.
     project.connections.splice(0);
     expect(await refusalOf(deployment.call(READ))).toMatchObject({
       reason: "reconnect",
@@ -1336,7 +1336,7 @@ describe("a Bot's call on an Arcade grant that is gone", () => {
     const deployment = await newDeployment();
     await connectGmail(deployment, "me@example.test");
 
-    // The person removes OpenBot's access at Google, and Arcade's connection goes with it.
+    // The person removes AwakenBot's access at Google, and Arcade's connection goes with it.
     project.connections.splice(0);
 
     const refused = await deployment.call(SEND).then(

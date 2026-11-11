@@ -29,7 +29,7 @@ import { userPreferencesQueryOptions } from "@/lib/settings/message-list";
 import { settleReactWork } from "./settle-react-work";
 
 /*
- * OpenBot's destinations live in one list (`lib/navigation.ts`) that the sidebar and every skin draw
+ * AwakenBot's destinations live in one list (`lib/navigation.ts`) that the sidebar and every skin draw
  * from. This holds the sidebar to that list exactly: the same entries, in the same order, at the
  * same addresses, with Admin only for admins. A destination added to the list and not drawn, or
  * drawn here and not added to the list, fails.
@@ -220,7 +220,7 @@ test.each(["user", "admin"] as const)(
   },
 );
 
-test("the running OpenBot version sits to the right of the person's name, in one row, from /api/me", async () => {
+test("the running AwakenBot version sits to the right of the person's name, in one row, from /api/me", async () => {
   const { view } = renderSidebar("user", "team", { version: "v0.3.1" });
   const version = await view.findByText("v0.3.1");
   const account = view.getByRole("button", { name: /Maya Chen/ });
@@ -281,15 +281,15 @@ test("the personal edition has no Admin or Capabilities, and a feature list in A
   expect(navigationFor("admin").map((item) => item.id)).toContain("admin");
 });
 
-test("in the personal edition the menu opens OpenBot for Business instead of Admin", async () => {
+test("in the personal edition the menu opens AwakenBot for Business instead of Admin", async () => {
   const { view, user } = renderSidebar("admin", "personal");
   await user.click(await view.findByRole("button", { name: /Maya Chen/ }));
   const menu = await view.findByRole("menu");
   expect(within(menu).queryByRole("menuitem", { name: "Admin" })).toBeNull();
   const entry = within(menu).getByRole("menuitem", {
-    name: "OpenBot for Business",
+    name: "AwakenBot for Business",
   });
-  // As wide as the links beside it, and marked with OpenBot's own logo.
+  // As wide as the links beside it, and marked with AwakenBot's own logo.
   expect(entry.className).toContain("w-full");
   expect(entry.querySelector("svg image")).toBeTruthy();
   await user.click(entry);
@@ -297,13 +297,13 @@ test("in the personal edition the menu opens OpenBot for Business instead of Adm
   expect(
     within(dialog).getByRole("heading", {
       level: 2,
-      name: "OpenBot for Business",
+      name: "AwakenBot for Business",
     }),
   ).toBeTruthy();
 });
 
 test("a single-person install has no Sign out, because nobody signed in", async () => {
-  // OpenBot Desktop: no identity provider, so Sign out could only ever fail with "No identity
+  // AwakenBot Desktop: no identity provider, so Sign out could only ever fail with "No identity
   // provider is configured." and leave the person where they were.
   const { view, user } = renderSidebar("admin", "personal");
   await user.click(await view.findByRole("button", { name: /Maya Chen/ }));

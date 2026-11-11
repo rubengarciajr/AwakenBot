@@ -29,7 +29,7 @@ import { TEST_POOL, testDatabaseUrl } from "./support/database";
 import { SESSION_LIFETIME_MS, testEnvironment } from "./support/environment";
 
 /*
- * The two ways OpenBot itself ends people's sessions, outside Better Auth's own routes, end their Recorders too:
+ * The two ways AwakenBot itself ends people's sessions, outside Better Auth's own routes, end their Recorders too:
  * an administrator removing somebody (People), and SSO-required being turned on (Admin, Enterprise). Each through its
  * real route, on the real database, with the Recorder wired as index.ts wires it.
  */
@@ -99,7 +99,7 @@ const peopleStore = createPeopleStore(database, [], (userId) =>
   }),
 );
 
-/** OpenBot's own app, signed in as the administrator by a test cookie. */
+/** AwakenBot's own app, signed in as the administrator by a test cookie. */
 function appAsAdmin() {
   const args = new Array(createApp.length) as unknown as Parameters<
     typeof createApp

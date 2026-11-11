@@ -33,7 +33,7 @@ const UNBIASED_DEVICE_GRANT: &str = "urn:ietf:params:oauth:grant-type:device_cod
 const UNBIASED_EXPIRED: &str =
     "The Unbiased AI sign-in code expired before it was approved. Sign in again.";
 const UNBIASED_UNREGISTERED: &str =
-    "This build of OpenBot is not registered for Unbiased AI sign-in. Update OpenBot, or use an API key from the Unbiased AI dashboard.";
+    "This build of AwakenBot is not registered for Unbiased AI sign-in. Update AwakenBot, or use an API key from the Unbiased AI dashboard.";
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -125,7 +125,7 @@ fn http() -> Result<reqwest::blocking::Client, String> {
     reqwest::blocking::Client::builder()
         .timeout(Duration::from_secs(25))
         .redirect(reqwest::redirect::Policy::none())
-        .user_agent("OpenBot/desktop-provider-oauth")
+        .user_agent("AwakenBot/desktop-provider-oauth")
         .build()
         .map_err(|e| e.to_string())
 }
@@ -172,7 +172,7 @@ pub fn begin(root: &Path, provider: &str) -> Result<Authorization, String> {
     let flow = reserve(root);
     let (pending, url, user_code) = match provider {
         "google" => {
-            let client_id = configured("OPENBOT_GOOGLE_MODEL_OAUTH_CLIENT_ID").ok_or("Google sign-in needs this OpenBot build's registered desktop OAuth client. Use an API key until it is configured.")?;
+            let client_id = configured("OPENBOT_GOOGLE_MODEL_OAUTH_CLIENT_ID").ok_or("Google sign-in needs this AwakenBot build's registered desktop OAuth client. Use an API key until it is configured.")?;
             let project = configured("OPENBOT_GOOGLE_MODEL_OAUTH_QUOTA_PROJECT").ok_or(
                 "Google sign-in needs a Google Cloud quota project with the Gemini API enabled.",
             )?;
@@ -567,7 +567,7 @@ fn receive_callback(stream: &mut TcpStream, state: &str) -> Result<Option<String
         return Ok(None);
     }
     if let Some(error) = query.get("error") {
-        let _ = stream.write_all(b"HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\nSign-in was not approved. Return to OpenBot.");
+        let _ = stream.write_all(b"HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\nSign-in was not approved. Return to AwakenBot.");
         return Err(format!("Google sign-in was not approved: {error}"));
     }
     let code = query
@@ -575,7 +575,7 @@ fn receive_callback(stream: &mut TcpStream, state: &str) -> Result<Option<String
         .filter(|v| !v.is_empty())
         .cloned()
         .ok_or("Google did not return an authorization code.")?;
-    stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\nReturn to OpenBot to finish signing in.").map_err(|e| e.to_string())?;
+    stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\nReturn to AwakenBot to finish signing in.").map_err(|e| e.to_string())?;
     Ok(Some(code))
 }
 
@@ -785,7 +785,7 @@ fn write(
             .map_err(|e| e.to_string())?;
         if !output.status.success() {
             return Err(format!(
-                "OpenBot could not make the provider sign-in private to your Windows account. {}",
+                "AwakenBot could not make the provider sign-in private to your Windows account. {}",
                 crate::quiet::said(&output.stderr)
             ));
         }

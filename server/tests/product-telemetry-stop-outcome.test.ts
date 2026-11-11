@@ -34,7 +34,7 @@ import {
 import { testEnvironment } from "./support/environment";
 
 /**
- * A run OpenBot knows was stopped ends, in OpenBot's own product telemetry, as the contract's
+ * A run AwakenBot knows was stopped ends, in AwakenBot's own product telemetry, as the contract's
  * `cancelled` (or `timeout`, for a turn's deadline) with `failure_category` `none`. Intelligence's
  * run summary already reads it so. A run that ends with no terminal event and no stop still reads
  * `missing_terminal`, and a lost lock is not a cancellation.
@@ -62,7 +62,7 @@ const ACTOR = "colleague";
 const KEY = "synthetic-privacy-key";
 
 beforeAll(async () => {
-  // The runtime's own telemetry goes nowhere from a test. OpenBot's is given its own env below.
+  // The runtime's own telemetry goes nowhere from a test. AwakenBot's is given its own env below.
   process.env.COPILOTKIT_TELEMETRY_DISABLED = "true";
   model = new LLMock();
   process.env.OPENAI_BASE_URL = `${await model.start()}/v1`;
@@ -203,7 +203,7 @@ async function telemetry() {
 }
 type Telemetry = Awaited<ReturnType<typeof telemetry>>;
 
-/** How OpenBot's own product telemetry says a run ended. */
+/** How AwakenBot's own product telemetry says a run ended. */
 async function ending(product: Telemetry, runId: string) {
   await until(
     () =>
@@ -376,7 +376,7 @@ function turnOptions(
   };
 }
 
-/** The Bot, with OpenBot's product middleware on it as the resolver puts it on every Bot. */
+/** The Bot, with AwakenBot's product middleware on it as the resolver puts it on every Bot. */
 function workingBot(product: Telemetry) {
   const agent = new WorkingAgent({ agentId: "bot_helper" });
   agent.use(product.middleware(ACTOR));

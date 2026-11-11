@@ -27,7 +27,7 @@ function packagesStartedBy(script: string, workspaces: string[]): string[] {
   );
 }
 
-describe("OpenBot workspace", () => {
+describe("AwakenBot workspace", () => {
   test("defines the app, server, worker, shared, toolkit and extension packages", () => {
     const manifest = rootManifest();
     const names: Record<string, string> = {

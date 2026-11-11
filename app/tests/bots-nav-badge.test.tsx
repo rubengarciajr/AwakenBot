@@ -100,7 +100,7 @@ function notifications() {
         title,
         body: options?.body,
         tag: options?.tag,
-        // The page a click opens in OpenBot Desktop, which reads it from `extra`.
+        // The page a click opens in AwakenBot Desktop, which reads it from `extra`.
         path: options?.extra?.path,
       });
     },

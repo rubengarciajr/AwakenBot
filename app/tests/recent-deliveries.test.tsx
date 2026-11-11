@@ -6,7 +6,7 @@ import { RecentDeliveries } from "@/components/settings/devices";
 import { settleReactWork } from "./settle-react-work";
 
 /**
- * Settings → Notifications, Recent deliveries: every message OpenBot sent the person outside the web
+ * Settings → Notifications, Recent deliveries: every message AwakenBot sent the person outside the web
  * app, named in the words the rest of the page uses. A row once read "push · attention" and
  * "failed": the server's own names for the channel, the kind and the state.
  */

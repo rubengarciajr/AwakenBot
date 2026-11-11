@@ -261,7 +261,7 @@ test("a Bot's check-in items are counted in the words the badge and Needs you us
   expect(view.container.textContent).not.toContain("suggestion");
 });
 
-test("personal edition labels starter Bots as included with OpenBot", async () => {
+test("personal edition labels starter Bots as included with AwakenBot", async () => {
   queryClient.setQueryData(deploymentKeys.capabilities(), {
     edition: "personal",
   });
@@ -272,7 +272,7 @@ test("personal edition labels starter Bots as included with OpenBot", async () =
   const view = draw();
   await view.findByText("Starter");
   expect(
-    view.getByRole("heading", { name: "Included with OpenBot" }),
+    view.getByRole("heading", { name: "Included with AwakenBot" }),
   ).toBeTruthy();
   expect(view.queryByText("Shared with you")).toBeNull();
 });

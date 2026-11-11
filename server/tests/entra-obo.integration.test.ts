@@ -43,14 +43,14 @@ import { testEnvironment } from "./support/environment";
 /**
  * A company system behind Microsoft Entra, reached as the signed-in person.
  *
- * Two doors in and one way out. A person's app calls OpenBot with their Entra token, and a routine
+ * Two doors in and one way out. A person's app calls AwakenBot with their Entra token, and a routine
  * runs with nobody in the browser at all; either way a server an admin marked with an Entra scope is
  * called with a token Entra issued for that person through the on-behalf-of exchange.
  *
  * Entra is a stand-in that answers as Entra does: the published keys, the refresh grant with a
  * rotated refresh token, the on-behalf-of grant checked for its grant type, `requested_token_use`
- * and an assertion addressed to OpenBot, and the three refusals a person can meet (an expired
- * sign-in, missing consent, an API OpenBot's registration does not expose), in Entra's own error
+ * and an assertion addressed to AwakenBot, and the three refusals a person can meet (an expired
+ * sign-in, missing consent, an API AwakenBot's registration does not expose), in Entra's own error
  * shape. The system is a real MCP server built with the official SDK that checks the bearer it is
  * sent. Both are reached at their real addresses through `fetch`, which forwards them to 127.0.0.1.
  */
@@ -83,11 +83,11 @@ const KID = `kid-${tag}`;
 type Directory = {
   /** Live refresh tokens, by token: whose they are and whether Entra still honours them. */
   refreshTokens: Map<string, { oid: string; upn: string; expired?: boolean }>;
-  /** Whether OpenBot's app registration exposes an API, so a token to it can be issued at all. */
+  /** Whether AwakenBot's app registration exposes an API, so a token to it can be issued at all. */
   apiExposed: boolean;
-  /** Whether an admin consented to OpenBot's own API, so its refresh grant may ask for it. */
+  /** Whether an admin consented to AwakenBot's own API, so its refresh grant may ask for it. */
   apiConsented: boolean;
-  /** The systems an admin has granted OpenBot access to. */
+  /** The systems an admin has granted AwakenBot access to. */
   consented: Set<string>;
   /** Every grant the token endpoint was asked for, in order. */
   requests: { grantType: string; scope: string; assertion?: string }[];
@@ -115,7 +115,7 @@ async function sign(
 }
 
 /**
- * A person's token to OpenBot's own API, as Entra issues one to their app: `azp` names the app it
+ * A person's token to AwakenBot's own API, as Entra issues one to their app: `azp` names the app it
  * was issued to, and `azpacr` how that app proved itself (`0`, a public client such as a SPA).
  */
 const tokenToOpenBot = (
@@ -222,7 +222,7 @@ async function tokenEndpoint(request: Request): Promise<Response> {
         400,
         "invalid_grant",
         65001,
-        `The user or administrator has not consented to use the application with ID '${CLIENT_ID}' named 'OpenBot'. Send an interactive authorization request for this user and resource.`,
+        `The user or administrator has not consented to use the application with ID '${CLIENT_ID}' named 'AwakenBot'. Send an interactive authorization request for this user and resource.`,
         { suberror: "consent_required" },
       );
     }
@@ -235,7 +235,7 @@ async function tokenEndpoint(request: Request): Promise<Response> {
       scope: `api://${CLIENT_ID}/access_as_user`,
       expires_in: 3599,
       ext_expires_in: 3599,
-      // Issued to OpenBot itself, which proved itself with its secret.
+      // Issued to AwakenBot itself, which proved itself with its secret.
       access_token: await tokenToOpenBot(held, {
         azp: CLIENT_ID,
         azpacr: "1",
@@ -278,7 +278,7 @@ async function tokenEndpoint(request: Request): Promise<Response> {
         400,
         "invalid_grant",
         65001,
-        `The user or administrator has not consented to use the application with ID '${CLIENT_ID}' named 'OpenBot'. Send an interactive authorization request for this user and resource.`,
+        `The user or administrator has not consented to use the application with ID '${CLIENT_ID}' named 'AwakenBot'. Send an interactive authorization request for this user and resource.`,
         { suberror: "consent_required" },
       );
     }
@@ -347,7 +347,7 @@ let entraServer: ReturnType<typeof Bun.serve>;
 let mcpServer: ReturnType<typeof Bun.serve>;
 const realFetch = globalThis.fetch;
 
-/* ---------------------------------------------------------------- OpenBot */
+/* ---------------------------------------------------------------- AwakenBot */
 
 const config = loadConfig(
   testEnvironment({
@@ -594,7 +594,7 @@ afterAll(async () => {
 
 /* ---------------------------------------------------------------- the tests */
 
-describe("an app calls OpenBot with a person's Entra token", () => {
+describe("an app calls AwakenBot with a person's Entra token", () => {
   test("a valid token runs as that person, signed in the way the sign-in screen signs them in", async () => {
     const response = await api("/me", await tokenToOpenBot(ada));
     expect(response.status).toBe(200);
@@ -667,7 +667,7 @@ describe("an app calls OpenBot with a person's Entra token", () => {
     ],
     ["a token that names no app", { azp: undefined }, undefined],
     [
-      // What Entra issues when OpenBot's registration asks for v1.0 tokens: the app is in `appid`.
+      // What Entra issues when AwakenBot's registration asks for v1.0 tokens: the app is in `appid`.
       "a v1.0 token, even from a listed app",
       {
         ver: "1.0",
@@ -868,11 +868,11 @@ describe("a routine reaches the system as its person, with nobody in the browser
       .insert(users)
       .values({ id: danId, email: email("dan"), name: "dan" });
     expect(await backgroundCall(newEntra(), danId)).toBe(
-      `${REFUSAL_MARKER} HR uses your Microsoft account, and OpenBot doesn't have your Microsoft sign-in. Sign in to OpenBot with Microsoft in the browser once, then ask again.`,
+      `${REFUSAL_MARKER} HR uses your Microsoft account, and AwakenBot doesn't have your Microsoft sign-in. Sign in to AwakenBot with Microsoft in the browser once, then ask again.`,
     );
   });
 
-  test("somebody who has only used OpenBot through their app is told to sign in once in the browser", async () => {
+  test("somebody who has only used AwakenBot through their app is told to sign in once in the browser", async () => {
     // Signed in from their app's token alone: a user and a Microsoft account, and no refresh token.
     const ivy = person("ivy");
     await newEntra().sessionFrom(
@@ -882,7 +882,7 @@ describe("a routine reaches the system as its person, with nobody in the browser
     expect((await storedRefreshToken(ivyId)).raw).toBeNull();
     // Their routine runs later, in a process that never saw that token (a restart, say).
     expect(await backgroundCall(newEntra(), ivyId)).toBe(
-      `${REFUSAL_MARKER} HR uses your Microsoft account, and OpenBot doesn't have your Microsoft sign-in. Sign in to OpenBot with Microsoft in the browser once, then ask again.`,
+      `${REFUSAL_MARKER} HR uses your Microsoft account, and AwakenBot doesn't have your Microsoft sign-in. Sign in to AwakenBot with Microsoft in the browser once, then ask again.`,
     );
   });
 
@@ -897,7 +897,7 @@ describe("a routine reaches the system as its person, with nobody in the browser
     const asked = entra.requests.length;
     const calls = reached.length;
     expect(await backgroundCall(tokens, joId)).toBe(
-      `${REFUSAL_MARKER} You no longer have access to OpenBot, so HR wasn't used.`,
+      `${REFUSAL_MARKER} You no longer have access to AwakenBot, so HR wasn't used.`,
     );
     // Neither the held token nor Entra was asked: nothing reached the system as them.
     expect(entra.requests.length).toBe(asked);
@@ -914,7 +914,7 @@ describe("a routine reaches the system as its person, with nobody in the browser
     );
   });
 
-  test("a system an admin has not granted OpenBot access to in Entra says so", async () => {
+  test("a system an admin has not granted AwakenBot access to in Entra says so", async () => {
     // Added while access was granted, so its tools are known; then an admin withdraws it in Entra.
     entra.consented.add(PAYROLL_SCOPE);
     await store.addCustomServer({
@@ -930,17 +930,17 @@ describe("a routine reaches the system as its person, with nobody in the browser
 
     const fayId = await signedInWithMicrosoft(person("fay"));
     expect(await backgroundCall(newEntra(), fayId, PAYROLL)).toBe(
-      `${REFUSAL_MARKER} An admin hasn't given OpenBot access to Payroll in Microsoft Entra. Ask an admin to grant it.`,
+      `${REFUSAL_MARKER} An admin hasn't given AwakenBot access to Payroll in Microsoft Entra. Ask an admin to grant it.`,
     );
   });
 
-  test("missing consent to OpenBot's own API names OpenBot's API, not the system", async () => {
+  test("missing consent to AwakenBot's own API names AwakenBot's API, not the system", async () => {
     const hal = person("hal");
     const halId = await signedInWithMicrosoft(hal);
     entra.apiConsented = false;
     try {
       expect(await backgroundCall(newEntra(), halId)).toBe(
-        `${REFUSAL_MARKER} OpenBot doesn't have consent for its own API in Microsoft Entra, so it can't reach HR as you. Ask an admin to grant it.`,
+        `${REFUSAL_MARKER} AwakenBot doesn't have consent for its own API in Microsoft Entra, so it can't reach HR as you. Ask an admin to grant it.`,
       );
     } finally {
       entra.apiConsented = true;
@@ -953,7 +953,7 @@ describe("a routine reaches the system as its person, with nobody in the browser
     entra.apiExposed = false;
     try {
       expect(await backgroundCall(newEntra(), gusId)).toBe(
-        `${REFUSAL_MARKER} OpenBot isn't set up in Microsoft Entra to reach HR as you. Ask an admin to expose OpenBot's API there.`,
+        `${REFUSAL_MARKER} AwakenBot isn't set up in Microsoft Entra to reach HR as you. Ask an admin to expose AwakenBot's API there.`,
       );
     } finally {
       entra.apiExposed = true;

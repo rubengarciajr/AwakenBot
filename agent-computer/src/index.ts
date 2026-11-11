@@ -161,7 +161,7 @@ const OWNER = computerOwner(process.env);
 const BROWSER_MODE = RUNTIME.mode;
 /*
  * The display this process was started on, kept before the virtual one replaces it. A person's
- * native browser on OpenBot Desktop opens on the person's own desktop, never on the Xvfb display that
+ * native browser on AwakenBot Desktop opens on the person's own desktop, never on the Xvfb display that
  * a Bot's headed browser uses on Linux. See `personBrowserEnv`.
  */
 const PERSON_DISPLAY = {
@@ -360,7 +360,7 @@ const terminalSockets = createTerminalSockets<StreamData & TerminalSocketData>({
 // Only the running computer points its shell at it: a test that imports this module shares its
 // process with every later test.
 await startEgressFilter({ forShell: import.meta.main });
-// The deployment's loopback addresses, where a browser here is handed one (OpenBot Desktop). Before any browser exists,
+// The deployment's loopback addresses, where a browser here is handed one (AwakenBot Desktop). Before any browser exists,
 // so a Recorder never connects to an address that is not there yet. See loopback-relay.ts.
 if (import.meta.main)
   await startLoopbackRelays(
@@ -385,7 +385,7 @@ const profiles = createProfiles(
 );
 
 /**
- * The OpenBot Browser: a person's own browser with the Recorder in it, opened for them by the
+ * The AwakenBot Browser: a person's own browser with the Recorder in it, opened for them by the
  * server. See browser-host.ts, and person-access.ts for what a person's browser id may do here.
  */
 /**
@@ -422,7 +422,7 @@ const botBrowser = createBotBrowserHost({
 });
 
 /**
- * The person's own everyday Chrome or Edge, on OpenBot Desktop's computer only: brought forward, or
+ * The person's own everyday Chrome or Edge, on AwakenBot Desktop's computer only: brought forward, or
  * handed the Recorder's store page. See real-browser.ts.
  */
 const realBrowser = createRealBrowserHost({

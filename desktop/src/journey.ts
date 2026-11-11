@@ -1,6 +1,6 @@
 /**
  * Where a long start, setup or update is, in the person's words, and how far along: from the
- * steps the CLI has finished (`local_eval_steps`) and what OpenBot's own start reports, weighed by
+ * steps the CLI has finished (`local_eval_steps`) and what AwakenBot's own start reports, weighed by
  * how long each part takes.
  *
  * The product's rule: a person waiting always knows what is happening and how far along it is. A
@@ -8,7 +8,7 @@
  * names never reach the screen: each maps to a plain phrase here, and the names stay in the log.
  *
  * Timings are measured, not guessed: a first setup and an update of the back end on Windows
- * (D30, 2026-11-09, `cli.log`), and OpenBot's own start (about 25 seconds). Each is a milestone:
+ * (D30, 2026-11-09, `cli.log`), and AwakenBot's own start (about 25 seconds). Each is a milestone:
  * the seconds into the run by which that step had typically finished. Where a run is, is the
  * furthest milestone it has passed, moved on by the time since, and never past the next one: a
  * step that runs long slows the bar rather than letting it pass what has not happened, and the
@@ -70,11 +70,11 @@ export const SETUP: Plan = {
   },
   stages: [
     { said: "Checking this computer", until: 13 },
-    { said: "Preparing a place on this computer for OpenBot", until: 32 },
-    { said: "Downloading what OpenBot needs", until: 80 },
-    { said: "Preparing where OpenBot keeps your data", until: 127 },
+    { said: "Preparing a place on this computer for AwakenBot", until: 32 },
+    { said: "Downloading what AwakenBot needs", until: 80 },
+    { said: "Preparing where AwakenBot keeps your data", until: 127 },
     { said: "Setting up your data", until: 160 },
-    { said: "Starting OpenBot's services", until: 190 },
+    { said: "Starting AwakenBot's services", until: 190 },
   ],
   download: { from: 32, to: 80 },
 };
@@ -111,10 +111,10 @@ export const UPDATE: Plan = {
   },
   stages: [
     { said: "Getting the update ready", until: 15 },
-    { said: "Pausing OpenBot's services", until: 50 },
-    { said: "Updating where OpenBot keeps your data", until: 68 },
+    { said: "Pausing AwakenBot's services", until: 50 },
+    { said: "Updating where AwakenBot keeps your data", until: 68 },
     { said: "Updating your data", until: 92 },
-    { said: "Starting OpenBot's services", until: 120 },
+    { said: "Starting AwakenBot's services", until: 120 },
   ],
   download: { from: 6, to: 11 },
 };
@@ -126,13 +126,13 @@ export const UPDATE: Plan = {
 export const WAIT: Plan = {
   milestones: {},
   stages: [
-    { said: "Starting the software OpenBot runs on", until: 15 },
-    { said: "Starting OpenBot's services", until: 60 },
+    { said: "Starting the software AwakenBot runs on", until: 15 },
+    { said: "Starting AwakenBot's services", until: 60 },
   ],
 };
 
 /**
- * OpenBot's own start, once its services answer (about 25 seconds): its settings, its apps, then
+ * AwakenBot's own start, once its services answer (about 25 seconds): its settings, its apps, then
  * waiting until it answers. By the rows `start_stack` reports (`setup:progress`).
  */
 export const OPEN: Plan = {
@@ -148,17 +148,17 @@ export const OPEN: Plan = {
     answering: 25,
   },
   stages: [
-    { said: "Checking OpenBot's settings", until: 4 },
-    { said: "Starting OpenBot's apps", until: 14 },
+    { said: "Checking AwakenBot's settings", until: 4 },
+    { said: "Starting AwakenBot's apps", until: 14 },
     { said: "Checking your data", until: 18 },
-    { said: "Waiting for OpenBot to respond", until: 25 },
+    { said: "Waiting for AwakenBot to respond", until: 25 },
   ],
 };
 
-/** Connecting OpenBot to its services: seconds. */
+/** Connecting AwakenBot to its services: seconds. */
 export const CONNECT: Plan = {
   milestones: {},
-  stages: [{ said: "Connecting OpenBot to its services", until: 3 }],
+  stages: [{ said: "Connecting AwakenBot to its services", until: 3 }],
 };
 
 /** Where a run is, in seconds of its plan, and whether it is running longer than usual. */
@@ -265,7 +265,7 @@ export function journey(legs: readonly Leg[]): Journey {
 
 /**
  * Seconds to plan with for each part of a download still unpacking once its bytes are in, until
- * its own parts have measured it. On Windows F the last two of OpenBot's five parts took about 10
+ * its own parts have measured it. On Windows F the last two of AwakenBot's five parts took about 10
  * seconds once every byte was in; on Windows D the update's last parts took two.
  */
 export const UNPACK_SECONDS = 6;
@@ -345,8 +345,8 @@ export function downloadWhere(
   steady = true,
   /**
    * Every byte was in once already (`seeParts`). It stays unpacking until every part is: on
-   * Windows F the row went back for a few seconds from "Unpacking OpenBot (3 of 5)" to
-   * "Downloading OpenBot. About 2 minutes left." as a report briefly counted its bytes short.
+   * Windows F the row went back for a few seconds from "Unpacking AwakenBot (3 of 5)" to
+   * "Downloading AwakenBot. About 2 minutes left." as a report briefly counted its bytes short.
    */
   wasAllIn = false,
 ): DownloadWhere {

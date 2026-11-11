@@ -278,7 +278,7 @@ function heldIn(stopped: Stopped): string {
 const NOT_SAVED: Record<NonNullable<Stopped["kept"]>, string> = {
   refused: "It's kept in this browser and sent again later.",
   "signed-out":
-    "It's kept in this browser until you connect it to OpenBot again.",
+    "It's kept in this browser until you connect it to AwakenBot again.",
 };
 
 /** What the page says once Stop ended a recording, naming it. The sidebar's Browser button says the same. */
@@ -367,7 +367,7 @@ export function StoppedRow({
   );
 }
 
-/** The same, as a line under the bar above a browser shown in the page (hosted OpenBot). */
+/** The same, as a line under the bar above a browser shown in the page (hosted AwakenBot). */
 export function StoppedNotice({ stopped }: { stopped: Stopped }) {
   return (
     <p
@@ -489,7 +489,7 @@ export function RecordingRow({
 }
 
 /**
- * The same controls for the toolbar of a browser shown in the page (hosted OpenBot). Idle, they are one Record button at
+ * The same controls for the toolbar of a browser shown in the page (hosted AwakenBot). Idle, they are one Record button at
  * the toolbar's end, where a browser keeps its own actions, and Record opens a small popover with the task's name and
  * `children` (the narration switch), so the toolbar stays one line and never shows a second field beside the address.
  * While recording, the toolbar itself holds the recording's name, its time and actions, `children` and Stop.

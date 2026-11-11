@@ -48,7 +48,7 @@ describe("the team features dialog", () => {
   });
 
   /*
-   * Every line is a claim about what OpenBot for Business does, so the list is pinned word for
+   * Every line is a claim about what AwakenBot for Business does, so the list is pinned word for
    * word: a line changes here, on purpose, or not at all. "Policies in plain English, tested on past
    * activity" stands for the describe-in-words screens (boundaries, team approval rules, auto-review
    * guidance, permissions, the network allowlist, one Bot's app actions), each of which replays what

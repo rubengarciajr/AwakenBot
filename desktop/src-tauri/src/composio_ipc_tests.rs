@@ -381,7 +381,7 @@ fn main() {
             .expect_err("signed out, there is no key to get");
         assert_eq!(
             error["said"],
-            "OpenBot couldn't connect your apps. Check your connection, then choose Connect apps. If it keeps happening, ask an admin."
+            "AwakenBot couldn't connect your apps. Check your connection, then choose Connect apps. If it keeps happening, ask an admin."
         );
         assert!(!error.to_string().contains("copilotkit login"));
         assert!(received.lock().unwrap().is_empty());

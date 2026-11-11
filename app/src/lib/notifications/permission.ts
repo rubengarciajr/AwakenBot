@@ -2,11 +2,11 @@ import { useSyncExternalStore } from "react";
 import { desktopShell, type ShellIpc } from "@/lib/desktop/shell";
 
 /**
- * Whether this browser may show OpenBot's notifications: the browser's own answer, never a guess.
+ * Whether this browser may show AwakenBot's notifications: the browser's own answer, never a guess.
  *
  * WHAT A NOTIFICATION IS HERE. The web app raises one when a Bot starts needing the person
  * (`AttentionNotifier` in `bot-profile/attention.tsx`), from the page itself. So it shows while
- * OpenBot is open in a tab, and not once the tab is closed: there is no web push. Onboarding's Get
+ * AwakenBot is open in a tab, and not once the tab is closed: there is no web push. Onboarding's Get
  * notified step says so rather than promise more.
  *
  * ONE ANSWER FOR THE WHOLE PAGE. Onboarding's step and a Bot's page both offer to turn them on,
@@ -29,7 +29,7 @@ export type NotificationPermissionState =
   | "default"
   /** No Notification API, as in Safari on iPhone outside a Home Screen app. */
   | "unsupported"
-  /** In OpenBot Desktop, until the desktop app has answered. Nothing is offered meanwhile. */
+  /** In AwakenBot Desktop, until the desktop app has answered. Nothing is offered meanwhile. */
   | "checking";
 
 /** What the browser says now. A browser that throws on reading it is one that cannot show them. */
@@ -43,7 +43,7 @@ export function notificationPermission(): NotificationPermissionState {
   }
 }
 
-/** Tauri's notification plugin, as OpenBot Desktop registers it (desktop/src-tauri). */
+/** Tauri's notification plugin, as AwakenBot Desktop registers it (desktop/src-tauri). */
 const PLUGIN = "plugin:notification";
 
 /**
@@ -131,12 +131,12 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
 }
 
 /**
- * Whether a notification may be shown now. In OpenBot Desktop, the desktop app's answer, the one
+ * Whether a notification may be shown now. In AwakenBot Desktop, the desktop app's answer, the one
  * the offer reads: not the plugin script's `Notification.permission`, which stays "default" for as
  * long as the page is open when its own first question went unanswered. In a browser, the browser's,
  * read afresh each time, so a site setting changed meanwhile counts.
  *
- * In OpenBot Desktop the answer comes back over IPC, so the first read after OpenBot starts has
+ * In AwakenBot Desktop the answer comes back over IPC, so the first read after AwakenBot starts has
  * none yet ("checking"). This waits for it rather than take that as a no: taken as a no, the first
  * Bot to need the person after each launch raised nothing.
  */

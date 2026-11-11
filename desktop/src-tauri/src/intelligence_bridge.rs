@@ -1,5 +1,5 @@
 /*!
-The OpenBot app's own page asking the shell to open the back end's local dashboard.
+The AwakenBot app's own page asking the shell to open the back end's local dashboard.
 
 The app is served from a loopback port and loaded in the main window, so to Tauri it is a remote
 origin, and a remote origin reaches no command of this app (Tauri refuses every app command to one

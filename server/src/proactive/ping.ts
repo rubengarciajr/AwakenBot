@@ -102,8 +102,8 @@ export function pingText(items: readonly AttentionItem[]): {
     ...lines,
     ...andMore,
     items.length === 1
-      ? "Start or hide it in OpenBot."
-      : "Start or hide them in OpenBot.",
+      ? "Start or hide it in AwakenBot."
+      : "Start or hide them in AwakenBot.",
   ].join("\n");
   const pushBody = clip(
     [

@@ -67,11 +67,11 @@ test("the loader reads a configured harness template alongside the fallback", as
   });
 });
 
-test("the Bot that ships says it runs on OpenBot itself", async () => {
+test("the Bot that ships says it runs on AwakenBot itself", async () => {
   const { agents } = await loadTenantPackage(personal);
   expect(agents[0]).toMatchObject({
     name: "Personal Assistant",
-    title: "Powered by OpenBot",
+    title: "Powered by AwakenBot",
     type: "built_in",
   });
 });

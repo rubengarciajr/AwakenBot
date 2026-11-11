@@ -15,20 +15,20 @@ import type { RecorderNotice } from "../../shared/storage";
 
 const SIGNED_OUT = {
   organization:
-    "Your organization sign-in ended. Connect this browser to OpenBot again.",
-  default: "This browser was disconnected from OpenBot. Connect it again.",
+    "Your organization sign-in ended. Connect this browser to AwakenBot again.",
+  default: "This browser was disconnected from AwakenBot. Connect it again.",
 } as const;
 
 function noticeSentence(notice: RecorderNotice): string {
   switch (notice.kind) {
     case "interrupted":
-      return "Your last recording stopped when the browser closed. Everything recorded until then goes to OpenBot's backend.";
+      return "Your last recording stopped when the browser closed. Everything recorded until then goes to AwakenBot's backend.";
     case "signed-out":
       return notice.reason === "organization"
         ? SIGNED_OUT.organization
         : SIGNED_OUT.default;
     case "policy-moved":
-      return `Your organization moved the Recorder to ${notice.origin}. Connect it again from OpenBot.`;
+      return `Your organization moved the Recorder to ${notice.origin}. Connect it again from AwakenBot.`;
   }
 }
 

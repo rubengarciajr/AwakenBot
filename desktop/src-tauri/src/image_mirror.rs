@@ -1,7 +1,7 @@
-//! OpenBot's images come from its own mirror first, and from GHCR only when the mirror cannot give
+//! AwakenBot's images come from its own mirror first, and from GHCR only when the mirror cannot give
 //! one.
 //!
-//! GHCR's download network is not dependable for the people who install OpenBot: on 2026-11-06, on
+//! GHCR's download network is not dependable for the people who install AwakenBot: on 2026-11-06, on
 //! a 300-500 Mbit office line, `agent-computer` came from GHCR's blob CDN at about 0.23 MB/s while
 //! nodejs.org gave the same Mac 31.5 MB/s in the same minute. So every image on ghcr.io is asked of
 //! https://downloads.copilotkit.ai first: CloudFront over a private S3 bucket, holding a read-only
@@ -17,10 +17,10 @@
 //! later, on the containerd image store only, also read a containerd `hosts.toml` per registry from
 //! `/etc/docker/certs.d/<host>/` (moby/moby#47380, `daemon/hosts.go`), which could name a mirror for
 //! ghcr.io; but that is inside Docker Desktop's VM, it is the person's Docker configuration and not
-//! OpenBot's to change, Docker Desktop reads it only when it restarts, and the classic image store
+//! AwakenBot's to change, Docker Desktop reads it only when it restarts, and the classic image store
 //! ignores it. So the app pulls the mirror's copy itself and gives it the ghcr.io name.
 //!
-//! WHY IT IS SAFE. The references OpenBot runs are digest-pinned (`deployment::reference`), and an
+//! WHY IT IS SAFE. The references AwakenBot runs are digest-pinned (`deployment::reference`), and an
 //! engine pulling by digest checks every manifest and blob it is given against that digest. A copy
 //! that differs by one byte is refused, and refused is the same as missing: the image comes from
 //! ghcr.io, as it always did.
@@ -40,11 +40,11 @@
 //!   in the store is not pulled again).
 //!
 //! The mirror's own name is removed once the ghcr.io name answers, so the person's image list shows
-//! the image once, under the name OpenBot runs it by.
+//! the image once, under the name AwakenBot runs it by.
 
 use crate::engine::Address;
 
-/// The host that serves OpenBot's mirror of ghcr.io.
+/// The host that serves AwakenBot's mirror of ghcr.io.
 pub const MIRROR: &str = "downloads.copilotkit.ai";
 
 /// The registry the mirror copies, and the one every image reference names.
@@ -241,7 +241,7 @@ mod tests {
 
 /**
 A pull against the real engine. A `registry:2` on loopback stands in for ghcr.io, holding a test image
-built and pushed for the test: a random payload over a local base, pushed as an index, as OpenBot's
+built and pushed for the test: a random payload over a local base, pushed as an index, as AwakenBot's
 release images are. The mirror is plain nginx serving that image's files, laid out and typed as
 downloads.copilotkit.ai serves them: S3 objects at the registry's paths behind CloudFront, each
 manifest with its stored Content-Type, no Docker-Content-Digest, no auth, query strings ignored, and

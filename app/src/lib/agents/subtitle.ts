@@ -2,7 +2,7 @@ import { withCurrentFrameworkNames } from "@openbot/shared/harnesses";
 
 /**
  * A Bot's subtitle as a person reads it: the Personal Assistant's seed shows Atai's wording, and a
- * "Powered by" OpenBot wrote under a framework's earlier name shows its current one.
+ * "Powered by" AwakenBot wrote under a framework's earlier name shows its current one.
  *
  * Display only, and so applied where a subtitle is drawn, never where the profile is read. What the
  * server returns is the stored subtitle, which is what the Bot is told (its standing role, a voice

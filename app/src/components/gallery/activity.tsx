@@ -126,7 +126,7 @@ export function ActivityReportCard({
 
   if (state.status === "reading") {
     return (
-      <GalleryFrame caption="Reading from OpenBot" title={title ?? "Report"}>
+      <GalleryFrame caption="Reading from AwakenBot" title={title ?? "Report"}>
         <p className="text-sm text-muted-foreground">Reading…</p>
       </GalleryFrame>
     );
@@ -198,7 +198,7 @@ function ActivityChart({
           </Button>
         ) : undefined
       }
-      caption={`Counted from OpenBot's audit trail, last ${data.days} days`}
+      caption={`Counted from AwakenBot's audit trail, last ${data.days} days`}
       title={title ?? "Bot activity"}
     >
       <ul className="flex flex-col gap-2">
@@ -242,7 +242,7 @@ function RefusalList({
     return (
       <GalleryFrame title={title ?? "Recent refusals"}>
         <p className="text-sm text-muted-foreground">
-          OpenBot hasn't refused anything.
+          AwakenBot hasn't refused anything.
         </p>
       </GalleryFrame>
     );
@@ -265,7 +265,7 @@ function RefusalList({
           </Button>
         ) : undefined
       }
-      caption="Read from OpenBot's audit trail"
+      caption="Read from AwakenBot's audit trail"
       title={title ?? "Recent refusals"}
     >
       <ul className="flex flex-col gap-2">
@@ -305,7 +305,7 @@ export const GALLERY: GalleryComponent[] = [
     title: TITLE,
     kind: "card",
     summary:
-      "Shows what your Bots have been doing and what was refused, read from OpenBot's own records.",
+      "Shows what your Bots have been doing and what was refused, read from AwakenBot's own records.",
     description:
       "Show what this deployment has actually been doing, read from its own records rather than from anything you know. Use for 'what have the Bots been up to' and 'what has been refused'. You choose the report and the period; the figures are read for you and you will not see them.",
     parameters: ActivityReportProps,

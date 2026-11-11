@@ -185,10 +185,10 @@ describe("deployment configuration", () => {
     ).toThrow("INTELLIGENCE_BROWSER_GATEWAY_WS_URL must be a valid URL");
   });
 
-  // Intelligence installed in the cluster beside OpenBot has no address a browser can reach, and the
-  // browser opens the gateway's socket itself. With the proxy on, the browser is told OpenBot's own
+  // Intelligence installed in the cluster beside AwakenBot has no address a browser can reach, and the
+  // browser opens the gateway's socket itself. With the proxy on, the browser is told AwakenBot's own
   // address for it: a path, resolved against the page, or on the public URL when there is one.
-  test("tells the browser OpenBot's own address for the gateway when the server carries its socket", () => {
+  test("tells the browser AwakenBot's own address for the gateway when the server carries its socket", () => {
     const proxied = loadConfig({
       ...baseEnvironment,
       INTELLIGENCE_GATEWAY_WS_URL:
@@ -522,7 +522,7 @@ describe("deployment configuration", () => {
       clientSecret: "entra-client-secret",
       tenantId: "common",
       apiScope: "api://entra-client-id/.default",
-      // No app may call OpenBot with a person's token until one is named.
+      // No app may call AwakenBot with a person's token until one is named.
       allowedClients: [],
     });
     expect(configuredAuthProviders(config.auth)).toEqual(["microsoft"]);
@@ -1397,7 +1397,7 @@ describe("edition", () => {
     expect(config.computer?.provider).toBe("shared");
   });
 
-  // What OpenBot Desktop writes, so an app connected over its own OAuth has an address to come
+  // What AwakenBot Desktop writes, so an app connected over its own OAuth has an address to come
   // back to. Loopback is this machine, so single-user mode stays on and stays this machine's.
   test("personal edition takes the app's own loopback address as its public URL", () => {
     const config = loadConfig({

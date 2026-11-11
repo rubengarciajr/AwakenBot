@@ -120,7 +120,7 @@ test("and the same for Arcade's GitHub app, which is the same vendor through the
 
 /**
  * A key app's tile says it takes a key before anybody opens it, so the form on its page is no
- * surprise. Reported from OpenBot Desktop 0.3.3, where every key app read as one more sign-in.
+ * surprise. Reported from AwakenBot Desktop 0.3.3, where every key app read as one more sign-in.
  * Once it is connected the tile goes back to the app's own line.
  */
 test("a key app nobody has connected says it needs a key; a sign-in app does not", () => {

@@ -1,15 +1,15 @@
 //! Docker Desktop: opened when it is installed, stopped, and safe to open.
 //!
-//! **OpenBot never puts a person in front of Docker's terms, and never waits on them.** A Docker
+//! **AwakenBot never puts a person in front of Docker's terms, and never waits on them.** A Docker
 //! Desktop that was installed and never opened shows its subscription terms on first open, and
 //! from outside it nothing tells that window apart from a password prompt, a required sign-in or a
 //! slow boot. So a stopped Docker Desktop is opened only when it is known to start by itself:
 //!
 //! - it has run before on this machine (`used_before`: its VM disk exists), or
-//! - this installation was set up on Docker, so it answered for OpenBot before.
+//! - this installation was set up on Docker, so it answered for AwakenBot before.
 //!
-//! Anything else gets Podman (see `install::install_engine_with`). OpenBot never installs Docker
-//! Desktop on a machine without it; one too old to run OpenBot is updated in place
+//! Anything else gets Podman (see `install::install_engine_with`). AwakenBot never installs Docker
+//! Desktop on a machine without it; one too old to run AwakenBot is updated in place
 //! (`docker_desktop_update`). Linux is not handled here: Docker there is the distribution's Docker
 //! Engine.
 
@@ -25,20 +25,20 @@ use crate::problem::Problem;
 const START_PATIENCE: Duration = Duration::from_secs(3 * 60);
 const POLL: Duration = Duration::from_secs(2);
 
-/// How long Docker Desktop starts before OpenBot says it may be waiting for the person. A Docker
+/// How long Docker Desktop starts before AwakenBot says it may be waiting for the person. A Docker
 /// Desktop that has run before answers well inside this on a warm machine. Past it, the likeliest
 /// reason is a window of Docker's own: updated terms, a required sign-in.
 const NEEDS_YOU_AFTER: Duration = Duration::from_secs(45);
 
-/// Said as OpenBot opens Docker Desktop, whose window then comes to the front over OpenBot's.
+/// Said as AwakenBot opens Docker Desktop, whose window then comes to the front over AwakenBot's.
 pub const HAND_OFF: &str = "Docker Desktop is starting in its own window. If it asks you to \
-                            accept its terms or sign in, do that there. OpenBot comes back when \
+                            accept its terms or sign in, do that there. AwakenBot comes back when \
                             Docker is ready.";
 
 /// Said once Docker Desktop has had `NEEDS_YOU_AFTER` and still does not answer.
 pub const STILL_WAITING: &str = "Docker Desktop hasn't started yet. It may be waiting for you \
                                  in its own window. Accept its terms or sign in there, and \
-                                 OpenBot carries on by itself.";
+                                 AwakenBot carries on by itself.";
 
 /// Where Docker Desktop is installed on this machine, if it is.
 pub fn installed_app() -> Option<PathBuf> {
@@ -150,7 +150,7 @@ pub(crate) struct Machine<'a> {
     /// Whether Docker answers now: `answers`.
     pub answers: &'a dyn Fn() -> bool,
     pub open: &'a dyn Fn() -> Result<(), Problem>,
-    /// OpenBot's own window to the front again.
+    /// AwakenBot's own window to the front again.
     pub back: &'a dyn Fn(),
     pub sleep: &'a dyn Fn(Duration),
     pub now: &'a dyn Fn() -> Instant,
@@ -160,9 +160,9 @@ pub(crate) struct Machine<'a> {
 /// step row; `progress` is each line before that. Only for a Docker Desktop that is safe to open:
 /// see the module comment.
 ///
-/// Opening Docker Desktop puts its window in front of OpenBot's, and nothing in Docker's says to
-/// come back. So OpenBot's window says what is happening while Docker starts (`HAND_OFF`), says
-/// when it may be waiting on the person (`STILL_WAITING`), and `back` brings OpenBot to the front
+/// Opening Docker Desktop puts its window in front of AwakenBot's, and nothing in Docker's says to
+/// come back. So AwakenBot's window says what is happening while Docker starts (`HAND_OFF`), says
+/// when it may be waiting on the person (`STILL_WAITING`), and `back` brings AwakenBot to the front
 /// the moment Docker answers, or when it gives up on it.
 pub fn start(progress: &mut dyn FnMut(StepLine), back: &dyn Fn()) -> Result<String, Problem> {
     start_with(
@@ -181,7 +181,7 @@ pub(crate) fn start_with(
     machine: &Machine,
     progress: &mut dyn FnMut(StepLine),
 ) -> Result<String, Problem> {
-    // Already answering: nothing is opened, and OpenBot never left the front.
+    // Already answering: nothing is opened, and AwakenBot never left the front.
     if (machine.answers)() {
         return Ok("Docker Desktop is running.".into());
     }
@@ -205,7 +205,7 @@ pub(crate) fn start_with(
         }
         (machine.sleep)(POLL);
     }
-    // The failure needs the person, and it is said in OpenBot's window.
+    // The failure needs the person, and it is said in AwakenBot's window.
     (machine.back)();
     Err(Problem::with(
         "Docker Desktop didn't start. Open it and finish anything it shows, then try again.",
@@ -230,7 +230,7 @@ pub fn start_saved(progress: &mut dyn FnMut(StepLine), back: &dyn Fn()) -> Resul
 fn open() -> Result<(), Problem> {
     let Some(app) = installed_app() else {
         return Err(Problem::plain(
-            "OpenBot cannot find Docker Desktop. Install it, then try again.",
+            "AwakenBot cannot find Docker Desktop. Install it, then try again.",
         ));
     };
     #[cfg(target_os = "macos")]
@@ -245,11 +245,11 @@ fn open() -> Result<(), Problem> {
     match spawned {
         Ok(status) if status.success() => Ok(()),
         Ok(status) => Err(Problem::with(
-            "OpenBot could not open Docker Desktop. Open it yourself, then try again.",
+            "AwakenBot could not open Docker Desktop. Open it yourself, then try again.",
             format!("opening {} ended with {status}", app.display()),
         )),
         Err(error) => Err(Problem::with(
-            "OpenBot could not open Docker Desktop. Open it yourself, then try again.",
+            "AwakenBot could not open Docker Desktop. Open it yourself, then try again.",
             format!("opening {}: {error}", app.display()),
         )),
     }
@@ -263,7 +263,7 @@ mod tests {
     /// A machine whose Docker answers after `answers_after` polls, counting what was done to it.
     ///
     /// Its probe has the real one's shape: `answers` is asked, says yes or no, and is asked again
-    /// after a sleep. Each poll Docker did not answer also records whether OpenBot had been brought
+    /// after a sleep. Each poll Docker did not answer also records whether AwakenBot had been brought
     /// back by then, so a test can tell "back once Docker answers" from "back at some point".
     struct Fake {
         polls: Cell<u32>,
@@ -332,7 +332,7 @@ mod tests {
         assert_eq!(result.unwrap(), "Docker Desktop is running.");
         assert_eq!(fake.opened.get(), 1, "nothing was opened again");
         assert!(said.is_empty());
-        assert_eq!(fake.backs.get(), 0, "OpenBot never left the front");
+        assert_eq!(fake.backs.get(), 0, "AwakenBot never left the front");
     }
 
     #[test]
@@ -344,8 +344,8 @@ mod tests {
         assert_eq!(said, [(0, StepLine::elsewhere(HAND_OFF))]);
     }
 
-    /// Dogfooding 0.3.3: Docker Desktop opened in front of OpenBot, started, and stayed in front.
-    /// OpenBot's window, behind it, said nothing about Docker and never came back.
+    /// Dogfooding 0.3.3: Docker Desktop opened in front of AwakenBot, started, and stayed in front.
+    /// AwakenBot's window, behind it, said nothing about Docker and never came back.
     #[test]
     fn opening_docker_desktop_says_so_while_it_starts_and_brings_openbot_back_once_it_answers() {
         let fake = Fake::new(Some(3));
@@ -358,7 +358,7 @@ mod tests {
         assert_eq!(*at, 0);
         assert!(line.elsewhere);
         assert!(line.said.starts_with("Docker Desktop is starting"));
-        assert!(line.said.contains("OpenBot comes back"));
+        assert!(line.said.contains("AwakenBot comes back"));
 
         // Not brought back while Docker was still starting: that would cover Docker's own window
         // just when it may need the person.
@@ -399,7 +399,7 @@ mod tests {
         assert!(problem.said.starts_with("Docker Desktop didn't start."));
         assert!(problem.detail.unwrap().contains("180s"));
         assert_eq!(said.len(), 2, "the hand-off, then one still-waiting line");
-        // The failure is said in OpenBot's window, so OpenBot comes back to say it.
+        // The failure is said in AwakenBot's window, so AwakenBot comes back to say it.
         assert_eq!(fake.backs.get(), 1);
     }
 

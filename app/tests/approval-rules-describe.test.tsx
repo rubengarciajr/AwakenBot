@@ -204,7 +204,7 @@ test("a description fills the rules, shows their reading and check, replays them
   ).toBeTruthy();
   expect(
     view.getByText(
-      "Checks. Every rule matches tools and Bots this OpenBot has.",
+      "Checks. Every rule matches tools and Bots this AwakenBot has.",
     ),
   ).toBeTruthy();
   // The rows, as fields that stay editable.
@@ -287,6 +287,6 @@ test("the headline counts what changed and never what a safety requirement decid
   };
   expect(backtestHeadline(none)).toBe("Would have changed no decisions.");
   expect(replayWords(none, true)).toBe(
-    "Replayed over the last 22 actions OpenBot checked. These rules are about 2 of them. 2 were decided by a safety requirement, auto-review or a task, which rules don't change. Actions that ran with nothing to check aren't recorded, so a new ask can reach further than this shows.",
+    "Replayed over the last 22 actions AwakenBot checked. These rules are about 2 of them. 2 were decided by a safety requirement, auto-review or a task, which rules don't change. Actions that ran with nothing to check aren't recorded, so a new ask can reach further than this shows.",
   );
 });

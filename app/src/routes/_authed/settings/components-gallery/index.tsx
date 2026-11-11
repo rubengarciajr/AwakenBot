@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authed/settings/components-gallery/")({
 /**
  * The intro and the empty state, by edition. The team edition has an admin who publishes components
  * and decides which Bot uses which. The personal edition has no Admin: every component is published
- * when OpenBot starts and every Bot can use all of them, so there is nothing to say an admin does.
+ * when AwakenBot starts and every Bot can use all of them, so there is nothing to say an admin does.
  */
 const WORDS = {
   team: {
@@ -47,7 +47,7 @@ const WORDS = {
       "Browse the components your Bots can show in conversations. Every Bot can use all of them.",
     emptyTitle: "No components yet",
     empty:
-      "Components show up here once OpenBot has loaded them. Reload the page if this stays empty.",
+      "Components show up here once AwakenBot has loaded them. Reload the page if this stays empty.",
   },
 } as const;
 

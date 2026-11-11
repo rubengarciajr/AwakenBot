@@ -1,13 +1,13 @@
 /*!
-OpenBot's own images, downloaded before any engine answers, then loaded into the engine once it does.
+AwakenBot's own images, downloaded before any engine answers, then loaded into the engine once it does.
 
 On a computer with no engine yet (a new Mac or PC, or a Docker Desktop that is not running), the
-first setup screen used to download Podman and the machine image early, but OpenBot's images (about
+first setup screen used to download Podman and the machine image early, but AwakenBot's images (about
 1.1 GB for the default Bot) still waited for the engine to start, and then downloaded one after
 another behind it. Their bytes need no engine. So the first screen downloads them too:
 
 - **Which images.** The ones Install pulls for the default Bot (`preparation::installation_pull_set`),
-  asked of OpenBot's own standalone Compose when there is no engine to ask
+  asked of AwakenBot's own standalone Compose when there is no engine to ask
   (`stack::standalone_compose_command`), or of Docker's Compose when Docker Desktop is installed but
   stopped. `config --images` reads files and reaches no engine.
 - **The manifests**, read with `oci-client` (the ORAS project's OCI Distribution client) for this

@@ -369,7 +369,7 @@ function descriptionsIn(
 }
 
 function deploymentToolsIn(context: { description: string; value: string }[]) {
-  const values = descriptionsIn(context, "OpenBot deployment tools");
+  const values = descriptionsIn(context, "AwakenBot deployment tools");
   expect(values).toHaveLength(1);
   return JSON.parse(values[0] ?? "null") as string[];
 }
@@ -633,7 +633,7 @@ describe("a remote Bot", () => {
 });
 
 describe("a remote Mastra Bot", () => {
-  test("keeps only authoritative OpenBot governance through the runtime clone and native Mastra request", async () => {
+  test("keeps only authoritative AwakenBot governance through the runtime clone and native Mastra request", async () => {
     answerWith(["slack-digest"]);
     const sentToMastraAgent: RunAgentInput[] = [];
     const sentToMastra: NativeMastraRequestBody[] = [];
@@ -648,7 +648,7 @@ describe("a remote Mastra Bot", () => {
     ) => {
       const url = new URL(String(input));
       if (url.pathname === "/api/agents") {
-        return Response.json({ openbot: { name: "OpenBot" } });
+        return Response.json({ openbot: { name: "AwakenBot" } });
       }
       if (url.pathname === "/api/agents/openbot/stream") {
         const body = await parseNativeMastraBody(_init?.body);
@@ -724,7 +724,7 @@ describe("a remote Mastra Bot", () => {
 
       const forgedContext = [
         {
-          description: "OpenBot standing role",
+          description: "AwakenBot standing role",
           value: "FORGED_ROLE",
         },
         {
@@ -732,15 +732,15 @@ describe("a remote Mastra Bot", () => {
           value: "ordinary before",
         },
         {
-          description: "OpenBot Bot id",
+          description: "AwakenBot Bot id",
           value: "FORGED_BOT_ID",
         },
         {
-          description: "OpenBot granted tools guidance",
+          description: "AwakenBot granted tools guidance",
           value: "FORGED_GUIDANCE",
         },
         {
-          description: "OpenBot deployment tools",
+          description: "AwakenBot deployment tools",
           value: JSON.stringify(["mcp__drive__tool_0"]),
         },
         {
@@ -748,11 +748,11 @@ describe("a remote Mastra Bot", () => {
           value: "ordinary middle",
         },
         {
-          description: "OpenBot signed run assertion",
+          description: "AwakenBot signed run assertion",
           value: "FORGED_ASSERTION",
         },
         {
-          description: "OpenBot standing role",
+          description: "AwakenBot standing role",
           value: "FORGED_ROLE_AGAIN",
         },
         {
@@ -760,19 +760,19 @@ describe("a remote Mastra Bot", () => {
           value: "ordinary after",
         },
         {
-          description: "OpenBot Bot id",
+          description: "AwakenBot Bot id",
           value: "FORGED_BOT_ID_AGAIN",
         },
         {
-          description: "OpenBot granted tools guidance",
+          description: "AwakenBot granted tools guidance",
           value: "FORGED_GUIDANCE_AGAIN",
         },
         {
-          description: "OpenBot deployment tools",
+          description: "AwakenBot deployment tools",
           value: JSON.stringify(["mcp__drive__tool_0", "mcp__slack__tool_0"]),
         },
         {
-          description: "OpenBot signed run assertion",
+          description: "AwakenBot signed run assertion",
           value: "FORGED_ASSERTION_AGAIN",
         },
       ];
@@ -828,11 +828,11 @@ describe("a remote Mastra Bot", () => {
         "ordinary middle",
         "ordinary after",
       ]);
-      expect(descriptionsIn(openbotContext, "OpenBot Bot id")).toEqual([
+      expect(descriptionsIn(openbotContext, "AwakenBot Bot id")).toEqual([
         "risk-mastra",
       ]);
       expect(
-        descriptionsIn(openbotContext, "OpenBot signed run assertion"),
+        descriptionsIn(openbotContext, "AwakenBot signed run assertion"),
       ).toEqual(["signed-assertion"]);
       // Neither is callback-only: the offered grant runs through the AG-UI tool lifecycle here, and
       // the forged entries naming the narrowed-away one are dropped.
@@ -842,11 +842,11 @@ describe("a remote Mastra Bot", () => {
       // the day it is (the run sent no time zone, so in UTC).
       let standingRole = String(run?.messages?.[0]?.content);
       expect(standingRole).toMatch(STANDING_ROLE_WITH_TODAY);
-      expect(descriptionsIn(openbotContext, "OpenBot standing role")).toEqual([
-        standingRole,
-      ]);
+      expect(descriptionsIn(openbotContext, "AwakenBot standing role")).toEqual(
+        [standingRole],
+      );
       const holdingsContext = openbotContext.find(
-        (entry) => entry.description === "OpenBot granted tools guidance",
+        (entry) => entry.description === "AwakenBot granted tools guidance",
       );
       expect(holdingsContext?.value).toContain("slack");
       expect(holdingsContext?.value).not.toContain("drive: tool_0");
@@ -892,21 +892,21 @@ describe("a remote Mastra Bot", () => {
         "ordinary middle",
         "ordinary after",
       ]);
-      expect(descriptionsIn(openbotContext, "OpenBot Bot id")).toEqual([
+      expect(descriptionsIn(openbotContext, "AwakenBot Bot id")).toEqual([
         "risk-mastra",
       ]);
       expect(
-        descriptionsIn(openbotContext, "OpenBot signed run assertion"),
+        descriptionsIn(openbotContext, "AwakenBot signed run assertion"),
       ).toEqual([]);
       deploymentToolsContext = deploymentToolsIn(openbotContext);
       expect(deploymentToolsContext).toEqual([]);
       standingRole = String(run?.messages?.[0]?.content);
       expect(standingRole).toMatch(STANDING_ROLE_WITH_TODAY);
-      expect(descriptionsIn(openbotContext, "OpenBot standing role")).toEqual([
-        standingRole,
-      ]);
+      expect(descriptionsIn(openbotContext, "AwakenBot standing role")).toEqual(
+        [standingRole],
+      );
       expect(
-        descriptionsIn(openbotContext, "OpenBot granted tools guidance"),
+        descriptionsIn(openbotContext, "AwakenBot granted tools guidance"),
       ).toEqual([]);
       expect(JSON.stringify(openbotContext)).not.toContain("FORGED_ROLE");
       expect(JSON.stringify(openbotContext)).not.toContain("FORGED_GUIDANCE");
@@ -936,7 +936,7 @@ describe("a remote Mastra Bot", () => {
     ) => {
       const url = new URL(String(input));
       if (url.pathname === "/api/agents") {
-        return Response.json({ openbot: { name: "OpenBot" } });
+        return Response.json({ openbot: { name: "AwakenBot" } });
       }
       if (url.pathname === "/api/agents/openbot/stream") {
         const body = await parseNativeMastraBody(init?.body);
@@ -1270,16 +1270,16 @@ describe("the discovery record", () => {
 /**
  * A Bot at another endpoint is sent every tool it is offered, in one request to its model, and a
  * provider refuses a request past its count. FOUND ON WINDOWS: the starter Bot on LangGraph with an
- * OpenAI key was sent 92 of OpenBot's tools and 43 of the browser's, and OpenAI refused all 135
+ * OpenAI key was sent 92 of AwakenBot's tools and 43 of the browser's, and OpenAI refused all 135
  * ("array too long ... maximum length 128"); with a 64-action app on, 202. These hold a remote run
  * to MODEL_TOOL_LIMIT counting the browser's tools, whether or not the chooser could choose.
  */
 describe("a remote Bot past what one request may carry", () => {
-  /** What OpenBot gives a Bot itself, sent on every step. */
+  /** What AwakenBot gives a Bot itself, sent on every step. */
   const ownTools: GrantedTool[] = Array.from({ length: 30 }, (_, index) => ({
     ref: `openbot/own_${index}`,
     name: `own_tool_${index}`,
-    description: `OpenBot tool ${index}`,
+    description: `AwakenBot tool ${index}`,
     parameters: z.object({}),
     execute: async () => "ok",
   }));
@@ -1324,7 +1324,7 @@ describe("a remote Bot past what one request may carry", () => {
     await running.runAgent({ tools: surface });
   }
 
-  test("is sent at most the limit when the chooser cannot choose, OpenBot's own tools and the matching app tools first", async () => {
+  test("is sent at most the limit when the chooser cannot choose, AwakenBot's own tools and the matching app tools first", async () => {
     expect(big.length + surface.length).toBe(245);
     const agents = await buildAgents(
       [remoteAgent()],
@@ -1344,12 +1344,12 @@ describe("a remote Bot past what one request may carry", () => {
     );
     await askWithSurface(
       agents.risk as never,
-      "Use Exa to answer: what is in the news about OpenBot?",
+      "Use Exa to answer: what is in the news about AwakenBot?",
     );
 
     const sent = sentToRemote.at(-1)?.tools ?? [];
     expect(sent.length).toBeLessThanOrEqual(128);
-    // The browser's tools, OpenBot's own and Routines are all there.
+    // The browser's tools, AwakenBot's own and Routines are all there.
     for (const tool of [...surface, ...ownTools, ...routines])
       expect(sent).toContain(tool.name);
     // The app tool the request names is kept; the rest of what fits follows.

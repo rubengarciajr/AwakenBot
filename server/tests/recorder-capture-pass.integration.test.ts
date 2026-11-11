@@ -56,7 +56,7 @@ const config = loadConfig(
   testEnvironment({
     INTELLIGENCE_API_URL: "http://127.0.0.1:7100",
     INTELLIGENCE_GATEWAY_WS_URL: "ws://127.0.0.1:7103",
-    // As OpenBot Desktop writes it: the browser's address for a local gateway names localhost, which the Recorder
+    // As AwakenBot Desktop writes it: the browser's address for a local gateway names localhost, which the Recorder
     // refuses to open (Decision 21), so the pass must name it at 127.0.0.1.
     INTELLIGENCE_BROWSER_GATEWAY_WS_URL: "ws://localhost:7103",
   }),
@@ -297,7 +297,7 @@ describe("the capture pass", () => {
     expect(await bindingOf(mine)).toEqual([{ userId: owner }]);
   });
 
-  test("the person's space was made once, on first need, and OpenBot remembers it", async () => {
+  test("the person's space was made once, on first need, and AwakenBot remembers it", async () => {
     expect(created.filter((spec) => spec.id === OWNER_SPACE)).toHaveLength(1);
     expect(
       await database

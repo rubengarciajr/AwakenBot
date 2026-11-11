@@ -182,7 +182,7 @@ test("every request goes out with credentials omit and redirect error, whatever 
   }
 });
 
-test("refuses a path that leaves OpenBot's origin before any request is made", async () => {
+test("refuses a path that leaves AwakenBot's origin before any request is made", async () => {
   const target = { openbotUrl, token: "obr_t" };
   for (const path of ["https://evil.test/x", "//evil.test/x"]) {
     let rejected = false;
@@ -211,7 +211,7 @@ test("openbotRaw rejects rather than throws when it refuses a path", async () =>
   }
 });
 
-test("openbotRaw rejects rather than throws on an unparseable OpenBot URL", async () => {
+test("openbotRaw rejects rather than throws on an unparseable AwakenBot URL", async () => {
   let rejected = false;
   await recordFetch(async () => {
     const pending = openbotRaw({ openbotUrl: "not a url" }, "/x", {});

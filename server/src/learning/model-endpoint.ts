@@ -1,6 +1,6 @@
 /**
  * The model local Intelligence's Learning agent thinks with when the person signed in to a Claude or
- * ChatGPT plan rather than giving OpenBot an API key.
+ * ChatGPT plan rather than giving AwakenBot an API key.
  *
  * A plan has no key to hand over. The Bots answer on it through the plan's own harness, which holds
  * the sign-in and renews it (`agents/plan-model.ts`), and Learning is answered the same way: this is
@@ -9,7 +9,7 @@
  * each call it receives is one model-only step on that harness. The harness reads the plan's current
  * sign-in on every step, so a renewed token is used on the next call without anything restarting.
  *
- * ONLY LEARNING MAY SPEND THE PLAN HERE. OpenBot Desktop mints one secret per installation, hands it
+ * ONLY LEARNING MAY SPEND THE PLAN HERE. AwakenBot Desktop mints one secret per installation, hands it
  * to the server and to the Learning agent's key (`LEARNING_AGENT_MODEL_API_KEY`), and to nothing
  * else. A call without it is refused before anything else is read. The server's port is published on
  * this machine's loopback alone, and the local cluster reaches it through the host name its engine
@@ -57,7 +57,7 @@ export function learningModelEndpointFor(
 
 /**
  * What became of one call to the endpoint. Intelligence keeps only a code for a failed run, never the
- * agent's own error, so this is how Settings can tell a Learning agent that never reached OpenBot from
+ * agent's own error, so this is how Settings can tell a Learning agent that never reached AwakenBot from
  * a plan that needs signing in again.
  */
 export type LearningModelCallOutcome =
@@ -255,9 +255,12 @@ function failureOf(
   if (signIn)
     return refused(
       401,
-      "The model plan OpenBot is signed in to needs signing in again.",
+      "The model plan AwakenBot is signed in to needs signing in again.",
     );
-  return refused(502, "The model plan OpenBot is signed in to didn't answer.");
+  return refused(
+    502,
+    "The model plan AwakenBot is signed in to didn't answer.",
+  );
 }
 
 type Completion = {
@@ -293,7 +296,7 @@ export function createLearningModelHandler(
     const offered = incoming.headers.get("authorization") ?? "";
     if (!sameToken(offered, `Bearer ${endpoint.token}`)) {
       record("refused");
-      return refused(401, "This endpoint answers OpenBot's Learning only.");
+      return refused(401, "This endpoint answers AwakenBot's Learning only.");
     }
 
     let body: ChatRequest;

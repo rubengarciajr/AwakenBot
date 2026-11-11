@@ -571,7 +571,7 @@ export function callMethods(context: StoreContext) {
             })
           : {
               allowed: false as const,
-              message: `${row.title} is shared, and OpenBot can't check who may use it, so it wasn't called.`,
+              message: `${row.title} is shared, and AwakenBot can't check who may use it, so it wasn't called.`,
             };
         if (!verdict.allowed) {
           await recordAuditEvent(auditStore, {

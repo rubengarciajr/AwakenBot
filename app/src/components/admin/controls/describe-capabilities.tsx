@@ -206,7 +206,7 @@ function activityWords(
 ): string | null {
   if (!loses(capability)) return null;
   if (unmapped.has(capability.capability))
-    return "OpenBot doesn't record its use.";
+    return "AwakenBot doesn't record its use.";
   const activity = capability.activity;
   if (!activity) return null;
   if (activity.count === 0) return `Not used in the last ${days} days.`;
@@ -231,7 +231,7 @@ function mediaOf(event: AuditEvent): ReplayRow["media"] {
 }
 
 /**
- * Who the changes would change, worked out on the server by the rule OpenBot enforces: the headline,
+ * Who the changes would change, worked out on the server by the rule AwakenBot enforces: the headline,
  * then each person with their permissions now and after, then the recent use of what they would lose,
  * in Audit's own cells, as a boundary's preview lists what it would stop.
  */
@@ -290,7 +290,7 @@ export function PermissionsPreview({
           <p className="font-medium text-sm">{previewHeadline(data.counts)}</p>
           <FieldDescription className="mt-1">
             Worked out for all {plural(data.counts.people, "person", "people")}{" "}
-            with the rule OpenBot enforces.
+            with the rule AwakenBot enforces.
             {data.counts.unchanged > 0
               ? ` ${plural(data.counts.unchanged, "person isn't", "people aren't")} affected.`
               : ""}
@@ -380,7 +380,7 @@ export function PermissionsPreview({
         ) : null}
         {data.activity.unmapped.length > 0 ? (
           <FieldDescription>
-            OpenBot doesn't record use of{" "}
+            AwakenBot doesn't record use of{" "}
             {data.activity.unmapped.map((entry) => entry.title).join(", ")}, so
             recent use isn't shown for it.
           </FieldDescription>

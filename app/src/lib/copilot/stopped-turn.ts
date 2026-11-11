@@ -47,10 +47,10 @@ const REST_REQUEST_FAILED = /^REST (\w+) request failed\b/;
 function backEndUnreachable(said: string): string | null {
   const match = REST_REQUEST_FAILED.exec(said.trim());
   if (!match) return null;
-  console.warn("OpenBot couldn't reach its backend.", said);
+  console.warn("AwakenBot couldn't reach its backend.", said);
   return match[1] === "run"
-    ? "OpenBot couldn't reach its backend, so your message wasn't sent. Try again, or quit and reopen OpenBot."
-    : "OpenBot couldn't reach its backend. Try again, or quit and reopen OpenBot.";
+    ? "AwakenBot couldn't reach its backend, so your message wasn't sent. Try again, or quit and reopen AwakenBot."
+    : "AwakenBot couldn't reach its backend. Try again, or quit and reopen AwakenBot.";
 }
 
 /**

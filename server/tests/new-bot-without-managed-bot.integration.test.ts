@@ -12,7 +12,7 @@ import { testEnvironment } from "./support/environment";
 /**
  * Making a Bot with your own instructions on a deployment with no Bot in the box.
  *
- * OpenBot Desktop's personal edition writes `MANAGED_AGENT_AG_UI_URL` empty: its Personal Assistant
+ * AwakenBot Desktop's personal edition writes `MANAGED_AGENT_AG_UI_URL` empty: its Personal Assistant
  * runs inside the server. The New Bot sheet asks `/api/agents/capabilities` whether a Bot can run
  * here, and the answer was "is there a managed Bot", so on the Desktop it said no. The sheet then
  * printed "An admin must enable built-in hosting before you can run a Bot here." to the only person,
@@ -30,7 +30,7 @@ const made: string[] = [];
 const config = loadConfig(
   testEnvironment({
     DATABASE_URL: testDatabaseUrl(),
-    // As OpenBot Desktop writes it: the personal edition, with no Bot in the box.
+    // As AwakenBot Desktop writes it: the personal edition, with no Bot in the box.
     OPENBOT_EDITION: "personal",
     GOOGLE_OAUTH_CLIENT_ID: undefined,
     GOOGLE_OAUTH_CLIENT_SECRET: undefined,

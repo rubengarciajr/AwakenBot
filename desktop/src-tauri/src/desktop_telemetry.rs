@@ -47,7 +47,8 @@ impl DesktopTelemetry {
             data_dir,
             tests::context(),
             telemetry::Config {
-                enabled: true,
+                // AwakenBot: the desktop app's own telemetry is off.
+                enabled: false,
                 endpoint: Some(endpoint),
                 max_queue: 256,
             },
@@ -244,7 +245,7 @@ pub fn usage_data_now() -> UsageData {
 }
 
 /// Turn sharing on or off from Settings. Kept for the next launch, and applied at once to the
-/// desktop's own events and to the CLI. The server reads it the next time OpenBot starts.
+/// desktop's own events and to the CLI. The server reads it the next time AwakenBot starts.
 pub fn set_usage_data<R: tauri::Runtime>(
     app: &tauri::AppHandle<R>,
     share: bool,
@@ -792,7 +793,7 @@ pub fn cli_reason(reason: local_eval::Reason) -> telemetry::CliReason {
         R::BrowserOpenFailed => T::BrowserOpenFailed,
         R::ResourcesShort => T::ResourcesShort,
         R::Unrecognized => T::Unrecognized,
-        // OpenBot's own reading of a failure the CLI reported as this.
+        // AwakenBot's own reading of a failure the CLI reported as this.
         R::StackLost => T::LocalCommandFailed,
     }
 }
@@ -854,7 +855,7 @@ fn needed(cpu_short: bool, memory_short: bool, disk_short: bool) -> telemetry::R
     }
 }
 
-/// A shortfall the CLI or OpenBot's check after a failed call named, with the numbers it said: CPUs,
+/// A shortfall the CLI or AwakenBot's check after a failed call named, with the numbers it said: CPUs,
 /// and GiB to one decimal.
 pub fn resources_of_shortfall(shortfall: &local_eval::Shortfall) -> telemetry::Resources {
     let number = |said: &Option<String>, scale: f64| {
@@ -1689,12 +1690,12 @@ mod tests {
             ("Access is denied.", Some(C::PermissionDenied)),
             ("failed to register layer: write /usr/lib/x: no space left on device", Some(C::InsufficientResources)),
             ("Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?", Some(C::EngineUnavailable)),
-            ("Part of OpenBot stopped during startup.", None),
+            ("Part of AwakenBot stopped during startup.", None),
         ] {
             assert_eq!(class_of_text(text), class, "{text}");
         }
         assert_eq!(
-            class_of_row(S::Services, "Part of OpenBot stopped during startup."),
+            class_of_row(S::Services, "Part of AwakenBot stopped during startup."),
             C::Unknown
         );
         assert_eq!(

@@ -124,7 +124,7 @@ export function NameRow() {
           <DialogHeader>
             <DialogTitle>Your name</DialogTitle>
             <DialogDescription>
-              Choose the name OpenBot shows for you.
+              Choose the name AwakenBot shows for you.
             </DialogDescription>
           </DialogHeader>
           <DialogBody className="mt-4">

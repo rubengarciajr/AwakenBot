@@ -79,7 +79,7 @@ test("a run is counted only with the context its deployment stated for its perso
   await lastValueFrom(
     other.telemetry.middleware("actor-one")(enriched, next).pipe(toArray()),
   );
-  // A run with no context of OpenBot's, as the runtime makes to name a conversation, is not either.
+  // A run with no context of AwakenBot's, as the runtime makes to name a conversation, is not either.
   await lastValueFrom(
     f.telemetry
       .middleware("actor-one")({ ...input, forwardedProps: {} }, next)

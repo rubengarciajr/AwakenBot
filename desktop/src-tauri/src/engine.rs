@@ -5,7 +5,7 @@
 //!
 //! - **macOS.** `podman machine` puts a Linux VM behind a socket. Inside that VM
 //!   `/var/run/docker.sock` is already a symlink to the socket of the mode the machine runs in
-//!   (rootful for the machine OpenBot creates, see `acquire`), so Compose's mount needs no help and
+//!   (rootful for the machine AwakenBot creates, see `acquire`), so Compose's mount needs no help and
 //!   `ENGINE_SOCKET` stays unset. `applehv` is the default on Apple silicon as of Podman
 //!   6.1, so no `--provider` is passed.
 //! - **Linux.** Podman is native and rootless and there is no VM. `/var/run/docker.sock` is either
@@ -16,10 +16,10 @@
 //!   to run as LocalSystem, so none of this can be done from a service; see `windows.rs`.
 //!
 //! A second rule was learned the same way: **never assume the engine is on this process's PATH.**
-//! When OpenBot installs Podman itself, the installer extends the *user's* PATH, and this process
+//! When AwakenBot installs Podman itself, the installer extends the *user's* PATH, and this process
 //! was started with the old one. `podman` then cannot be run for the rest of the session, so the
 //! app reports no engine while `podman.exe` sits on disk where it was just put. Every engine
-//! command is therefore built from a resolved path, and the Compose provider OpenBot placed is put
+//! command is therefore built from a resolved path, and the Compose provider AwakenBot placed is put
 //! on the child's PATH. See `install.rs`.
 //!
 //! One rule cuts across all three: **never address Podman through its ambient default connection.**
@@ -42,13 +42,13 @@ use serde::{Deserialize, Serialize};
 ///
 /// `elsewhere` when the line sends the person to another app's window: Docker Desktop starting, or
 /// the system's password prompt for Podman's installer. Those windows come to the front over
-/// OpenBot's. The setup window then says the line on whichever screen the person is on, and OpenBot
+/// AwakenBot's. The setup window then says the line on whichever screen the person is on, and AwakenBot
 /// comes back to the front once that window is done with.
 ///
-/// `asks` when the step waits for the person's go-ahead in OpenBot's own window before it raises
+/// `asks` when the step waits for the person's go-ahead in AwakenBot's own window before it raises
 /// such a prompt (`install::GoAhead`). The window explains what comes next, with one button.
 ///
-/// `said` is what the person reads, in plain words: what OpenBot is doing for them. `detail` is the
+/// `said` is what the person reads, in plain words: what AwakenBot is doing for them. `detail` is the
 /// same moment in the log's words, with the names a person never needs on screen (Podman, the
 /// engine machine, WSL). The window shows only `said`; the log keeps both (`log_entry`). A tester
 /// read "Preparing the engine machine" for minutes and could not tell whether setup was stuck.
@@ -64,7 +64,7 @@ pub struct StepLine {
 }
 
 impl StepLine {
-    /// A line about work OpenBot does by itself.
+    /// A line about work AwakenBot does by itself.
     pub fn here(said: impl Into<String>) -> Self {
         Self {
             said: said.into(),
@@ -86,7 +86,7 @@ impl StepLine {
         }
     }
 
-    /// A line about a step that waits for the person's go-ahead in OpenBot's window.
+    /// A line about a step that waits for the person's go-ahead in AwakenBot's window.
     pub fn asks(said: impl Into<String>) -> Self {
         Self {
             said: said.into(),
@@ -119,17 +119,17 @@ impl StepLine {
     }
 }
 
-/// Preparing the machine OpenBot's containers run in (`podman machine init`). Minutes the first
+/// Preparing the machine AwakenBot's containers run in (`podman machine init`). Minutes the first
 /// time: it downloads the machine's disk.
 ///
 /// On Windows, Podman's own installer for WSL comes first when WSL is missing: its dialog, then
 /// Windows' administrator prompt, then a restart. Said before it happens, on whichever screen the
-/// person is on: those windows come to the front over OpenBot's.
+/// person is on: those windows come to the front over AwakenBot's.
 pub fn preparing_machine_line(os: &str) -> StepLine {
     if os == "windows" {
         StepLine::elsewhere(
-            "Preparing this computer to run OpenBot. If a window asks to install a Windows \
-             feature OpenBot needs, allow it. Windows then asks for your approval and a restart.",
+            "Preparing this computer to run AwakenBot. If a window asks to install a Windows \
+             feature AwakenBot needs, allow it. Windows then asks for your approval and a restart.",
         )
         .logged(
             "Preparing the engine machine (podman machine init). If Windows Subsystem for Linux \
@@ -138,7 +138,7 @@ pub fn preparing_machine_line(os: &str) -> StepLine {
         )
     } else {
         StepLine::here(
-            "Preparing this computer to run OpenBot. This takes a few minutes the first time.",
+            "Preparing this computer to run AwakenBot. This takes a few minutes the first time.",
         )
         .logged("Preparing the engine machine (podman machine init).")
     }
@@ -146,19 +146,19 @@ pub fn preparing_machine_line(os: &str) -> StepLine {
 
 /// Starting that machine (`podman machine start`): at install, and on a start after a restart.
 pub fn starting_machine_line() -> StepLine {
-    StepLine::here("Starting the software OpenBot runs on.")
+    StepLine::here("Starting the software AwakenBot runs on.")
         .logged("Starting the engine machine (podman machine start).")
 }
 
 /// Waiting for the engine to answer once its machine is up.
 pub fn checking_engine_line() -> StepLine {
-    StepLine::here("Checking that the software OpenBot runs on is ready.")
+    StepLine::here("Checking that the software AwakenBot runs on is ready.")
         .logged("Waiting for the engine to answer.")
 }
 
 /// The engine answers: what the row says once it is done.
 pub fn engine_ready_line() -> StepLine {
-    StepLine::here("The software OpenBot runs on is ready.")
+    StepLine::here("The software AwakenBot runs on is ready.")
         .logged("The container engine is answering.")
 }
 
@@ -403,7 +403,7 @@ pub struct EngineStatus {
 ///
 /// Somebody who already has a machine up is handed it rather than made to wait while a duplicate
 /// boots beside it. Ours is preferred among running machines only so that repeat launches settle on
-/// the same one. A machine of the person's own that OpenBot cannot run on is passed over: see
+/// the same one. A machine of the person's own that AwakenBot cannot run on is passed over: see
 /// `passed_over`.
 ///
 /// Answers with the connection for the machine's own mode (see `acquire::connection_for`): a rootful
@@ -440,27 +440,27 @@ fn usable_running_machine(
 }
 
 /**
-The person's own Podman machine behind `address`, by name, when OpenBot does not run on it and uses
+The person's own Podman machine behind `address`, by name, when AwakenBot does not run on it and uses
 its own machine (`acquire::MACHINE`) instead.
 
 - **Rootless, anywhere.** Local Intelligence needs rootful Podman, and its CLI refuses a rootless
   machine ("Rootless Podman is not supported"). `podman machine init` makes a rootless machine by
-  default, so a person who already uses Podman usually has one, and OpenBot used to settle on it and
-  stop at that refusal. OpenBot never switches somebody's machine (see `acquire::create_machine`).
-- **Any machine of theirs, on Windows.** OpenBot's own machine there has what OpenBot's containers
+  default, so a person who already uses Podman usually has one, and AwakenBot used to settle on it and
+  stop at that refusal. AwakenBot never switches somebody's machine (see `acquire::create_machine`).
+- **Any machine of theirs, on Windows.** AwakenBot's own machine there has what AwakenBot's containers
   need to reach this computer: user-mode networking, and `host.containers.internal` set to its
   gateway (`acquire::configure_host_gateway_after_start`). A person's machine has neither. Found on
   a live Windows run with the person's machine switched to rootful by hand: `host.docker.internal`
   answered with the WSL VM's bridge gateway, where nothing listens, so the server could not reach
-  Intelligence and every chat said "OpenBot couldn't reach its backend". A Mac machine has no such
-  setting: every applehv machine reaches this computer through gvproxy's gateway, and OpenBot makes
+  Intelligence and every chat said "AwakenBot couldn't reach its backend". A Mac machine has no such
+  setting: every applehv machine reaches this computer through gvproxy's gateway, and AwakenBot makes
   its own with nothing but `--rootful`, so a person's rootful machine there is used as before.
 
-OpenBot's own machine is never the person's, even one an early release created rootless: OpenBot's
+AwakenBot's own machine is never the person's, even one an early release created rootless: AwakenBot's
 database is in it. A connection that is not a machine's (a remote host somebody added) is not one
 either, and is used as before.
 
-On Windows OpenBot's machine runs beside theirs, and on a Mac in its place while OpenBot runs (see
+On Windows AwakenBot's machine runs beside theirs, and on a Mac in its place while AwakenBot runs (see
 `own_machine`).
 */
 pub fn passed_over_machine(address: &Address) -> Option<String> {
@@ -489,7 +489,7 @@ pub(crate) fn passed_over(
     if machine == crate::acquire::MACHINE {
         return None;
     }
-    // On Windows every machine but OpenBot's is passed over, so none is asked anything.
+    // On Windows every machine but AwakenBot's is passed over, so none is asked anything.
     if os == "windows" {
         return Some(machine.to_string());
     }
@@ -510,19 +510,19 @@ struct MachineListing {
     running: bool,
 }
 
-/// Where OpenBot keeps the engine tools it installed itself.
+/// Where AwakenBot keeps the engine tools it installed itself.
 ///
 /// Set once, at start-up, because the app knows its own cache directory and this module is called
 /// from places that do not. Unset in tests and in any caller that never installed anything, which
 /// is why every read tolerates its absence.
 static TOOLS: OnceLock<PathBuf> = OnceLock::new();
 
-/// Tell this module where the tools OpenBot installed live.
+/// Tell this module where the tools AwakenBot installed live.
 pub fn tools_live_in(dir: PathBuf) {
     let _ = TOOLS.set(dir);
 }
 
-/// The directory holding OpenBot's own copy of the Compose provider, under a download directory.
+/// The directory holding AwakenBot's own copy of the Compose provider, under a download directory.
 pub fn tools_dir_under(downloads: &Path) -> PathBuf {
     downloads.join("bin")
 }
@@ -543,7 +543,7 @@ fn command_at(engine: Engine, binary: &Path) -> Command {
     command_configured(engine, binary, crate::docker_config::owned())
 }
 
-/// `command_at`, with OpenBot's Docker configuration kept in `docker_config`.
+/// `command_at`, with AwakenBot's Docker configuration kept in `docker_config`.
 fn command_configured(engine: Engine, binary: &Path, docker_config: Option<&Path>) -> Command {
     let mut built = command(binary);
     let mut path = tools_dir()
@@ -582,7 +582,7 @@ fn command_configured(engine: Engine, binary: &Path, docker_config: Option<&Path
         built.env("PATH", path);
     }
     // A pull through the person's own configuration runs Docker Desktop's credential helper,
-    // which macOS stops to ask about when OpenBot runs it. See `docker_config`.
+    // which macOS stops to ask about when AwakenBot runs it. See `docker_config`.
     if let Some(dir) = docker_config.and_then(|owned| {
         crate::docker_config::for_commands_in(owned, |name| std::env::var_os(name))
     }) {
@@ -605,7 +605,7 @@ pub fn path_with_docker() -> Option<OsString> {
 
 /// `path_with_docker`, for each of `engines` that is here, or None when none is.
 ///
-/// The Intelligence CLI runs `podman` by name as it runs `docker`, and a Podman OpenBot installed
+/// The Intelligence CLI runs `podman` by name as it runs `docker`, and a Podman AwakenBot installed
 /// in this session is not on this process's PATH (see the PATH rule above).
 pub fn path_with_engines(engines: &[Engine]) -> Option<OsString> {
     let binaries: Vec<PathBuf> = engines
@@ -634,7 +634,7 @@ pub fn path_with_engines(engines: &[Engine]) -> Option<OsString> {
 
 /// This process's PATH with `first` in front of it.
 ///
-/// In front, so the provider OpenBot placed is the one found; appended, a broken `docker-compose`
+/// In front, so the provider AwakenBot placed is the one found; appended, a broken `docker-compose`
 /// earlier on PATH would still win.
 pub(crate) fn path_with(first: &Path) -> OsString {
     let mut joined = OsString::from(first);
@@ -650,7 +650,7 @@ pub(crate) fn path_with(first: &Path) -> OsString {
 /// Where this engine's binary is, looking on PATH first and then where installers put it.
 ///
 /// PATH first, because somebody who installed it themselves may have put it anywhere and that
-/// choice is theirs. The fixed places are the fallback for the session in which OpenBot installed
+/// choice is theirs. The fixed places are the fallback for the session in which AwakenBot installed
 /// it, when this process's PATH is the one it started with.
 pub fn program(engine: Engine) -> Option<PathBuf> {
     on_path(engine.binary()).or_else(|| where_installers_put(engine))
@@ -770,7 +770,7 @@ pub fn rootless_socket() -> Option<PathBuf> {
 }
 
 /**
-Whether OpenBot's Podman engine here is only ever its own machine, `acquire::MACHINE`: on Windows,
+Whether AwakenBot's Podman engine here is only ever its own machine, `acquire::MACHINE`: on Windows,
 where every machine of the person's is passed over (`passed_over_machine`). There nothing of
 theirs is asked or used: not Podman's default connection, which may be theirs, and not another
 running machine. On a Mac a rootful machine of theirs is used as before.
@@ -808,8 +808,8 @@ fn detect_among(engines: &[Engine]) -> EngineStatus {
 }
 
 /// `detect_among`, with how each engine answers passed in, so the choice can be tested on any
-/// computer: whether an address answers, the person's machine behind one that OpenBot passes over
-/// (see `passed_over_machine`), the connection of a running machine OpenBot can use, and whether an
+/// computer: whether an address answers, the person's machine behind one that AwakenBot passes over
+/// (see `passed_over_machine`), the connection of a running machine AwakenBot can use, and whether an
 /// engine is installed.
 fn detect_among_with(
     engines: &[Engine],
@@ -819,11 +819,11 @@ fn detect_among_with(
     running_machine: impl FnOnce() -> Option<String>,
     installed: impl Fn(Engine) -> bool,
 ) -> EngineStatus {
-    // The person's machine answered first, and OpenBot uses its own machine instead.
+    // The person's machine answered first, and AwakenBot uses its own machine instead.
     let mut passed_over = None;
     for &engine in engines {
-        // Podman's default connection may be the person's machine, and on Windows OpenBot runs only
-        // on its own: never asked, and OpenBot's machine is found by name below.
+        // Podman's default connection may be the person's machine, and on Windows AwakenBot runs only
+        // on its own: never asked, and AwakenBot's machine is found by name below.
         if own_machine_only && engine == Engine::Podman {
             continue;
         }
@@ -848,7 +848,7 @@ fn detect_among_with(
         }
     }
 
-    // Not answering, for OpenBot: its own machine is made or started next, as on a computer with
+    // Not answering, for AwakenBot: its own machine is made or started next, as on a computer with
     // no machine (see `own_machine`).
     if let Some(theirs) = passed_over {
         return EngineStatus {
@@ -857,8 +857,8 @@ fn detect_among_with(
             responding: false,
             engine_socket: None,
             detail: format!(
-                "podman answers on {theirs}, a machine of the person's own that OpenBot does not \
-                 run on; OpenBot uses its own machine, {}, instead.",
+                "podman answers on {theirs}, a machine of the person's own that AwakenBot does not \
+                 run on; AwakenBot uses its own machine, {}, instead.",
                 crate::acquire::MACHINE
             ),
         };
@@ -884,7 +884,7 @@ fn detect_among_with(
         address: None,
         responding: false,
         engine_socket: None,
-        // Not an instruction any more: OpenBot installs one. See `install.rs`.
+        // Not an instruction any more: AwakenBot installs one. See `install.rs`.
         detail: "No container engine yet.".into(),
     }
 }
@@ -979,7 +979,7 @@ fn main() {
 
     /// Install's `docker compose pull` and a `docker run` of an image not here yet read Docker's
     /// configuration, and Docker Desktop's names `docker-credential-desktop`, which macOS stops to
-    /// ask about when OpenBot runs it. OpenBot's commands get its own configuration instead: no
+    /// ask about when AwakenBot runs it. AwakenBot's commands get its own configuration instead: no
     /// credential store, the person's context.
     #[cfg(unix)]
     #[test]
@@ -1103,7 +1103,7 @@ fn main() {
         assert_eq!(command.get_args().count(), 0);
     }
 
-    /// The program is a path, not a name. This is the fix for an engine OpenBot has just installed
+    /// The program is a path, not a name. This is the fix for an engine AwakenBot has just installed
     /// but this process's PATH does not know about, and asserting it here is the only place it is
     /// visible without a machine that has no engine on it.
     #[test]
@@ -1212,9 +1212,9 @@ fn main() {
     const THEIRS: &str = "podman-machine-default";
 
     /// The live Windows run: the person's `podman-machine-default`, made the default way and so
-    /// rootless, answered first. OpenBot settled on it, and the CLI refused it ("Rootless Podman is
+    /// rootless, answered first. AwakenBot settled on it, and the CLI refused it ("Rootless Podman is
     /// not supported"). Switched to rootful by hand, it answered and chat still could not reach the
-    /// back end: it has none of the networking OpenBot's own machine is given. So on Windows every
+    /// back end: it has none of the networking AwakenBot's own machine is given. So on Windows every
     /// machine of the person's is passed over, and on a Mac a rootless one.
     #[test]
     fn the_persons_machine_is_passed_over_rootless_anywhere_and_any_on_windows() {
@@ -1236,10 +1236,10 @@ fn main() {
                 passed.then(|| THEIRS.to_string()),
                 "{os}, rootful {rootful}, root connection"
             );
-            // OpenBot's own machine is used as it is, whatever its mode: its database is in it.
+            // AwakenBot's own machine is used as it is, whatever its mode: its database is in it.
             assert_eq!(passed_over("openbot-root", os, |_| facts(rootful)), None);
             assert_eq!(passed_over("openbot", os, |_| facts(rootful)), None);
-            // A connection that is not a machine's is used as before on a Mac. On Windows OpenBot
+            // A connection that is not a machine's is used as before on a Mac. On Windows AwakenBot
             // runs only on its own machine, so it is passed over too.
             assert_eq!(
                 passed_over("remote-host", os, missing),
@@ -1266,11 +1266,11 @@ fn main() {
             .collect()
     }
 
-    /// Box I, after OpenBot was uninstalled with its data: OpenBot's machine was gone, Podman had
+    /// Box I, after AwakenBot was uninstalled with its data: AwakenBot's machine was gone, Podman had
     /// made the person's rootless `mine` its default connection, and the engine check landed on it.
     /// On Windows, Podman's default connection is never asked, and from the running machines only
-    /// OpenBot's is ever picked, without asking any other one anything. So there is no engine for
-    /// OpenBot until its own machine is made again, and the person's is never touched.
+    /// AwakenBot's is ever picked, without asking any other one anything. So there is no engine for
+    /// AwakenBot until its own machine is made again, and the person's is never touched.
     #[test]
     fn on_windows_only_openbots_own_machine_is_ever_looked_at() {
         let touched = std::cell::RefCell::new(Vec::<String>::new());
@@ -1303,14 +1303,14 @@ fn main() {
             )
         };
 
-        // Only the person's machine, running and the default: no engine for OpenBot.
+        // Only the person's machine, running and the default: no engine for AwakenBot.
         let gone = detect(listing(&[("mine", true)]));
         assert!(!gone.responding, "{}", gone.detail);
         assert_eq!(gone.address, None);
         assert_eq!(gone.engine, Some(Engine::Podman));
         assert!(touched.borrow().is_empty(), "{:?}", touched.borrow());
 
-        // OpenBot's machine made again and running beside theirs: it, and only it, is used.
+        // AwakenBot's machine made again and running beside theirs: it, and only it, is used.
         let ours = detect(listing(&[("mine", true), ("openbot", true)]));
         assert!(ours.responding);
         assert_eq!(
@@ -1326,9 +1326,9 @@ fn main() {
         Address::new(Engine::Podman, None)
     }
 
-    /// The person's machine answers on Podman's default connection and OpenBot's is not up yet: no
-    /// engine for OpenBot, so setup makes and starts its own (`own_machine`), and the person's is
-    /// left out of it. Once OpenBot's machine runs, it is the one used, through its root connection.
+    /// The person's machine answers on Podman's default connection and AwakenBot's is not up yet: no
+    /// engine for AwakenBot, so setup makes and starts its own (`own_machine`), and the person's is
+    /// left out of it. Once AwakenBot's machine runs, it is the one used, through its root connection.
     #[test]
     fn a_passed_over_machine_leaves_openbot_waiting_for_its_own_then_using_it() {
         let theirs = |address: &Address| {
@@ -1366,7 +1366,7 @@ fn main() {
         );
     }
 
-    /// Docker, and a machine of the person's that OpenBot runs on (rootful, on a Mac), keep today's
+    /// Docker, and a machine of the person's that AwakenBot runs on (rootful, on a Mac), keep today's
     /// behaviour: whatever answers is used.
     #[test]
     fn docker_or_a_usable_machine_that_answers_is_used_as_before() {
@@ -1394,8 +1394,8 @@ fn main() {
         assert_eq!(podman.address, Some(podman_default()));
     }
 
-    /// A machine of the person's that OpenBot passes over is never picked from the running
-    /// machines either. Ours is, and so is one OpenBot can use.
+    /// A machine of the person's that AwakenBot passes over is never picked from the running
+    /// machines either. Ours is, and so is one AwakenBot can use.
     #[test]
     fn a_running_passed_over_machine_is_never_the_one_used() {
         let listing = |machines: &[(&str, bool)]| -> Vec<MachineListing> {
@@ -1486,7 +1486,7 @@ pub mod local_api {
     pub const HOST_LOOPBACK_CONFIG: &str = "containers/containers.conf.d/90-openbot-host.conf";
 
     /**
-    Present from the moment [`HOST_LOOPBACK_CONFIG`] changes until a Start has taken OpenBot's
+    Present from the moment [`HOST_LOOPBACK_CONFIG`] changes until a Start has taken AwakenBot's
     stack down, so the containers after it build a new rootless network namespace.
 
     A file rather than a flag in memory, so the reset is still owed after a Start whose teardown
@@ -1505,14 +1505,14 @@ pub mod local_api {
     parse `{append=true}`.
 
     Nothing here renames `host.containers.internal` or `host.docker.internal` for the person's
-    other containers. OpenBot's own services are pointed at this address by Compose, and anything
+    other containers. AwakenBot's own services are pointed at this address by Compose, and anything
     else would have to ask for it by number.
     */
     pub fn host_loopback_config() -> String {
         let address = super::ROOTLESS_HOST_LOOPBACK;
         format!(
-            "# Written by OpenBot Desktop: lets its containers reach services this machine runs on\n\
-             # 127.0.0.1, such as OpenBot's backend, at {address}.\n\
+            "# Written by AwakenBot Desktop: lets its containers reach services this machine runs on\n\
+             # 127.0.0.1, such as AwakenBot's backend, at {address}.\n\
              [engine]\n\
              network_cmd_options = [\"allow_host_loopback=true\", {{append=true}}]\n\
              \n\
@@ -1556,7 +1556,7 @@ pub mod local_api {
 
     fn problem(detail: impl Into<String>) -> Problem {
         Problem::with(
-            "OpenBot could not prepare its container API. Try again.",
+            "AwakenBot could not prepare its container API. Try again.",
             detail,
         )
     }
@@ -1733,7 +1733,7 @@ pub mod local_api {
         }
 
         /**
-        Whether a Start still owes the host loopback configuration a teardown of OpenBot's stack.
+        Whether a Start still owes the host loopback configuration a teardown of AwakenBot's stack.
 
         Podman reads it only when the rootless network namespace is created, and that namespace
         lives while any container on a Compose network does, so a stack still running from before

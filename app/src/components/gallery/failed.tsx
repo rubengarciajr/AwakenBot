@@ -2,7 +2,7 @@ import { GalleryFrame } from "./frame";
 
 /** Why: what the Bot sent is not something the component can draw. */
 export const UNREADABLE =
-  "The Bot sent data OpenBot couldn't read. Ask it to try again.";
+  "The Bot sent data AwakenBot couldn't read. Ask it to try again.";
 
 /** Why, when the call failed and what it sent was fine. */
 export const WENT_WRONG =

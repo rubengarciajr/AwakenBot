@@ -35,7 +35,7 @@ async function bundle(): Promise<string> {
     entrypoints: [join(import.meta.dir, "a2ui-frame.fixture.tsx")],
     target: "browser",
     define: { "process.env.NODE_ENV": JSON.stringify("production") },
-    // The catalog's Map loads it on demand; OpenBot omits Map and does not ship it.
+    // The catalog's Map loads it on demand; AwakenBot omits Map and does not ship it.
     external: ["maplibre-gl"],
     plugins: [
       {

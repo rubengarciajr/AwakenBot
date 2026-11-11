@@ -20,17 +20,17 @@ import { DISCLOSURE_SHORT } from "../ui/disclosure";
 const LEARNING_SENTENCES: Partial<Record<LearningSpaceState["state"], string>> =
   {
     unassigned:
-      "Learning will not see this recording: Automatic Learning is off in this OpenBot. It still goes to OpenBot's backend.",
+      "Learning will not see this recording: Automatic Learning is off in this AwakenBot. It still goes to AwakenBot's backend.",
     missing:
-      "Learning will not see this recording: your Learning space could not be made. Ask an admin to check Admin, Automatic Learning. It still goes to OpenBot's backend.",
-    // OpenBot could not read its Learning settings, or your space was still being made, so it named none.
+      "Learning will not see this recording: your Learning space could not be made. Ask an admin to check Admin, Automatic Learning. It still goes to AwakenBot's backend.",
+    // AwakenBot could not read its Learning settings, or your space was still being made, so it named none.
     unverified:
-      "Learning may not see this recording: OpenBot could not reach your Learning space just now. It still goes to OpenBot's backend.",
+      "Learning may not see this recording: AwakenBot could not reach your Learning space just now. It still goes to AwakenBot's backend.",
   };
 
 /**
  * What the person is told under the title: a warning only when the capture pass joins none of their own Learning space
- * (Automatic Learning is off, the space could not be made, or OpenBot could not reach it). A space OpenBot could not
+ * (Automatic Learning is off, the space could not be made, or AwakenBot could not reach it). A space AwakenBot could not
  * check with Intelligence (its Learning delivery off, or Intelligence not answering) says nothing, because the pass
  * still joins it.
  */
@@ -59,7 +59,7 @@ export function RecordForm({
   narration = null,
   onNarration,
 }: {
-  /** The person's own Learning space, once OpenBot said; null until then, and nothing is warned about. */
+  /** The person's own Learning space, once AwakenBot said; null until then, and nothing is warned about. */
   learning?: LearningSpaceState | null;
   busy: boolean;
   onRecord: (title: string) => void;

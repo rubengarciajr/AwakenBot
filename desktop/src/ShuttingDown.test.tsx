@@ -19,9 +19,9 @@ afterEach(() => {
 afterAll(() => GlobalRegistrator.unregister());
 
 /**
- * Windows F: the Shutting down screen's journey started over partway. "Closing OpenBot's apps ·
- * 14s so far" at 46% became "Closing OpenBot's services · 1s so far" at 7%, in the moment between
- * "Stopping OpenBot" finishing and its services starting to stop, when no step was running. The
+ * Windows F: the Shutting down screen's journey started over partway. "Closing AwakenBot's apps ·
+ * 14s so far" at 46% became "Closing AwakenBot's services · 1s so far" at 7%, in the moment between
+ * "Stopping AwakenBot" finishing and its services starting to stop, when no step was running. The
  * bar and the time so far only ever go forward, gaps and all.
  */
 test("a Quit's bar and time so far never go back, in the gap between its steps", () => {
@@ -39,7 +39,7 @@ test("a Quit's bar and time so far never go back, in the gap between its steps",
     [0, [stopping]],
     [7, [stopping]],
     [14, [stopping]],
-    // OpenBot stopped; its services not yet begun.
+    // AwakenBot stopped; its services not yet begun.
     [15, [{ ...stopping, running: false }]],
     [16, [{ ...stopping, running: false }]],
     [
@@ -89,10 +89,10 @@ test("a Quit's bar and time so far never go back, in the gap between its steps",
 });
 
 /**
- * On a Mac where OpenBot paused the person's own Podman while it ran, Quit starts it again last,
+ * On a Mac where AwakenBot paused the person's own Podman while it ran, Quit starts it again last,
  * and says so. Anywhere else there is no such part, and nothing waits on it.
  */
-test("Quit says it is starting the person's Podman again only when OpenBot paused it", () => {
+test("Quit says it is starting the person's Podman again only when AwakenBot paused it", () => {
   setSystemTime(new Date("2026-11-10T07:14:24Z"));
   const done = (step: string) => ({
     step,

@@ -418,11 +418,11 @@ function parseAgents(
         `${source}: agent.id "${id}" is reserved for a deployment route and cannot name a Bot`,
       );
     }
-    // Nor after a person's own OpenBot browser, which is a computer named the same way a Bot's is: a Bot with that id
+    // Nor after a person's own AwakenBot browser, which is a computer named the same way a Bot's is: a Bot with that id
     // would share its computer with the person whose browser it is.
     if (isPersonBrowserId(id)) {
       throw new Error(
-        `${source}: agent.id "${id}" is the shape of a person's OpenBot browser and cannot name a Bot`,
+        `${source}: agent.id "${id}" is the shape of a person's AwakenBot browser and cannot name a Bot`,
       );
     }
     if (type === "remote_ag_ui" || type === "remote_mastra") {
@@ -846,12 +846,12 @@ const PERSONAL_ASSISTANT = "personal-assistant";
 const PICKED_HARNESS = "picked-harness";
 
 /**
- * Every `system_prompt` an earlier OpenBot shipped for the Personal Assistant, newest first, as YAML
+ * Every `system_prompt` an earlier AwakenBot shipped for the Personal Assistant, newest first, as YAML
  * folds it. A personal starter still holding one of these exactly moves to the package's current
  * text; see `synchronizeTenantPackage`.
  */
 const EARLIER_STARTER_INSTRUCTIONS: readonly string[] = [
-  "You are a personal assistant for one person. Help with their email, calendar, research, planning and everyday errands. Be clear and brief, and ask when something is ambiguous rather than guessing. When you send, buy, delete or post anything, say exactly what you are doing; OpenBot asks the person before it happens, so do not ask them yourself first. Never type a password yourself: ask the person to sign in, and wait for them.",
+  "You are a personal assistant for one person. Help with their email, calendar, research, planning and everyday errands. Be clear and brief, and ask when something is ambiguous rather than guessing. When you send, buy, delete or post anything, say exactly what you are doing; AwakenBot asks the person before it happens, so do not ask them yourself first. Never type a password yourself: ask the person to sign in, and wait for them.",
   "You are a personal assistant for one person. Help with their email, calendar, research, planning and everyday errands. Be clear and brief, and ask when something is ambiguous rather than guessing. Before you send, buy, delete or post anything, say exactly what you are about to do. Never type a password yourself: ask the person to sign in, and wait for them.",
 ];
 
@@ -923,7 +923,7 @@ function personalStarterSeed(
         ({ name, image }) => image !== null && name === picked.name,
       );
     // Starter copy is ordinary editable profile text, written only on the first seed.
-    // A Bot that runs here is powered by OpenBot itself, as examples/personal/agents.yaml says.
+    // A Bot that runs here is powered by AwakenBot itself, as examples/personal/agents.yaml says.
     const harnessName = picked
       ? harness
         ? harness.name
@@ -1259,12 +1259,12 @@ export async function synchronizeTenantPackage(
     }
 
     /*
-     * A personal starter still running on instructions an earlier OpenBot shipped, word for word.
+     * A personal starter still running on instructions an earlier AwakenBot shipped, word for word.
      *
      * The starter's instructions are seeded once and then belong to the person, so a fix to the
      * package's `system_prompt` reached only fresh installs. The earlier wording told the Bot to ask
      * whenever something was ambiguous, which stopped it short of finishing, and to ask the person
-     * to sign in and wait, which contradicted OpenBot's own rule that a sign-in is handed over with
+     * to sign in and wait, which contradicted AwakenBot's own rule that a sign-in is handed over with
      * a tool call. A starter that still carries one of those texts exactly has never been edited, so
      * it moves to the current one. One that somebody changed, by a single word, is theirs and stays.
      */

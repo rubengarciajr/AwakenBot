@@ -1,7 +1,7 @@
-// The Intelligence gateway's client socket, carried through OpenBot's own address.
+// The Intelligence gateway's client socket, carried through AwakenBot's own address.
 //
-// Where Intelligence runs in the cluster beside OpenBot (the Helm chart's bundled install), the only
-// address a person has is OpenBot's: a `kubectl port-forward` to the server. The browser opens the
+// Where Intelligence runs in the cluster beside AwakenBot (the Helm chart's bundled install), the only
+// address a person has is AwakenBot's: a `kubectl port-forward` to the server. The browser opens the
 // gateway's socket itself, so without this every conversation waited on a socket to a Service name
 // the browser cannot resolve.
 //
@@ -9,7 +9,7 @@
 // gateway's `/client/websocket`, which is plain WebSocket underneath Phoenix. What is pinned is what
 // the browser's Phoenix client depends on: the path and query reach the gateway as sent, the join
 // sent the instant the browser's socket opens is not lost while the gateway's side is still opening,
-// text stays text and binary stays binary, a close code comes back, and OpenBot's session cookie does
+// text stays text and binary stays binary, a close code comes back, and AwakenBot's session cookie does
 // not travel on to Intelligence.
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { reservePort } from "../../tests/support/reserved-port";
@@ -82,7 +82,7 @@ async function startOpenBot(gatewayProxy: boolean) {
       },
       browserOrigins: [`http://127.0.0.1:${port}`],
     } as unknown as DeploymentConfig,
-    // Signed in means carrying the session cookie, as a browser on OpenBot's page does.
+    // Signed in means carrying the session cookie, as a browser on AwakenBot's page does.
     resolveRequestActor: async (request) => {
       if (!request.headers.get("cookie")?.includes("session=signed-in"))
         throw new Error("no session");
@@ -133,7 +133,7 @@ async function until(check: () => boolean, ms = 5_000) {
   }
 }
 
-describe("the Intelligence gateway's client socket through OpenBot", () => {
+describe("the Intelligence gateway's client socket through AwakenBot", () => {
   test("carries the browser's socket to the gateway's /client/websocket, losing nothing sent before the gateway's side opened", async () => {
     const { port, server } = await startOpenBot(true);
     try {
@@ -147,7 +147,7 @@ describe("the Intelligence gateway's client socket through OpenBot", () => {
       expect(upgrades).toHaveLength(1);
       expect(upgrades[0]?.path).toBe("/client/websocket");
       expect(upgrades[0]?.search).toBe("?vsn=2.0.0&join_token=jt-123");
-      // OpenBot's session is OpenBot's. The gateway authorizes with the join token alone.
+      // AwakenBot's session is AwakenBot's. The gateway authorizes with the join token alone.
       expect(upgrades[0]?.cookie).toBeNull();
 
       // In order, and in kind: the join as text, the binary frame as the same bytes.

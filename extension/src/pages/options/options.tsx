@@ -40,17 +40,17 @@ import { ask as askBackground } from "../ui/runtime";
 type OptionsDeps = { ask: typeof askBackground };
 
 const VIA: Record<RecorderConnectVia, string> = {
-  web: "Connected from OpenBot in your browser",
-  desktop: "Connected from OpenBot Desktop",
-  "openbot-browser": "Connected by OpenBot when it opened this browser",
-  "bot-browser": "Connected by OpenBot while you record in a Bot's browser",
+  web: "Connected from AwakenBot in your browser",
+  desktop: "Connected from AwakenBot Desktop",
+  "openbot-browser": "Connected by AwakenBot when it opened this browser",
+  "bot-browser": "Connected by AwakenBot while you record in a Bot's browser",
 };
 
 function plural(count: number, one: string, many: string) {
   return `${count} ${count === 1 ? one : many}`;
 }
 
-/** The Recorder's one settings page: which OpenBot this browser is connected to, and how to disconnect it; whether the
+/** The Recorder's one settings page: which AwakenBot this browser is connected to, and how to disconnect it; whether the
  * person narrates their recordings; and the sites they keep out of them, each with Record again. */
 export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
   const ask = deps?.ask ?? askBackground;
@@ -106,7 +106,7 @@ export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
 
   if (!state) {
     return (
-      <Page title="OpenBot Recorder" width="prose">
+      <Page title="AwakenBot Recorder" width="prose">
         {error ? (
           <p className="mt-4 text-destructive text-sm" role="alert">
             {error}
@@ -123,7 +123,7 @@ export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
   const recording = state.state.phase !== "idle";
   const sending = Math.max(0, state.state.draining - (kept?.recordings ?? 0));
   return (
-    <Page title="OpenBot Recorder" width="prose">
+    <Page title="AwakenBot Recorder" width="prose">
       <PageSection title="Connection">
         {connection ? (
           <PageRows>
@@ -132,7 +132,7 @@ export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
                 <IconLink />
               </ItemMedia>
               <ItemContent>
-                <ItemTitle>OpenBot address</ItemTitle>
+                <ItemTitle>AwakenBot address</ItemTitle>
                 <ItemDescription className="line-clamp-none">
                   {connection.openbotUrl}
                 </ItemDescription>
@@ -158,7 +158,7 @@ export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
               <ItemContent>
                 <ItemTitle>This browser</ItemTitle>
                 <ItemDescription>
-                  Disconnect this browser from OpenBot.
+                  Disconnect this browser from AwakenBot.
                 </ItemDescription>
               </ItemContent>
               <ItemActions>
@@ -170,7 +170,7 @@ export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
           </PageRows>
         ) : (
           <PageEmpty>
-            This browser is not connected to OpenBot. Open OpenBot, go to
+            This browser is not connected to AwakenBot. Open AwakenBot, go to
             Settings, Browsers, and choose Connect this browser.
           </PageEmpty>
         )}
@@ -257,7 +257,7 @@ export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
       {policy.openbotUrl ? (
         <PageSection
           title="Set by your organization"
-          description="Your organization chose which OpenBot this Recorder connects to."
+          description="Your organization chose which AwakenBot this Recorder connects to."
         >
           <PageRows>
             <Item size="sm">
@@ -265,7 +265,7 @@ export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
                 <IconBuildingSkyscraper />
               </ItemMedia>
               <ItemContent>
-                <ItemTitle>OpenBot address</ItemTitle>
+                <ItemTitle>AwakenBot address</ItemTitle>
               </ItemContent>
               <ItemActions>
                 <span className="text-muted-foreground text-sm">
@@ -286,13 +286,13 @@ export function Options({ deps }: { deps?: Partial<OptionsDeps> }) {
             {recording ? (
               <p className="mt-2">
                 The recording in progress stops, and what it has not sent to
-                OpenBot's backend yet is discarded.
+                AwakenBot's backend yet is discarded.
               </p>
             ) : null}
             {sending > 0 ? (
               <p className="mt-2">
                 {plural(sending, "recording", "recordings")} still sending to
-                OpenBot's backend {sending === 1 ? "stops" : "stop"}, and what{" "}
+                AwakenBot's backend {sending === 1 ? "stops" : "stop"}, and what{" "}
                 {sending === 1 ? "it has" : "they have"} not sent yet is
                 discarded.
               </p>

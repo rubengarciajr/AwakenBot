@@ -61,13 +61,13 @@ const bea = { id: "p2", name: "Bea", email: "bea@example.test" };
 const DEAL = "https://crm.example.test/deals/42";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const SIGNED_OUT =
-  "This browser was disconnected from OpenBot. Your recording stopped, and everything in it is kept in this browser for 7 days, until you connect again.";
+  "This browser was disconnected from AwakenBot. Your recording stopped, and everything in it is kept in this browser for 7 days, until you connect again.";
 const ORGANIZATION_SIGNED_OUT =
   "Your organization sign-in ended. Your recording stopped, and everything in it is kept in this browser for 7 days, until you connect again.";
 const POLICY_MOVED =
-  "Your organization moved the Recorder to another OpenBot. Your recording stopped, and everything in it is kept in this browser for 7 days.";
+  "Your organization moved the Recorder to another AwakenBot. Your recording stopped, and everything in it is kept in this browser for 7 days.";
 const REPLACED =
-  "This browser was connected to another OpenBot or person. Your recording stopped, and everything in it is kept in this browser for 7 days, until you connect again.";
+  "This browser was connected to another AwakenBot or person. Your recording stopped, and everything in it is kept in this browser for 7 days, until you connect again.";
 
 const event = (name: string, value: unknown): CapturedEvent => ({
   type: "CUSTOM",
@@ -78,26 +78,26 @@ const event = (name: string, value: unknown): CapturedEvent => ({
 /** A step the person took in the page, as a content script sends it. */
 const contentEvent = (value: unknown) => event("click", value);
 
-// ---- The fake OpenBot -------------------------------------------------------------------------
+// ---- The fake AwakenBot -------------------------------------------------------------------------
 //
-// The extension asks OpenBot only to connect: who is connected (`me`), the person's Learning space, and Disconnect; and
+// The extension asks AwakenBot only to connect: who is connected (`me`), the person's Learning space, and Disconnect; and
 // tells it what it is doing (activity.ts), which holds nothing recorded. Every other request is recorded, so a test can
-// say OpenBot heard nothing of a recording.
+// say AwakenBot heard nothing of a recording.
 
 type Call = { method: string; path: string; auth: string | null };
 type HeldRoute = "me" | "disconnect";
 
 const openbot = {
   calls: [] as Call[],
-  /** Tokens OpenBot no longer takes: `me` and the Learning space answer signed out for them. */
+  /** Tokens AwakenBot no longer takes: `me` and the Learning space answer signed out for them. */
   revoked: new Set<string>(),
   /** While set, that route's answers wait for it. */
   holds: {} as Partial<Record<HeldRoute, Promise<void>>>,
   me: { status: 200, body: {} as object },
   learning: { state: "assigned", containerId: "space-1" } as LearningSpaceState,
-  /** While set, OpenBot refuses the Learning space with this answer. */
+  /** While set, AwakenBot refuses the Learning space with this answer. */
   learningRefusal: null as { status: number; body: object } | null,
-  /** Every report of what the Recorder is doing, as OpenBot received it. */
+  /** Every report of what the Recorder is doing, as AwakenBot received it. */
   activity: [] as unknown[],
 };
 const meBody = {
@@ -182,10 +182,10 @@ beforeAll(() => {
 afterAll(() => server.stop(true));
 
 const requests = () => openbot.calls.map((c) => `${c.method} ${c.path}`);
-/** OpenBot's calls other than the reports of what the Recorder is doing (activity.ts), which hold nothing recorded. */
+/** AwakenBot's calls other than the reports of what the Recorder is doing (activity.ts), which hold nothing recorded. */
 const callsBeyondActivity = () =>
   openbot.calls.filter((call) => call.path !== "/api/recorder/activity");
-/** What OpenBot heard beyond connecting: nothing, ever, about a recording. */
+/** What AwakenBot heard beyond connecting: nothing, ever, about a recording. */
 const recordingRequests = () =>
   requests().filter((request) => !CONNECTING.has(request));
 
@@ -357,7 +357,7 @@ let hostAccess = true;
 let handlers: ReturnType<typeof installRecording>;
 let restoreVariant: (() => void) | null = null;
 
-/** The waits outside the fake OpenBot a test can hold: a double's answer, or the document saying ready. */
+/** The waits outside the fake AwakenBot a test can hold: a double's answer, or the document saying ready. */
 type GateName = "host" | "policy" | "document" | "networkStart" | "networkStop";
 let gates: Partial<Record<GateName, Promise<void>>> = {};
 /** The gates something has reached while they were held. */
@@ -403,7 +403,7 @@ function holdStorage(
   };
   return { hit: () => seen === nth, open: held.open };
 }
-/** Holds a route of the fake OpenBot from now on; reached once a request to it arrives. */
+/** Holds a route of the fake AwakenBot from now on; reached once a request to it arrives. */
 function holdRoute(route: HeldRoute, path: string) {
   const held = gate();
   const from = openbot.calls.length;
@@ -680,7 +680,7 @@ function useVariant(value: string) {
 
 // ---- Record ------------------------------------------------------------------------------------
 
-test("Record opens the document and starts a new trajectory for the picked Bot, telling OpenBot nothing", async () => {
+test("Record opens the document and starts a new trajectory for the picked Bot, telling AwakenBot nothing", async () => {
   // The person chose to narrate (the setup page, or the Record form).
   fake.storage.local.set("narration", "on");
   const id = await startRecording({
@@ -753,7 +753,7 @@ test("Record opens the document and starts a new trajectory for the picked Bot, 
   expect(fake.badge).toEqual({ text: "REC", color: "#e7000b" });
 });
 
-test("the microphone stays closed until the person chooses to narrate, and OpenBot's own Record can ask for it", async () => {
+test("the microphone stays closed until the person chooses to narrate, and AwakenBot's own Record can ask for it", async () => {
   // Nobody chose yet: the recording starts muted, and its Voice row says so.
   const first = await startRecording({ title: "T", tabId: 7 });
   const start = (recordingId: string) =>
@@ -781,7 +781,7 @@ test("the microphone stays closed until the person chooses to narrate, and OpenB
   await page({ type: "page.stop" });
   await until(async () => (await state()).phase === "idle", "idle");
 
-  // OpenBot's own Record form asked the person, and they said yes: that recording narrates.
+  // AwakenBot's own Record form asked the person, and they said yes: that recording narrates.
   const third = await startRecording({ title: "T", tabId: 7, narrate: true });
   const asked = start(third);
   if (asked?.type !== "offscreen.start") throw new Error("No start");
@@ -790,7 +790,7 @@ test("the microphone stays closed until the person chooses to narrate, and OpenB
   expect(fake.storage.local.get("narration")).toBe("off");
 });
 
-test("Record copies the person's own Learning space, as OpenBot last described it", async () => {
+test("Record copies the person's own Learning space, as AwakenBot last described it", async () => {
   await page({ type: "page.learning" });
   await record();
   expect((await state()).learning).toEqual({
@@ -861,13 +861,13 @@ test("Record after the person took website access away in the browser's settings
   expect(await page({ type: "page.record", title: "T", tabId: 7 })).toEqual({
     ok: false,
     error:
-      "Site access is off for OpenBot Recorder. Open your browser's Extensions page, choose Details on OpenBot Recorder and set Site access to On all sites.",
+      "Site access is off for AwakenBot Recorder. Open your browser's Extensions page, choose Details on AwakenBot Recorder and set Site access to On all sites.",
   });
   expect(fake.offscreen.created).toEqual([]);
   expect(await state()).toMatchObject({
     phase: "idle",
     error:
-      "Site access is off for OpenBot Recorder. Open your browser's Extensions page, choose Details on OpenBot Recorder and set Site access to On all sites.",
+      "Site access is off for AwakenBot Recorder. Open your browser's Extensions page, choose Details on AwakenBot Recorder and set Site access to On all sites.",
   });
 });
 
@@ -881,7 +881,7 @@ test("Record without a connection is refused", async () => {
   });
   expect(answer).toEqual({
     ok: false,
-    error: "Connect this browser to OpenBot first.",
+    error: "Connect this browser to AwakenBot first.",
   });
   expect(fake.offscreen.created).toEqual([]);
   expect((await state()).phase).toBe("idle");
@@ -915,13 +915,13 @@ test("a tab whose url Chrome withholds (a chrome:// page) starts with the networ
 });
 
 test("a page the Record tab reaches while Record starts is its first step, and the next page change comes from it", async () => {
-  // A new browser's blank tab, whose address Chrome withholds, as OpenBot's own browser opens on.
+  // A new browser's blank tab, whose address Chrome withholds, as AwakenBot's own browser opens on.
   fake.tabs.set(7, { id: 7 } as chrome.tabs.Tab);
   const opening = hold("document");
   const answer = page({ type: "page.record", title: "T", tabId: 7 });
   await until(opening.hit, "Record waiting on the document");
   expect((await state()).phase).toBe("starting");
-  // The person types an address into OpenBot's address bar while Record still starts: the tab commits it.
+  // The person types an address into AwakenBot's address bar while Record still starts: the tab commits it.
   fake.tabs.set(7, { id: 7, url: DEAL } as chrome.tabs.Tab);
   fake.webNavigation.commit({
     tabId: 7,
@@ -1045,7 +1045,7 @@ test("Stop queues the outcome in the document, and the recording waits as a drai
 test("a recording the document could not send at all never reads as sent: Stop says nothing reached Intelligence", async () => {
   const id = await record();
   const NOT_SENT =
-    "Nothing of this recording reached OpenBot's backend: the Recorder could not start sending it. Try recording again.";
+    "Nothing of this recording reached AwakenBot's backend: the Recorder could not start sending it. Try recording again.";
   holdStop = true;
   const stopping = page({ type: "page.stop" });
   await until(
@@ -1126,7 +1126,7 @@ test("the popup keeps the person's Learning space after Stop when Chrome stopped
     lastStopped: { recordingId: id },
     learning: { state: "assigned", containerId: "space-1" },
   });
-  // Nothing more was asked of OpenBot for it: Record still tells OpenBot nothing.
+  // Nothing more was asked of AwakenBot for it: Record still tells AwakenBot nothing.
   expect(
     requests().filter((request) => request === "GET /api/recorder/learning"),
   ).toHaveLength(1);
@@ -1693,7 +1693,7 @@ test("Start over on the notice records a new recording whose count starts again"
 
 // ---- Start over ------------------------------------------------------------------------------
 
-test("Start over sends the recording it leaves to OpenBot's backend with a failed outcome and records into a new trajectory", async () => {
+test("Start over sends the recording it leaves to AwakenBot's backend with a failed outcome and records into a new trajectory", async () => {
   const old = await record();
   const oldTrajectory = trajectoryOf(old);
   const content = contentPort(7);
@@ -1819,7 +1819,7 @@ test("once Intelligence takes events again the popup says Streaming, and nothing
   const id = await record();
   const trajectory = trajectoryOf(id);
   const busy =
-    "OpenBot's backend is busy or unreachable. Retrying; nothing is lost.";
+    "AwakenBot's backend is busy or unreachable. Retrying; nothing is lost.";
   doc?.postMessage({
     type: "offscreen.status",
     capture: {
@@ -2001,7 +2001,7 @@ test("a signed-out pass names its reason and keeps everything for the person", a
   ]);
 });
 
-test("a signed-out answer the popup gets from OpenBot forgets the connection and stops the recording that used it, keeping everything", async () => {
+test("a signed-out answer the popup gets from AwakenBot forgets the connection and stops the recording that used it, keeping everything", async () => {
   const id = await record();
   openbot.revoked.add("obr_one");
   const answer = (await page({ type: "page.state" })) as PageStateResponse;
@@ -2172,7 +2172,7 @@ test("a sign-out the document reports for the stored connection forgets it, tell
   expect(await page({ type: "page.stop" })).toEqual({ ok: true });
   const own = drains()[0] as DrainRecord;
   expect(own).toMatchObject({ recordingId: id, userId: "p1" });
-  // Drains no connection of Ada's here sends: Bea's, and Ada's own on another OpenBot.
+  // Drains no connection of Ada's here sends: Bea's, and Ada's own on another AwakenBot.
   const beas: DrainRecord = {
     ...own,
     recordingId: "rec-bea",
@@ -2206,7 +2206,7 @@ test("a sign-out the document reports for the stored connection forgets it, tell
   expect(drains().slice(1)).toEqual([beas, elsewhere]);
 });
 
-test("a sign-out that stops the running recording keeps waiting only the person's drains on this OpenBot", async () => {
+test("a sign-out that stops the running recording keeps waiting only the person's drains on this AwakenBot", async () => {
   fake.tabs.set(7, { id: 7, url: "chrome://newtab/" } as chrome.tabs.Tab);
   await record();
   expect(await page({ type: "page.stop" })).toEqual({ ok: true });
@@ -2403,7 +2403,7 @@ test("Stop on the recording mark, answered Discard, ends the recording failed an
   });
   await until(async () => (await state()).phase === "idle", "stopped");
   expect(drains()).toEqual([]);
-  // Named, so OpenBot says it was discarded rather than saved; the connection stays.
+  // Named, so AwakenBot says it was discarded rather than saved; the connection stays.
   expect((await state()).lastStopped).toMatchObject({
     recordingId,
     discarded: true,
@@ -2585,7 +2585,7 @@ test("Disconnect clears a sentence that says everything is kept until you connec
 
 test("connecting again clears the sentence that the stopped recording waits for a connection, so the popup no longer says both sent and kept", async () => {
   // Run 6: after the person connected the browser again, the popup said "Sent to Intelligence" above "This browser was
-  // disconnected from OpenBot ... kept in this browser for 7 days, until you connect again".
+  // disconnected from AwakenBot ... kept in this browser for 7 days, until you connect again".
   fake.tabs.set(7, { id: 7, url: "chrome://newtab/" } as chrome.tabs.Tab);
   const id = await record();
   doc?.postMessage({
@@ -2620,7 +2620,7 @@ test("connecting again clears the sentence that the stopped recording waits for 
 const meChecks = () =>
   openbot.calls.filter((call) => call.path === "/api/recorder/me");
 
-test("while a recording runs OpenBot is asked every 30 s whether its connection stands, and a browser revoked in OpenBot ends the recording as signed out", async () => {
+test("while a recording runs AwakenBot is asked every 30 s whether its connection stands, and a browser revoked in AwakenBot ends the recording as signed out", async () => {
   const id = await record();
   const document = doc;
   await advance(29_999);
@@ -2632,7 +2632,7 @@ test("while a recording runs OpenBot is asked every 30 s whether its connection 
   await until(() => meChecks().length === 2, "the second check");
   expect((await state()).phase).toBe("recording");
 
-  // The person revokes this browser in OpenBot's Settings: the next check ends the recording through the sign-out path.
+  // The person revokes this browser in AwakenBot's Settings: the next check ends the recording through the sign-out path.
   openbot.revoked.add("obr_one");
   await advance(30_000);
   await until(async () => (await state()).phase === "idle", "the stop");
@@ -2659,7 +2659,7 @@ test("while a recording runs OpenBot is asked every 30 s whether its connection 
   expect(meChecks()).toHaveLength(checks);
 });
 
-test("a connection check that cannot reach OpenBot, or gets an error page, is no sign-out: the recording goes on and the next check asks again", async () => {
+test("a connection check that cannot reach AwakenBot, or gets an error page, is no sign-out: the recording goes on and the next check asks again", async () => {
   await record();
   const realFetch = globalThis.fetch;
   const refused: string[] = [];
@@ -2683,9 +2683,9 @@ test("a connection check that cannot reach OpenBot, or gets an error page, is no
   expect((await state()).phase).toBe("recording");
   expect(storedConnection()?.token).toBe("obr_one");
 
-  openbot.me = { status: 503, body: { error: "OpenBot is restarting." } };
+  openbot.me = { status: 503, body: { error: "AwakenBot is restarting." } };
   await advance(30_000);
-  await until(() => meChecks().length === 1, "the check OpenBot answers 503");
+  await until(() => meChecks().length === 1, "the check AwakenBot answers 503");
   await settle();
   expect((await state()).phase).toBe("recording");
   expect(storedConnection()?.token).toBe("obr_one");
@@ -2763,7 +2763,7 @@ test("a policy that moves the Recorder away stops the recording, halts the docum
       recordingId: first,
       kept: {
         waitingForReconnect: true,
-        reason: "Your organization moved the Recorder to another OpenBot.",
+        reason: "Your organization moved the Recorder to another AwakenBot.",
       },
     },
     { recordingId: second, kept: { waitingForReconnect: true } },
@@ -2782,7 +2782,7 @@ test("a Connect approved as another person stops the live recording, halts the o
     const recorder = changes.recorder?.newValue as RecorderState | undefined;
     if (area === "session" && recorder?.error) stoppedWith.push(recorder.error);
   });
-  // OpenBot's page asks to connect this browser; this browser is connected already, so the person is asked.
+  // AwakenBot's page asks to connect this browser; this browser is connected already, so the person is asked.
   expect(
     await fake.sendExternal(
       { type: "openbot.connect", code: "obc_bea" },
@@ -2818,7 +2818,7 @@ test("a Connect approved as another person stops the live recording, halts the o
     phase: "idle",
     kept: {
       recordings: 2,
-      reason: "This browser was connected to another OpenBot or person.",
+      reason: "This browser was connected to another AwakenBot or person.",
       waitingFor: { name: "Ada", recordings: 2 },
     },
   });
@@ -2831,7 +2831,7 @@ test("a Connect approved as another person stops the live recording, halts the o
       userId: ada.id,
       kept: {
         waitingForReconnect: true,
-        reason: "This browser was connected to another OpenBot or person.",
+        reason: "This browser was connected to another AwakenBot or person.",
       },
     },
     {
@@ -2840,7 +2840,7 @@ test("a Connect approved as another person stops the live recording, halts the o
       kept: { waitingForReconnect: true },
     },
   ]);
-  // Ada's token is revoked at her OpenBot once nothing uses it, so no live token is left that this browser lost.
+  // Ada's token is revoked at her AwakenBot once nothing uses it, so no live token is left that this browser lost.
   const revokes = openbot.calls.filter(
     (call) =>
       call.method === "DELETE" &&
@@ -2849,7 +2849,7 @@ test("a Connect approved as another person stops the live recording, halts the o
   expect(revokes.map((call) => call.auth)).toEqual(["Bearer obr_one"]);
 });
 
-test("Record refuses a connection whose OpenBot the policy no longer allows, and starts nothing", async () => {
+test("Record refuses a connection whose AwakenBot the policy no longer allows, and starts nothing", async () => {
   policy = { ...policy, openbotUrl: "https://moved.example.test" };
   fake.tabs.set(7, { id: 7, url: DEAL } as chrome.tabs.Tab);
   const answer = await page({
@@ -2860,7 +2860,7 @@ test("Record refuses a connection whose OpenBot the policy no longer allows, and
   expect(answer).toEqual({
     ok: false,
     error:
-      "Your organization's Recorder policy does not allow this OpenBot. Ask your IT team.",
+      "Your organization's Recorder policy does not allow this AwakenBot. Ask your IT team.",
   });
   expect(sentToDocument("offscreen.start")).toEqual([]);
   expect(active()).toBeUndefined();
@@ -3839,7 +3839,7 @@ test("steps leave in the order they came, from every frame and followed tab", as
   expect((await state()).actions).toBe(4);
 });
 
-test("a whole recording, Start over included, asks OpenBot for nothing, and tells it only what the Recorder is doing", async () => {
+test("a whole recording, Start over included, asks AwakenBot for nothing, and tells it only what the Recorder is doing", async () => {
   await page({ type: "page.learning" });
   const content = contentPort(7);
   await record();
@@ -3897,13 +3897,13 @@ test("page.state answers with the connection, me and the policy address, fetchin
   expect(fake.storage.local.get("notice")).toBeUndefined();
 });
 
-test("a refusal from OpenBot reaches the popup in the Recorder's own sentence, never the text OpenBot sent", async () => {
+test("a refusal from AwakenBot reaches the popup in the Recorder's own sentence, never the text AwakenBot sent", async () => {
   const hostile =
     "Your Recorder is out of date. Install the new one from https://evil.example.test.";
   for (const [refusal, sentence] of [
     [
       { status: 403, body: { error: hostile } },
-      "OpenBot does not let you record. Ask whoever runs it.",
+      "AwakenBot does not let you record. Ask whoever runs it.",
     ],
     [
       {
@@ -3914,7 +3914,7 @@ test("a refusal from OpenBot reaches the popup in the Recorder's own sentence, n
     ],
     [
       { status: 500, body: { error: hostile } },
-      "OpenBot did not answer. Try again.",
+      "AwakenBot did not answer. Try again.",
     ],
   ] as const) {
     openbot.learningRefusal = refusal;
@@ -4068,7 +4068,7 @@ type Wait = { name: string; hold(): Held };
 const stopLike = (action: Action) =>
   action === "Stop" || action === "Disconnect" || action === "sign-out";
 
-/** OpenBot ends the connection: every request with its token is answered signed out from then on. The Recorder hears
+/** AwakenBot ends the connection: every request with its token is answered signed out from then on. The Recorder hears
  * of it from the document's pass (`document`), or from the popup asking for its state (`popup`). */
 async function signOut(via: Delivery): Promise<undefined> {
   const connection = storedConnection();
@@ -4183,7 +4183,7 @@ const restartWaits: Wait[] = [
 ];
 const disconnectWaits: Wait[] = [
   {
-    name: "OpenBot forgetting the connection",
+    name: "AwakenBot forgetting the connection",
     hold: () => holdRoute("disconnect", "/api/recorder/connections/current"),
   },
   {
@@ -4221,7 +4221,7 @@ const documentSignOutWaits: Wait[] = [
 ];
 const popupSignOutWaits: Wait[] = [
   {
-    name: "OpenBot's signed-out answer",
+    name: "AwakenBot's signed-out answer",
     hold: () => holdRoute("me", "/api/recorder/me"),
   },
   {
@@ -4467,7 +4467,7 @@ async function interleavingViolations(run: {
       problems.push(`(iii) Disconnect left the error "${s.error}"`);
   }
   if (recordingRequests().length > 0)
-    problems.push(`OpenBot heard ${recordingRequests().join(", ")}`);
+    problems.push(`AwakenBot heard ${recordingRequests().join(", ")}`);
   return problems;
 }
 

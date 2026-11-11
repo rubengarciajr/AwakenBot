@@ -1,10 +1,10 @@
 // The Browser button and the person's own everyday browser, through the real routes and the real database: each
 // Recorder's report of what it is recording is kept against its connection, the state's red dot (`activity`) reads the
-// newest live one from any of the person's Recorders, and on OpenBot Desktop the state lists the person's own browsers
+// newest live one from any of the person's Recorders, and on AwakenBot Desktop the state lists the person's own browsers
 // and whether a Recorder in one is connected through Desktop (`real`), while Browser brings that browser forward, or
-// opens the Recorder's store page in it, or (before the Recorder is published) opens the OpenBot browser as before.
+// opens the Recorder's store page in it, or (before the Recorder is published) opens the AwakenBot browser as before.
 // The computer is a stand-in that answers its routes exactly as the contract types them (shared/openbot-browser.ts):
-// the real-browser routes are OpenBot Desktop's host-side computer's, another slice's work.
+// the real-browser routes are AwakenBot Desktop's host-side computer's, another slice's work.
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { randomUUID } from "node:crypto";
 import {
@@ -78,7 +78,7 @@ const PUBLISHED = {
 
 /** Every request the computer took, as `<method> <path>`, with the body of each real-browser POST. */
 const asked: { line: string; body?: unknown }[] = [];
-/** The OpenBot browsers it has open, by person browser id. */
+/** The AwakenBot browsers it has open, by person browser id. */
 const browsers = new Map<string, BrowserState & { token?: string }>();
 /** The connection each browser's Recorder keeps in its profile, which outlives the browser being closed. */
 const recorderKeeps = new Map<string, LauncherConnection>();
@@ -93,7 +93,7 @@ const STORE_HOSTS = [
 ];
 
 /** The computer's routes as the contract types them: the token, a person's browser id in `x-openbot-bot-id` (400 for
- * anything else), and each body read against the contract's schema. The real-browser routes refuse what OpenBot
+ * anything else), and each body read against the contract's schema. The real-browser routes refuse what AwakenBot
  * Desktop's host-side computer refuses: a front with a url, and a store url that is not an https store page. */
 const computer = Bun.serve({
   hostname: "127.0.0.1",
@@ -203,7 +203,7 @@ const computer = Bun.serve({
   },
 });
 
-// ---- OpenBot, as index.ts builds it ------------------------------------------------------------
+// ---- AwakenBot, as index.ts builds it ------------------------------------------------------------
 
 const auditStore = { insert: async (_event: AuditEventInput) => {} };
 const roleRepository = { rolesForUser: async () => ["user" as const] };
@@ -225,8 +225,8 @@ const better = {
 };
 
 /**
- * One OpenBot: hosted (people's browsers on computers of their own beside the Bots', as a supervisor or a Sandbox gives
- * them, shown as a screen), or OpenBot Desktop (`desktop`: people's browsers on its host-side computer,
+ * One AwakenBot: hosted (people's browsers on computers of their own beside the Bots', as a supervisor or a Sandbox gives
+ * them, shown as a screen), or AwakenBot Desktop (`desktop`: people's browsers on its host-side computer,
  * `OPENBOT_BROWSER_URL`, as windows on the person's own desktop).
  */
 function build(
@@ -247,7 +247,7 @@ function build(
         : undefined;
   const config = loadConfig(
     testEnvironment({
-      // A single-user OpenBot is reached only from this machine: its window's own loopback address.
+      // A single-user AwakenBot is reached only from this machine: its window's own loopback address.
       OPENBOT_PUBLIC_URL: options.singleUser ? undefined : PUBLIC,
       AGENT_COMPUTER_URL: computerUrl,
       COMPUTER_TOKEN,
@@ -326,10 +326,10 @@ function build(
   };
   return { app: createApp(...args), config };
 }
-type OpenBot = ReturnType<typeof build>;
+type AwakenBot = ReturnType<typeof build>;
 
 const call = (
-  { app }: OpenBot,
+  { app }: AwakenBot,
   path: string,
   init: RequestInit & { json?: unknown; as?: Person } = {},
 ) => {
@@ -346,10 +346,10 @@ const call = (
 };
 const bearer = (token: string) => ({ authorization: `Bearer ${token}` });
 
-/** A Recorder connecting as the person, as the real one does: a connect code minted for them (from OpenBot, or from
- * OpenBot Desktop's handoff), exchanged from the Recorder's own origin under the name it gives its browser. */
+/** A Recorder connecting as the person, as the real one does: a connect code minted for them (from AwakenBot, or from
+ * AwakenBot Desktop's handoff), exchanged from the Recorder's own origin under the name it gives its browser. */
 async function connect(
-  openbot: OpenBot,
+  openbot: AwakenBot,
   as: Person | null,
   input: { via: "web" | "desktop"; label: string },
 ): Promise<ExchangeResponse> {
@@ -373,8 +373,8 @@ async function connect(
   return exchanged.json();
 }
 
-/** The Recorder telling OpenBot what it is doing, with its own bearer. */
-const report = (openbot: OpenBot, token: string, activity: unknown) =>
+/** The Recorder telling AwakenBot what it is doing, with its own bearer. */
+const report = (openbot: AwakenBot, token: string, activity: unknown) =>
   call(openbot, recorderPaths.activity, {
     method: "POST",
     headers: bearer(token),
@@ -390,13 +390,13 @@ const recordingReceipt = (startedAt = Date.now() - 20_000) =>
     actions: 4,
   }) satisfies RecorderActivity;
 
-async function stateOf(openbot: OpenBot, as?: Person) {
+async function stateOf(openbot: AwakenBot, as?: Person) {
   const response = await call(openbot, "/api/browser", as ? { as } : {});
   expect(response.status).toBe(200);
   return (await response.json()) as BrowserApiState;
 }
 
-async function openAs(openbot: OpenBot, as?: Person) {
+async function openAs(openbot: AwakenBot, as?: Person) {
   const response = await call(openbot, "/api/browser/open", {
     method: "POST",
     ...(as ? { as } : {}),
@@ -450,7 +450,7 @@ afterAll(async () => {
   await database.$client.close();
 });
 
-describe("a Recorder tells OpenBot what it is recording", () => {
+describe("a Recorder tells AwakenBot what it is recording", () => {
   test("its report is kept against its connection with when it arrived, and the next one replaces it", async () => {
     const openbot = build();
     const chrome = await connect(openbot, "ada", {
@@ -600,7 +600,7 @@ describe("the red dot follows any of the person's Recorders", () => {
       await report(openbot, everyday.token, recording);
       const state = await stateOf(openbot, "ada");
       expect(state.activity).toEqual(recording);
-      // The OpenBot browser itself is not open, and nothing about it changed.
+      // The AwakenBot browser itself is not open, and nothing about it changed.
       expect(state).toMatchObject({ open: false, tabs: [] });
       expect(state.recorder).toBeUndefined();
 
@@ -666,7 +666,7 @@ describe("the red dot follows any of the person's Recorders", () => {
     await removeConnections(ben.id);
   });
 
-  test("the OpenBot browser's own Recorder, as its computer says now, is newer than any report", async () => {
+  test("the AwakenBot browser's own Recorder, as its computer says now, is newer than any report", async () => {
     const openbot = build({ desktop: true });
     const opened = await openAs(openbot, "cy");
     expect(opened.status).toBe(200);
@@ -679,7 +679,7 @@ describe("the red dot follows any of the person's Recorders", () => {
     });
     await report(openbot, everyday.token, recordingReceipt());
 
-    // Recording in the OpenBot browser too, as its computer reports it: that is the one named, being the newest.
+    // Recording in the AwakenBot browser too, as its computer reports it: that is the one named, being the newest.
     browser.recorder = {
       ...(browser.recorder as LauncherState),
       phase: "recording",
@@ -697,7 +697,7 @@ describe("the red dot follows any of the person's Recorders", () => {
       actions: 2,
     });
 
-    // The OpenBot browser's Recorder said it was recording, then stopped, and its idle report did not arrive: its
+    // The AwakenBot browser's Recorder said it was recording, then stopped, and its idle report did not arrive: its
     // computer says idle now, which outranks the report, and the everyday browser's recording is the one shown.
     const reported = await report(openbot, browser.token, {
       phase: "recording",
@@ -756,7 +756,7 @@ describe("the red dot follows any of the person's Recorders", () => {
   });
 });
 
-describe("OpenBot Desktop's state names the person's own browsers", () => {
+describe("AwakenBot Desktop's state names the person's own browsers", () => {
   test("which are installed, and whether a Recorder in one is connected through Desktop", async () => {
     const desktop = build({ desktop: true });
     installed = ["chrome", "msedge"];
@@ -764,7 +764,7 @@ describe("OpenBot Desktop's state names the person's own browsers", () => {
       connected: false,
       browsers: ["chrome", "msedge"],
     });
-    // A browser connected from OpenBot in that browser (Connect this browser) is not the Desktop route.
+    // A browser connected from AwakenBot in that browser (Connect this browser) is not the Desktop route.
     await connect(desktop, "ada", {
       via: "web",
       label: "Google Chrome on macOS",
@@ -790,7 +790,7 @@ describe("OpenBot Desktop's state names the person's own browsers", () => {
     });
     installed = ["chrome", "msedge"];
 
-    // Hosted OpenBot has no everyday browser of the person's to name.
+    // Hosted AwakenBot has no everyday browser of the person's to name.
     expect((await stateOf(build(), "ada")).real).toBeUndefined();
     await removeConnections(ada.id);
   });
@@ -815,7 +815,7 @@ describe("OpenBot Desktop's state names the person's own browsers", () => {
   });
 });
 
-describe("Browser on OpenBot Desktop, with the person's own browser", () => {
+describe("Browser on AwakenBot Desktop, with the person's own browser", () => {
   test("with the Recorder connected through Desktop it brings that browser forward: Edge when its name says so, else Chrome", async () => {
     const desktop = build({ desktop: true, storeIds: PUBLISHED });
     const connectionsBefore = async () =>
@@ -846,7 +846,7 @@ describe("Browser on OpenBot Desktop, with the person's own browser", () => {
         body: { browser: "msedge" },
       },
     ]);
-    // No OpenBot browser opened, and no Recorder connection minted for one.
+    // No AwakenBot browser opened, and no Recorder connection minted for one.
     expect(browsers.has(personBrowserId(ada.id))).toBe(false);
     expect(await connectionsBefore()).toBe(minted);
 
@@ -925,7 +925,7 @@ describe("Browser on OpenBot Desktop, with the person's own browser", () => {
     });
   });
 
-  test("before the Recorder is published it opens the OpenBot browser as it always has, and asks nothing about their own", async () => {
+  test("before the Recorder is published it opens the AwakenBot browser as it always has, and asks nothing about their own", async () => {
     // No store ids at all, as shipped until the Recorder is published.
     installed = ["chrome", "msedge"];
     const desktop = build({ desktop: true, storeIds: {} });
@@ -947,7 +947,7 @@ describe("Browser on OpenBot Desktop, with the person's own browser", () => {
     ).toEqual([]);
     await call(desktop, "/api/browser/close", { method: "POST", as: "ben" });
 
-    // Published only for a browser the person does not have: the OpenBot browser still.
+    // Published only for a browser the person does not have: the AwakenBot browser still.
     installed = ["chrome"];
     const edgeOnly = build({
       desktop: true,
@@ -979,7 +979,7 @@ describe("Browser on OpenBot Desktop, with the person's own browser", () => {
     await removeConnections(ada.id);
   });
 
-  test("hosted OpenBot is unchanged: a Desktop connection and a published Recorder open the browser in the page", async () => {
+  test("hosted AwakenBot is unchanged: a Desktop connection and a published Recorder open the browser in the page", async () => {
     const hosted = build({ storeIds: PUBLISHED });
     await connect(hosted, "cy", {
       via: "desktop",
@@ -999,7 +999,7 @@ describe("Browser on OpenBot Desktop, with the person's own browser", () => {
   });
 });
 
-describe("OpenBot Desktop as it runs, for its one person", () => {
+describe("AwakenBot Desktop as it runs, for its one person", () => {
   beforeAll(async () => {
     await initializeDevActorUser(database, true);
   });

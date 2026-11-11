@@ -96,7 +96,7 @@ test("the same signed event replayed with a fresh X-GitHub-Delivery dedupes", as
 });
 test("a pull request event larger than 32 KiB is accepted and fitted to the ledger cap", async () => {
   const { routes, events } = fixture();
-  // A real `pull_request` delivery for an OpenBot PR is 26–57 KB: the PR object alone repeats the
+  // A real `pull_request` delivery for an AwakenBot PR is 26–57 KB: the PR object alone repeats the
   // repository under `head` and `base`. Before, every one over 32 KiB was answered 503.
   const body = JSON.stringify({
     action: "synchronize",

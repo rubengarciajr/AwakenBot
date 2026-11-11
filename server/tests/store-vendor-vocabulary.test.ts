@@ -3,7 +3,7 @@
  * THE SENTENCES `store.ts` HANDS A PERSON NAME NO BROKER AT ALL.
  *
  * They used to name the broker this deployment runs. A person, the admin included, now connects
- * apps through OpenBot and never reads the provider's name, so each is pinned to name neither.
+ * apps through AwakenBot and never reads the provider's name, so each is pinned to name neither.
  *
  * Two of the store's refusals spelled the literal "Composio" into prose a reader acts on: the name
  * collision an administrator meets when they add a server by URL over a brokered row, and the
@@ -145,7 +145,7 @@ describe("the brokered-name collision names no vendor", () => {
         );
 
       expect(refused).not.toBeNull();
-      expect(refused).toContain("through OpenBot");
+      expect(refused).toContain("through AwakenBot");
       expect(refused).not.toMatch(/\b(Composio|Arcade)\b/);
     });
   }

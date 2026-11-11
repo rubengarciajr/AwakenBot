@@ -103,7 +103,7 @@ pub fn resolve_version(root: &Path) -> Result<String, String> {
     let own = crate::upgrade::app_release();
     resolve_version_with(root, deployment::pinned().as_ref(), &own, || {
         let policy = distribution(root)?;
-        // OpenBot's own releases: the app update feed on downloads.copilotkit.ai names the same
+        // AwakenBot's own releases: the app update feed on downloads.copilotkit.ai names the same
         // Latest release, and GitHub is asked only when it cannot be read.
         if policy.repository == "CopilotKit/OpenBot" {
             match deployment::get_from_mirror(LATEST_FEED).and_then(|body| feed_tag(&body)) {
@@ -114,7 +114,7 @@ pub fn resolve_version(root: &Path) -> Result<String, String> {
             }
         }
         let body = deployment::get(&latest_url(&policy))
-            .map_err(|error| format!("could not find the latest OpenBot release: {error}"))?;
+            .map_err(|error| format!("could not find the latest AwakenBot release: {error}"))?;
         release_tag(&body)
     })
 }
@@ -184,9 +184,9 @@ fn release_tag(body: &[u8]) -> Result<String, String> {
     }
 
     let release: Release = serde_json::from_slice(body)
-        .map_err(|error| format!("the latest OpenBot release is not readable: {error}"))?;
+        .map_err(|error| format!("the latest AwakenBot release is not readable: {error}"))?;
     if release.tag_name.trim().is_empty() {
-        return Err("the latest OpenBot release has no version tag".into());
+        return Err("the latest AwakenBot release has no version tag".into());
     }
     Ok(release.tag_name)
 }
@@ -387,7 +387,7 @@ mod tests {
     #[test]
     fn githubs_exact_tag_is_used_instead_of_the_release_title() {
         assert_eq!(
-            release_tag(br#"{"name":"OpenBot September release","tag_name":"v0.0.9"}"#).unwrap(),
+            release_tag(br#"{"name":"AwakenBot September release","tag_name":"v0.0.9"}"#).unwrap(),
             "v0.0.9"
         );
     }

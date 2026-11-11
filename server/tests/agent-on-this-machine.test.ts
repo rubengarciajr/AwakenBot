@@ -12,7 +12,7 @@ import { testEnvironment } from "./support/environment";
 /**
  * An agent a person runs on their own machine, registered at its loopback address.
  *
- * OpenBot Desktop runs this server in a container, where `127.0.0.1` is the container. A person who
+ * AwakenBot Desktop runs this server in a container, where `127.0.0.1` is the container. A person who
  * registered `http://127.0.0.1:8765/ag-ui` was told "This server could not reach that address",
  * while `http://host.docker.internal:8765/ag-ui` worked. The Desktop now tells the server the name
  * its container reaches the machine by (`OPENBOT_THIS_MACHINE_HOST`), and a loopback address is

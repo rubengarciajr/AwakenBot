@@ -1,6 +1,6 @@
 /*!
 What listening did, one line each, in a file a person can send: on macOS
-`~/Library/Logs/OpenBot/speech.log`, on Windows `%LOCALAPPDATA%\OpenBot\Logs\speech.log`.
+`~/Library/Logs/OpenBot/speech.log`, on Windows `%LOCALAPPDATA%\AwakenBot\Logs\speech.log`.
 
 A packaged app's stderr goes nowhere, and without this a narration that reached nobody could not be
 told from a microphone that heard nothing, a recognizer that refused, or a page that stopped
@@ -26,7 +26,7 @@ pub fn path() -> Option<PathBuf> {
         std::env::var_os("HOME").map(|home| PathBuf::from(home).join("Library/Logs/OpenBot"))
     } else if cfg!(windows) {
         std::env::var_os("LOCALAPPDATA")
-            .map(|local| PathBuf::from(local).join("OpenBot").join("Logs"))
+            .map(|local| PathBuf::from(local).join("AwakenBot").join("Logs"))
     } else {
         std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".local/state/openbot"))
     };

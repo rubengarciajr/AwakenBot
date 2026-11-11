@@ -9,13 +9,13 @@ import {
 } from "../src/loopback-relay";
 
 /**
- * A Recorder in the computer's container is handed OpenBot at `http://127.0.0.1:<port>` and a local Intelligence gateway
+ * A Recorder in the computer's container is handed AwakenBot at `http://127.0.0.1:<port>` and a local Intelligence gateway
  * at `ws://localhost:<port>`: the person's own laptop's addresses, which inside the container are the container. Before
- * `COMPUTER_LOOPBACK_RELAYS`, nothing answered there, so Record in a browser on OpenBot Desktop's computer connected and
+ * `COMPUTER_LOOPBACK_RELAYS`, nothing answered there, so Record in a browser on AwakenBot Desktop's computer connected and
  * then reached nothing. These run the real relay and the real computer process over real sockets.
  */
 
-/** Stands in for OpenBot (another container) or the gateway (the host): it answers HTTP and echoes a WebSocket. */
+/** Stands in for AwakenBot (another container) or the gateway (the host): it answers HTTP and echoes a WebSocket. */
 function target() {
   return Bun.serve({
     hostname: "127.0.0.1",

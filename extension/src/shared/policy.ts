@@ -47,7 +47,7 @@ export async function readPolicy(): Promise<RecorderPolicy> {
 }
 
 /** Whether the policy lets this browser connect to (and stay connected to) `origin`: never under an invalid policy,
- * and only to the pinned OpenBot when one is pinned. */
+ * and only to the pinned AwakenBot when one is pinned. */
 export function allowsOpenBot(policy: RecorderPolicy, origin: string): boolean {
   if (policy.openbotUrlInvalid) return false;
   if (policy.openbotUrl === null) return true;

@@ -1,14 +1,14 @@
 /*!
-Getting an announced OpenBot release ready while this version keeps running.
+Getting an announced AwakenBot release ready while this version keeps running.
 
-THE PROBLEM. An update did all its work after the Update click, with OpenBot down: the back end's
-update, then OpenBot's own image pulls (up to 1.1 GB when every image changed, see `upgrade`), then
-the start. Measured on Windows, 0.3.4 to 1.0.0 took 3 min 34 s from the click to OpenBot.
+THE PROBLEM. An update did all its work after the Update click, with AwakenBot down: the back end's
+update, then AwakenBot's own image pulls (up to 1.1 GB when every image changed, see `upgrade`), then
+the start. Measured on Windows, 0.3.4 to 1.0.0 took 3 min 34 s from the click to AwakenBot.
 
 WHAT THIS DOES. As soon as the update feed names a newer release (`app_update`), it downloads that
-release's images into the engines they will run on, in the background: OpenBot's own into the
+release's images into the engines they will run on, in the background: AwakenBot's own into the
 container engine, where the upgrade's pull finds them (`pull_metrics::pull_image` skips an image the
-engine has), and the back end's into its k3d node, where `local update` and OpenBot's download
+engine has), and the back end's into its k3d node, where `local update` and AwakenBot's download
 before it find them (`local_images`). The Update click then costs the stop, the backup, the
 migrations and the start. Desktop updaters stage an update this way: Sparkle downloads it silently
 and installs it when the person says (`SUAutomaticallyUpdate`), and Tauri's updater splits
@@ -35,14 +35,14 @@ of its disk free, the line where the kubelet starts removing images no container
 download takes at most half of what the computer's drive has free. Short of either, nothing
 downloads, the log says why, and the update downloads the images as it always did.
 
-AN INSTALLATION BEHIND THE APP. The app often updates itself at launch, before OpenBot runs, so
+AN INSTALLATION BEHIND THE APP. The app often updates itself at launch, before AwakenBot runs, so
 nothing above had a chance: the app is then the release the feed names, and its installation is
 still on the one before, which the next Start moves (`upgrade::due`) and whose images that Start
-pulled with nobody able to use OpenBot. On 2026-11-10 a Mac moved from v1.0.0 to v1.0.1 that way:
+pulled with nobody able to use AwakenBot. On 2026-11-10 a Mac moved from v1.0.0 to v1.0.1 that way:
 4.5 minutes of the back end's setup, then 4 more of the update's pulls, one after the other. So the
 app's own release is got ready the same way for an installation behind it (`behind`), as soon as
-its engine answers, whether OpenBot runs or not: during sign-in, the back end's setup, or the wait
-for an engine with room. It pulls OpenBot's images only; the back end's setup pulls its own.
+its engine answers, whether AwakenBot runs or not: during sign-in, the back end's setup, or the wait
+for an engine with room. It pulls AwakenBot's images only; the back end's setup pulls its own.
 
 Its download never takes the engine below the 40 GiB free the back end's setup checks for
 (`local_eval::MIN_ENGINE_FREE_DISK_BYTES`, `Ahead::keep_free`), counted with `ON_DISK` and against
@@ -72,14 +72,14 @@ pub const ON_DISK: u64 = 4;
 /// `local_eval` checks a back end's start against too.
 pub const KEEP_FREE_PERCENT: u64 = 15;
 
-/// What an image counts as when its registry does not say its size: more than any image OpenBot
+/// What an image counts as when its registry does not say its size: more than any image AwakenBot
 /// or the back end pulls (the largest, the computer's, is 451 MB).
 pub const UNKNOWN_SIZE: u64 = 1 << 30;
 
 /// A release's `desktop-images.json`.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
 pub struct Announced {
-    /// The OpenBot release, `v1.0.1`.
+    /// The AwakenBot release, `v1.0.1`.
     pub openbot: String,
     /// The back end release its CLI installs.
     pub intelligence: String,
@@ -122,7 +122,7 @@ fn repository(image: &str) -> Option<(String, String)> {
     Some((reference.host, reference.repository))
 }
 
-/// OpenBot's images in `list` that this installation runs: for each image it pulled last
+/// AwakenBot's images in `list` that this installation runs: for each image it pulled last
 /// (`installed`), the list's image of the same repository.
 pub fn openbot_images(installed: &[String], list: &Announced) -> Vec<String> {
     let mut found: Vec<String> = Vec::new();
@@ -293,7 +293,7 @@ pub struct Ahead<'a> {
     pub version: &'a Version,
     /// Its `desktop-images.json`.
     pub list: &'a Announced,
-    /// The engine OpenBot runs on.
+    /// The engine AwakenBot runs on.
     pub engine: &'a Address,
     /// The images this installation's last install pulled.
     pub installed: &'a [String],
@@ -324,7 +324,7 @@ pub enum Outcome {
 }
 
 /**
-Download what `ahead`'s release needs that is not here yet, one image at a time, OpenBot's first.
+Download what `ahead`'s release needs that is not here yet, one image at a time, AwakenBot's first.
 `stop` is asked before each image and while the back end's download runs. `progress` hears the bytes
 arrived of the bytes there are to download, after each image and as the back end's arrive.
 */
@@ -546,7 +546,7 @@ mod tests {
 
     /// The back end 0.3.4's CLI runs, moved to 1.0.0's release: its runtime images at the new tag,
     /// and its pinned images by the new list's digests, but never the cluster's own images, which
-    /// k3d pulls only when it creates a cluster, nor OpenBot's.
+    /// k3d pulls only when it creates a cluster, nor AwakenBot's.
     #[test]
     fn the_back_ends_images_are_the_new_releases_by_the_repositories_the_cli_pulls() {
         let current = crate::local_images::cli_images(CLI_0_3_4).unwrap();
@@ -627,7 +627,7 @@ mod tests {
         assert!(keeps_free(download, at_the_line, None, 40 * GIB).is_err());
         // The computer's drive counts as well, when it is the smaller.
         assert!(keeps_free(download, raised, Some(41 * GIB), 40 * GIB).is_err());
-        // A release got ready while OpenBot runs keeps nothing back, as before.
+        // A release got ready while AwakenBot runs keeps nothing back, as before.
         assert_eq!(keeps_free(download, at_the_line, None, 0), Ok(()));
     }
 

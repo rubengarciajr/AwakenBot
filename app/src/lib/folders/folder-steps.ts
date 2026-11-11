@@ -4,7 +4,7 @@ import { createContext } from "react";
 /**
  * A Bot's steps on folders on the person's computer (`host_*` tools), as a person reads them.
  *
- * The tools answer the model: "Check your folders" answers JSON naming each folder by the id OpenBot
+ * The tools answer the model: "Check your folders" answers JSON naming each folder by the id AwakenBot
  * gave its grant ({"connected":true,"folders":[{"grantId":"host-grant-7712-…","displayName":"share"}]}),
  * and every other step names its folder only by that id. Opened, a step showed that JSON as it came.
  * The person reads the folder's name, the file in it ("todo.txt in share"), and no JSON or id.
@@ -110,7 +110,7 @@ export function folderStepBody(
       names.length > 0
         ? `Folders it can read: ${names.join(", ")}.`
         : "No folders are shared with this Bot.",
-      ...(listing.connected ? [] : ["OpenBot Desktop isn't running."]),
+      ...(listing.connected ? [] : ["AwakenBot Desktop isn't running."]),
     ].join(" ");
   }
   const trimmed = body.trim();

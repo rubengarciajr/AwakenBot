@@ -1,22 +1,22 @@
-//! Whether the engine is new enough to run OpenBot, and the one place that says what "enough" is.
+//! Whether the engine is new enough to run AwakenBot, and the one place that says what "enough" is.
 //!
-//! An engine that answers is not an engine that can run OpenBot. A tester on Docker Desktop 4.27.2
+//! An engine that answers is not an engine that can run AwakenBot. A tester on Docker Desktop 4.27.2
 //! (Compose v2.24.5) got through setup and then stopped at Start with "Compose config exited with
 //! exit status: 15": that Compose rejected the project before it applied profiles. Fixing that one
 //! file does not fix the next feature an old Compose lacks, so the version is checked at setup and
 //! at every Start, and an engine that is too old is updated for the person:
 //!
-//! - **Podman** (macOS and Windows): OpenBot's own pinned installer (`install::PODMAN`) is run over
-//!   the old one, and OpenBot's own Compose provider is placed in front of an old one. Existing
+//! - **Podman** (macOS and Windows): AwakenBot's own pinned installer (`install::PODMAN`) is run over
+//!   the old one, and AwakenBot's own Compose provider is placed in front of an old one. Existing
 //!   machines and everything in them stay: a newer client works with machines an older one made on
 //!   macOS and Windows (Podman 6.0 release notes), and the installer never touches them.
 //! - **Docker Desktop**: the newest signed release is downloaded from Docker, checked, and installed
 //!   over the old one with Docker's documented command line (see `docker_desktop_update`).
 //!
 //! Only when neither can be done for them (a Docker that is not Docker Desktop, an Intel Mac whose
-//! Podman OpenBot has no installer for) is the person told one plain step.
+//! Podman AwakenBot has no installer for) is the person told one plain step.
 //!
-//! Linux is left as it is. Its engine comes from the distribution, OpenBot never installs Docker
+//! Linux is left as it is. Its engine comes from the distribution, AwakenBot never installs Docker
 //! there, and an Ubuntu LTS ships a Compose older than this on purpose.
 //!
 //! THE MINIMUMS, AND WHY EACH ONE.
@@ -32,10 +32,10 @@
 //!   because newer Docker Desktops can update Compose on its own.
 //! - Docker Engine 20.10.0: the oldest engine that understands `host-gateway`, which the Compose
 //!   file maps `host.docker.internal` to. Nothing else in the file asks more of the engine.
-//! - Podman 6.1.0: OpenBot creates its machine without `--provider`, relying on `applehv` being the
+//! - Podman 6.1.0: AwakenBot creates its machine without `--provider`, relying on `applehv` being the
 //!   default on Apple silicon, which it is again from 6.1 (5.7 and 6.0 default to libkrun, whose
-//!   bind mounts OpenBot cannot use; see `acquire::create_machine`). It is also the release line
-//!   OpenBot installs and tests (`install::PODMAN`).
+//!   bind mounts AwakenBot cannot use; see `acquire::create_machine`). It is also the release line
+//!   AwakenBot installs and tests (`install::PODMAN`).
 
 use std::fmt;
 use std::time::{Duration, Instant};
@@ -104,11 +104,11 @@ impl fmt::Display for Version {
     }
 }
 
-/// The oldest Compose that runs OpenBot. See the module comment.
+/// The oldest Compose that runs AwakenBot. See the module comment.
 pub const COMPOSE: Version = Version::new(2, 27, 2);
-/// The oldest Docker Engine that runs OpenBot. See the module comment.
+/// The oldest Docker Engine that runs AwakenBot. See the module comment.
 pub const DOCKER_ENGINE: Version = Version::new(20, 10, 0);
-/// The oldest Podman OpenBot runs on, on macOS and Windows. See the module comment.
+/// The oldest Podman AwakenBot runs on, on macOS and Windows. See the module comment.
 pub const PODMAN: Version = Version::new(6, 1, 0);
 /// The first Docker Desktop that bundles `COMPOSE` or newer, for the log.
 pub const DOCKER_DESKTOP: Version = Version::new(4, 32, 0);
@@ -123,7 +123,7 @@ pub const DOCKER_VERSION_FORMAT: &str = "{{.Server.Version}}|{{.Server.Platform.
 /// What was read from the engine. `None` where it did not say.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Readings {
-    /// Docker: the engine's (server's) version. Podman: the client's, which is what OpenBot installs.
+    /// Docker: the engine's (server's) version. Podman: the client's, which is what AwakenBot installs.
     pub engine: Option<Version>,
     pub compose: Option<Version>,
     /// The Docker Desktop release running the engine, when it is Docker Desktop.
@@ -219,7 +219,7 @@ pub fn read(address: &Address) -> Readings {
 #[derive(Debug, PartialEq, Eq)]
 pub enum Verdict {
     NewEnough,
-    /// Run OpenBot's pinned Podman installer over the old one (`podman`), place OpenBot's own
+    /// Run AwakenBot's pinned Podman installer over the old one (`podman`), place AwakenBot's own
     /// Compose provider (`compose`), or both.
     UpdatePodman {
         podman: bool,
@@ -227,7 +227,7 @@ pub enum Verdict {
     },
     /// Install the newest Docker Desktop over the old one.
     UpdateDockerDesktop,
-    /// It is too old and OpenBot cannot update it: the person's one step.
+    /// It is too old and AwakenBot cannot update it: the person's one step.
     CannotUpdate(Problem),
 }
 
@@ -240,7 +240,7 @@ fn older(version: Option<Version>, minimum: Version) -> bool {
 ///
 /// A version that could not be read is not called old. Reading can fail for reasons that have
 /// nothing to do with age, and Start reports an engine that does not answer or has no Compose on
-/// its own; an update OpenBot cannot justify is worse than the error it would have prevented.
+/// its own; an update AwakenBot cannot justify is worse than the error it would have prevented.
 pub fn decide(engine: Engine, readings: &Readings, os: &str, arch: &str) -> Verdict {
     if os != "macos" && os != "windows" {
         return Verdict::NewEnough;
@@ -251,12 +251,12 @@ pub fn decide(engine: Engine, readings: &Readings, os: &str, arch: &str) -> Verd
             let podman_old = older(readings.engine, PODMAN);
             if podman_old && os == "macos" && arch != "aarch64" {
                 // Podman publishes its Mac package for Apple silicon only (see
-                // `install::podman_download`), so there is nothing for OpenBot to install here.
+                // `install::podman_download`), so there is nothing for AwakenBot to install here.
                 return Verdict::CannotUpdate(Problem::with(
-                    "The software OpenBot runs on is too old, and OpenBot can't update it on an \
-                     Intel Mac. Update Podman, then start OpenBot again.",
+                    "The software AwakenBot runs on is too old, and AwakenBot can't update it on an \
+                     Intel Mac. Update Podman, then start AwakenBot again.",
                     format!(
-                        "{}; OpenBot needs Podman {PODMAN} or newer, and Podman publishes its Mac \
+                        "{}; AwakenBot needs Podman {PODMAN} or newer, and Podman publishes its Mac \
                          installer for Apple silicon only",
                         readings.said(engine)
                     ),
@@ -279,10 +279,10 @@ pub fn decide(engine: Engine, readings: &Readings, os: &str, arch: &str) -> Verd
                 return Verdict::UpdateDockerDesktop;
             }
             Verdict::CannotUpdate(Problem::with(
-                "Docker on this computer is too old to run OpenBot. Update Docker, then start \
-                 OpenBot again.",
+                "Docker on this computer is too old to run AwakenBot. Update Docker, then start \
+                 AwakenBot again.",
                 format!(
-                    "{}; OpenBot needs Compose {COMPOSE} or newer and Docker Engine \
+                    "{}; AwakenBot needs Compose {COMPOSE} or newer and Docker Engine \
                      {DOCKER_ENGINE} or newer, and only Docker Desktop can be updated for you",
                     readings.said(engine)
                 ),
@@ -297,7 +297,7 @@ pub trait Updates {
     fn update_podman(&mut self, progress: &mut dyn FnMut(StepLine)) -> Result<(), Problem>;
     fn place_compose(&mut self, progress: &mut dyn FnMut(StepLine)) -> Result<(), Problem>;
     fn update_docker_desktop(&mut self, progress: &mut dyn FnMut(StepLine)) -> Result<(), Problem>;
-    /// The engine answers on the connection OpenBot uses, asked until `within` is up, or why not.
+    /// The engine answers on the connection AwakenBot uses, asked until `within` is up, or why not.
     /// For a Podman machine that includes the Docker API Compose uses (`acquire::engine_answers`).
     fn answers(&mut self, within: Duration) -> Result<(), String>;
     /// Stop and start the Podman machine behind that connection, with what was running in it.
@@ -321,13 +321,13 @@ pub enum Checked {
     },
 }
 
-/// The row's line while OpenBot stops and starts a Podman machine whose API does not answer.
+/// The row's line while AwakenBot stops and starts a Podman machine whose API does not answer.
 pub fn restarting_line() -> StepLine {
-    StepLine::here("Restarting the software OpenBot runs on.")
+    StepLine::here("Restarting the software AwakenBot runs on.")
 }
 
 /**
-The engine new enough to run OpenBot, and answering: checked, updated when it is not, and checked
+The engine new enough to run AwakenBot, and answering: checked, updated when it is not, and checked
 again.
 
 The second check is the point. An update that reported success and left the old version in use (a
@@ -354,7 +354,7 @@ pub fn ensure(
         Verdict::CannotUpdate(problem) => return Err(problem),
         Verdict::UpdatePodman { podman, compose } => {
             log::info!(
-                "[engine] {} is too old for OpenBot (Podman {PODMAN}, Compose {COMPOSE}); updating",
+                "[engine] {} is too old for AwakenBot (Podman {PODMAN}, Compose {COMPOSE}); updating",
                 before.said(engine)
             );
             let mut compose_old = compose;
@@ -366,16 +366,16 @@ pub fn ensure(
             if compose_old {
                 updates.place_compose(progress)?;
             }
-            "OpenBot updated the software it runs on."
+            "AwakenBot updated the software it runs on."
         }
         Verdict::UpdateDockerDesktop => {
             log::info!(
-                "[engine] {} is too old for OpenBot (Compose {COMPOSE}, first bundled by Docker \
+                "[engine] {} is too old for AwakenBot (Compose {COMPOSE}, first bundled by Docker \
                  Desktop {DOCKER_DESKTOP}); updating Docker Desktop",
                 before.said(engine)
             );
             updates.update_docker_desktop(progress)?;
-            "OpenBot updated Docker."
+            "AwakenBot updated Docker."
         }
     };
     let now = updates.read();
@@ -404,7 +404,7 @@ again, failed on the same missing pipe until the person restarted their machine 
 answers through its API already, and is asked again only after it was updated.
 
 Asked once without waiting when nothing was updated, so a healthy engine costs one question. Only
-the machine behind OpenBot's own connection is restarted, and only once: an engine that still does not
+the machine behind AwakenBot's own connection is restarted, and only once: an engine that still does not
 answer is the person's failure to see, with Try again, which runs this again.
 */
 fn answering(
@@ -447,7 +447,7 @@ fn answering(
         })
 }
 
-/// `answering`, where nothing was updated: at every check (`ensure`), and when OpenBot's back end is
+/// `answering`, where nothing was updated: at every check (`ensure`), and when AwakenBot's back end is
 /// about to be asked (`wake_engine`), whose own check says only that Docker is unavailable. Only a
 /// Podman machine on macOS or Windows is asked. Whether it was restarted.
 pub fn answering_now(
@@ -464,16 +464,20 @@ pub fn answering_now(
 
 fn not_answering(engine: Engine, updated: bool, detail: String) -> Problem {
     let said = match (engine, updated) {
-        (Engine::Podman, true) => "OpenBot updated Podman, but Podman isn't answering. Try again.",
-        (Engine::Docker, true) => "OpenBot updated Docker, but Docker isn't answering. Try again.",
-        (_, false) => "The software OpenBot runs on isn't answering. Try again.",
+        (Engine::Podman, true) => {
+            "AwakenBot updated Podman, but Podman isn't answering. Try again."
+        }
+        (Engine::Docker, true) => {
+            "AwakenBot updated Docker, but Docker isn't answering. Try again."
+        }
+        (_, false) => "The software AwakenBot runs on isn't answering. Try again.",
     };
     Problem::with(said, detail)
 }
 
 fn still_too_old(engine: Engine, before: &Readings, now: &Readings) -> Problem {
     let detail = format!(
-        "after the update: {} (before: {}); OpenBot needs Compose {COMPOSE}{}",
+        "after the update: {} (before: {}); AwakenBot needs Compose {COMPOSE}{}",
         now.said(engine),
         before.said(engine),
         match engine {
@@ -483,13 +487,13 @@ fn still_too_old(engine: Engine, before: &Readings, now: &Readings) -> Problem {
     );
     match engine {
         Engine::Podman => Problem::with(
-            "OpenBot updated the software it runs on, but an older copy is still in use. Remove \
-             the older Podman, then start OpenBot again.",
+            "AwakenBot updated the software it runs on, but an older copy is still in use. Remove \
+             the older Podman, then start AwakenBot again.",
             detail,
         ),
         Engine::Docker => Problem::with(
-            "OpenBot updated Docker, but Docker is still running the old version. Quit Docker \
-             Desktop and open it again, then start OpenBot again.",
+            "AwakenBot updated Docker, but Docker is still running the old version. Quit Docker \
+             Desktop and open it again, then start AwakenBot again.",
             detail,
         ),
     }
@@ -500,7 +504,7 @@ pub struct OnThisMachine<'a> {
     pub address: Address,
     /// The app's cache directory, where installers are downloaded (`acquire::download_dir`).
     pub cache: std::path::PathBuf,
-    /// OpenBot's window to the front again, after another app's window or a system prompt.
+    /// AwakenBot's window to the front again, after another app's window or a system prompt.
     pub back: &'a dyn Fn(),
     /// Stop or Quit while a step waits for the person.
     pub cancelled: &'a dyn Fn() -> bool,
@@ -518,7 +522,7 @@ impl Updates for OnThisMachine<'_> {
     fn place_compose(&mut self, progress: &mut dyn FnMut(StepLine)) -> Result<(), Problem> {
         progress(
             StepLine::here(
-                "Part of the software OpenBot runs on is too old, so OpenBot is updating it.",
+                "Part of the software AwakenBot runs on is too old, so AwakenBot is updating it.",
             )
             .logged(format!(
                 "Compose is older than {COMPOSE}; placing Compose {} in front of it.",
@@ -643,7 +647,7 @@ mod tests {
         // Podman's banner names the provider's path; the version is the provider's own line.
         assert_eq!(
             compose_version(
-                ">>>> Executing external compose provider \"/Users/a/Library/Caches/ai.copilotkit.openbot.desktop/openbot-engine/bin/docker-compose\". Please see podman-compose(1) for how to disable this message. <<<<\n5.5.1\n"
+                ">>>> Executing external compose provider \"/Users/a/Library/Caches/org.awakenbot.desktop/openbot-engine/bin/docker-compose\". Please see podman-compose(1) for how to disable this message. <<<<\n5.5.1\n"
             ),
             Some(Version::new(5, 5, 1))
         );
@@ -667,7 +671,7 @@ mod tests {
         // `config --environment` arrived in Compose v2.27.2: v2.27.1 is too old, v2.27.2 is not.
         assert!(compose_version(COMPOSE_2_27_1_SHORT).unwrap() < COMPOSE);
         assert!(compose_version(COMPOSE_2_27_2_SHORT).unwrap() >= COMPOSE);
-        // What OpenBot itself installs is always new enough.
+        // What AwakenBot itself installs is always new enough.
         assert!(Version::find(crate::install::PODMAN).unwrap() >= PODMAN);
         assert!(Version::find(crate::install::COMPOSE).unwrap() >= COMPOSE);
     }
@@ -726,7 +730,7 @@ mod tests {
                 "aarch64",
                 Verdict::NewEnough,
             ),
-            // Podman OpenBot installed, and an older one somebody brought.
+            // Podman AwakenBot installed, and an older one somebody brought.
             (
                 "podman 6.1.1",
                 Engine::Podman,
@@ -811,7 +815,7 @@ mod tests {
             assert_eq!(decide(engine, &readings, os, arch), expected, "{name}");
         }
 
-        // Too old, and nothing OpenBot can update: one plain step each.
+        // Too old, and nothing AwakenBot can update: one plain step each.
         let Verdict::CannotUpdate(intel) = decide(
             Engine::Podman,
             &podman(PODMAN_5_8_9, COMPOSE_5_5_1_SHORT),
@@ -835,7 +839,7 @@ mod tests {
         };
         assert_eq!(
             other_docker.said,
-            "Docker on this computer is too old to run OpenBot. Update Docker, then start OpenBot \
+            "Docker on this computer is too old to run AwakenBot. Update Docker, then start AwakenBot \
              again."
         );
     }
@@ -938,7 +942,7 @@ mod tests {
         let Checked::Updated { said, now } = run(Engine::Docker, &mut fake).unwrap() else {
             panic!("Docker Desktop 4.27.2 is updated");
         };
-        assert_eq!(said, "OpenBot updated Docker.");
+        assert_eq!(said, "AwakenBot updated Docker.");
         assert_eq!(now, docker_4_76());
         assert_eq!(
             fake.done,
@@ -950,7 +954,7 @@ mod tests {
     fn an_update_that_left_the_old_version_running_says_so() {
         let mut fake = Fake::new(vec![docker_4_27_2()]);
         let problem = run(Engine::Docker, &mut fake).unwrap_err();
-        assert!(problem.said.starts_with("OpenBot updated Docker, but"));
+        assert!(problem.said.starts_with("AwakenBot updated Docker, but"));
         assert!(problem.detail.unwrap().contains("Compose 2.24.5"));
     }
 
@@ -972,7 +976,7 @@ mod tests {
         let Checked::Updated { said, now } = run(Engine::Podman, &mut fake).unwrap() else {
             panic!("Podman is updated");
         };
-        assert_eq!(said, "OpenBot updated the software it runs on.");
+        assert_eq!(said, "AwakenBot updated the software it runs on.");
         assert_eq!(now, all_new);
         assert_eq!(
             fake.done,
@@ -1031,7 +1035,7 @@ mod tests {
         let Checked::Updated { said: row, now } = on_windows(&mut fake, &mut said).unwrap() else {
             panic!("Podman is updated, and answers");
         };
-        assert_eq!(row, "OpenBot updated the software it runs on.");
+        assert_eq!(row, "AwakenBot updated the software it runs on.");
         assert_eq!(now, podman_6_1_1());
         assert_eq!(
             fake.done,
@@ -1045,7 +1049,7 @@ mod tests {
                 "answers"
             ]
         );
-        assert_eq!(said, ["Restarting the software OpenBot runs on."]);
+        assert_eq!(said, ["Restarting the software AwakenBot runs on."]);
     }
 
     /// An engine that does not answer after its update is a failure, with Try again, and never
@@ -1058,7 +1062,7 @@ mod tests {
         let problem = on_windows(&mut fake, &mut Vec::new()).unwrap_err();
         assert_eq!(
             problem.said,
-            "OpenBot updated Podman, but Podman isn't answering. Try again."
+            "AwakenBot updated Podman, but Podman isn't answering. Try again."
         );
         let detail = problem.detail.unwrap();
         assert!(detail.contains(PIPE_GONE), "{detail}");
@@ -1077,7 +1081,7 @@ mod tests {
         let problem = run(Engine::Docker, &mut docker).unwrap_err();
         assert_eq!(
             problem.said,
-            "OpenBot updated Docker, but Docker isn't answering. Try again."
+            "AwakenBot updated Docker, but Docker isn't answering. Try again."
         );
         assert!(!docker.done.contains(&"restart"));
     }
@@ -1094,7 +1098,7 @@ mod tests {
             Checked::Restarted(podman_6_1_1())
         );
         assert_eq!(fake.done, ["read", "answers", "restart", "answers"]);
-        assert_eq!(said, ["Restarting the software OpenBot runs on."]);
+        assert_eq!(said, ["Restarting the software AwakenBot runs on."]);
 
         // The same before the back end is asked on a relaunch, where no versions are read.
         let mut fake = Fake::new(vec![podman_6_1_1()]);
@@ -1109,7 +1113,7 @@ mod tests {
         let problem = on_windows(&mut fake, &mut Vec::new()).unwrap_err();
         assert_eq!(
             problem.said,
-            "The software OpenBot runs on isn't answering. Try again."
+            "The software AwakenBot runs on isn't answering. Try again."
         );
         assert_eq!(fake.done, ["read", "answers", "restart", "answers"]);
     }
@@ -1142,7 +1146,7 @@ mod tests {
         let mut fake = Fake::new(vec![podman_readings(PODMAN_5_8_9, COMPOSE_5_5_1_SHORT)]);
         let problem =
             ensure(Engine::Podman, "macos", "x86_64", &mut fake, &mut |_| {}).unwrap_err();
-        assert!(problem.said.ends_with("then start OpenBot again."));
+        assert!(problem.said.ends_with("then start AwakenBot again."));
         assert_eq!(fake.done, ["read"]);
     }
 }

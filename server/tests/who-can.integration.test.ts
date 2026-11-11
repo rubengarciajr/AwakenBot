@@ -302,7 +302,7 @@ describe("POST /api/admin/enterprise/capabilities/translate", () => {
     const asked = prompts();
     expect(asked).toHaveLength(2);
     expect(asked[0]).toContain(recording.text);
-    // The writer is told this OpenBot's real groups and the rule a group can only widen.
+    // The writer is told this AwakenBot's real groups and the rule a group can only widen.
     expect(asked[0]).toContain('- "Contractors": 2 people');
     expect(asked[0]).toContain('- "Field Sales (EMEA)": 1 person');
     expect(asked[0]).toContain("There is no off for a group.");

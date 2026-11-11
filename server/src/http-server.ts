@@ -324,7 +324,7 @@ export function startHttpServer(deps: {
         if (!config.computer) {
           return new Response("No computer is configured.", { status: 503 });
         }
-        // On a single-user OpenBot the guard below admits everybody, so first: is this somebody it may admit.
+        // On a single-user AwakenBot the guard below admits everybody, so first: is this somebody it may admit.
         const notHere = config.singleUser
           ? singleUserRefusal(request, caller, config.singleUserAccess)
           : null;
@@ -338,7 +338,7 @@ export function startHttpServer(deps: {
         // And which Bot, which the guard above does not answer. This socket carries that Bot's screen,
         // so signing in is not enough: without this, anybody signed in watches anybody's Bot work. And
         // seeing a Team Bot is not enough either: its screen is its owner's signed-in browser. A person's
-        // own OpenBot browser is that person's alone, an administrator's neither: the same check says so.
+        // own AwakenBot browser is that person's alone, an administrator's neither: the same check says so.
         if (
           !(await computerAccessCheck(agentProfileStore)(
             { id: actor.id, role: actor.role },

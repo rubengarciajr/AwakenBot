@@ -14,7 +14,7 @@ import captured from "./fixtures/composio-gmail-messages.json";
  * I can't guarantee they're the top two across every email in the past 24 hours". A model asks
  * GMAIL_FETCH_EMAILS for that with `max_results: 50, include_payload: true, verbose: true` (Claude
  * Sonnet 5.5's own arguments for the prompt, asked on 2026-11-07), every message then carries its
- * raw MIME tree, and OpenBot cut the answer at 20,000 characters: inside the first message's base64
+ * raw MIME tree, and AwakenBot cut the answer at 20,000 characters: inside the first message's base64
  * HTML, before the page token, ending "[truncated]". The Bot could not read its inbox and could not
  * page to the rest.
  *
@@ -390,7 +390,7 @@ describe("a thread read whole", () => {
 
 describe("any action's list over the cap", () => {
   test("is cut between its records, drops the token past them, and says how to read the rest", async () => {
-    // An action OpenBot does not shape: its answer is read as it came, and only the cut changes.
+    // An action AwakenBot does not shape: its answer is read as it came, and only the cut changes.
     const threads = Array.from({ length: 60 }, (_, index) => ({
       id: `thread-${index}`,
       snippet: `${"y".repeat(900)} ${index}`,

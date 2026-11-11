@@ -110,7 +110,7 @@ describe("runtime capabilities", () => {
     expect((await response.json()).generativeUi).toBe(false);
   });
 
-  // A fork running OpenBot for its own people turns the banner off, and the browser has to hear it.
+  // A fork running AwakenBot for its own people turns the banner off, and the browser has to hear it.
   test("reports the self-host banner as off when the deployment opts out", async () => {
     const disabled = createApp(
       loadConfig(testEnvironment({ OPENBOT_SELF_HOST_BANNER: "false" })),
@@ -151,7 +151,7 @@ describe("runtime capabilities", () => {
 
 describe("authentication availability", () => {
   test("a single-person install answers Sign out as done, since it has no sign-in to end", async () => {
-    // OpenBot Desktop: one person, no identity provider, no sessions. A page that still offers Sign
+    // AwakenBot Desktop: one person, no identity provider, no sessions. A page that still offers Sign
     // out must not be told "No identity provider is configured." for a button that cannot fail.
     const single = createApp(
       loadConfig(

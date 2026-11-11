@@ -138,17 +138,17 @@ pub fn said_about(output: &str) -> String {
         || lower.contains("manifest unknown")
         || lower.contains("not found: manifest")
     {
-        return "OpenBot could not download one of the parts it needs. That version may not have \
-                been published yet. Check for an OpenBot update, and try again."
+        return "AwakenBot could not download one of the parts it needs. That version may not have \
+                been published yet. Check for an AwakenBot update, and try again."
             .into();
     }
     if lower.contains("port is already allocated") || lower.contains("address already in use") {
-        return "Something else on this computer is using a port OpenBot needs. Close it, or \
+        return "Something else on this computer is using a port AwakenBot needs. Close it, or \
                 restart the computer, and try again."
             .into();
     }
     if lower.contains("no space left") {
-        return "This computer has run out of disk space, so OpenBot could not finish. Free some \
+        return "This computer has run out of disk space, so AwakenBot could not finish. Free some \
                 space and try again."
             .into();
     }
@@ -173,7 +173,7 @@ pub fn said_about(output: &str) -> String {
             .iter()
             .any(|cause| lower.contains(cause)))
     {
-        return "OpenBot couldn't download the software it needs. Check your internet connection, \
+        return "AwakenBot couldn't download the software it needs. Check your internet connection, \
                 proxy or firewall, and try again."
             .into();
     }
@@ -181,7 +181,7 @@ pub fn said_about(output: &str) -> String {
         || lower.contains("is the docker daemon running")
         || lower.contains("connection refused")
     {
-        return "OpenBot can't reach the software it runs on. If you use Docker Desktop, open it and \
+        return "AwakenBot can't reach the software it runs on. If you use Docker Desktop, open it and \
                 wait for it to start. Then try again."
             .into();
     }
@@ -191,12 +191,12 @@ pub fn said_about(output: &str) -> String {
             .into();
     }
     if lower.contains("unauthorized") || lower.contains("permission denied") {
-        return "OpenBot was refused permission for something it needed. The details below say \
+        return "AwakenBot was refused permission for something it needed. The details below say \
                 what, and are worth sending to whoever set this up."
             .into();
     }
 
-    "Something went wrong while setting OpenBot up. The details below are worth sending to \
+    "Something went wrong while setting AwakenBot up. The details below are worth sending to \
      whoever set this up."
         .into()
 }
@@ -243,7 +243,7 @@ mod tests {
     #[test]
     fn a_taken_port_says_so_in_words_somebody_can_act_on() {
         let said = said_about("Bind for 0.0.0.0:4202 failed: port is already allocated");
-        assert!(said.contains("port OpenBot needs"), "{said}");
+        assert!(said.contains("port AwakenBot needs"), "{said}");
     }
 
     #[test]

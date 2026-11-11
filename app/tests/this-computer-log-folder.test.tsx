@@ -1,5 +1,5 @@
 /**
- * Settings → This computer: the Logs row and Open log folder. OpenBot Desktop writes a log file on
+ * Settings → This computer: the Logs row and Open log folder. AwakenBot Desktop writes a log file on
  * this computer, and this is how a person finds it to share it. These tests stand in for the IPC
  * Tauri injects into the Desktop window, answering as the shell's `openbot-desktop` plugin does
  * (desktop/src-tauri/src/desktop_page.rs: `status` and `open_logs`); the page, its queries and its
@@ -23,7 +23,7 @@ import { queryClient } from "@/query-client";
 import { Route as ThisComputerRoute } from "@/routes/_authed/settings/this-computer";
 
 const LOG_FOLDER =
-  "C:\\Users\\Administrator\\AppData\\Local\\ai.copilotkit.openbot.desktop\\logs";
+  "C:\\Users\\Administrator\\AppData\\Local\\org.awakenbot.desktop\\logs";
 
 const STATUS: DesktopStatus = {
   openbotRunning: true,
@@ -33,7 +33,7 @@ const STATUS: DesktopStatus = {
   intelligenceStack: null,
   intelligenceContainers: [],
   engine: "docker",
-  root: "C:\\Users\\Administrator\\OpenBot",
+  root: "C:\\Users\\Administrator\\AwakenBot",
   appPort: 3010,
   version: "0.3.2",
   build: "v0.3.2 (b214c97e)",

@@ -163,7 +163,7 @@ describe("how a Bot asks, and how an unattended run ends", () => {
     }
   });
 
-  test("a brought Bot is told OpenBot asks only for what OpenBot gives it", () => {
+  test("a brought Bot is told AwakenBot asks only for what AwakenBot gives it", () => {
     const said = flat(BROUGHT_BOT_ASKING_GUIDANCE);
     expect(said).toContain("when you use the apps and tools openbot gives you");
     expect(said).toContain(

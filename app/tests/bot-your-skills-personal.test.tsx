@@ -85,7 +85,7 @@ function memoryStore() {
   const bots: string[] = [];
   const given = new Set<string>();
   const key = (slug: string, agentId: string) => `${slug}\u0000${agentId}`;
-  // Shipped with OpenBot: the deployment's, so never one of "Your skills".
+  // Shipped with AwakenBot: the deployment's, so never one of "Your skills".
   rows.set("find-a-document", {
     id: "find-a-document",
     slug: "find-a-document",
@@ -269,6 +269,6 @@ test("a skill written on Settings > Skills shows under a new Bot's Your skills, 
   expect(tide.getAttribute("aria-checked")).toBe("true");
   expect(view.queryByText("/tide-report")).toBeNull();
   expect(view.queryByText("No skills yet")).toBeNull();
-  // A skill OpenBot ships is not one the person wrote.
+  // A skill AwakenBot ships is not one the person wrote.
   expect(view.queryByRole("switch", { name: "Find a document" })).toBeNull();
 });

@@ -33,7 +33,7 @@ import type { BrowserComputers, BrowserRouteDeps } from "./routes";
  * (`COMPUTER_PERSON_ID` with `OPENBOT_EDITION`) and allows it for the same reason.
  */
 export const SHARED_COMPUTER =
-  "This OpenBot can't open a browser of your own, because its Bots share one computer.";
+  "This AwakenBot can't open a browser of your own, because its Bots share one computer.";
 
 /**
  * Why a person's browser cannot run on these computers, or null where it can: on a host-side computer of people's
@@ -65,7 +65,7 @@ export function personBrowserRefusal(
  * (`COMPUTER_PERSON_ID`, scripts/start.sh) and allows Record for the same reason.
  */
 export const SHARED_COMPUTER_RECORD =
-  "This OpenBot can't record in a Bot's browser, because its Bots share one computer.";
+  "This AwakenBot can't record in a Bot's browser, because its Bots share one computer.";
 
 /**
  * Why Record in a Bot's browser cannot run on these computers, or null where it can: a provider that gives every person
@@ -162,7 +162,7 @@ export function withPersonBrowsers(
 /**
  * Where a person's browser shows here, from where it runs, by the rule `withPersonBrowsers` finds it by: on a host-side
  * local Chrome computer (`browserUrl`, set for nothing else) it is the person's own Chrome or Edge, a native window on
- * their desktop; on the computers Bots run on (OpenBot Desktop's among them) it is a browser the app shows in the page,
+ * their desktop; on the computers Bots run on (AwakenBot Desktop's among them) it is a browser the app shows in the page,
  * as a screen. Known before the browser is opened, so the sidebar's Browser button knows what one click does.
  */
 export function personBrowserShows(
@@ -193,7 +193,7 @@ export function gatewayBrowserComputers(
 const REPUSH_MS = 30_000;
 
 /**
- * People's browsers on a host-side computer when this OpenBot has no computer for Bots at all, so there
+ * People's browsers on a host-side computer when this AwakenBot has no computer for Bots at all, so there
  * is no gateway to go through. The person's network policy goes ahead of the browser, as the provider's push on wake
  * sends a Bot's: the computer holds it in memory and refuses the browser's connections until one arrives. A failed push
  * is logged, never thrown, for the same reason.

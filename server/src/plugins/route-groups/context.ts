@@ -82,7 +82,7 @@ export function brokerRefusal(
 /**
  * The broker's name, as a sentence written for an operator spells it.
  *
- * A person connects their work apps through OpenBot and is never told which company sits behind
+ * A person connects their work apps through AwakenBot and is never told which company sits behind
  * it. Most of the broker layer's sentences were written for an operator who can open that company's
  * dashboard, so they name it; a route a person calls passes each one through {@link forPerson}.
  */
@@ -153,7 +153,7 @@ export function logReturnUrlRefusal(error: unknown, serverId: string): void {
  *
  * THE SETTING COMES OFF THE ACTIVE PROVIDER'S PROFILE, because the client shows the server's
  * sentence in preference to its own fallback: a sentence that spelled one broker's variable was read
- * by an operator of the other. The broker itself is not named: the directory is OpenBot's.
+ * by an operator of the other. The broker itself is not named: the directory is AwakenBot's.
  */
 export function directoryUnavailable(provider: BrokerProvider): string {
   const { envVar } = BROKERED_PROFILE[provider];

@@ -20,10 +20,10 @@ import type { Profiles } from "../src/profiles";
  * connections arrived anonymous and were judged by every policy on the computer, strictest first:
  * with a person's browser open, a Bot allowed to reach an internal service was refused, and two Bots
  * on one computer refused each other the same way. Here a Bot allowed everything, a Bot allowed
- * nothing and a person's hosted browser allowed only its OpenBot are all open at once, in real
+ * nothing and a person's hosted browser allowed only its AwakenBot are all open at once, in real
  * Chromium, through the real filter, and each reaches exactly what its own policy allows.
  *
- * The person's browser comes first and its Recorder's worker reports to OpenBot as it connects,
+ * The person's browser comes first and its Recorder's worker reports to AwakenBot as it connects,
  * before any page has loaded: the worker's own requests have to answer the filter's question too.
  *
  *   OPENBOT_COMPUTER_BROWSER=1 bun test tests/egress-browsers.test.ts
@@ -45,7 +45,7 @@ const RUNTIME: BrowserRuntime = {
 
 const reports: { method: string }[] = [];
 
-/** The OpenBot the person's browser may reach, which the fixture Recorder reports its calls to. */
+/** The AwakenBot the person's browser may reach, which the fixture Recorder reports its calls to. */
 const openbot = asked
   ? Bun.serve({
       hostname: "127.0.0.1",
@@ -55,9 +55,12 @@ const openbot = asked
           reports.push((await request.json()) as { method: string });
           return new Response("");
         }
-        return new Response("<!doctype html><title>OpenBot</title>OpenBot", {
-          headers: { "content-type": "text/html" },
-        });
+        return new Response(
+          "<!doctype html><title>AwakenBot</title>AwakenBot",
+          {
+            headers: { "content-type": "text/html" },
+          },
+        );
       },
     })
   : undefined;
@@ -154,7 +157,7 @@ describe.skipIf(!asked)("browsers sharing a computer's egress filter", () => {
     return page.evaluate(() => document.body?.innerText ?? "");
   };
 
-  test("the person's browser opens and its Recorder reaches OpenBot before any page has loaded", async () => {
+  test("the person's browser opens and its Recorder reaches AwakenBot before any page has loaded", async () => {
     const opening = await person("/browser/open", {
       connection: {
         openbotUrl: OPENBOT,
@@ -167,7 +170,7 @@ describe.skipIf(!asked)("browsers sharing a computer's egress filter", () => {
     expect(((await opening.json()) as BrowserState).recorder?.connected).toBe(
       true,
     );
-    // The Recorder's worker told OpenBot about the connect, through the filter.
+    // The Recorder's worker told AwakenBot about the connect, through the filter.
     expect(reports.map((report) => report.method)).toContain("connect");
   }, 60_000);
 
@@ -204,7 +207,7 @@ describe.skipIf(!asked)("browsers sharing a computer's egress filter", () => {
     );
   }, 60_000);
 
-  test("and no Bot borrows the person's allowance for their OpenBot", async () => {
+  test("and no Bot borrows the person's allowance for their AwakenBot", async () => {
     expect(await shown(STRICT_BOT, OPENBOT)).toContain(
       "is not on this deployment's network allowlist.",
     );
@@ -212,7 +215,7 @@ describe.skipIf(!asked)("browsers sharing a computer's egress filter", () => {
     expect(opened.status).toBe(200);
     const page = await profiles.page(PERSON);
     expect(await page.evaluate(() => document.body.innerText)).toContain(
-      "OpenBot",
+      "AwakenBot",
     );
   }, 60_000);
 });

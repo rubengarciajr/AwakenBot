@@ -1,24 +1,24 @@
 //! What the Windows uninstaller stops, and with "Delete the application data" removes, before it
-//! removes OpenBot.
+//! removes AwakenBot.
 //!
-//! Uninstalling OpenBot from Windows' Apps closed the app and left everything it runs behind:
-//! OpenBot's Podman machine (`acquire::MACHINE`), OpenBot's containers in it and the backend's
+//! Uninstalling AwakenBot from Windows' Apps closed the app and left everything it runs behind:
+//! AwakenBot's Podman machine (`acquire::MACHINE`), AwakenBot's containers in it and the backend's
 //! cluster, with no app left to stop them. So the uninstaller first runs this app headless
 //! (`NSIS_HOOK_PREUNINSTALL` in `windows/hooks.nsh`), as `openbot-desktop.exe --stop-for-uninstall`,
 //! with `--delete-data` added when the person ticked "Delete the application data".
 //!
-//! It stops what Stop stops, then OpenBot's own machine, and nothing else:
-//! - OpenBot's containers, with Compose (`stack::down`), on the engine the installation runs on;
-//! - the backend, with the CLI's `local stop`, and only when OpenBot created it;
-//! - OpenBot's machine, `openbot`, when there is one.
+//! It stops what Stop stops, then AwakenBot's own machine, and nothing else:
+//! - AwakenBot's containers, with Compose (`stack::down`), on the engine the installation runs on;
+//! - the backend, with the CLI's `local stop`, and only when AwakenBot created it;
+//! - AwakenBot's machine, `openbot`, when there is one.
 //!
 //! Deleting the data also removes what a new installation would otherwise find and take for its own:
-//! the backend OpenBot created (the CLI's `local delete`), OpenBot's machine, and OpenBot's files in
+//! the backend AwakenBot created (the CLI's `local delete`), AwakenBot's machine, and AwakenBot's files in
 //! the installation folder (`remove_installation`). Box I found why: with the machine gone and the
 //! folder left complete, the next install opened on a Start that could never work. Otherwise the
-//! machine is left stopped, with everything in it, so installing OpenBot again finds it.
+//! machine is left stopped, with everything in it, so installing AwakenBot again finds it.
 //!
-//! The person's own machines and containers are never touched. An OpenBot that ran in a machine of
+//! The person's own machines and containers are never touched. An AwakenBot that ran in a machine of
 //! theirs has its containers taken down there, and their machine is left running.
 //!
 //! Not on an update: the installer runs the old uninstaller with `/UPDATE`, and the hook then leaves
@@ -63,11 +63,11 @@ pub fn asked(args: &[OsString]) -> Option<Asked> {
 pub trait Computer {
     /// The engine the installation at `root` runs on, when it answers.
     fn engine(&mut self, root: &Path) -> Option<Address>;
-    /// OpenBot's containers at `root`, taken down with Compose.
+    /// AwakenBot's containers at `root`, taken down with Compose.
     fn compose_down(&mut self, engine: &Address, root: &Path) -> Result<(), String>;
-    /// The backend, stopped with the CLI, when OpenBot created it.
+    /// The backend, stopped with the CLI, when AwakenBot created it.
     fn stop_backend(&mut self, engine: &Address, root: &Path) -> Result<(), String>;
-    /// The backend deleted with the CLI, when OpenBot created it.
+    /// The backend deleted with the CLI, when AwakenBot created it.
     fn delete_backend(&mut self, engine: &Address, root: &Path) -> Result<(), String>;
     /// The Podman machine `name`: `None` when there is none (or no Podman), else whether it runs.
     fn machine(&mut self, name: &str) -> Result<Option<bool>, String>;
@@ -75,13 +75,13 @@ pub trait Computer {
     fn remove_machine(&mut self, name: &str) -> Result<(), String>;
     /// Every container in the machine `name` stopped, taking its port rules with it.
     fn stop_containers(&mut self, name: &str) -> Result<(), String>;
-    /// Every one of OpenBot's port rules in the machine `name` removed, when its containers wouldn't stop.
+    /// Every one of AwakenBot's port rules in the machine `name` removed, when its containers wouldn't stop.
     fn clear_port_rules(&mut self, name: &str) -> Result<(), String>;
-    /// OpenBot's files in the installation folder `root` (`remove_installation`).
+    /// AwakenBot's files in the installation folder `root` (`remove_installation`).
     fn remove_installation(&mut self, root: &Path) -> Result<(), String>;
 }
 
-/// Stop what OpenBot runs for the installation at `root`, and with `delete_data` remove it, saying
+/// Stop what AwakenBot runs for the installation at `root`, and with `delete_data` remove it, saying
 /// each step to `say` in plain words. Every step is tried, whatever happened to the one before.
 /// What failed is returned in plain words too, and the engine's own words go to the log.
 pub fn stop_with(
@@ -91,7 +91,7 @@ pub fn stop_with(
     say: &mut dyn FnMut(&str),
 ) -> Vec<String> {
     log::info!(
-        "[uninstall] stopping what OpenBot runs for {}{}",
+        "[uninstall] stopping what AwakenBot runs for {}{}",
         root.display(),
         if asked.delete_data {
             ", and deleting its data"
@@ -101,32 +101,32 @@ pub fn stop_with(
     );
     let mut failures = Vec::new();
 
-    // No engine answering: nothing of OpenBot's runs there to take down.
+    // No engine answering: nothing of AwakenBot's runs there to take down.
     match computer.engine(root) {
         Some(engine) => {
             log::info!("[uninstall] on {engine:?}");
-            say("Stopping OpenBot.");
+            say("Stopping AwakenBot.");
             let down = computer.compose_down(&engine, root);
             note(
                 &mut failures,
-                "Couldn't stop OpenBot.",
+                "Couldn't stop AwakenBot.",
                 "compose down",
                 down,
             );
-            say("Stopping OpenBot's services.");
+            say("Stopping AwakenBot's services.");
             let backend = computer.stop_backend(&engine, root);
             note(
                 &mut failures,
-                "Couldn't stop OpenBot's services.",
+                "Couldn't stop AwakenBot's services.",
                 "the backend's stop",
                 backend,
             );
             if asked.delete_data {
-                say("Removing OpenBot's services.");
+                say("Removing AwakenBot's services.");
                 let deleted = computer.delete_backend(&engine, root);
                 note(
                     &mut failures,
-                    "Couldn't remove OpenBot's services.",
+                    "Couldn't remove AwakenBot's services.",
                     "the backend's delete",
                     deleted,
                 );
@@ -140,9 +140,9 @@ pub fn stop_with(
         Ok(Some(running)) => {
             // Before the machine goes, its containers stop, and their port rules go with them. In
             // WSL's shared network namespace they would outlive the machine, ahead of the next
-            // OpenBot's rules for the same ports (box I: the backend wouldn't stop, its cluster's
-            // rules stayed, and the next install failed at "Opening OpenBot"). If they won't stop,
-            // OpenBot's rules are removed instead, while the machine can still be reached.
+            // AwakenBot's rules for the same ports (box I: the backend wouldn't stop, its cluster's
+            // rules stayed, and the next install failed at "Opening AwakenBot"). If they won't stop,
+            // AwakenBot's rules are removed instead, while the machine can still be reached.
             if asked.delete_data && running {
                 match computer.stop_containers(own) {
                     Ok(()) => log::info!("[uninstall] stopped every container in {own}"),
@@ -157,21 +157,21 @@ pub fn stop_with(
                 }
             }
             if running {
-                say("Stopping the software OpenBot runs on.");
+                say("Stopping the software AwakenBot runs on.");
                 let stopped = computer.stop_machine(own);
                 note(
                     &mut failures,
-                    "Couldn't stop the software OpenBot runs on.",
+                    "Couldn't stop the software AwakenBot runs on.",
                     &format!("podman machine stop {own}"),
                     stopped,
                 );
             }
             if asked.delete_data {
-                say("Removing the software OpenBot runs on.");
+                say("Removing the software AwakenBot runs on.");
                 let removed = computer.remove_machine(own);
                 note(
                     &mut failures,
-                    "Couldn't remove the software OpenBot runs on.",
+                    "Couldn't remove the software AwakenBot runs on.",
                     &format!("podman machine rm {own}"),
                     removed,
                 );
@@ -180,19 +180,19 @@ pub fn stop_with(
         Ok(None) => log::info!("[uninstall] no Podman machine named {own}"),
         Err(error) => note(
             &mut failures,
-            "Couldn't check the software OpenBot runs on.",
+            "Couldn't check the software AwakenBot runs on.",
             "podman machine list",
             Err(error),
         ),
     }
 
-    // Last, once nothing of OpenBot's runs from it.
+    // Last, once nothing of AwakenBot's runs from it.
     if asked.delete_data {
-        say("Removing OpenBot's files.");
+        say("Removing AwakenBot's files.");
         let removed = computer.remove_installation(root);
         note(
             &mut failures,
-            "Couldn't remove all of OpenBot's files.",
+            "Couldn't remove all of AwakenBot's files.",
             "removing the installation's files",
             removed,
         );
@@ -211,7 +211,7 @@ fn note(failures: &mut Vec<String>, sentence: &str, step: &str, result: Result<(
     }
 }
 
-/// Only OpenBot writes these, so a folder with one of them is an OpenBot installation.
+/// Only AwakenBot writes these, so a folder with one of them is an AwakenBot installation.
 const RECORDS: [&str; 3] = [
     ".openbot-deployment",
     crate::preparation::FILE,
@@ -220,7 +220,7 @@ const RECORDS: [&str; 3] = [
 
 /// The installation's own files besides `upgrade::KEPT` and every `.openbot…` record: its settings
 /// and keys, the backend's tool's project and the sign-in store the containers keep there, the log of
-/// processes an older version ran, and the engine tools OpenBot downloaded.
+/// processes an older version ran, and the engine tools AwakenBot downloaded.
 const OWN: [&str; 6] = [
     ".env",
     ".secrets",
@@ -230,7 +230,7 @@ const OWN: [&str; 6] = [
     "openbot-engine",
 ];
 
-/// Whether the entry `name` in an installation folder is OpenBot's own.
+/// Whether the entry `name` in an installation folder is AwakenBot's own.
 fn openbots(name: &str) -> bool {
     crate::upgrade::KEPT.contains(&name)
         || OWN.contains(&name)
@@ -239,18 +239,18 @@ fn openbots(name: &str) -> bool {
 }
 
 /**
-OpenBot's files in the installation folder `root`, removed, then the folder itself once nothing else
+AwakenBot's files in the installation folder `root`, removed, then the folder itself once nothing else
 is left in it: what a new installation would otherwise find and take for its own.
 
-Only a folder OpenBot recorded as an installation, by a record only it writes (`RECORDS`), and never
-the home folder `home`, a folder above it or the root of a drive. Inside it only OpenBot's own entries
+Only a folder AwakenBot recorded as an installation, by a record only it writes (`RECORDS`), and never
+the home folder `home`, a folder above it or the root of a drive. Inside it only AwakenBot's own entries
 go (`openbots`): a file of the person's stays, and with it the folder. The backend's tool also leaves
 a `.gitignore` in the folder it runs in, which goes only when nothing but it is left. Links are
 removed as links, never followed.
 */
 pub fn remove_installation(root: &Path, home: Option<&Path>) -> Result<(), String> {
     if !root.is_absolute() || root.parent().is_none() {
-        return Err(format!("{} is not a folder OpenBot made", root.display()));
+        return Err(format!("{} is not a folder AwakenBot made", root.display()));
     }
     if let Some(home) = home {
         if root == home || home.starts_with(root) {
@@ -259,7 +259,7 @@ pub fn remove_installation(root: &Path, home: Option<&Path>) -> Result<(), Strin
     }
     if !RECORDS.iter().any(|record| root.join(record).exists()) {
         log::info!(
-            "[uninstall] {} holds no OpenBot installation; nothing removed",
+            "[uninstall] {} holds no AwakenBot installation; nothing removed",
             root.display()
         );
         return Ok(());
@@ -299,7 +299,7 @@ pub fn remove_installation(root: &Path, home: Option<&Path>) -> Result<(), Strin
         }
     } else {
         log::info!(
-            "[uninstall] {} keeps files that are not OpenBot's",
+            "[uninstall] {} keeps files that are not AwakenBot's",
             root.display()
         );
     }
@@ -393,7 +393,7 @@ mod tests {
         (said, failures)
     }
 
-    /// Uninstalling found OpenBot's machine, its containers and the backend still running with no
+    /// Uninstalling found AwakenBot's machine, its containers and the backend still running with no
     /// app left to stop them. The uninstaller now stops them, and leaves the machine there, stopped,
     /// with the installation folder, for a reinstall to find.
     #[test]
@@ -414,16 +414,16 @@ mod tests {
         assert_eq!(
             said,
             [
-                "Stopping OpenBot.",
-                "Stopping OpenBot's services.",
-                "Stopping the software OpenBot runs on.",
+                "Stopping AwakenBot.",
+                "Stopping AwakenBot's services.",
+                "Stopping the software AwakenBot runs on.",
             ]
         );
     }
 
     /// Box I: "Delete the application data" took the machine and left the installation folder whole,
     /// and the next install opened on a Start that could never work. Deleting the data now removes
-    /// the backend OpenBot created while its engine still runs, then OpenBot's machine, then its
+    /// the backend AwakenBot created while its engine still runs, then AwakenBot's machine, then its
     /// files, last.
     #[test]
     fn deleting_the_data_removes_the_backend_the_machine_and_the_installation() {
@@ -447,20 +447,20 @@ mod tests {
         assert_eq!(
             said,
             [
-                "Stopping OpenBot.",
-                "Stopping OpenBot's services.",
-                "Removing OpenBot's services.",
-                "Stopping the software OpenBot runs on.",
-                "Removing the software OpenBot runs on.",
-                "Removing OpenBot's files.",
+                "Stopping AwakenBot.",
+                "Stopping AwakenBot's services.",
+                "Removing AwakenBot's services.",
+                "Stopping the software AwakenBot runs on.",
+                "Removing the software AwakenBot runs on.",
+                "Removing AwakenBot's files.",
             ]
         );
     }
 
     /// Box I: deleting the data removed `openbot` with the backend's cluster still running (its stop
     /// had failed), the cluster's port rules stayed in WSL's shared network namespace, and the next
-    /// install failed at "Opening OpenBot". Before the machine stops and goes, every container in it
-    /// stops, and if they won't, OpenBot's port rules are removed. Not when the data stays: the
+    /// install failed at "Opening AwakenBot". Before the machine stops and goes, every container in it
+    /// stops, and if they won't, AwakenBot's port rules are removed. Not when the data stays: the
     /// machine stays too, and its next start clears its own dead rules.
     #[test]
     fn before_openbots_machine_goes_its_containers_stop_or_its_port_rules_go() {
@@ -526,7 +526,7 @@ mod tests {
         );
     }
 
-    /// Docker, or no Podman machine of OpenBot's: the containers stop and no machine is touched.
+    /// Docker, or no Podman machine of AwakenBot's: the containers stop and no machine is touched.
     /// The installation's files still go when the data is deleted.
     #[test]
     fn without_openbots_machine_no_machine_is_touched() {
@@ -548,7 +548,7 @@ mod tests {
         );
     }
 
-    /// The only machine named is OpenBot's own, whatever the engine OpenBot ran on: one of the
+    /// The only machine named is AwakenBot's own, whatever the engine AwakenBot ran on: one of the
     /// person's machines is never stopped or removed.
     #[test]
     fn only_openbots_own_machine_is_ever_named() {
@@ -570,7 +570,7 @@ mod tests {
         );
     }
 
-    /// No engine answering (OpenBot's machine already stopped, say): nothing to take down, and the
+    /// No engine answering (AwakenBot's machine already stopped, say): nothing to take down, and the
     /// machine and the files are still dealt with.
     #[test]
     fn with_no_engine_answering_only_the_machine_and_the_files_are_dealt_with() {
@@ -601,13 +601,13 @@ mod tests {
         assert_eq!(
             failures,
             [
-                "Couldn't stop OpenBot. Uninstalling anyway.",
-                "Couldn't stop the software OpenBot runs on. Uninstalling anyway.",
+                "Couldn't stop AwakenBot. Uninstalling anyway.",
+                "Couldn't stop the software AwakenBot runs on. Uninstalling anyway.",
             ]
         );
     }
 
-    /// Nothing the uninstaller shows names the parts inside OpenBot: none of the copy guard's
+    /// Nothing the uninstaller shows names the parts inside AwakenBot: none of the copy guard's
     /// words (`tests/plain-setup-words.test.ts`), and never an engine's own message.
     #[test]
     fn the_uninstallers_lines_are_plain_words() {
@@ -644,7 +644,7 @@ mod tests {
         }
     }
 
-    /// What box I found left in `~\OpenBot` after "Delete the application data", by name.
+    /// What box I found left in `~\AwakenBot` after "Delete the application data", by name.
     const LEFT_ON_BOX_I: [&str; 18] = [
         ".copilotkit/local.json",
         ".langchain/chatgpt-auth.json",
@@ -668,7 +668,7 @@ mod tests {
 
     fn installation(name: &str) -> (std::path::PathBuf, std::path::PathBuf) {
         let home = crate::test_support::temp_root(name);
-        let root = home.join("OpenBot");
+        let root = home.join("AwakenBot");
         for entry in LEFT_ON_BOX_I {
             let path = root.join(entry);
             std::fs::create_dir_all(path.parent().unwrap()).unwrap();
@@ -702,11 +702,11 @@ mod tests {
         let _ = std::fs::remove_dir_all(home);
     }
 
-    /// Never the home folder, a folder above it, a drive's root, or a folder OpenBot didn't record.
+    /// Never the home folder, a folder above it, a drive's root, or a folder AwakenBot didn't record.
     #[test]
     fn only_a_folder_openbot_recorded_is_ever_touched() {
         let (home, root) = installation("uninstall-refusals");
-        // The home folder itself, holding OpenBot's records, and the folder above it.
+        // The home folder itself, holding AwakenBot's records, and the folder above it.
         for entry in LEFT_ON_BOX_I {
             let path = home.join(entry);
             std::fs::create_dir_all(path.parent().unwrap()).unwrap();
@@ -717,9 +717,9 @@ mod tests {
         assert!(home.join(".env").exists());
         let drive = Path::new(if cfg!(windows) { "C:\\" } else { "/" });
         assert!(remove_installation(drive, Some(&home)).is_err());
-        assert!(remove_installation(Path::new("OpenBot"), Some(&home)).is_err());
+        assert!(remove_installation(Path::new("AwakenBot"), Some(&home)).is_err());
 
-        // A folder with none of OpenBot's records: nothing in it goes.
+        // A folder with none of AwakenBot's records: nothing in it goes.
         for record in RECORDS {
             std::fs::remove_file(root.join(record)).unwrap();
         }
@@ -773,7 +773,7 @@ mod tests {
             .collect()
     }
 
-    /// The uninstaller runs the stop on a real uninstall only, closes a running OpenBot first, and
+    /// The uninstaller runs the stop on a real uninstall only, closes a running AwakenBot first, and
     /// asks for the data to go only when "Delete the application data" is ticked. What it runs is
     /// what the app reads.
     #[test]
@@ -793,7 +793,7 @@ mod tests {
         let stop = nsis_macro("OPENBOT_STOP_WHAT_OPENBOT_RUNS");
         let close = stop
             .find("!insertmacro CheckIfAppIsRunning")
-            .expect("a running OpenBot is closed first");
+            .expect("a running AwakenBot is closed first");
         assert!(close < stop.find(COMMAND).unwrap());
         let ticked = stop
             .split("${If} $DeleteAppDataCheckboxState = 1")

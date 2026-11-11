@@ -296,7 +296,7 @@ export function myCapabilitiesQueryOptions() {
     queryFn: async (): Promise<MyCapabilities> =>
       (
         await client("/api/admin/enterprise/me", {
-          fallback: "Couldn't load what OpenBot allows.",
+          fallback: "Couldn't load what AwakenBot allows.",
         })
       ).json(),
   });

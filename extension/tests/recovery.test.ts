@@ -39,11 +39,11 @@ const OFFSCREEN_SENDER = {
 const ada = { id: "p1", name: "Ada", email: "ada@example.test" };
 const bea = { id: "p2", name: "Bea", email: "bea@example.test" };
 const DEAL = "https://crm.example.test/deals/42";
-const KEPT_SIGNED_OUT = "This browser was disconnected from OpenBot.";
+const KEPT_SIGNED_OUT = "This browser was disconnected from AwakenBot.";
 
-// ---- The fake OpenBot -------------------------------------------------------------------------
+// ---- The fake AwakenBot -------------------------------------------------------------------------
 //
-// Recovery asks OpenBot nothing: every request is recorded so the tests can say so.
+// Recovery asks AwakenBot nothing: every request is recorded so the tests can say so.
 
 const openbot = { calls: [] as string[] };
 
@@ -459,7 +459,7 @@ test("a drain of another person waits for that person and nothing of it is sent;
   expect(openbot.calls).toEqual([]);
 });
 
-test("a recording that has waited for its person longer than OpenBot keeps anyone signed in is deleted unsent at the next start, its outbox with it, and one within that time waits on", async () => {
+test("a recording that has waited for its person longer than AwakenBot keeps anyone signed in is deleted unsent at the next start, its outbox with it, and one within that time waits on", async () => {
   await restartBrowser();
   const waiting = (id: string, since: number) =>
     storedDrain(id, bea, {
@@ -593,7 +593,7 @@ test("a service-worker restart with the document still open finishes a discard i
   // The document holds its events, retrying them while it lives on.
   storeDiscardingDrain("rec-gone", {
     kept: {
-      reason: "OpenBot's backend could not take the events yet.",
+      reason: "AwakenBot's backend could not take the events yet.",
       parked: false,
       events: 12,
       at: now - 1_000,

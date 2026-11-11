@@ -101,7 +101,7 @@ const MAIL = `composio-mail-${suite}`;
 const MAIL_APP = `mail-${suite}`;
 /** Web search on this deployment's own key. */
 const EXA = "exa-authenticated";
-/** A server added under the id OpenBot's memory tools are spelled with. */
+/** A server added under the id AwakenBot's memory tools are spelled with. */
 const MEMORY = "memory";
 /** An Arcade app the person connected, on a deployment that runs Arcade. */
 const TASKS = `arcade-tasks-${suite}`;
@@ -827,7 +827,7 @@ describe("a check-in reads what the person connected, through the tools that say
     expect(refusal?.payload).toMatchObject({ refusal: "check_in_not_a_read" });
   });
 
-  test("a Bot on another framework checks in on OpenBot's own runner, as itself, with the person's tools, and its endpoint is never called", async () => {
+  test("a Bot on another framework checks in on AwakenBot's own runner, as itself, with the person's tools, and its endpoint is never called", async () => {
     script = {
       read: modelName(ref(MAIL, "MAIL_FETCH_EMAILS")),
       title: "Answer the supplier",
@@ -838,14 +838,14 @@ describe("a check-in reads what the person connected, through the tools that say
     expect(connectorsOffered(asked[0])).toEqual([
       modelName(ref(MAIL, "MAIL_FETCH_EMAILS")),
     ]);
-    // The role it is sent at its endpoint, as the instructions OpenBot's own runner gives a model.
+    // The role it is sent at its endpoint, as the instructions AwakenBot's own runner gives a model.
     const system = (asked[0]?.messages ?? [])
       .filter((message) => message.role !== "user" && message.role !== "tool")
       .map((message) => textOf(message.content))
       .join("\n");
     expect(system).toContain("You are Harness Bot, Planner.");
     expect(system).toContain("Plans the person's week.");
-    // Said once: the guidance its standing role ends with is the guidance OpenBot gives every Bot.
+    // Said once: the guidance its standing role ends with is the guidance AwakenBot gives every Bot.
     expect(system.split(PROVENANCE_GUIDANCE)).toHaveLength(2);
     expect(system.split(COMPONENT_GUIDANCE)).toHaveLength(2);
     expect(system.split(UNTRUSTED_GUIDANCE)).toHaveLength(2);
@@ -912,7 +912,7 @@ describe("the memory tools' own id", () => {
         )
       )?.text,
     ).toStartWith("Refused.");
-    // The person's own memory, by the name OpenBot gives it, still reads.
+    // The person's own memory, by the name AwakenBot gives it, still reads.
     expect(
       await guardProactiveCallback(
         {

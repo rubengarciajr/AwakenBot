@@ -1,8 +1,8 @@
 // The recording controller: Record, the tabs a recording follows, the 50-action notice, Stop, Start over and the
 // drains that keep sending after it. A recording goes to Intelligence only: Record takes a new trajectory id, the
-// offscreen document asks OpenBot for a capture pass (the trajectory joins the person's own Learning space) and streams
+// offscreen document asks AwakenBot for a capture pass (the trajectory joins the person's own Learning space) and streams
 // every event to Intelligence, and
-// Stop queues the outcome and lets the outbox drain. OpenBot hears nothing of the recording itself, only what the
+// Stop queues the outcome and lets the outbox drain. AwakenBot hears nothing of the recording itself, only what the
 // Recorder is doing (its phase, the recording's title and how many actions so far, activity.ts), for the Browser
 // button's red dot. The phase lives in a
 // reducer (`reduceRecorder`), persisted to storage.session after every transition so a restarted service worker finds
@@ -130,8 +130,8 @@ export type RecordingDeps = {
 
 /** Called by the router after Task 8's handler answered: `connected` after a successful `page.connect.decide` (web or Desktop),
  * `disconnected` after `page.disconnect` (the person's own Disconnect). `connectionLost` is connection.ts's: the
- * keep-alive's signed-out answer, the organization's policy moving the Recorder away from the connection's OpenBot, or a
- * connection to another OpenBot, or for another person, replacing it. */
+ * keep-alive's signed-out answer, the organization's policy moving the Recorder away from the connection's AwakenBot, or a
+ * connection to another AwakenBot, or for another person, replacing it. */
 type ConnectionEvents = {
   connected(): Promise<void>;
   disconnected(): Promise<void>;
@@ -191,7 +191,7 @@ export function recordingRecovery(): RecordingRecovery | null {
 const READY_TIMEOUT_MS = 5_000;
 const STOP_WATCHDOG_MS = 120_000;
 const ME_FRESH_MS = 60_000;
-/** How often a running recording asks OpenBot whether its connection still stands. */
+/** How often a running recording asks AwakenBot whether its connection still stands. */
 const CONNECTION_CHECK_MS = 30_000;
 /** While the offscreen port is down, content events wait here; beyond either cap the oldest go, counted (Decision 19). */
 const QUEUE_EVENTS = 2_000;
@@ -242,11 +242,11 @@ export function heldEvents(
 }
 
 const SENTENCES = {
-  noConnection: "Connect this browser to OpenBot first.",
+  noConnection: "Connect this browser to AwakenBot first.",
   badSite: "That is not a website the Recorder can leave out.",
   // The install grants website access; only the person's own Site access setting can withhold it afterwards.
   noAccess:
-    "Site access is off for OpenBot Recorder. Open your browser's Extensions page, choose Details on OpenBot Recorder and set Site access to On all sites.",
+    "Site access is off for AwakenBot Recorder. Open your browser's Extensions page, choose Details on AwakenBot Recorder and set Site access to On all sites.",
   busy: "A recording is already running.",
   notRecording: "Nothing is being recorded.",
   noVoice: "This recording has no voice.",
@@ -257,23 +257,23 @@ const SENTENCES = {
   documentFailed: "The Recorder could not start recording. Try again.",
   restartUnreachable:
     "The Recorder could not start over just now. Your recording goes on; try again in a moment.",
-  signedOut: `This browser was disconnected from OpenBot. Your recording stopped, and everything in it is kept in this browser for ${KEPT_FOR_PERSON_DAYS} days, until you connect again.`,
+  signedOut: `This browser was disconnected from AwakenBot. Your recording stopped, and everything in it is kept in this browser for ${KEPT_FOR_PERSON_DAYS} days, until you connect again.`,
   organizationSignedOut: `Your organization sign-in ended. Your recording stopped, and everything in it is kept in this browser for ${KEPT_FOR_PERSON_DAYS} days, until you connect again.`,
-  policyMoved: `Your organization moved the Recorder to another OpenBot. Your recording stopped, and everything in it is kept in this browser for ${KEPT_FOR_PERSON_DAYS} days.`,
+  policyMoved: `Your organization moved the Recorder to another AwakenBot. Your recording stopped, and everything in it is kept in this browser for ${KEPT_FOR_PERSON_DAYS} days.`,
   policyRefused:
-    "Your organization's Recorder policy does not allow this OpenBot. Ask your IT team.",
-  replaced: `This browser was connected to another OpenBot or person. Your recording stopped, and everything in it is kept in this browser for ${KEPT_FOR_PERSON_DAYS} days, until you connect again.`,
-  keptSignedOut: "This browser was disconnected from OpenBot.",
+    "Your organization's Recorder policy does not allow this AwakenBot. Ask your IT team.",
+  replaced: `This browser was connected to another AwakenBot or person. Your recording stopped, and everything in it is kept in this browser for ${KEPT_FOR_PERSON_DAYS} days, until you connect again.`,
+  keptSignedOut: "This browser was disconnected from AwakenBot.",
   keptOrganization: "Your organization sign-in ended.",
-  keptPolicy: "Your organization moved the Recorder to another OpenBot.",
-  keptReplaced: "This browser was connected to another OpenBot or person.",
+  keptPolicy: "Your organization moved the Recorder to another AwakenBot.",
+  keptReplaced: "This browser was connected to another AwakenBot or person.",
   authorityUnavailable: TRAJECTORY_GATE_REFUSALS.authorityUnavailable.message,
-  forbidden: "OpenBot does not let you record. Ask whoever runs it.",
+  forbidden: "AwakenBot does not let you record. Ask whoever runs it.",
 } as const;
 
 type SignedOutReason = "revoked" | "removed" | "organization";
-/** Why a connection went without the person's Disconnect: OpenBot signed it out, the policy moved the Recorder, or the
- * person connected this browser to another OpenBot, or as another person, on the Connect page. */
+/** Why a connection went without the person's Disconnect: AwakenBot signed it out, the policy moved the Recorder, or the
+ * person connected this browser to another AwakenBot, or as another person, on the Connect page. */
 type LostReason = SignedOutReason | "policy" | "replaced";
 
 /** The sentences that say a stopped recording is kept until something happens: a Disconnect discards it, so they go. */
@@ -302,8 +302,8 @@ const keptSentence = (reason: LostReason): string =>
         ? SENTENCES.keptReplaced
         : SENTENCES.keptSignedOut;
 
-/** Record found the policy no longer allows the connection's OpenBot (connection.ts forgets it in a moment). */
-const POLICY_REFUSED = new Error("The policy does not allow this OpenBot.");
+/** Record found the policy no longer allows the connection's AwakenBot (connection.ts forgets it in a moment). */
+const POLICY_REFUSED = new Error("The policy does not allow this AwakenBot.");
 
 /** Record ended by a stop (Stop, Disconnect, a sign-out) before its recording was live: it rolls back. */
 const CANCELLED = new Error("Record was cancelled before it started.");
@@ -567,7 +567,7 @@ const signedOutReason = (error: unknown): SignedOutReason | null =>
     ? (error.body?.reason ?? "revoked")
     : null;
 
-/** What the popup says when OpenBot refused a request: the Recorder's own sentence for what OpenBot answered, never the
+/** What the popup says when AwakenBot refused a request: the Recorder's own sentence for what AwakenBot answered, never the
  * text in its answer, which the popup would show in the Recorder's own voice. */
 const sentenceFor = (error: unknown, fallback: string): string => {
   if (!(error instanceof OpenBotError)) return fallback;
@@ -609,7 +609,7 @@ export function installRecording(
    * most): a save whose body held one carries what they entered, though it reads [redacted] (network/index.ts). Kept as
    * `digests` are. */
   const typedSecrets = new Map<number, string[]>();
-  /** The person's own Learning space as OpenBot last described it: a recording starts with it, for its popup line. Kept
+  /** The person's own Learning space as AwakenBot last described it: a recording starts with it, for its popup line. Kept
    * in storage.session too (`learning`), so a service worker that started after the popup asked still has it. */
   let learningSpace: LearningSpaceState | undefined;
   /** The live recording's narration when its launcher passes it in (`external`): the language its phrases are in, and
@@ -664,7 +664,7 @@ export function installRecording(
    * network capture and the tab's script Record starts are there for the stop to end.
    *
    * `pageChanges` holds the page changes of the tab Record starts in that come while it starts: the tab is the person's
-   * from the moment they press Record, and OpenBot's own address bar or a link can take it to a website before the
+   * from the moment they press Record, and AwakenBot's own address bar or a link can take it to a website before the
    * recording is live. Record reads the tab's address once, early, and they would otherwise be neither its first page
    * nor a step of it; it records them as steps once the recording is live, and starts on the page they reached. */
   let starting: {
@@ -685,7 +685,7 @@ export function installRecording(
    * trajectory (a recording Start over replaced, still draining) leaves that capture alone. */
   let shown: { recordingId: string; trajectoryIds: Set<string> } | null = null;
 
-  /** What this browser is recording, told to OpenBot whenever the phase or the recording changes and every 30 s while
+  /** What this browser is recording, told to AwakenBot whenever the phase or the recording changes and every 30 s while
    * one runs (activity.ts): with the live recording's connection, else the stored one, whatever made it. A signed-out
    * answer goes the way the connection check's does. */
   const activity = createActivityReport({
@@ -799,7 +799,7 @@ export function installRecording(
     for (const [tabId, typed] of (await readSession("typedSecrets")) ?? [])
       typedSecrets.set(tabId, typed);
     // The popup asks when it opens, and Chrome may stop this worker before the person presses Record: the next one takes
-    // up what OpenBot said, while the connection that asked is still the one connected.
+    // up what AwakenBot said, while the connection that asked is still the one connected.
     const space = await readSession("learning");
     if (
       space &&
@@ -826,7 +826,7 @@ export function installRecording(
     openSteps(live.recordingId, takeRestored(live.recordingId));
   })();
   ready.catch(report("loading the recorder state"));
-  // A service worker that restarted while a recording runs tells OpenBot again, and goes on every 30 s.
+  // A service worker that restarted while a recording runs tells AwakenBot again, and goes on every 30 s.
   void ready.then(
     () => {
       if (state.phase !== "idle") activity.changed();
@@ -1663,7 +1663,7 @@ export function installRecording(
       const policy = await deps.readPolicy();
       if (attempt.cancelled) throw CANCELLED;
       if (!allowsOpenBot(policy, connection.openbotUrl)) throw POLICY_REFUSED;
-      // The microphone opens only for a person who chose to narrate: OpenBot says so with the Record it passes on (its
+      // The microphone opens only for a person who chose to narrate: AwakenBot says so with the Record it passes on (its
       // own Record form asked them), anything else goes by the choice made in the Recorder, and none yet is no.
       const narrate =
         message.narrate ?? (await readLocal("narration")) === "on";
@@ -1895,7 +1895,7 @@ export function installRecording(
         : {
             type: "offscreen.stop",
             outcome: "failed",
-            // Only OpenBot signs a connection out; a policy move and a replaced connection disconnect it here.
+            // Only AwakenBot signs a connection out; a policy move and a replaced connection disconnect it here.
             reason:
               mode.kind === "discard"
                 ? "discarded"
@@ -1965,7 +1965,7 @@ export function installRecording(
       type: "finished",
       // A recording a Disconnect stops is discarded right after: what it had not sent yet never goes to Intelligence, so
       // the popup does not say it was sent (what it streamed live is there, ended with a failed outcome). One the person
-      // discarded is named, so OpenBot can say it was discarded.
+      // discarded is named, so AwakenBot can say it was discarded.
       lastStopped:
         mode.kind === "disconnect" ||
         (failed !== undefined && mode.kind !== "discard")
@@ -1974,7 +1974,7 @@ export function installRecording(
               recordingId,
               ...(state.title !== undefined ? { title: state.title } : {}),
               stoppedAt: deps.now(),
-              // What it held, for OpenBot to say: the badge's count and the phrases placed, both final now.
+              // What it held, for AwakenBot to say: the badge's count and the phrases placed, both final now.
               actions: state.actions,
               phrases: state.phrases ?? 0,
               ...(mode.kind === "discard" ? { discarded: true } : {}),
@@ -2021,10 +2021,10 @@ export function installRecording(
 
   // ---- The connection check while recording -------------------------------------------------
 
-  /** While a recording runs, OpenBot is asked every 30 s whether the connection it records under still stands: a
-   * browser revoked in OpenBot's Settings, or a connection OpenBot signed out, would otherwise go on streaming until the
+  /** While a recording runs, AwakenBot is asked every 30 s whether the connection it records under still stands: a
+   * browser revoked in AwakenBot's Settings, or a connection AwakenBot signed out, would otherwise go on streaming until the
    * popup or the 12-hour keep-alive asked. A signed-out answer ends the recording through the sign-out path (a failed
-   * outcome, reason signed-out, its streams halted, everything kept for its person). OpenBot not answering, or
+   * outcome, reason signed-out, its streams halted, everything kept for its person). AwakenBot not answering, or
    * answering anything else, says nothing about the connection: the recording goes on through an outage, and the next
    * check asks again. */
   let connectionCheck: unknown = null;
@@ -2059,7 +2059,7 @@ export function installRecording(
           current.openbotUrl,
         );
     }
-    // Still recording (OpenBot answered, could not answer, or the person connected again first): asked again later.
+    // Still recording (AwakenBot answered, could not answer, or the person connected again first): asked again later.
     if (live && state.phase === "recording" && connectionCheck === null)
       watchConnection();
   }
@@ -2117,8 +2117,8 @@ export function installRecording(
     );
   }
 
-  /** OpenBot answered that the connection a request used is gone: forget it (only if it is still the stored one), stop
-   * a recording that used it, and keep everything for its person on that OpenBot (their drains on another OpenBot are
+  /** AwakenBot answered that the connection a request used is gone: forget it (only if it is still the stored one), stop
+   * a recording that used it, and keep everything for its person on that AwakenBot (their drains on another AwakenBot are
    * another connection's). */
   async function handleSignedOut(
     reason: SignedOutReason,
@@ -2143,7 +2143,7 @@ export function installRecording(
 
   /** The live recording's person connected this browser again: connecting revoked the token its passes were asked
    * with, so it takes the new one, as do the stored session (for a reopened document) and the document's stream.
-   * Resolves true when it switched; a recording of another person, or on another OpenBot, keeps its own token. */
+   * Resolves true when it switched; a recording of another person, or on another AwakenBot, keeps its own token. */
   async function adoptConnection(): Promise<boolean> {
     const connection = await currentConnection();
     const current = live;
@@ -2186,10 +2186,10 @@ export function installRecording(
     await markWaiting((drain) => ownedBy(drain, connection), reason);
   }
 
-  /** The organization's policy moved the Recorder away from this connection's OpenBot (connection.ts forgot it), or a
-   * connection to another OpenBot, or for another person, replaced it (connection.ts `endReplaced`, which revokes its
+  /** The organization's policy moved the Recorder away from this connection's AwakenBot (connection.ts forgot it), or a
+   * connection to another AwakenBot, or for another person, replaced it (connection.ts `endReplaced`, which revokes its
    * token next): the live recording that used it stops, the document stops sending with its token, and everything is
-   * kept for its person on that OpenBot, as a sign-out keeps it. */
+   * kept for its person on that AwakenBot, as a sign-out keeps it. */
   async function connectionEnded(
     connection: ConnectionRecord,
     reason: "policy" | "replaced",
@@ -2401,7 +2401,7 @@ export function installRecording(
   }
 
   /** The person who recorded kept drains is connected again (or, `recovering`, the browser started): the document
-   * sends everything their drains still hold. Drains of another person, or of another OpenBot, keep waiting: they are
+   * sends everything their drains still hold. Drains of another person, or of another AwakenBot, keep waiting: they are
    * never sent under someone else's connection, and recovery marks them waiting for their person. */
   async function sendDrains(options: { recovering: boolean }): Promise<void> {
     await finishDiscards();
@@ -2632,7 +2632,7 @@ export function installRecording(
         );
         return null;
       }
-      // OpenBot cannot answer for now: the last answer for this connection, if any.
+      // AwakenBot cannot answer for now: the last answer for this connection, if any.
       return cached?.value.connectionId === connection.connectionId
         ? cached.value
         : null;
@@ -2697,7 +2697,7 @@ export function installRecording(
         );
       return {
         ok: false,
-        error: sentenceFor(error, "OpenBot did not answer. Try again."),
+        error: sentenceFor(error, "AwakenBot did not answer. Try again."),
       };
     }
   }
@@ -3016,7 +3016,7 @@ export function installRecording(
   //
   // A recording follows every tab the person uses while it runs (David, 2026-10-22), in any window: the tab Record
   // started in, a tab a followed tab opened (onCreatedTarget above), any tab they switch to and any tab they open. A tab
-  // is used when it becomes the active tab of its window (tabs.onActivated: a click on it, a keyboard switch, OpenBot's
+  // is used when it becomes the active tab of its window (tabs.onActivated: a click on it, a keyboard switch, AwakenBot's
   // own tab strip), when its window comes to the front (windows.onFocusChanged: the active tab of the window the person
   // moved to is the one they now use), and when it is opened (tabs.onCreated: the new-tab button, a bookmark opened in
   // the background). A tab that was open before Record and that the person never goes to is never followed.

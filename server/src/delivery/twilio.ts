@@ -120,7 +120,7 @@ export function createTwilioTransport(config: TwilioConfig) {
           Body:
             input.text.length <= 1500
               ? input.text
-              : `${cutAtCodeUnits(input.text, 1400)}…\nOpen OpenBot to read the full message.`,
+              : `${cutAtCodeUnits(input.text, 1400)}…\nOpen AwakenBot to read the full message.`,
           ...(config.statusUrl ? { StatusCallback: config.statusUrl } : {}),
         },
       );

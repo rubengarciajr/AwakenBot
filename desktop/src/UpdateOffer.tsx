@@ -4,7 +4,7 @@ import type { UpdateReadiness } from "../../shared/desktop-updates";
 import { asProblem } from "./Problem";
 
 /**
- * What the shell offers. The same answer OpenBot's own page reads for its update banner, so the
+ * What the shell offers. The same answer AwakenBot's own page reads for its update banner, so the
  * setup window and the app never offer two different things, and closing one closes both.
  */
 export type AppUpdate = {
@@ -34,11 +34,11 @@ const ASK_EVERY_MS = 5_000;
 const ASK_WHILE_INSTALLING_MS = 500;
 
 /**
- * The one screen that is not part of setup: a newer OpenBot exists, install it.
+ * The one screen that is not part of setup: a newer AwakenBot exists, install it.
  *
  * Nothing installs without the click. An app that installs itself without saying so restarts in
  * the middle of somebody's sentence. "Not now" closes the offer until a newer version comes out,
- * here and in OpenBot's own banner alike.
+ * here and in AwakenBot's own banner alike.
  *
  * A failed check is silent: the shell keeps its last good answer, and a laptop on a plane has
  * nothing to fix. A build without the updater (internal, candidate, unsigned) is never offered
@@ -109,8 +109,8 @@ export function UpdateOffer() {
     <section className="update-offer" aria-labelledby="update-offer-title">
       <h2 id="update-offer-title">
         {ready?.state === "ready"
-          ? `OpenBot ${version} is ready to install`
-          : `OpenBot ${version} is available`}
+          ? `AwakenBot ${version} is ready to install`
+          : `AwakenBot ${version} is available`}
       </h2>
       <p>
         You are running {offer.current}. {readiness(ready)}
@@ -136,7 +136,7 @@ export function UpdateOffer() {
       </div>
       {failure && (
         <p className="caution" role="alert">
-          OpenBot could not install the update: {failure}
+          AwakenBot could not install the update: {failure}
         </p>
       )}
     </section>
@@ -149,16 +149,16 @@ export function UpdateOffer() {
  */
 export function readiness(ready: AppUpdate["ready"]): string {
   if (ready?.state === "ready") {
-    return "Installing it takes a few minutes and restarts OpenBot.";
+    return "Installing it takes a few minutes and restarts AwakenBot.";
   }
   if (ready?.state === "preparing") {
     const share =
       ready.total > 0
         ? Math.min(99, Math.floor((ready.done / ready.total) * 100))
         : 0;
-    return `OpenBot is downloading it in the background (${share}%).`;
+    return `AwakenBot is downloading it in the background (${share}%).`;
   }
-  return "Updating downloads the new version and restarts OpenBot.";
+  return "Updating downloads the new version and restarts AwakenBot.";
 }
 
 /** "Downloading… 25%", then "Restarting…" once it is installed. */

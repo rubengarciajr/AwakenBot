@@ -1,12 +1,12 @@
 /**
- * The OpenBot for Business page, which has the booking calendar for a call inline. Every Book a
- * call, Book a demo and Meet OpenBot for Business in the app opens this one page, so somebody asking
- * about OpenBot for their organization reaches the people who run it.
+ * The AwakenBot for Business page, which has the booking calendar for a call inline. Every Book a
+ * call, Book a demo and Meet AwakenBot for Business in the app opens this one page, so somebody asking
+ * about AwakenBot for their organization reaches the people who run it.
  */
 export const BUSINESS_URL = "https://open.bot/business";
 
 /**
- * The OpenBot for Business booking event on Calendly: the same calls the page above books. The
+ * The AwakenBot for Business booking event on Calendly: the same calls the page above books. The
  * onboarding step embeds it, and falls back to {@link BUSINESS_URL} when it can't load.
  */
 export const BOOKING_CALENDAR_URL =

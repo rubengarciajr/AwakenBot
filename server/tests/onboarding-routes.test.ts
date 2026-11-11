@@ -77,7 +77,7 @@ describe("onboarding routes", () => {
     expect(body.user.onboarding).toBeNull();
   });
 
-  test("/api/me carries the OpenBot release the server runs, beside the person", async () => {
+  test("/api/me carries the AwakenBot release the server runs, beside the person", async () => {
     const app = appWith(undefined, { OPENBOT_BUILD_VERSION: "v0.3.1" });
 
     const response = await app.request("http://openbot.local/api/me");

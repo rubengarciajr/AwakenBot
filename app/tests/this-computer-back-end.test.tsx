@@ -1,5 +1,5 @@
 /**
- * Settings → This computer: the OpenBot's services section, the local back end. Only OpenBot
+ * Settings → This computer: the AwakenBot's services section, the local back end. Only AwakenBot
  * Desktop has this page, and Desktop runs the personal edition, whose local Intelligence isn't
  * licensed for memory. So the section says nothing about a Bot's memory; how much of the
  * computer's memory it uses still shows.
@@ -63,7 +63,7 @@ afterAll(async () => {
   await GlobalRegistrator.unregister();
 });
 
-test("OpenBot's services say what they keep without mentioning memory", async () => {
+test("AwakenBot's services say what they keep without mentioning memory", async () => {
   const Page = ThisComputerRoute.options.component as ComponentType;
   const view = render(
     <QueryClientProvider client={queryClient}>
@@ -71,12 +71,12 @@ test("OpenBot's services say what they keep without mentioning memory", async ()
     </QueryClientProvider>,
   );
   const heading = await view.findByRole("heading", {
-    name: "OpenBot's services",
+    name: "AwakenBot's services",
   });
   const section = heading.closest("section") as HTMLElement;
   expect(
     within(section).getByText(
-      "These keep your Bots' conversations and skills. OpenBot needs them while it runs.",
+      "These keep your Bots' conversations and skills. AwakenBot needs them while it runs.",
     ),
   ).toBeTruthy();
   expect(

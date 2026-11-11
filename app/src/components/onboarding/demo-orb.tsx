@@ -4,7 +4,7 @@ import { orbPalette } from "@/lib/orb-palette";
 
 /**
  * An orb in one of onboarding's pictures: a Bot's, in the palette its seed picks as `BotOrb` draws
- * it, or OpenBot's own mark with no seed.
+ * it, or AwakenBot's own mark with no seed.
  *
  * Always the live `AgentOrb`, because a picture shows a Bot listening, working and done, where
  * `BotOrb` only draws idle, working and waiting. Decorative: the picture around it is labelled, so

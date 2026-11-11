@@ -1,6 +1,6 @@
 """The conversation a Bot answers from is the one the server sends, on every run.
 
-OpenBot restores a thread from Intelligence and sends all of it in `input.messages`. Nothing may
+AwakenBot restores a thread from Intelligence and sends all of it in `input.messages`. Nothing may
 depend on this process remembering an earlier run: a restart, or the upstream adapter dropping an
 idle worker after 30 minutes, would otherwise leave the Bot answering the newest message alone.
 
@@ -38,7 +38,7 @@ def thread(*turns, context="CATALOG_V1", run="run-1"):
                 ],
             ],
             "tools": [],
-            "context": [{"description": "OpenBot learned skills", "value": context}],
+            "context": [{"description": "AwakenBot learned skills", "value": context}],
             "forwardedProps": {},
         }
     )

@@ -102,7 +102,7 @@ describe("remote Automatic Learning delivery", () => {
     expect(remote.inputs).toHaveLength(2);
     for (const request of remote.inputs) {
       expect(request.context).toContainEqual({
-        description: "OpenBot learned skills",
+        description: "AwakenBot learned skills",
         value: "catalog revision-one",
       });
       expect(
@@ -267,7 +267,7 @@ describe("remote Automatic Learning delivery", () => {
   });
 
   test("a Bot whose stream ends with no answer and no error is told in words", async () => {
-    // Seen on OpenBot Desktop as "Remote agent ended without a terminal event." in red: the
+    // Seen on AwakenBot Desktop as "Remote agent ended without a terminal event." in red: the
     // LangGraph harness died on a provider refusal and its stream just stopped after RUN_STARTED.
     const remote = new Remote(() => of(start));
     const output = await events(
@@ -440,7 +440,7 @@ test("disabled delivery removes a catalog replayed in a remote message snapshot"
       ],
       context: [
         {
-          description: "OpenBot learned skills",
+          description: "AwakenBot learned skills",
           value: "old published catalog",
         },
       ],

@@ -1,7 +1,7 @@
 import catalogue from "./harnesses.json";
 
 /**
- * The agent harnesses OpenBot knows by name, read from the one file every language reads.
+ * The agent harnesses AwakenBot knows by name, read from the one file every language reads.
  *
  * WHY A SHARED FILE. The list began in `desktop/src-tauri/src/harness.rs`, where it decides which
  * image the setup window runs. The web app's New Bot dialog needs the same names, summaries and
@@ -133,14 +133,14 @@ function namesWithHarness(): Array<[string, Harness]> {
 }
 
 /**
- * A subtitle OpenBot wrote, as a person reads it now. For the profile a person sees, never for what
+ * A subtitle AwakenBot wrote, as a person reads it now. For the profile a person sees, never for what
  * a Bot is told.
  *
  * - The Personal Assistant's seed, "Everyday life. Powered by <framework>.", exactly as seeded under
  *   any of the framework's names, reads as {@link starterSubtitle} for its current name.
  * - Any other "Powered by <earlier name>" reads with the framework's current name.
  *
- * Only what OpenBot wrote changes. A subtitle the person rewrote no longer matches the seed, and the
+ * Only what AwakenBot wrote changes. A subtitle the person rewrote no longer matches the seed, and the
  * person's own words around a "Powered by" stay as they wrote them.
  */
 export function withCurrentFrameworkNames(title: string): string {
@@ -163,10 +163,10 @@ export function withCurrentFrameworkNames(title: string): string {
 }
 
 /**
- * What a Bot that runs inside OpenBot is powered by: its subtitle's "Powered by OpenBot", and the
+ * What a Bot that runs inside AwakenBot is powered by: its subtitle's "Powered by AwakenBot", and the
  * framework it is told it runs on.
  */
-export const OPENBOT_HARNESS_NAME = "OpenBot";
+export const OPENBOT_HARNESS_NAME = "AwakenBot";
 
 /**
  * A framework a person may declare for an agent they run themselves, by id: any named harness, never
@@ -180,7 +180,7 @@ export function declaredHarness(id: unknown): Harness | undefined {
 /**
  * The harness an image reference runs, by the directory a release builds it from:
  * `ghcr.io/copilotkit/openbot-agent-langgraph-agui@sha256:…` is LangChain. Undefined for
- * an image OpenBot does not publish.
+ * an image AwakenBot does not publish.
  */
 export function harnessForImage(reference: string): Harness | undefined {
   const name = /(?:^|\/)(?:openbot-)?(agent-[a-z0-9-]+)(?::|@|$)/.exec(

@@ -96,8 +96,8 @@ function virtualClock(start = CLOCK_START) {
 }
 type Clock = ReturnType<typeof virtualClock>;
 
-/** OpenBot's routes the offscreen document calls, served on the fake gateway's own origin. */
-type OpenBot = {
+/** AwakenBot's routes the offscreen document calls, served on the fake gateway's own origin. */
+type AwakenBot = {
   passes: {
     trajectoryId: string;
     authorization: string | null;
@@ -106,7 +106,7 @@ type OpenBot = {
   /** Answers for the next passes, in order; then `refuse`, then a grant. */
   passScript: (() => Response)[];
   refuse: ((trajectoryId: string) => Response | null) | null;
-  /** Every request to OpenBot's recorder routes: the document must send none (it asks only for passes). */
+  /** Every request to AwakenBot's recorder routes: the document must send none (it asks only for passes). */
   recorderRequests: string[];
 };
 
@@ -115,7 +115,7 @@ const parkedPass = () =>
   Response.json(
     {
       code: "INTELLIGENCE_RUNTIME_REQUIRED",
-      message: "OpenBot's backend is not configured.",
+      message: "AwakenBot's backend is not configured.",
     },
     { status: 503 },
   );
@@ -128,11 +128,11 @@ const heldPass = () =>
     },
     { status: 403 },
   );
-/** Row 2: OpenBot's guard says this browser's connection is gone. */
+/** Row 2: AwakenBot's guard says this browser's connection is gone. */
 const signedOutPass = (reason: "revoked" | "removed" | "organization") => () =>
   Response.json(
     {
-      error: "This browser is no longer connected to OpenBot.",
+      error: "This browser is no longer connected to AwakenBot.",
       code: RECORDER_SIGNED_OUT,
       reason,
     },
@@ -151,7 +151,7 @@ type Message<T extends OffscreenToBackground["type"]> = Extract<
 
 type Harness = {
   gateway: FakeGateway;
-  openbot: OpenBot;
+  openbot: AwakenBot;
   dbName: string;
   clock: Clock;
   /** "fetch <path>", in the order they happened. */
@@ -180,7 +180,7 @@ const harnesses: Harness[] = [];
 let dbCounter = 0;
 
 async function setup(): Promise<Harness> {
-  const openbot: OpenBot = {
+  const openbot: AwakenBot = {
     passes: [],
     passScript: [],
     refuse: null,
@@ -382,7 +382,7 @@ const NOT_ALLOWED = PASS_HINTS.GATEWAY_NOT_ALLOWED;
 /** An organization's pinned Intelligence addresses that leave the fake gateway out. */
 const ELSEWHERE = ["wss://intelligence.example.com"];
 
-/** A recording stopped with its events parked; then the next browser start opens a document and OpenBot passes again. */
+/** A recording stopped with its events parked; then the next browser start opens a document and AwakenBot passes again. */
 async function keptThenRestart(h: Harness): Promise<StreamSession> {
   h.openbot.refuse = () => parkedPass();
   await h.open(virtualClock());
@@ -578,7 +578,7 @@ describe("offscreen controller", () => {
       capture: {
         intelligence: "off",
         intelligenceReason:
-          "The Recorder could not start sending this recording to OpenBot's backend.",
+          "The Recorder could not start sending this recording to AwakenBot's backend.",
         events: { sent: 0, pending: 0, rejected: 0, dropped: 2 },
       },
     });
@@ -600,7 +600,7 @@ describe("offscreen controller", () => {
         type: "offscreen.done",
         recordingId: "rec-1",
         failed:
-          "Nothing of this recording reached OpenBot's backend: the Recorder could not start sending it. Try recording again.",
+          "Nothing of this recording reached AwakenBot's backend: the Recorder could not start sending it. Try recording again.",
       },
     ]);
     const types = h.latest().map((message) => message.type);
@@ -625,7 +625,7 @@ describe("offscreen controller", () => {
         type: "offscreen.kept",
         recordingId: "rec-1",
         reason:
-          "The Recorder could not start sending this recording to OpenBot's backend.",
+          "The Recorder could not start sending this recording to AwakenBot's backend.",
         parked: true,
         events: 0,
       },
@@ -1319,7 +1319,7 @@ describe("offscreen controller", () => {
     const passes = h.openbot.passes.length;
     h.openbot.refuse = null;
 
-    // The held recording tries again with the same token: the attempt never reaches OpenBot.
+    // The held recording tries again with the same token: the attempt never reaches AwakenBot.
     await h.clock.advance(10 * MINUTE);
     await sleep(50);
     expect(h.openbot.passes).toHaveLength(passes);
@@ -1554,7 +1554,7 @@ describe("offscreen controller", () => {
         token: "obr_later",
       },
     ]);
-    // A rollover, a Start over and a stop: OpenBot heard nothing but the capture passes.
+    // A rollover, a Start over and a stop: AwakenBot heard nothing but the capture passes.
     expect(h.openbot.recorderRequests).toEqual([]);
     expect(h.openbot.passes.length).toBeGreaterThan(3);
   });

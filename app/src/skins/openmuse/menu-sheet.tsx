@@ -52,8 +52,8 @@ import {
 } from "./ui";
 
 /**
- * OpenMuse's menu: the main chat, a new chat, every conversation OpenBot keeps, and a way to every
- * other OpenBot surface. Nothing here is OpenMuse's own data; each row opens an OpenBot route.
+ * OpenMuse's menu: the main chat, a new chat, every conversation AwakenBot keeps, and a way to every
+ * other AwakenBot surface. Nothing here is OpenMuse's own data; each row opens an AwakenBot route.
  */
 export function MenuSheet({ onClose }: { onClose: () => void }) {
   const { bot } = useMuse();
@@ -148,7 +148,7 @@ export function MenuSheet({ onClose }: { onClose: () => void }) {
             render={<Link onClick={onClose} to="/" />}
             title="Home"
           />
-          {/* OpenBot's own destinations, from the one list its sidebar draws. */}
+          {/* AwakenBot's own destinations, from the one list its sidebar draws. */}
           {navigation.map((item) => (
             <LinkRow
               icon={item.icon}
@@ -184,7 +184,7 @@ export function MenuSheet({ onClose }: { onClose: () => void }) {
 
 /**
  * One conversation, laid out as this look lists a side chat: its Bots' faces and title, then its actions as pills.
- * Pin and delete are the same two OpenBot offers on its sidebar row.
+ * Pin and delete are the same two AwakenBot offers on its sidebar row.
  */
 function ConversationRow({
   channel,
@@ -229,7 +229,7 @@ function ConversationRow({
           />
         }
       >
-        {/* The same faces OpenBot's own conversation list draws: the Bot, or the group's Bots. */}
+        {/* The same faces AwakenBot's own conversation list draws: the Bot, or the group's Bots. */}
         <span className="mt-0.5 shrink-0">
           <ChannelAvatar
             participantIds={channel.agentIds}

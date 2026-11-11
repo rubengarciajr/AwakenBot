@@ -512,7 +512,7 @@ describe("Activity and attention", () => {
   });
 
   test("a goal run's summary is the Bot's reply as plain text, the way the sidebar draws a reply", async () => {
-    // The reply a goal run gave on OpenBot Desktop, which the row drew with its backticks and asterisks.
+    // The reply a goal run gave on AwakenBot Desktop, which the row drew with its backticks and asterisks.
     await database.insert(responsibilityEvents).values({
       id: `${prefix}-goal-event`,
       ownerUserId: owner,

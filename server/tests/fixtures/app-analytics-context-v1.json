@@ -1,5 +1,5 @@
 {
-  "description": "OpenBot telemetry contract, version 1. Shared by OpenBot (producer), CopilotKit (runtime forwarding), Intelligence app-api (validation, persistence) and realtime-gateway (run summary). See Notion: OpenBot telemetry: Intelligence build.",
+  "description": "AwakenBot telemetry contract, version 1. Shared by AwakenBot (producer), CopilotKit (runtime forwarding), Intelligence app-api (validation, persistence) and realtime-gateway (run summary). See Notion: AwakenBot telemetry: Intelligence build.",
   "valid": [
     {
       "name": "human run",
@@ -70,7 +70,7 @@
     },
     {
       "name": "app id with capitals and punctuation",
-      "context": { "app_context_version": 1, "app_id": "OpenBot!" }
+      "context": { "app_context_version": 1, "app_id": "AwakenBot!" }
     },
     {
       "name": "extra field not in the contract",

@@ -139,7 +139,7 @@ test("an ok page.connect.decide calls connected() after the connection answered"
   expect(seen.order).toEqual(["connection", "connected"]);
 });
 
-test("OpenBot Desktop's connect calls connected() once it connected this browser, as an approved Connect does, and not when it did not", async () => {
+test("AwakenBot Desktop's connect calls connected() once it connected this browser, as an approved Connect does, and not when it did not", async () => {
   stubConnection({ ok: true, connected: true });
   installRouter(handlers);
   expect(await fake.sendFromPage({ type: "page.connect.desktop" })).toEqual({
@@ -350,7 +350,7 @@ test("openbot.ping and openbot.connect from a web page go to the external connec
   ]);
 });
 
-test("a trusted OpenBot's connect, made with no Connect page, is followed up as an approved Connect is, and one waiting on its page is not", async () => {
+test("a trusted AwakenBot's connect, made with no Connect page, is followed up as an approved Connect is, and one waiting on its page is not", async () => {
   const answers = [
     {
       ok: true as const,
@@ -387,7 +387,7 @@ test("a trusted OpenBot's connect, made with no Connect page, is followed up as 
   expect(seen.order).toEqual(["connection", "connected", "connection"]);
 });
 
-test("openbot.state, openbot.record and openbot.stop are answered for OpenBot's page and never reach the connect handler or the page-network entry", async () => {
+test("openbot.state, openbot.record and openbot.stop are answered for AwakenBot's page and never reach the connect handler or the page-network entry", async () => {
   const spy = spyOn(connection, "handleExternalConnect");
   restore.push(() => spy.mockRestore());
   installRouter(handlers);
@@ -407,7 +407,7 @@ test("openbot.state, openbot.record and openbot.stop are answered for OpenBot's 
   ])
     expect(await fake.sendExternal(message, sender)).toEqual({
       ok: false,
-      error: "Connect this browser to OpenBot first.",
+      error: "Connect this browser to AwakenBot first.",
     });
   // Malformed: answered invalid before anything reads it.
   for (const message of [
@@ -598,7 +598,7 @@ test("a recorder.page-network event the fallback accepts reaches the network cap
     fake.offscreen.open = true;
     const handlers = installRecording({
       // The recording this resumes is live, so its worker reports its activity and checks its connection every 30 s,
-      // against an OpenBot at 127.0.0.1:9 that is not there. On the browser's own timers it went on doing both for the
+      // against an AwakenBot at 127.0.0.1:9 that is not there. On the browser's own timers it went on doing both for the
       // rest of the suite, and a later file watching the global `fetch` took those calls for its own
       // (support/context-timers.ts). The worker stops with this test instead.
       timers: worker,

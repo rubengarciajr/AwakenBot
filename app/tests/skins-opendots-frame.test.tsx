@@ -31,11 +31,11 @@ import { createAgentRoutes } from "../../server/src/agents/routes";
 import { settleReactWork } from "./settle-react-work";
 
 /**
- * The OpenDots frame, drawn around a page the way `_authed/_app` draws it, against OpenBot's own
- * agent routes and the payloads OpenBot's endpoints send.
+ * The OpenDots frame, drawn around a page the way `_authed/_app` draws it, against AwakenBot's own
+ * agent routes and the payloads AwakenBot's endpoints send.
  *
- * What it holds the frame to: every OpenBot surface the default sidebar reaches is reachable from
- * it, Settings above all (it is where a skin is switched back); its Dots are OpenBot's Bots as the
+ * What it holds the frame to: every AwakenBot surface the default sidebar reaches is reachable from
+ * it, Settings above all (it is where a skin is switched back); its Dots are AwakenBot's Bots as the
  * agents route lists them; a Dot opens a chat with its Bot; and its computer toggle drives the
  * conversation's own computer pane rather than opening a second one.
  */
@@ -144,7 +144,7 @@ function agentRoutes() {
   });
 }
 
-/** OpenBot's endpoints, answering in the envelopes the browser reads them in. */
+/** AwakenBot's endpoints, answering in the envelopes the browser reads them in. */
 async function serve(path: string, init?: RequestInit): Promise<Response> {
   const method = init?.method ?? "GET";
   requests.push({ method, path });
@@ -272,12 +272,12 @@ function draw(path: string) {
   const page = createRoute({
     getParentRoute: () => root,
     path: "$",
-    component: () => <p>OpenBot page</p>,
+    component: () => <p>AwakenBot page</p>,
   });
   const index = createRoute({
     getParentRoute: () => root,
     path: "/",
-    component: () => <p>OpenBot home</p>,
+    component: () => <p>AwakenBot home</p>,
   });
   const router = createRouter({
     history: createMemoryHistory({ initialEntries: [path] }),
@@ -302,7 +302,7 @@ function hrefs(container: HTMLElement) {
 }
 
 describe("OpenDots frame", () => {
-  test("BOTS lists the Bots OpenBot's agent list returns, in the roster's order", async () => {
+  test("BOTS lists the Bots AwakenBot's agent list returns, in the roster's order", async () => {
     const { view } = draw("/");
     const list = await view.findByRole("navigation", { name: "Your Bots" });
     await waitFor(() =>
@@ -357,11 +357,11 @@ describe("OpenDots frame", () => {
     cleanup();
     // Without a chosen Bot there is no one to introduce.
     const open = draw("/channel/new");
-    await open.view.findByText("OpenBot page");
+    await open.view.findByText("AwakenBot page");
     expect(open.view.queryByRole("link", { name: /Edit Bot/ })).toBeNull();
   });
 
-  test("every OpenBot surface is reachable from the frame", async () => {
+  test("every AwakenBot surface is reachable from the frame", async () => {
     const { view } = draw("/");
     await view.findByText("Planning the Lisbon trip");
     await view.findByText("Cass");
@@ -443,7 +443,7 @@ describe("OpenDots frame", () => {
     ["a member", person],
     ["an admin", admin],
   ])(
-    "the rail and sidebar draw OpenBot's own navigation list for %s",
+    "the rail and sidebar draw AwakenBot's own navigation list for %s",
     async (_who, signedIn) => {
       actor = signedIn;
       const { view } = draw("/");
@@ -466,7 +466,7 @@ describe("OpenDots frame", () => {
           ).toBeTruthy(),
         );
       }
-      // Every destination OpenBot's sidebar offers this person, under its own label, and no others.
+      // Every destination AwakenBot's sidebar offers this person, under its own label, and no others.
       for (const item of expected) {
         expect(
           within(rail)
@@ -507,7 +507,7 @@ describe("OpenDots frame", () => {
       agentsFail = true;
       channels = [];
       const { view } = draw(path);
-      await view.findByText(/OpenBot (page|home)/);
+      await view.findByText(/AwakenBot (page|home)/);
       const settings = view
         .getAllByRole("link")
         .filter((link) => link.getAttribute("href") === "/settings");
@@ -540,7 +540,7 @@ describe("OpenDots frame", () => {
     );
   });
 
-  test("elsewhere, the computer toggle opens OpenBot's computer for the Bot on screen", async () => {
+  test("elsewhere, the computer toggle opens AwakenBot's computer for the Bot on screen", async () => {
     const { view, user } = draw("/bots/cass");
     await waitFor(() =>
       expect(view.getByTestId("opendots-crumb").textContent).toBe("Cass"),
@@ -548,7 +548,7 @@ describe("OpenDots frame", () => {
     await user.click(view.getByRole("button", { name: "Show computer" }));
     const pane = await view.findByTestId("opendots-computer-pane");
     expect(within(pane).getByText("Cass’s computer")).toBeTruthy();
-    // OpenBot's own panel, not a copy of it.
+    // AwakenBot's own panel, not a copy of it.
     expect(
       within(pane).getByRole("region", { name: "Computer sidebar" }),
     ).toBeTruthy();
@@ -571,7 +571,7 @@ describe("OpenDots frame", () => {
     // A page about no one Bot offers no pause, since there would be nothing to say it applies to.
     cleanup();
     const elsewhere = draw("/connections");
-    await elsewhere.view.findByText("OpenBot page");
+    await elsewhere.view.findByText("AwakenBot page");
     expect(
       elsewhere.view.queryByRole("button", { name: /^Pause / }),
     ).toBeNull();
@@ -579,7 +579,7 @@ describe("OpenDots frame", () => {
 });
 
 describe("OpenDots screens", () => {
-  test("Routines is OpenBot's routines list under OpenDots' heading", async () => {
+  test("Routines is AwakenBot's routines list under OpenDots' heading", async () => {
     const Screen = opendots.screens?.routines;
     if (!Screen) throw new Error("OpenDots has no routines screen");
     const view = render(
@@ -591,7 +591,7 @@ describe("OpenDots screens", () => {
     expect(await view.findByText("No routines yet")).toBeTruthy();
   });
 
-  test("Memories is OpenBot's memory list under OpenDots' heading, with Remember a fact", async () => {
+  test("Memories is AwakenBot's memory list under OpenDots' heading, with Remember a fact", async () => {
     const Screen = opendots.screens?.memories;
     if (!Screen) throw new Error("OpenDots has no memories screen");
     const view = render(
@@ -605,7 +605,7 @@ describe("OpenDots screens", () => {
   });
 });
 
-/** The personal edition has no memory: OpenBot Desktop's local Intelligence isn't licensed for it. */
+/** The personal edition has no memory: AwakenBot Desktop's local Intelligence isn't licensed for it. */
 describe("OpenDots in the personal edition", () => {
   test("has no Memories row", async () => {
     edition = "personal";
@@ -634,7 +634,7 @@ describe("OpenDots in the personal edition", () => {
         createRoute({
           getParentRoute: () => root,
           path: "/",
-          component: () => <p>OpenBot home</p>,
+          component: () => <p>AwakenBot home</p>,
         }),
         createRoute({
           getParentRoute: () => root,
@@ -648,7 +648,7 @@ describe("OpenDots in the personal edition", () => {
         <RouterProvider router={router} />
       </QueryClientProvider>,
     );
-    expect(await view.findByText("OpenBot home")).toBeTruthy();
+    expect(await view.findByText("AwakenBot home")).toBeTruthy();
     expect(router.state.location.pathname).toBe("/");
     expect(view.queryByRole("heading", { name: "Memories" })).toBeNull();
   });
@@ -656,7 +656,7 @@ describe("OpenDots in the personal edition", () => {
 
 /**
  * The skin is OpenDots' look, never its identity: whatever a person reads as the product is the
- * deployment's own name from `brand.yaml`, and every Bot wears OpenBot's own avatar.
+ * deployment's own name from `brand.yaml`, and every Bot wears AwakenBot's own avatar.
  */
 describe("OpenDots skin wears the deployment's brand", () => {
   /** What the drawing of one avatar looks like, without the ids React gives each instance. */
@@ -668,7 +668,7 @@ describe("OpenDots skin wears the deployment's brand", () => {
     await view.findByRole("navigation", { name: "Your Bots" });
     await view.findByRole("heading", { name: "Ada" });
     const productName = appConfig.brand.productName;
-    // The name as a brand mark: OpenBot's wordmark carries the trademark sign, as on open.bot.
+    // The name as a brand mark: AwakenBot's wordmark carries the trademark sign, as on open.bot.
     expect(view.getByTestId("opendots-wordmark").textContent).toBe(
       `${productName}™`,
     );
@@ -694,7 +694,7 @@ describe("OpenDots skin wears the deployment's brand", () => {
     expect(view.container.querySelector('img[src*="/skins/"]')).toBeNull();
   });
 
-  test("every Bot wears OpenBot's own avatar, drawn from its avatarSeed", async () => {
+  test("every Bot wears AwakenBot's own avatar, drawn from its avatarSeed", async () => {
     const { view } = draw("/channel/new?agent=ada");
     const list = await view.findByRole("navigation", { name: "Your Bots" });
     await waitFor(() =>

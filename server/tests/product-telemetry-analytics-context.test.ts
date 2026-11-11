@@ -30,7 +30,7 @@ import type { WorkQueue } from "../src/work/queue";
 import contract from "./fixtures/app-analytics-context-v1.json";
 
 /**
- * What OpenBot tells Intelligence about a run, under CopilotKit's contract key.
+ * What AwakenBot tells Intelligence about a run, under CopilotKit's contract key.
  *
  * A browser run carries the context in `forwardedProps.__copilotkitAnalyticsContext`, which the
  * runtime takes off and sends on the thread lock. A headless turn, and a Bot-to-Bot hop, take the
@@ -39,7 +39,7 @@ import contract from "./fixtures/app-analytics-context-v1.json";
  * platform is the only fake, on 127.0.0.1, and what the real client sends it is captured.
  *
  * `@copilotkit/runtime` 1.83.0 dropped `analyticsContext` from the lock request, and the runtime
- * OpenBot installs now sends it. So every case asserts what OpenBot handed the lock call, and the
+ * AwakenBot installs now sends it. So every case asserts what AwakenBot handed the lock call, and the
  * wire body is asserted against what the installed runtime is measured to forward, which is the
  * context itself on that runtime and nothing on 1.83.0.
  */
@@ -57,7 +57,7 @@ const sha256 = (value: string) =>
 
 /* ------------------------------------------------------------------------------------------------
  * The contract, version 1, as the Notion build page states it. Checked against the shared fixture
- * below before it is trusted with anything OpenBot produces.
+ * below before it is trusted with anything AwakenBot produces.
  * --------------------------------------------------------------------------------------------- */
 
 const FIELDS = [
@@ -113,7 +113,7 @@ function ruleProblems(value: unknown): string[] {
   return problems;
 }
 
-/** The rules, plus every field but the optional parent being present: what OpenBot must send. */
+/** The rules, plus every field but the optional parent being present: what AwakenBot must send. */
 function contractProblems(value: unknown): string[] {
   const problems = ruleProblems(value);
   if (problems.includes("not an object")) return problems;
@@ -192,7 +192,7 @@ afterAll(() => {
   platform.stop(true);
 });
 
-/** The real client, with what OpenBot hands its lock call written down on the way through. */
+/** The real client, with what AwakenBot hands its lock call written down on the way through. */
 function intelligence() {
   const client = createIntelligenceClient({
     apiUrl: `http://127.0.0.1:${platform.port}`,
@@ -448,7 +448,7 @@ describe("a run tells Intelligence its context, under the contract key", () => {
     expect(lockCalls.map((call) => call.analyticsContext)).toEqual([expected]);
     expect(contractProblems(expected)).toEqual([]);
     expect(onTheWire("thread-routine")).toEqual(forwards ? expected : null);
-    // Taken off the run's input, as the runtime does for a browser run; OpenBot's own copy stays.
+    // Taken off the run's input, as the runtime does for a browser run; AwakenBot's own copy stays.
     expect(AnsweringAgent.seen).toHaveLength(1);
     const props = AnsweringAgent.seen[0] as Record<string, unknown>;
     expect(ANALYTICS in props).toBe(false);

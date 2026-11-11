@@ -23,7 +23,7 @@ const MAX_NAME_LENGTH = 60;
  *
  * A dialog, like Delete beside it in the same menu, so the row keeps its avatar, time and dots
  * while the name is typed. Enter saves, Escape or Cancel leaves the name as it was, and an empty
- * name gives the conversation back the name OpenBot chose for it.
+ * name gives the conversation back the name AwakenBot chose for it.
  */
 export function RenameConversationDialog({
   channelId,
@@ -81,7 +81,7 @@ export function RenameConversationDialog({
         <DialogHeader>
           <DialogTitle>Rename conversation</DialogTitle>
           <DialogDescription>
-            Leave it empty to go back to the name OpenBot chose.
+            Leave it empty to go back to the name AwakenBot chose.
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="mt-4">

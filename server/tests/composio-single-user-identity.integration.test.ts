@@ -38,7 +38,7 @@ import { TEST_POOL, testDatabaseUrl } from "./support/database";
  * EVERY SINGLE-USER OPENBOT ON ONE COMPOSIO KEY WAS ONE COMPOSIO USER.
  *
  * WHAT WAS SEEN. A single-user deployment's one person is `dev-local-user`, and that id was what
- * Composio filed their accounts under. A test OpenBot on one machine listed another local stack's
+ * Composio filed their accounts under. A test AwakenBot on one machine listed another local stack's
  * active Gmail connection as its own. The same sharing meant a disconnect in one ended the other's
  * account, and a call that names no account could run in whichever of them connected last.
  *
@@ -169,7 +169,11 @@ const refuse = (what: string) => async (): Promise<never> => {
  * for Gmail (ours), the accounts it holds, every link it minted and every action it ran.
  */
 function composioProject() {
-  const config = { id: "ac_gmail", name: "gmail (OpenBot)", status: "ENABLED" };
+  const config = {
+    id: "ac_gmail",
+    name: "gmail (AwakenBot)",
+    status: "ENABLED",
+  };
   const accounts: HeldAccount[] = [];
   const minted: string[] = [];
   const ran: { userId: string; mailbox: string }[] = [];
@@ -538,7 +542,7 @@ describe("two single-user deployments on one Composio key", () => {
 });
 
 describe("a single-user deployment that already holds Composio accounts under dev-local-user", () => {
-  /** Gmail connected the way every single-user OpenBot connected it before its own name existed. */
+  /** Gmail connected the way every single-user AwakenBot connected it before its own name existed. */
   async function connectedBeforeTheUpgrade(project: Project) {
     const url = await freshDatabase();
     const before = open(url);

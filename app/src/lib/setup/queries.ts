@@ -49,7 +49,7 @@ export type SetupRow = {
 };
 
 export type SetupChecklist = {
-  /** Who the server answered as: an admin (or somebody running OpenBot alone) or a member. */
+  /** Who the server answered as: an admin (or somebody running AwakenBot alone) or a member. */
   audience: "admin" | "member";
   rows: SetupRow[];
 };
@@ -70,7 +70,7 @@ export function setupChecklistQueryOptions() {
 }
 
 /**
- * Who may open Settings → Setup: an admin, or the one person running OpenBot on their own machine.
+ * Who may open Settings → Setup: an admin, or the one person running AwakenBot on their own machine.
  * The same readers the server answers as `audience: "admin"`, decided from what the browser already
  * holds, so the page and its sidebar entry never wait on the checklist itself.
  */

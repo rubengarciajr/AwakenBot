@@ -69,7 +69,7 @@ type AlreadyConfigured = {
     stack: string;
     ownership: "created" | "shared";
     phase: string;
-    /** OpenBot holds the key `local connect` gave it for this stack. */
+    /** AwakenBot holds the key `local connect` gave it for this stack. */
     connected?: boolean;
   };
 };
@@ -107,7 +107,7 @@ function comeForward(why: string) {
  */
 /** The restart screen's words when setup found that only a Windows restart lets it carry on. */
 const SETUP_NEEDS_RESTART =
-  "Windows needs to restart to finish setting up the software OpenBot runs on. OpenBot opens again after you sign back in.";
+  "Windows needs to restart to finish setting up the software AwakenBot runs on. AwakenBot opens again after you sign back in.";
 
 export function App() {
   return <Setup />;
@@ -140,7 +140,7 @@ function Setup() {
   /*
    * The model as of the latest choice, without waiting for a render.
    *
-   * Local Intelligence starts OpenBot from its own sequence, a tick after the go-ahead. A choice
+   * Local Intelligence starts AwakenBot from its own sequence, a tick after the go-ahead. A choice
    * made by a click has rendered by then; one made from an effect (a sign-in that finished and moved
    * on by itself) may not have, and Start ran with the model from before it: null.
    */
@@ -176,7 +176,7 @@ function Setup() {
   const installationReady =
     preparation?.key === installationKey && preparation.status === "complete";
   /*
-   * A first run sets Intelligence up alongside the OpenBot install, not after it: from the moment
+   * A first run sets Intelligence up alongside the AwakenBot install, not after it: from the moment
    * the install reports the container engine ready (Intelligence runs on the same Docker, and the
    * install is what starts or installs it), or at once when the install is already done. Queued by
    * the CopilotKit account step, which runs first.
@@ -199,7 +199,7 @@ function Setup() {
   const visibleSetupStep =
     checkingResume || blockerFailure || blocker || running ? null : step;
   /*
-   * The first screen starts the big downloads, without a click: the person opened OpenBot's setup
+   * The first screen starts the big downloads, without a click: the person opened AwakenBot's setup
    * to install it. The native side downloads only what this computer's install will need, once per
    * run of the app (`early_downloads.rs`).
    */
@@ -246,7 +246,7 @@ function Setup() {
     }
   }, []);
   const [reinstall, setReinstall] = useState(false);
-  // A local Intelligence stack OpenBot could not stop. Shown, but it never holds a start.
+  // A local Intelligence stack AwakenBot could not stop. Shown, but it never holds a start.
   const [intelligenceNotice, setIntelligenceNotice] = useState<Problem | null>(
     null,
   );
@@ -268,15 +268,15 @@ function Setup() {
       setLocalStack(stack);
       if (connected) setLocalConnected(true);
     },
-    // Start fresh after the backend was lost: nothing recorded is OpenBot's until setup records anew.
+    // Start fresh after the backend was lost: nothing recorded is AwakenBot's until setup records anew.
     onForgotten: () => {
       setLocalStack(null);
       setLocalConnected(false);
     },
-    // And OpenBot's own software is installed again before it sets up (`installAfresh`).
+    // And AwakenBot's own software is installed again before it sets up (`installAfresh`).
     installAgain: () => installAfresh(),
   });
-  // The engine's wake found that only a Windows restart fixes OpenBot's machine: the restart
+  // The engine's wake found that only a Windows restart fixes AwakenBot's machine: the restart
   // screen, not a Retry that can't work.
   useEffect(() => {
     if (local.problem?.restart_windows) {
@@ -285,7 +285,7 @@ function Setup() {
     }
   }, [local.problem]);
   /*
-   * Whether this Start updates OpenBot itself, asked once the back end is waited on, so the Start
+   * Whether this Start updates AwakenBot itself, asked once the back end is waited on, so the Start
    * journey counts the update from the start rather than learning of it when it begins: on Windows
    * D the time left said "About a minute", then "About 2", then "About 3". Start uses this answer.
    */
@@ -304,7 +304,7 @@ function Setup() {
     releaseDueAsked.current = { root: at, answer };
     void answer.then((due) => setReleaseDue(Boolean(due)));
   }, [local.running, local.at, root]);
-  // A recorded stack: the OpenBot app's page may offer its dashboard (intelligence_bridge.rs).
+  // A recorded stack: the AwakenBot app's page may offer its dashboard (intelligence_bridge.rs).
   const intelligenceOffered = localStack !== null;
   // What the shell was last told. Starts hidden, so nothing is said before a stack is recorded.
   const offeredToMenus = useRef({ root: "", offered: false });
@@ -315,7 +315,7 @@ function Setup() {
     offeredToMenus.current = { root, offered: intelligenceOffered };
     offerLocalIntelligence(root, intelligenceOffered).catch(() => {});
   }, [root, intelligenceOffered]);
-  // Stop OpenBot was chosen in this window: nothing local starts again on its own.
+  // Stop AwakenBot was chosen in this window: nothing local starts again on its own.
   const stoppedByChoice = useRef(false);
   const credentialContext = useRef([root, model, harness, step]);
   useEffect(() => {
@@ -412,7 +412,7 @@ function Setup() {
             ? recordedModel({ ...configured.values, saved: configured.saved })
             : null;
         /*
-         * Settings' Change on the AI model row stopped OpenBot to come here: open at the AI screen,
+         * Settings' Change on the AI model row stopped AwakenBot to come here: open at the AI screen,
          * as this window's own Change AI connection does. Asked every load, and answered once.
          */
         const changeAiConnection = await invoke<boolean>(
@@ -498,7 +498,7 @@ function Setup() {
         step: "engine",
         ok: true,
         running: true,
-        detail: "Checking the software OpenBot needs.",
+        detail: "Checking the software AwakenBot needs.",
       },
     ]);
     setPreparation({ key: installationKey, status: "preparing" });
@@ -605,9 +605,9 @@ function Setup() {
   }
 
   /**
-   * Starts OpenBot against a ready Intelligence.
+   * Starts AwakenBot against a ready Intelligence.
    *
-   * `started` only when OpenBot started. `deferred` when it has to be installed first: the window
+   * `started` only when AwakenBot started. `deferred` when it has to be installed first: the window
    * goes to the install, and Start is asked for again after it. `failed` for anything else.
    */
   async function start(
@@ -618,7 +618,7 @@ function Setup() {
       setStep("install");
       return "deferred";
     }
-    // OpenBot starts only from a stack its CLI reports ready and licensed.
+    // AwakenBot starts only from a stack its CLI reports ready and licensed.
     if (!intelligence) {
       setStep("connect");
       return "deferred";
@@ -631,7 +631,7 @@ function Setup() {
     try {
       const startWith = {
         root: root.trim(),
-        // The key `local connect` gave OpenBot is in the vault; Start takes it from there.
+        // The key `local connect` gave AwakenBot is in the vault; Start takes it from there.
         apiUrl: intelligence.apiUrl,
         gatewayWsUrl: intelligence.gatewayWsUrl,
         // The whole answer from the model screen, so the Rust side decides which keys that
@@ -664,12 +664,12 @@ function Setup() {
       setRunning(true);
       setRecoveryFailure(null);
       startedAfterReinstall.current = false;
-      // The handover, on a first run as on a return: the window becomes OpenBot the moment the
+      // The handover, on a first run as on a return: the window becomes AwakenBot the moment the
       // stack is up. Recorded first, so a later Start of this installation reads as a return.
       savedLaunch.current = installationKey;
       setStep("connect");
       setRefreshIntelligence(false);
-      // An upgrade that did not happen is said on the running screen first; Show OpenBot hands over.
+      // An upgrade that did not happen is said on the running screen first; Show AwakenBot hands over.
       // So is a back end that runs the release it had because its own update did not finish.
       if (outcome?.notice || intelligence.notice) {
         // The notice says what the rows would: it is the one thing on the screen.
@@ -682,7 +682,7 @@ function Setup() {
       return "started";
     } catch (error) {
       recoverFromStart(error);
-      // Refused until OpenBot is installed again, which the window now does by itself and then
+      // Refused until AwakenBot is installed again, which the window now does by itself and then
       // starts. Only once: refused again straight after that install, it is a failure.
       return asProblem(error).connection === "installation" &&
         !startedAfterReinstall.current
@@ -696,10 +696,10 @@ function Setup() {
   }
 
   /*
-   * Start fresh after the backend was lost installs OpenBot's own software first, on the screen the
-   * person is on, before setup and Start carry on. On box I the backend went with OpenBot's machine,
-   * and the machine made again had none of OpenBot's software: Start was refused after setup, and
-   * the window went back from Starting OpenBot to Installing OpenBot. Installed with the Bot this
+   * Start fresh after the backend was lost installs AwakenBot's own software first, on the screen the
+   * person is on, before setup and Start carry on. On box I the backend went with AwakenBot's machine,
+   * and the machine made again had none of AwakenBot's software: Start was refused after setup, and
+   * the window went back from Starting AwakenBot to Installing AwakenBot. Installed with the Bot this
    * installation runs, so it is still the installation the person returns to. Already there, the
    * install says so and is done at once.
    */
@@ -723,7 +723,7 @@ function Setup() {
     />
   );
 
-  // OpenBot's own updates. The installation follows the app: Start upgrades it to the app's release.
+  // AwakenBot's own updates. The installation follows the app: Start upgrades it to the app's release.
   const appUpdates = <CheckForUpdates />;
 
   /** The leftovers go first, then Start carries on: starting fresh is one choice, not two. */
@@ -750,7 +750,7 @@ function Setup() {
     local.retry();
   }
 
-  /** The model chosen can start OpenBot: a saved one must be complete enough to use. */
+  /** The model chosen can start AwakenBot: a saved one must be complete enough to use. */
   function modelCanStart(choice = model) {
     if (!choice) return false;
     if (!choice.saved) return true;
@@ -770,7 +770,7 @@ function Setup() {
     return choice.login === "plan" || choice.login === "api-key";
   }
 
-  /** True when OpenBot stopped, even if the local Intelligence stack it started did not. */
+  /** True when AwakenBot stopped, even if the local Intelligence stack it started did not. */
   async function stopStack(): Promise<boolean> {
     try {
       await invoke("stop_stack", { root });
@@ -820,7 +820,7 @@ function Setup() {
 
   /*
    * Starts local Intelligence without a click: a recorded stack on a first run that was not
-   * interrupted, or a connected one on relaunch with auto-start on. Never after Stop OpenBot. And a
+   * interrupted, or a connected one on relaunch with auto-start on. Never after Stop AwakenBot. And a
    * Start that waited for the install it asked for, which is carrying on, not starting anew.
    */
   const localAuto =
@@ -841,7 +841,7 @@ function Setup() {
   // The person closed macOS's password prompt: whichever screen they are on says so, with Try
   // again, while Install asks again by itself. See `install::GoAhead`.
   const goAhead = goAheadNow(steps);
-  // On a Mac whose own Podman OpenBot can't use: the offer to pause it while OpenBot runs, on
+  // On a Mac whose own Podman AwakenBot can't use: the offer to pause it while AwakenBot runs, on
   // whichever screen the person is on, with the button that says yes. See `own_machine`.
   const pauseOffer = pauseOfferNow(steps);
   const pauseCard = pauseOffer && (
@@ -850,7 +850,7 @@ function Setup() {
 
   /*
    * What is installing behind a screen that asks the person for something else, as one row: the
-   * account step and the AI step. It says what OpenBot is doing, how far along it is and for how
+   * account step and the AI step. It says what AwakenBot is doing, how far along it is and for how
    * long, so the screen never looks stuck while minutes of install go on behind it.
    */
   // The downloads the first screen started, which the background row shows while they run.
@@ -875,7 +875,7 @@ function Setup() {
     return (
       <main>
         <div className="sheet">
-          <h1>OpenBot could not check Windows setup</h1>
+          <h1>AwakenBot could not check Windows setup</h1>
           <Failure problem={blockerFailure} />
         </div>
       </main>
@@ -898,7 +898,7 @@ function Setup() {
     return (
       <main>
         <div className="sheet connection-sheet">
-          <h1>Getting OpenBot ready</h1>
+          <h1>Getting AwakenBot ready</h1>
           <p className="lede" role="status">
             Checking your saved setup…
           </p>
@@ -909,7 +909,7 @@ function Setup() {
   }
 
   /*
-   * Skipped entirely when a stack is already up: somebody returning to a running OpenBot is not
+   * Skipped entirely when a stack is already up: somebody returning to a running AwakenBot is not
    * setting one up.
    */
   if (!running && step === "welcome") {
@@ -919,7 +919,7 @@ function Setup() {
           onInstall={() => {
             // The default Bot, recorded as a choice of it would be.
             recordSetupEvent(harnessChoiceEvent(DEFAULT_HARNESS));
-            // The account is the first screen; OpenBot installs behind it meanwhile.
+            // The account is the first screen; AwakenBot installs behind it meanwhile.
             setStep("account");
             void beginLocalInstall();
           }}
@@ -935,11 +935,13 @@ function Setup() {
         <div className="sheet">
           <Sections at="Install" />
           <h1>
-            {installationReady ? "Installation complete" : "Installing OpenBot"}
+            {installationReady
+              ? "Installation complete"
+              : "Installing AwakenBot"}
           </h1>
           <p className="lede">
             {installationReady
-              ? "OpenBot’s local software is ready. Next, connect your AI."
+              ? "AwakenBot’s local software is ready. Next, connect your AI."
               : INSTALL_BLURB}
           </p>
           {/* Intelligence sets itself up alongside, once the install has Docker answering. Its
@@ -988,7 +990,7 @@ function Setup() {
                 >
                   {preparation?.status === "failed"
                     ? "Retry installation"
-                    : "Install OpenBot"}
+                    : "Install AwakenBot"}
                 </button>
               )}
             </div>
@@ -1047,7 +1049,7 @@ function Setup() {
               <Failure
                 problem={displayedFailure}
                 // The install behind this step failed: Try again runs it again, its check of the
-                // software OpenBot runs on and any update or restart included. Nothing else on this
+                // software AwakenBot runs on and any update or restart included. Nothing else on this
                 // step would, and the account check waits on that software meanwhile.
                 onRetry={
                   failure && preparation?.status === "failed"
@@ -1081,7 +1083,7 @@ function Setup() {
               <BehindSlot>
                 <BehindRow
                   row={behind({
-                    done: "OpenBot starts as soon as you connect your AI.",
+                    done: "AwakenBot starts as soon as you connect your AI.",
                   })}
                 />
                 <LocalStatus sequence={local} download={false} />
@@ -1101,7 +1103,7 @@ function Setup() {
             recordSetupEvent(modelChoiceEvent(choice));
             chosenModel.current = choice;
             setModel(choice);
-            // The go-ahead: OpenBot starts once Intelligence is ready, wherever it has got to.
+            // The go-ahead: AwakenBot starts once Intelligence is ready, wherever it has got to.
             setSteps([]);
             setStep("connect");
             local.start();
@@ -1139,7 +1141,7 @@ function Setup() {
             row.running,
         )
     : undefined;
-  // One row while it updates, with its download's bar once there is one: "Installing OpenBot" sat
+  // One row while it updates, with its download's bar once there is one: "Installing AwakenBot" sat
   // unchanged for minutes while the update's software downloaded. Not while the Start journey
   // shows, whose one bar counts the update too (`StartJourney`).
   const updatingLine = updating && !(local.running && !local.stopped) && (
@@ -1147,7 +1149,7 @@ function Setup() {
       label="Update progress"
       steps={[
         {
-          step: "Updating OpenBot",
+          step: "Updating AwakenBot",
           ok: true,
           running: true,
           detail: updating.detail,
@@ -1168,15 +1170,15 @@ function Setup() {
         <div className="sheet connection-sheet">
           <h1>
             {localStarting || installingAfresh
-              ? "Starting OpenBot"
-              : "OpenBot is stopped"}
+              ? "Starting AwakenBot"
+              : "AwakenBot is stopped"}
           </h1>
           <p className="lede">
             {localStarting || installingAfresh
               ? // No time of its own: the card under it says how long is left, from how long each
                 // part takes. "This usually takes a minute or two" sat over "About 3 minutes left"
                 // on Windows G, and the start took four.
-                "OpenBot is getting ready and opens by itself."
+                "AwakenBot is getting ready and opens by itself."
               : "Your installation and saved connections are ready to reopen."}
           </p>
           {freshInstall || (
@@ -1239,7 +1241,7 @@ function Setup() {
   }
 
   /*
-   * The Start step: Intelligence's rows, and OpenBot starts by itself once the CLI reports it ready
+   * The Start step: Intelligence's rows, and AwakenBot starts by itself once the CLI reports it ready
    * and valid. While a CLI call runs, Cancel is the only control; leaving is offered only once
    * nothing runs.
    */
@@ -1248,12 +1250,12 @@ function Setup() {
       <main>
         <div className="sheet connection-sheet">
           {!returningToInstallation && <Sections at="Start" />}
-          {/* Not "Getting ready" over a "Getting OpenBot ready" row: Windows F read them as one. */}
+          {/* Not "Getting ready" over a "Getting AwakenBot ready" row: Windows F read them as one. */}
           <h1>Finishing setup</h1>
           <p className="lede">
             {leftoverVolumes.length > 0
-              ? "OpenBot starts once you choose what happens to the data a previous installation left."
-              : "OpenBot is setting up on this computer and starts by itself when it’s ready. This can take a few minutes."}
+              ? "AwakenBot starts once you choose what happens to the data a previous installation left."
+              : "AwakenBot is setting up on this computer and starts by itself when it’s ready. This can take a few minutes."}
           </p>
           {freshInstall || (
             <LocalIntelligence
@@ -1317,7 +1319,9 @@ function Setup() {
         {/* A failure outranks `running`. The supervisor gives up on a process and sends the window
           back here, and a heading that still says everything is running while the box underneath
           names the process that stopped is a screen arguing with itself. */}
-        <h1>{displayedFailure ? "OpenBot stopped" : "OpenBot is running"}</h1>
+        <h1>
+          {displayedFailure ? "AwakenBot stopped" : "AwakenBot is running"}
+        </h1>
         {/* The back end runs the release it had: information, said where the lede goes. Nothing
           failed, so it is not drawn as a failure and offers no help. */}
         {!displayedFailure && backEndNotice && (
@@ -1327,37 +1331,37 @@ function Setup() {
         )}
         {!displayedFailure && !releaseNotice && !backEndNotice && (
           <p className="lede">
-            OpenBot is open in this window. You can also show it or stop it from
-            its icon in {trayPlace()}.
+            AwakenBot is open in this window. You can also show it or stop it
+            from its icon in {trayPlace()}.
           </p>
         )}
         {/* Start went back to the version this installation had. Said before handing over. */}
         {!displayedFailure && releaseNotice && (
           <InlineFailure problem={releaseNotice} />
         )}
-        {/* The start's rows only when something failed, to show where. Once OpenBot runs they are
+        {/* The start's rows only when something failed, to show where. Once AwakenBot runs they are
           all done, and they flashed for the moment before it opened with the native side's own
           words ("settings written, credentials stored"). */}
         {displayedFailure && <SetupProgress steps={steps} />}
         {displayedFailure && <Failure problem={displayedFailure} />}
-        {stopping && <StatusLine>Stopping OpenBot…</StatusLine>}
-        {showing && <StatusLine>Loading OpenBot…</StatusLine>}
+        {stopping && <StatusLine>Stopping AwakenBot…</StatusLine>}
+        {showing && <StatusLine>Loading AwakenBot…</StatusLine>}
         <div className="row">
           <button
             type="button"
             /*
              * The refusal is shown, not swallowed.
              *
-             * `show_openbot` answers with "OpenBot is not answering on port 3010 yet, so there is
+             * `show_openbot` answers with "AwakenBot is not answering on port 3010 yet, so there is
              * nothing to show" when the app host process is not up, and this button dropped it on
-             * the floor. Clicking it then did nothing at all, on a screen headed "OpenBot is
+             * the floor. Clicking it then did nothing at all, on a screen headed "AwakenBot is
              * running", which is the worst of both: a true sentence was available and the window
              * threw it away.
              */
             onClick={showOpenBot}
             disabled={busy || showing}
           >
-            Show OpenBot
+            Show AwakenBot
           </button>
           <button
             type="button"
@@ -1365,7 +1369,7 @@ function Setup() {
             onClick={stop}
             disabled={busy || showing}
           >
-            Stop OpenBot
+            Stop AwakenBot
           </button>
         </div>
         {/* Under the buttons, as on the stopped screen. A disclosure draws a rule above itself, and

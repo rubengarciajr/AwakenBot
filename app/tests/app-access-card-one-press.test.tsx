@@ -29,7 +29,7 @@ import { settleReactWork } from "./settle-react-work";
 /**
  * ONE PRESS ON THE CHAT CARD, IN THE DESKTOP, FOR AN APP NOBODY HAS TURNED ON.
  *
- * OpenBot Personal on a fresh install: a Bot asked for Gmail, which nobody had turned on, and drew
+ * AwakenBot Personal on a fresh install: a Bot asked for Gmail, which nobody had turned on, and drew
  * this card. The press turned Gmail on and stopped there. The card swapped to "You haven't connected
  * your Gmail account yet." with a second Connect, and only that second press opened the sign-in.
  *
@@ -90,7 +90,7 @@ function inTheDesktop() {
 }
 
 /**
- * Gmail as `GET /api/plugins/for/:agentId/apps/:app` answers it on OpenBot Personal before anybody
+ * Gmail as `GET /api/plugins/for/:agentId/apps/:app` answers it on AwakenBot Personal before anybody
  * turned it on: no row, so no recorded scheme, and switched off because it is absent.
  */
 const notTurnedOn = (overrides: Partial<AppAccess> = {}): AppAccess =>
@@ -108,7 +108,7 @@ const notTurnedOn = (overrides: Partial<AppAccess> = {}): AppAccess =>
 const turnedOn = appAccess({ state: "not_connected" });
 
 /**
- * The server, for one person on OpenBot Personal. Records each write the card sends, and holds the
+ * The server, for one person on AwakenBot Personal. Records each write the card sends, and holds the
  * connect route's answer until `signIn` settles, the way a vendor's slow answer does.
  */
 function serving(before: AppAccess, signIn: Promise<void>) {

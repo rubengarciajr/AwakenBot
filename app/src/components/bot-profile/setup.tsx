@@ -199,7 +199,7 @@ export function SetupSections({ agent }: { agent: AgentProfile }) {
                 <ItemContent>
                   <ItemTitle>System owned</ItemTitle>
                   <ItemDescription>
-                    Comes with OpenBot. It doesn't belong to a person.
+                    Comes with AwakenBot. It doesn't belong to a person.
                   </ItemDescription>
                 </ItemContent>
               </Item>
@@ -246,8 +246,8 @@ function VisibilityRow({
                 ? `Only you can see it and start conversations with it. ${ISOLATED_MAKING_PUBLIC}`
                 : "Only you can see it and start conversations with it."
               : agent.isolationActive
-                ? `Everyone on OpenBot can find and use it. ${ISOLATED_PUBLIC_SHARES_LOGINS}`
-                : "Everyone on OpenBot can find and use it.")}
+                ? `Everyone on AwakenBot can find and use it. ${ISOLATED_PUBLIC_SHARES_LOGINS}`
+                : "Everyone on AwakenBot can find and use it.")}
         </ItemDescription>
       </ItemContent>
       <ItemActions>
@@ -318,14 +318,14 @@ function IsolatedRow({
   const available = capabilities?.isolationAvailable ?? false;
   const allowed = mine?.capabilities.isolatedComputers !== false;
   const isPublic = agent.visibility === "public";
-  // A Bot that comes with OpenBot belongs to nobody, and the switch is a person's.
+  // A Bot that comes with AwakenBot belongs to nobody, and the switch is a person's.
   const editable =
     agent.canManage &&
     !agent.systemOwned &&
     (agent.isolated || (available && allowed));
 
   const summary = agent.systemOwned
-    ? "Comes with OpenBot, so it runs on the computer of whoever is using it."
+    ? "Comes with AwakenBot, so it runs on the computer of whoever is using it."
     : agent.isolated
       ? agent.isolationActive
         ? isolatedExplained(isPublic)
@@ -509,7 +509,7 @@ function ConnectionSection({ agent }: { agent: AgentProfile }) {
               }
             >
               {builtIn
-                ? "Runs inside OpenBot. There's nothing to connect."
+                ? "Runs inside AwakenBot. There's nothing to connect."
                 : agent.endpoint}
             </ItemDescription>
           </ItemContent>

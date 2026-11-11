@@ -611,7 +611,7 @@ describe("whether it is in effect", () => {
     );
     expect(refused.status).toBe(400);
     expect((await refused.json()).error).toBe(
-      "This OpenBot can't give a Bot a computer of its own, so it runs on yours.",
+      "This AwakenBot can't give a Bot a computer of its own, so it runs on yours.",
     );
     // Turning it off is still allowed here.
     const off = await call(

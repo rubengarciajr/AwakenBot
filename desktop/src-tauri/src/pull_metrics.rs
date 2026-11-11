@@ -329,7 +329,7 @@ fn download_bytes(stdout: &[u8], stderr: &[u8]) -> Option<u64> {
 /// Pull a provider sign-in image without starting its CLI or creating a container.
 /// A tiny stdin Compose project gives the same missing-only policy and JSON progress as setup.
 /// Older Compose providers use an explicit native pull after a local presence check.
-/// An image on ghcr.io comes from OpenBot's mirror first: see `image_mirror`.
+/// An image on ghcr.io comes from AwakenBot's mirror first: see `image_mirror`.
 pub fn pull_image(
     engine: &Address,
     image: &str,
@@ -484,7 +484,7 @@ pub const IMAGE_PULLS_AT_ONCE: usize = 4;
 /// falls when a download stalls, and a size the registries sent in the meantime is shown.
 pub const PROGRESS_TICK: Duration = Duration::from_millis(500);
 
-/// Install's download, as the window shows it under "Installing OpenBot".
+/// Install's download, as the window shows it under "Installing AwakenBot".
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Downloads {
@@ -838,9 +838,9 @@ fn run_with_progress(
     });
     let output = output.map_err(|error| {
         Problem::with(
-            "OpenBot couldn't download what it needs. Check your internet connection, then try \
+            "AwakenBot couldn't download what it needs. Check your internet connection, then try \
              again.",
-            format!("could not pull the images OpenBot needs: {error}"),
+            format!("could not pull the images AwakenBot needs: {error}"),
         )
     })?;
     if output.status.success() {
@@ -1331,7 +1331,7 @@ Executing external compose provider
     /// Install puts on Windows) from `compose --progress json -f - pull --policy missing`, as
     /// `pull_image` runs it, and from `podman pull` through the remote API, as Windows runs it.
     const REGISTRY_UNREACHABLE: [(&str, &str); 5] = [
-        // Podman 5.8.9's API, a real OpenBot image, its registries resolving to a refused port.
+        // Podman 5.8.9's API, a real AwakenBot image, its registries resolving to a refused port.
         // Podman answers with only the root cause once nothing has been pulled. This is the
         // upgrade on Windows whose window said to start the engine.
         (

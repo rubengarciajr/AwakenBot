@@ -7,8 +7,8 @@ the bundled CLI made, so it needs a model of its own. It gets the person's, in t
 1. **Their own API key.** Signed in with an OpenAI or an Anthropic key, Learning is given that key,
    on Intelligence's own default model for the provider (`DEFAULT_OPENAI_MODEL` and
    `DEFAULT_ANTHROPIC_MODEL`, Intelligence `libs/learning-agent/src/model-selection.ts`).
-2. **Their plan, through OpenBot.** Signed in with a Claude or ChatGPT plan, there is no key to give.
-   Learning is pointed at the OpenBot server's Learning endpoint
+2. **Their plan, through AwakenBot.** Signed in with a Claude or ChatGPT plan, there is no key to give.
+   Learning is pointed at the AwakenBot server's Learning endpoint
    (`server/src/learning/model-endpoint.ts`), which answers each call on the plan's own harness, the
    way the Bots are answered. The key Learning sends there is a secret minted once per installation
    ([`TOKEN`]) and given to the server and the Learning agent alone.
@@ -26,11 +26,11 @@ provider key or `LEARNING_AGENT_MODEL_BASE_URL` and `LEARNING_AGENT_MODEL_API_KE
 (`apps/cli/src/services/local-values.ts`).
 
 THE PLAN ENDPOINT IS GIVEN BY NUMBER, the IPv4 address the engine gives containers for this machine
-(`host.docker.internal` inside OpenBot's own `server` container, see `stack::host_gateway_ipv4`).
+(`host.docker.internal` inside AwakenBot's own `server` container, see `stack::host_gateway_ipv4`).
 Inside the cluster, 127.0.0.1 is the pod. Given a loopback address, the CLI swaps in
 `host.k3d.internal` (`localModelEndpoint` in `local-values.ts`), and that name does not survive a
 restart: k3s rewrites CoreDNS's NodeHosts every time the cluster starts and drops the entry k3d
-added (k3d-io/k3d#1221), and OpenBot starts the cluster on every Start. Measured on Docker Desktop:
+added (k3d-io/k3d#1221), and AwakenBot starts the cluster on every Start. Measured on Docker Desktop:
 every Learning call then failed with "Connection error.". The CLI passes any other address through
 as written, and the engine's address for this machine does not depend on the cluster's DNS: Docker
 Desktop's is 192.168.65.254, a Podman machine's the address `acquire` configures (192.168.127.254),
@@ -110,7 +110,7 @@ pub fn through_openbot(credential: &ModelCredential) -> bool {
 }
 
 /**
-The Learning agent's model for this sign-in. `server` is where the cluster reaches OpenBot's server:
+The Learning agent's model for this sign-in. `server` is where the cluster reaches AwakenBot's server:
 this machine's address as the engine gives it to containers, and the server's port on this machine.
 */
 pub fn for_credential(
@@ -242,7 +242,7 @@ fn write_private(folder: &Path, config: &Value) -> Result<PathBuf, ()> {
 /// What giving the Learning agent its model came to, for the log. Never a key or a CLI word.
 #[derive(Debug, PartialEq, Eq)]
 pub enum Given {
-    /// Nothing to do: nothing chosen, or no stack OpenBot made for this installation.
+    /// Nothing to do: nothing chosen, or no stack AwakenBot made for this installation.
     Nothing,
     /// The stack was not running and ready. A setup there would install all of it again, so it
     /// waits for the next Start.
@@ -257,9 +257,9 @@ pub enum Given {
 }
 
 /**
-Give the Learning agent of the stack OpenBot made for `root` the model for `credential`.
+Give the Learning agent of the stack AwakenBot made for `root` the model for `credential`.
 
-Only a stack OpenBot made: one that was already there serves other apps, and their Learning is not
+Only a stack AwakenBot made: one that was already there serves other apps, and their Learning is not
 this sign-in's to change. Only once `status` says it is running and ready, because there the CLI
 changes the Learning agent alone.
 */
@@ -485,7 +485,7 @@ mod tests {
         root
     }
 
-    /// A Start on a ChatGPT plan gives the stack OpenBot made the plan's Learning file, once that
+    /// A Start on a ChatGPT plan gives the stack AwakenBot made the plan's Learning file, once that
     /// stack answers ready.
     #[test]
     fn a_start_gives_the_ready_stack_openbot_made_its_learning_model() {

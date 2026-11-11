@@ -1,13 +1,13 @@
 /*!
-The shell's own messages on macOS, such as Check for Updates…'s answer, in an alert with OpenBot's
+The shell's own messages on macOS, such as Check for Updates…'s answer, in an alert with AwakenBot's
 icon.
 
 The dialog plugin hands a message to `rfd`, and on macOS `rfd` shows a message that has no parent
 window through `CFUserNotificationDisplayAlert`, with no icon. That alert is drawn by the system,
-not by OpenBot, so it carries the system's grey note icon whatever the message's kind. A message
+not by AwakenBot, so it carries the system's grey note icon whatever the message's kind. A message
 from the menu or the tray has no window to sit on, so it always went that way.
 
-An `NSAlert` that OpenBot runs itself shows OpenBot's icon. This one is set to the app's icon by
+An `NSAlert` that AwakenBot runs itself shows AwakenBot's icon. This one is set to the app's icon by
 name, so nothing else can stand in for it, and it keeps the informational style, which on macOS
 draws no badge or symbol over the icon. On Windows and Linux the dialog plugin's message is right
 as it is.
@@ -24,7 +24,7 @@ use objc2_foundation::NSString;
 const ESCAPE: &str = "\u{1b}";
 
 /**
-The alert for a message: `title` in bold, `message` under it, OpenBot's icon beside them.
+The alert for a message: `title` in bold, `message` under it, AwakenBot's icon beside them.
 
 `buttons` is the answer to ask for, the one that goes ahead first. Without it the alert has a
 single OK. Return chooses the first button and Escape the second, as in any Mac alert.
@@ -66,8 +66,8 @@ pub fn went_ahead(response: NSModalResponse) -> bool {
 Show the alert for a message in front of whatever is there, wait for the answer, and say whether
 it was the first button. On the main thread, which `mtm` proves.
 
-A message from the tray comes while another app is in front, so OpenBot is activated first, with
-`activateIgnoringOtherApps:`: macOS 14's cooperative `activate` leaves OpenBot behind an app that
+A message from the tray comes while another app is in front, so AwakenBot is activated first, with
+`activateIgnoringOtherApps:`: macOS 14's cooperative `activate` leaves AwakenBot behind an app that
 does not yield (see `bring_to_front` in main.rs).
 */
 pub fn ask(

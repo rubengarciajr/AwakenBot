@@ -463,7 +463,7 @@ describe.each(PROVIDERS)("a Bot holding 279 tools, on $name", (current) => {
       expect((seen[1] as { code?: string }).code).toBe(TOOL_LIMIT_EXCEEDED);
       expect(llm.sent).toEqual([]);
       expect(recorded).toHaveLength(1);
-      // Chat Completions' limit is the provider's; anywhere else 128 is OpenBot's own.
+      // Chat Completions' limit is the provider's; anywhere else 128 is AwakenBot's own.
       expect(recorded[0]?.[1].provider).toBe(
         current.wire === "chat" ? "OpenAI" : OPENBOT_TOOL_LIMIT,
       );
@@ -798,7 +798,7 @@ describe("the pre-flight count", () => {
         limit: 128,
       }),
     ).toBe(
-      "General Assistant can't answer. It needs 131 tools on every step, and OpenBot sends at most 128 at once. Ask an admin to check this Bot's setup.",
+      "General Assistant can't answer. It needs 131 tools on every step, and AwakenBot sends at most 128 at once. Ask an admin to check this Bot's setup.",
     );
   });
 

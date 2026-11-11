@@ -79,7 +79,7 @@ async function startSigningIn() {
   );
 }
 
-/** OpenBot's own engine check: a Docker short of disk is caught here, before Start fails on it. */
+/** AwakenBot's own engine check: a Docker short of disk is caught here, before Start fails on it. */
 test("an engine short of disk says how to raise it, and Try again checks again", async () => {
   invokeHandler = alreadySignedIn(async ({ command }) => {
     if (command === "local_eval_terms")
@@ -96,7 +96,7 @@ test("an engine short of disk says how to raise it, and Try again checks again",
     <CopilotKitAccount root="/tmp/account-engine" onDone={() => {}} />,
   );
   await screen.findByText(
-    "Docker Desktop doesn't have enough free disk space. OpenBot needs 40 GB free. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Try again.",
+    "Docker Desktop doesn't have enough free disk space. AwakenBot needs 40 GB free. Raise the disk limit in Docker Desktop > Settings > Resources, or free space in Docker, then Try again.",
   );
   await userEvent.click(screen.getByRole("button", { name: "Try again" }));
   await waitFor(() =>
@@ -108,7 +108,7 @@ test("an engine short of disk says how to raise it, and Try again checks again",
 
 /**
  * What `local_eval_terms` answered on Windows F, filled to 15 GB free, once Install had made
- * OpenBot's machine: 13.2 GiB free on C:. `local_eval.rs` measures F's engine and checks its answer
+ * AwakenBot's machine: 13.2 GiB free on C:. `local_eval.rs` measures F's engine and checks its answer
  * is this.
  */
 const windowsFShortOfDisk = JSON.parse(
@@ -122,10 +122,10 @@ const windowsFShortOfDisk = JSON.parse(
 );
 
 /**
- * Windows F was told "OpenBot is out of disk space. It needs 40 GB free." with 13 GB free, and
+ * Windows F was told "AwakenBot is out of disk space. It needs 40 GB free." with 13 GB free, and
  * again on Try again. The step says what is free and what is needed, and Try again asks again.
  */
-test("a disk too short for OpenBot says what is free and what it needs", async () => {
+test("a disk too short for AwakenBot says what is free and what it needs", async () => {
   invokeHandler = alreadySignedIn(async ({ command }) => {
     if (command === "local_eval_terms") return windowsFShortOfDisk;
     throw new Error(`unexpected ${command}`);
@@ -134,7 +134,7 @@ test("a disk too short for OpenBot says what is free and what it needs", async (
     <CopilotKitAccount root="/tmp/account-windows-f" onDone={() => {}} />,
   );
   await screen.findByText(
-    "This computer has 13.2 GB of free space on drive C:, and OpenBot needs 40 GB. Free up some space, then Try again.",
+    "This computer has 13.2 GB of free space on drive C:, and AwakenBot needs 40 GB. Free up some space, then Try again.",
   );
   expect(screen.queryByText(/out of disk space/)).toBeNull();
   await userEvent.click(screen.getByRole("button", { name: "Try again" }));
@@ -161,7 +161,7 @@ const orbStack = JSON.parse(
 );
 
 /**
- * 1.0.0 sat on "Checking your OpenBot account…" for 15 minutes on a Mac with OrbStack, asking
+ * 1.0.0 sat on "Checking your AwakenBot account…" for 15 minutes on a Mac with OrbStack, asking
  * every 2 seconds, then said only that it couldn't check the account. The refusal is said at once,
  * with what to do about it, and nothing is asked again until Try again.
  */
@@ -176,18 +176,18 @@ test("an engine local setup doesn't run on is said at once, with how to switch",
   await screen.findByRole("heading", {
     name: "Switch to Docker Desktop or Podman",
   });
-  // OpenBot's own words: the CLI's names a rootful Podman, and goes to the log.
+  // AwakenBot's own words: the CLI's names a rootful Podman, and goes to the log.
   expect(
     screen.getByText(
-      "OpenBot can't run with the app this computer uses to run its software. It works with Docker Desktop or Podman.",
+      "AwakenBot can't run with the app this computer uses to run its software. It works with Docker Desktop or Podman.",
     ),
   ).toBeTruthy();
   expect(screen.queryByText(/rootful/)).toBeNull();
   expect(screen.getByText("docker context use desktop-linux")).toBeTruthy();
   expect(
-    screen.queryByText("Couldn’t check your OpenBot account. Try again."),
+    screen.queryByText("Couldn’t check your AwakenBot account. Try again."),
   ).toBeNull();
-  expect(screen.queryByText("Checking your OpenBot account…")).toBeNull();
+  expect(screen.queryByText("Checking your AwakenBot account…")).toBeNull();
 
   // Not waited out: no second check comes by itself.
   await new Promise((settle) => setTimeout(settle, 2500));
@@ -227,7 +227,7 @@ function expectWorking(screen: ReturnType<typeof render>, said: string) {
 }
 
 /**
- * 1.0.0 on a new Mac said only "Checking your OpenBot account…" for minutes while Install put
+ * 1.0.0 on a new Mac said only "Checking your AwakenBot account…" for minutes while Install put
  * Podman in behind this step. Signed in first, it says what the agreement is waiting on, in
  * Install's own words as Install moves on. Then it goes on to the agreement by itself.
  */
@@ -261,20 +261,20 @@ test("while Install sets up the engine, the signed-in account step says so, then
   );
   const screen = render(account("Preparing the engine machine."));
   await screen.findByText(
-    "You're signed in. OpenBot is setting up the software it runs on. The license agreement comes next.",
+    "You're signed in. AwakenBot is setting up the software it runs on. The license agreement comes next.",
   );
   expect(
     screen.getByRole("heading", { name: "Setting up this computer" }),
   ).toBeTruthy();
   expectWorking(screen, "Preparing the engine machine.");
-  expect(screen.queryByText("Checking your OpenBot account…")).toBeNull();
+  expect(screen.queryByText("Checking your AwakenBot account…")).toBeNull();
 
   // Install moves on, and so does what the step says. Asking again, it still says it.
   screen.rerender(account("Starting the engine machine."));
   expectWorking(screen, "Starting the engine machine.");
   await waitFor(() => expect(asked).toBe(2), { timeout: 3000 });
   expectWorking(screen, "Starting the engine machine.");
-  expect(screen.queryByText("Checking your OpenBot account…")).toBeNull();
+  expect(screen.queryByText("Checking your AwakenBot account…")).toBeNull();
   answerSecond(noEngine);
 
   // The engine answers: the agreement.
@@ -318,7 +318,7 @@ test("a closed password prompt is said with Try again, and no Continue comes bef
 
   // Closed without a password: what that means, and Try again.
   const declined =
-    "OpenBot needs your password to install what it needs to run. It asks again in a moment, or choose Try again.";
+    "AwakenBot needs your password to install what it needs to run. It asks again in a moment, or choose Try again.";
   screen.rerender(account(declined));
   expect(screen.getByText(declined)).toBeTruthy();
   await userEvent.click(screen.getByRole("button", { name: "Try again" }));
@@ -332,7 +332,7 @@ test("a closed password prompt is said with Try again, and no Continue comes bef
 });
 
 /** A refusal with no sentence of the CLI's own still says what is wrong, and is not waited out. */
-test("a refused engine with no sentence from the CLI says so in OpenBot's words", async () => {
+test("a refused engine with no sentence from the CLI says so in AwakenBot's words", async () => {
   invokeHandler = alreadySignedIn(async ({ command }) => {
     if (command === "local_eval_terms")
       return { status: "blocked", reason: "unsupported-engine" };
@@ -342,7 +342,7 @@ test("a refused engine with no sentence from the CLI says so in OpenBot's words"
     <CopilotKitAccount root="/tmp/account-refused" onDone={() => {}} />,
   );
   await screen.findByText(
-    "OpenBot can't run with the app this computer uses to run its software. It works with Docker Desktop or Podman.",
+    "AwakenBot can't run with the app this computer uses to run its software. It works with Docker Desktop or Podman.",
   );
   expect(screen.getByRole("button", { name: "Try again" })).toBeTruthy();
 });
@@ -350,7 +350,7 @@ test("a refused engine with no sentence from the CLI says so in OpenBot's words"
 test("a sign-in waiting on the browser shows its code and a way back to the page", async () => {
   waitingSignIn();
   const screen = await startSigningIn();
-  await screen.findByText("Finish signing in to OpenBot in your browser…");
+  await screen.findByText("Finish signing in to AwakenBot in your browser…");
   expect((await screen.findByText(PAGE.userCode)).tagName).toBe("STRONG");
   expect(
     screen.getByText(
@@ -395,10 +395,10 @@ test("Cancel stops the CLI's sign-in and goes back to the start of the step", as
 });
 
 /*
- * The step is OpenBot's, so it leads with OpenBot by CopilotKit, not CopilotKit's logotype, while
+ * The step is AwakenBot's, so it leads with AwakenBot by CopilotKit, not CopilotKit's logotype, while
  * the sign-in waits and once it is stopped, and says what the free local license key is for.
  */
-test("the sign-in leads with OpenBot, while it waits and once stopped", async () => {
+test("the sign-in leads with AwakenBot, while it waits and once stopped", async () => {
   waitingSignIn();
   const screen = await startSigningIn();
   await screen.findByText(PAGE.userCode);
@@ -406,11 +406,11 @@ test("the sign-in leads with OpenBot, while it waits and once stopped", async ()
     screen.getByRole("heading", { name: "Get your free license key" }),
   ).toBeTruthy();
   expect(screen.getByText(/needs a free license key/)).toBeTruthy();
-  // What signing in does, and where OpenBot keeps what you make: never "only", and never that
+  // What signing in does, and where AwakenBot keeps what you make: never "only", and never that
   // conversations stay on this computer (the AI provider gets them).
   expect(
     screen.getByText(
-      "Signing in gets your free license key and sets up your apps. OpenBot keeps your conversations and files on this computer.",
+      "Signing in gets your free license key and sets up your apps. AwakenBot keeps your conversations and files on this computer.",
     ),
   ).toBeTruthy();
   expect(

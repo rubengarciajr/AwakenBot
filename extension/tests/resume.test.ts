@@ -45,7 +45,7 @@ const ada = { id: "p1", name: "Ada", email: "ada@example.test" };
 const DEAL = "https://crm.example.test/deals/42";
 const NEXT_DEAL = "https://crm.example.test/deals/43";
 const SIGNED_OUT =
-  "This browser was disconnected from OpenBot. Your recording stopped, and everything in it is kept in this browser for 7 days, until you connect again.";
+  "This browser was disconnected from AwakenBot. Your recording stopped, and everything in it is kept in this browser for 7 days, until you connect again.";
 const START_FAILED = "The recording could not start. Try again.";
 /** A card number typed into a sensitive field before the restart, and the digest the content script sent for it. */
 const SECRET = "4111111111111111";
@@ -58,10 +58,10 @@ const capturedEvent = (name: string, value: unknown): CapturedEvent => ({
   value: value as CapturedEvent["value"],
 });
 
-// ---- The fake OpenBot -------------------------------------------------------------------------
+// ---- The fake AwakenBot -------------------------------------------------------------------------
 //
-// Nothing a restart finishes asks OpenBot anything: every request is recorded so the tests can say so. A restarted worker
-// tells OpenBot what it is doing again (activity.ts), which holds nothing recorded, so `asked` leaves those reports out.
+// Nothing a restart finishes asks AwakenBot anything: every request is recorded so the tests can say so. A restarted worker
+// tells AwakenBot what it is doing again (activity.ts), which holds nothing recorded, so `asked` leaves those reports out.
 
 const openbot = { calls: [] as string[] };
 const asked = () =>
@@ -669,7 +669,7 @@ test("a discard that cannot finish because the document never reconnects does no
   expect(drains().map((drain) => drain.recordingId)).toEqual(["rec-gone"]);
 });
 
-test("a service-worker restart mid-recording goes on checking the connection with OpenBot every 30 s", async () => {
+test("a service-worker restart mid-recording goes on checking the connection with AwakenBot every 30 s", async () => {
   startWorker();
   await startRecording(7);
   await restartWorker();
@@ -682,7 +682,7 @@ test("a service-worker restart mid-recording goes on checking the connection wit
     () => openbot.calls.includes("GET /api/recorder/me"),
     "the check after the restart",
   );
-  // OpenBot's answer here says nothing about the connection: the recording goes on.
+  // AwakenBot's answer here says nothing about the connection: the recording goes on.
   expect((await state()).phase).toBe("recording");
 });
 

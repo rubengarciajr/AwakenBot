@@ -33,7 +33,7 @@ fn main() {
     build_identity();
     bundled_cli();
     pin_deployment();
-    // The one way the OpenBot app's own page reaches the shell: an inline plugin whose commands get
+    // The one way the AwakenBot app's own page reaches the shell: an inline plugin whose commands get
     // permissions of their own, granted at runtime to the exact owned app origin. App commands stay
     // out of a remote page's reach.
     tauri_build::try_build(
@@ -63,7 +63,7 @@ fn main() {
                     "speech_abort",
                     // Open log folder: the shell's own log folder. See `src/logging.rs`.
                     "open_logs",
-                    // A Bot's notification, opening OpenBot at a page when clicked. See `src/notice.rs`.
+                    // A Bot's notification, opening AwakenBot at a page when clicked. See `src/notice.rs`.
                     "notify",
                     // Settings' AI model row, and its Change. See `src/ai_connection.rs`.
                     "ai_connection",
@@ -82,7 +82,7 @@ fn main() {
 }
 
 /**
-What "About OpenBot" says about this build: the commit, whether the tree had uncommitted changes,
+What "About AwakenBot" says about this build: the commit, whether the tree had uncommitted changes,
 the branch, and when it was built.
 
 Several worktrees build this app on one machine, and the window looks the same from all of them,

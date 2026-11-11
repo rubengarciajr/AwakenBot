@@ -21,7 +21,7 @@ import { queryClient } from "@/query-client";
 
 /**
  * Whether the person narrates their recordings: their own preference, kept on their account so every browser they
- * open OpenBot in knows it. Null until they chose, which the Record button asks before their first recording, and
+ * open AwakenBot in knows it. Null until they chose, which the Record button asks before their first recording, and
  * which keeps the microphone closed. `choose` keeps a new answer, here and in every browser.
  *
  * Undefined while it is not known: the preferences still loading, or not readable. That is not "never chose": read as
@@ -113,8 +113,8 @@ export function NarrationChoiceDialog({
             voice never leaves it, and no recording of it is kept.
           </p>
           <p className="mt-2">
-            OpenBot keeps your answer for every recording. You can change it any
-            time with the Narration switch on this page.
+            AwakenBot keeps your answer for every recording. You can change it
+            any time with the Narration switch on this page.
           </p>
         </DialogBody>
         <DialogFooter className="mt-4">

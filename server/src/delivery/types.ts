@@ -57,7 +57,7 @@ export type DeliveryOutbox = DeliveryScope & {
   transport: BindingTransport | "push";
   /**
    * What is sent. A ping's push row carries its title on the first line and its body after it,
-   * since one row holds one text; every other push is titled "OpenBot".
+   * since one row holds one text; every other push is titled "AwakenBot".
    */
   text: string;
   kind: DeliveryKind;

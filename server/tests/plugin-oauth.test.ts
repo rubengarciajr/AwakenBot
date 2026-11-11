@@ -385,7 +385,7 @@ describe("where the callback sends somebody afterwards", () => {
     ).toBe("http://localhost:3010/connections/google-drive");
   });
 
-  test("a sign-in from OpenBot Desktop returns to the page that hands back to the window", () => {
+  test("a sign-in from AwakenBot Desktop returns to the page that hands back to the window", () => {
     expect(desktopReturnUrlFor("http://localhost:3010/", "google drive")).toBe(
       "http://localhost:3010/desktop-return?app=google%20drive",
     );
@@ -479,7 +479,7 @@ describe("registering this deployment as an OAuth client", () => {
         grant_types: ["authorization_code", "refresh_token"],
         response_types: ["code"],
         token_endpoint_auth_method: "none",
-        client_name: "OpenBot",
+        client_name: "AwakenBot",
       });
     } finally {
       globalThis.fetch = realFetch;

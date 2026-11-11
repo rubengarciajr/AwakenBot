@@ -9,7 +9,7 @@ import { createProductTelemetry } from "../src/telemetry/product";
 import { testEnvironment } from "./support/environment";
 
 /**
- * Only work somebody asked for is counted as an OpenBot run.
+ * Only work somebody asked for is counted as an AwakenBot run.
  *
  * The CopilotKit runtime used to name a new conversation itself: it built the conversation's Bot again
  * and ran it on a title prompt. That run went through the same agent, so the product middleware saw
@@ -37,7 +37,7 @@ const created = new Set<string>();
 let endpoint: ReturnType<typeof Bun.serve>;
 let platform: ReturnType<typeof Bun.serve>;
 
-// The runtime's own telemetry goes nowhere from a test. OpenBot's is given its own env below.
+// The runtime's own telemetry goes nowhere from a test. AwakenBot's is given its own env below.
 const runtimeTelemetry = process.env.COPILOTKIT_TELEMETRY_DISABLED;
 
 beforeAll(() => {
@@ -225,7 +225,7 @@ test("a new conversation's first message is counted once, as the person's run, a
   // Only the person's run reached the Bot: the runtime no longer names the conversation itself.
   expect(seen).toHaveLength(1);
   expect(named).toEqual([]);
-  // Only the person's run is an OpenBot run.
+  // Only the person's run is an AwakenBot run.
   const runs = sent
     .filter((event) => /run_(accepted|terminal)$/.test(event.event))
     .map((event) => ({

@@ -26,7 +26,7 @@ import { TEST_POOL, testDatabaseUrl } from "./support/database";
  *
  * Seen on Windows, upgrading the personal edition to a build whose Routines added seven goal tools:
  * Activity showed twenty-one rows at the moment the app started, one per tool for each of three
- * Bots, each "Started by a person". Nobody did anything. The grant names OpenBot as its actor
+ * Bots, each "Started by a person". Nobody did anything. The grant names AwakenBot as its actor
  * (`openbot:always-on`), and the row was written with no initiator, which the trail reads as a
  * person. These start the deployment the way `index.ts` does, over the rows an older build left,
  * against a real database.
@@ -129,7 +129,7 @@ afterAll(async () => {
 });
 
 describe("starting a build whose Routines has new tools", () => {
-  test("writes one row per Bot naming every tool it was given, started by OpenBot", async () => {
+  test("writes one row per Bot naming every tool it was given, started by AwakenBot", async () => {
     expect(goalTools.length).toBeGreaterThan(1);
     const before = new Set((await trail()).map((row) => row.id));
 

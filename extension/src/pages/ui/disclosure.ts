@@ -6,7 +6,7 @@
  * https://developer.chrome.com/docs/webstore/program-policies/user-data-faq
  * https://developer.chrome.com/docs/webstore/program-policies/limited-use
  *
- * The sentences are OpenBot's own (@openbot/shared/recorder-disclosure), so the Recorder and OpenBot's Settings, Browsers
+ * The sentences are AwakenBot's own (@openbot/shared/recorder-disclosure), so the Recorder and AwakenBot's Settings, Browsers
  * never say different things: the lead says when it records and where it goes, the list (RecorderCollectsRows) what a
  * recording holds, and the short form fits under the Record form's task name.
  */

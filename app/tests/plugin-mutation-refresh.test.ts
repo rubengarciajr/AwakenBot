@@ -531,11 +531,11 @@ test("the consent starts carry the screen they were started from", async () => {
 });
 
 /**
- * Started in OpenBot Desktop's window, both consent starts say so (`from=desktop`), so the sign-in
+ * Started in AwakenBot Desktop's window, both consent starts say so (`from=desktop`), so the sign-in
  * that opens in the person's browser comes back to the page that hands them back to the window
  * (`/desktop-return`). In a browser they say nothing of the kind.
  */
-test("the consent starts say when they were pressed in OpenBot Desktop", async () => {
+test("the consent starts say when they were pressed in AwakenBot Desktop", async () => {
   const scope = globalThis as unknown as { window?: Record<string, unknown> };
   const hadWindow = "window" in scope;
   const window = scope.window ?? {};

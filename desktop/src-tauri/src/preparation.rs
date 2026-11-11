@@ -13,7 +13,7 @@ use crate::{
     stack,
 };
 
-pub const REQUIRED: &str = "Finish installing OpenBot's local software before signing in or starting. Return to Install and try again.";
+pub const REQUIRED: &str = "Finish installing AwakenBot's local software before signing in or starting. Return to Install and try again.";
 pub const FILE: &str = ".openbot-prepared.json";
 /// The launch a Start last made from this installation.
 pub const LAUNCH: &str = ".openbot-launched.json";
@@ -60,7 +60,7 @@ pub fn record_launch(root: &Path, harness: Option<&HarnessChoice>) -> Result<(),
     )
 }
 
-/// Whether an app finished installing in `root`, or started OpenBot from it, at some point: its
+/// Whether an app finished installing in `root`, or started AwakenBot from it, at some point: its
 /// completed-installation or launch record is there, valid or not. Proof that the folder is an
 /// installation's own, which a source checkout never has (see `stack::project`).
 pub fn installed_before(root: &Path) -> bool {
@@ -100,7 +100,7 @@ struct SavedEngine {
 ///
 /// Every later install and start uses this engine and never the other one. The installation's
 /// images and its database are in the engine it was set up on, so moving to the other one, say
-/// because Docker happens to be answering, starts OpenBot with an empty database.
+/// because Docker happens to be answering, starts AwakenBot with an empty database.
 pub fn saved_engine(root: &Path) -> Option<Engine> {
     let record: SavedEngine =
         serde_json::from_slice(&std::fs::read(root.join(ENGINE)).ok()?).ok()?;
@@ -113,18 +113,18 @@ pub fn save_engine(root: &Path, engine: Engine) -> Result<(), Problem> {
 }
 
 /// Saved resolved and in the form a person reads: on Windows `canonicalize` answers
-/// `\\?\C:\Users\Ada\OpenBot`, and this record is where Settings, the setup window and every
+/// `\\?\C:\Users\Ada\AwakenBot`, and this record is where Settings, the setup window and every
 /// later Start take the installation's folder from.
 pub fn save_selected_root(config: &Path, root: &Path) -> Result<(), Problem> {
     let root = std::fs::canonicalize(root).map(paths::plain).map_err(|e| {
         Problem::with(
-            "OpenBot could not remember this installation for next time.",
+            "AwakenBot could not remember this installation for next time.",
             e.to_string(),
         )
     })?;
     std::fs::create_dir_all(config).map_err(|e| {
         Problem::with(
-            "OpenBot could not remember this installation for next time.",
+            "AwakenBot could not remember this installation for next time.",
             e.to_string(),
         )
     })?;
@@ -268,7 +268,7 @@ fn complete_with(
 
 /// `selection=None` is the auth check, which has no authority to change the Bot selection.
 ///
-/// No runtime and no packages: everything OpenBot runs is a container now, so what Start needs from
+/// No runtime and no packages: everything AwakenBot runs is a container now, so what Start needs from
 /// the installation is the deployment it laid out and the images it downloaded.
 pub fn require(
     root: &Path,
@@ -302,7 +302,7 @@ fn require_with(
     // Install moves this one to the latest release; Start cannot. See `deployment_release`.
     if deployment::predates_containers(root) {
         return Err(required(
-            "The deployment is a release from before OpenBot ran its server in a container.",
+            "The deployment is a release from before AwakenBot ran its server in a container.",
         ));
     }
     // A deployment laid out by an app that copied less still matches its own fingerprint. Install
@@ -311,7 +311,7 @@ fn require_with(
         .is_some_and(|found| deployment::needs_fetch(root, &found.version))
     {
         return Err(required(
-            "The deployment was laid out by an earlier OpenBot and is missing files this version runs.",
+            "The deployment was laid out by an earlier AwakenBot and is missing files this version runs.",
         ));
     }
     verify(&record.images)
@@ -335,7 +335,7 @@ pub fn installation_pull_set(
 }
 
 /// [`installation_pull_set`], with the Compose to ask made by `compose` from the image settings:
-/// an engine's, or before there is one, OpenBot's own standalone Compose
+/// an engine's, or before there is one, AwakenBot's own standalone Compose
 /// (`stack::standalone_compose_command`).
 pub fn installation_pull_set_by(
     compose: impl FnOnce(&stack::Secrets) -> std::process::Command,
@@ -513,7 +513,7 @@ mod tests {
         f.prepared(None);
         let problem = require_with(&f.root, Some(&None), |_| Ok(())).unwrap_err();
         assert!(
-            format!("{problem:?}").contains("before OpenBot ran its server in a container"),
+            format!("{problem:?}").contains("before AwakenBot ran its server in a container"),
             "{problem:?}"
         );
     }
@@ -572,7 +572,7 @@ mod tests {
         );
     }
 
-    /// Windows' `canonicalize` answers `\\?\C:\Users\Administrator\OpenBot`, and the saved folder
+    /// Windows' `canonicalize` answers `\\?\C:\Users\Administrator\AwakenBot`, and the saved folder
     /// is what Settings shows under Installed in. It is saved plain, and a record an earlier app
     /// saved with the prefix reads back plain.
     #[test]
@@ -601,12 +601,12 @@ mod tests {
             write_record(
                 &config,
                 "last-launched-root.json",
-                &PathBuf::from(r"\\?\C:\Users\Administrator\OpenBot"),
+                &PathBuf::from(r"\\?\C:\Users\Administrator\AwakenBot"),
             )
             .unwrap();
             assert_eq!(
                 selected_root(&config),
-                Some(PathBuf::from(r"C:\Users\Administrator\OpenBot"))
+                Some(PathBuf::from(r"C:\Users\Administrator\AwakenBot"))
             );
         }
     }

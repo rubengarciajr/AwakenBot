@@ -1,0 +1,130 @@
+/*
+ * AwakenBot theme for the web app: maps the two brand colors in palette.css onto the app's
+ * shadcn tokens. Imported after app/src/theme.css, so these win over OpenBot's lavender palette.
+ *
+ * To change colors, edit palette.css, not this file. Edit here only to change how light or dark
+ * a derived surface is (the percentages).
+ *
+ * The app switches dark mode with a `.dark` class on <html>. Every token set in `:root` is also
+ * set in `.dark`: both selectors have the same specificity and `:root` comes later than OpenBot's
+ * own `.dark`, so a token missing from `.dark` here would show its light value in dark mode.
+ */
+@import "./palette.css";
+
+:root {
+  --background: var(--awaken-paper);
+  --foreground: var(--awaken-ink);
+  --card: color-mix(in oklab, var(--awaken-paper) 45%, white);
+  --card-foreground: var(--awaken-ink);
+  --popover: color-mix(in oklab, var(--awaken-paper) 45%, white);
+  --popover-foreground: var(--awaken-ink);
+  --primary: var(--awaken-ink);
+  --primary-foreground: var(--awaken-paper);
+  --secondary: color-mix(in oklab, var(--awaken-ink) 6%, var(--awaken-paper));
+  --secondary-foreground: var(--awaken-ink);
+  --muted: color-mix(in oklab, var(--awaken-ink) 6%, var(--awaken-paper));
+  --muted-foreground: color-mix(
+    in oklab,
+    var(--awaken-ink) 60%,
+    var(--awaken-paper)
+  );
+  --accent: color-mix(in oklab, var(--awaken-ink) 7%, var(--awaken-paper));
+  --accent-foreground: var(--awaken-ink);
+  --border: color-mix(in oklab, var(--awaken-ink) 13%, var(--awaken-paper));
+  --input: color-mix(in oklab, var(--awaken-ink) 13%, var(--awaken-paper));
+  --ring: color-mix(in oklab, var(--awaken-ink) 45%, var(--awaken-paper));
+  --chart-1: color-mix(in oklab, var(--awaken-ink) 20%, var(--awaken-paper));
+  --chart-2: color-mix(in oklab, var(--awaken-ink) 40%, var(--awaken-paper));
+  --chart-3: color-mix(in oklab, var(--awaken-ink) 60%, var(--awaken-paper));
+  --chart-4: color-mix(in oklab, var(--awaken-ink) 78%, var(--awaken-paper));
+  --chart-5: var(--awaken-ink);
+  --empty-pattern-color: color-mix(
+    in oklab,
+    var(--awaken-ink) 40%,
+    var(--awaken-paper)
+  );
+  --empty-pattern-opacity: 0.12;
+  --sidebar: color-mix(in oklab, var(--awaken-ink) 4%, var(--awaken-paper));
+  --sidebar-foreground: var(--awaken-ink);
+  --sidebar-primary: var(--awaken-ink);
+  --sidebar-primary-foreground: var(--awaken-paper);
+  --sidebar-accent: color-mix(
+    in oklab,
+    var(--awaken-ink) 9%,
+    var(--awaken-paper)
+  );
+  --sidebar-accent-foreground: var(--awaken-ink);
+  --sidebar-border: color-mix(
+    in oklab,
+    var(--awaken-ink) 13%,
+    var(--awaken-paper)
+  );
+  --sidebar-ring: color-mix(
+    in oklab,
+    var(--awaken-ink) 45%,
+    var(--awaken-paper)
+  );
+}
+
+.dark {
+  --background: var(--awaken-ink);
+  --foreground: var(--awaken-paper);
+  --card: color-mix(in oklab, var(--awaken-paper) 5%, var(--awaken-ink));
+  --card-foreground: var(--awaken-paper);
+  --popover: color-mix(in oklab, var(--awaken-paper) 5%, var(--awaken-ink));
+  --popover-foreground: var(--awaken-paper);
+  --primary: var(--awaken-paper);
+  --primary-foreground: var(--awaken-ink);
+  --secondary: color-mix(in oklab, var(--awaken-paper) 10%, var(--awaken-ink));
+  --secondary-foreground: var(--awaken-paper);
+  --muted: color-mix(in oklab, var(--awaken-paper) 10%, var(--awaken-ink));
+  --muted-foreground: color-mix(
+    in oklab,
+    var(--awaken-paper) 62%,
+    var(--awaken-ink)
+  );
+  --accent: color-mix(in oklab, var(--awaken-paper) 13%, var(--awaken-ink));
+  --accent-foreground: var(--awaken-paper);
+  --border: color-mix(in oklab, var(--awaken-paper) 14%, var(--awaken-ink));
+  --input: color-mix(in oklab, var(--awaken-paper) 14%, var(--awaken-ink));
+  --ring: color-mix(in oklab, var(--awaken-paper) 50%, var(--awaken-ink));
+  --chart-1: color-mix(in oklab, var(--awaken-paper) 90%, var(--awaken-ink));
+  --chart-2: color-mix(in oklab, var(--awaken-paper) 70%, var(--awaken-ink));
+  --chart-3: color-mix(in oklab, var(--awaken-paper) 50%, var(--awaken-ink));
+  --chart-4: color-mix(in oklab, var(--awaken-paper) 32%, var(--awaken-ink));
+  --chart-5: color-mix(in oklab, var(--awaken-paper) 18%, var(--awaken-ink));
+  --empty-pattern-color: color-mix(
+    in oklab,
+    var(--awaken-paper) 50%,
+    var(--awaken-ink)
+  );
+  --empty-pattern-opacity: 0.08;
+  --sidebar: color-mix(in oklab, black 22%, var(--awaken-ink));
+  --sidebar-foreground: var(--awaken-paper);
+  --sidebar-primary: var(--awaken-paper);
+  --sidebar-primary-foreground: var(--awaken-ink);
+  --sidebar-accent: color-mix(
+    in oklab,
+    var(--awaken-paper) 10%,
+    var(--awaken-ink)
+  );
+  --sidebar-accent-foreground: var(--awaken-paper);
+  --sidebar-border: color-mix(
+    in oklab,
+    var(--awaken-paper) 14%,
+    var(--awaken-ink)
+  );
+  --sidebar-ring: color-mix(
+    in oklab,
+    var(--awaken-paper) 50%,
+    var(--awaken-ink)
+  );
+}
+
+/*
+ * The upstream product name carries a trademark sign (components/edition/brand-name.tsx).
+ * AwakenBot is not a registered mark, so the sign is not drawn.
+ */
+[data-slot="trademark"] {
+  display: none;
+}

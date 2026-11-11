@@ -957,7 +957,7 @@ describe("a tool its app marks destructive, called through the app", () => {
     }
   });
 
-  test("the Bot is offered it with a description that says OpenBot asks, so it doesn't ask first", async () => {
+  test("the Bot is offered it with a description that says AwakenBot asks, so it doesn't ask first", async () => {
     const offered = await grantedTools({
       store: plugins,
       botId: BOT,

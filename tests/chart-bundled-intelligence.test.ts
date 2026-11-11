@@ -1,21 +1,21 @@
 /**
- * The chart installing Intelligence with OpenBot, wired by itself: rendered by real Helm from the
+ * The chart installing Intelligence with AwakenBot, wired by itself: rendered by real Helm from the
  * real chart and its real Intelligence dependency.
  *
  * What must not regress, because each of these fails silently on a cluster rather than at install:
  *  - the server's Intelligence addresses are the Services the Intelligence chart actually renders;
  *  - the runtime key the server reads is the Secret the key Job writes, and the Job's service token is
  *    the one Intelligence's API mounts, for an organization Intelligence's bootstrap creates;
- *  - the licence, given once, reaches OpenBot's server and Intelligence's API;
- *  - OpenBot's bundled PostgreSQL and Intelligence's never render as the same object, and
+ *  - the licence, given once, reaches AwakenBot's server and Intelligence's API;
+ *  - AwakenBot's bundled PostgreSQL and Intelligence's never render as the same object, and
  *    Intelligence's database URL names its own database with the password that database is given;
  *  - `intelligence.enabled: false` renders today's chart: no Intelligence, the addresses and key the
  *    operator named, and no gateway proxy;
- *  - Automatic Learning is on in the bundled Intelligence, as it is in OpenBot: its agent, scheduler
+ *  - Automatic Learning is on in the bundled Intelligence, as it is in AwakenBot: its agent, scheduler
  *    and object store render, every Secret they read is one the chart writes with the key they ask
  *    for, and every client of the store reaches the store's pod, whatever the release is called;
  *  - the Job that installs Learning's queue waits out the restart of Intelligence's database an
- *    upgrade causes for as long as OpenBot's own migrations wait.
+ *    upgrade causes for as long as AwakenBot's own migrations wait.
  */
 import { describe, expect, test } from "bun:test";
 import { randomBytes } from "node:crypto";
@@ -182,7 +182,7 @@ describe.skipIf(!helm)("the chart with the bundled Intelligence", () => {
     ).toBeUndefined();
   });
 
-  test("generates OpenBot's runtime key once, and the server and Intelligence's bootstrap read that one Secret", () => {
+  test("generates AwakenBot's runtime key once, and the server and Intelligence's bootstrap read that one Secret", () => {
     const docs = render(...vanilla);
     const server = workload(docs, "Deployment", component("server"));
     const bootstrap = workload(docs, "Job", component("bootstrap"));
@@ -195,7 +195,7 @@ describe.skipIf(!helm)("the chart with the bundled Intelligence", () => {
       /^cpk(-[A-Za-z0-9-]*)?_[A-Za-z0-9]{8,64}_[A-Za-z0-9]{24,256}$/,
     );
 
-    // Intelligence's bootstrap reads the same Secret and key for OpenBot's project, in OpenBot's
+    // Intelligence's bootstrap reads the same Secret and key for AwakenBot's project, in AwakenBot's
     // organization, with the container Automatic Learning assigns.
     const fromBootstrap = (containerEnv(bootstrap) ?? []).filter((e) =>
       /^BOOTSTRAP_PROJECT_\d+_API_KEY$/.test(e.name),
@@ -224,7 +224,7 @@ describe.skipIf(!helm)("the chart with the bundled Intelligence", () => {
     );
     expect(project?.learningContainers?.map((c) => c.id)).toContain("openbot");
 
-    // No Job of OpenBot's makes the key, so none of its pods is allowed to write a Secret.
+    // No Job of AwakenBot's makes the key, so none of its pods is allowed to write a Secret.
     const ownRoles = docs.filter(
       (d) =>
         (d.kind === "Role" || d.kind === "RoleBinding") &&
@@ -233,7 +233,7 @@ describe.skipIf(!helm)("the chart with the bundled Intelligence", () => {
     expect(ownRoles.map((d) => d.metadata.name)).toEqual([]);
   });
 
-  test("hands the licence, given once, to OpenBot's server and to Intelligence's API", () => {
+  test("hands the licence, given once, to AwakenBot's server and to Intelligence's API", () => {
     const docs = render(...vanilla);
     const server = workload(docs, "Deployment", component("server"));
     const appApi = workload(docs, "Deployment", component("app-api"));
@@ -280,7 +280,7 @@ describe.skipIf(!helm)("the chart with the bundled Intelligence", () => {
     );
   });
 
-  test("keeps OpenBot's database and Intelligence's apart, and gives Intelligence the URL of its own", () => {
+  test("keeps AwakenBot's database and Intelligence's apart, and gives Intelligence the URL of its own", () => {
     const docs = render(...vanilla);
     const names = docs.map((d) => `${d.kind}/${d.metadata.name}`);
     expect(names.filter((name, i) => names.indexOf(name) !== i)).toEqual([]);
@@ -571,7 +571,7 @@ describe.skipIf(!helm)("Automatic Learning in the bundled Intelligence", () => {
    * On Intelligence's 300 seconds, an in-place upgrade from 0.16.0-rc.5 failed with the Job's
    * DeadlineExceeded while the new database pod came up, and reported UPGRADE FAILED.
    */
-  test("gives the Job that installs Learning's queue as long to wait out a database restart as OpenBot's own migrations", () => {
+  test("gives the Job that installs Learning's queue as long to wait out a database restart as AwakenBot's own migrations", () => {
     const docs = render(...learningVanilla);
     const queue = workload(
       docs,

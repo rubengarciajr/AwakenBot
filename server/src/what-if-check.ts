@@ -1,5 +1,5 @@
 /**
- * What each of OpenBot's controls decides about one action, in the order the product applies them.
+ * What each of AwakenBot's controls decides about one action, in the order the product applies them.
  *
  * Deterministic: no model is asked anything here. "What would happen if…" (`what-if.ts`) hands this an
  * action an admin confirmed, and "Why did this happen?" hands it the facts an audit row recorded.
@@ -73,7 +73,7 @@ import {
 import { appCallPolicyContext } from "./plugins/plugin-store/call-policy";
 import type { PluginDecision } from "./plugins/plugin-store/model";
 
-/** Where the deciders read this OpenBot's settings from: the same stores the live path reads. */
+/** Where the deciders read this AwakenBot's settings from: the same stores the live path reads. */
 export type GovernanceReaders = {
   /** The boundary policy in force. */
   policy: () => ActionPolicy | null | undefined;
@@ -209,7 +209,7 @@ function capabilitySource(answer: CapabilityAnswer): string {
     case "organization":
       return "set for everybody";
     default:
-      return "OpenBot's default";
+      return "AwakenBot's default";
   }
 }
 
@@ -261,7 +261,7 @@ function enterpriseLayers(
   const installed = readers.enterprise();
   const isApp = Boolean(context.mcp?.server);
   if (!installed) {
-    const none = "No admin controls are set up on this OpenBot.";
+    const none = "No admin controls are set up on this AwakenBot.";
     return {
       capabilities: layer("capabilities", "allows", none),
       ...(isApp
@@ -282,7 +282,7 @@ function enterpriseLayers(
       layers.capabilities = layer(
         "capabilities",
         "refuses",
-        "The admin controls haven't loaded, so OpenBot refuses every action until they do.",
+        "The admin controls haven't loaded, so AwakenBot refuses every action until they do.",
         { page: "/admin/permissions" },
       );
     } else if (check.control === "app_allowlist") {
@@ -386,7 +386,7 @@ async function approvalLayers(
 ): Promise<{ safety: Layer; approvals: Layer }> {
   const safety = safetyRequirement(candidate);
   const words = safety ? (SAFETY_WORDS[safety.id] ?? "this") : "";
-  // Before the approvals are read: a kind OpenBot always hands to the person, or none at all.
+  // Before the approvals are read: a kind AwakenBot always hands to the person, or none at all.
   const fixedSafety: Layer | undefined = !safety
     ? layer(
         "safety",
@@ -453,7 +453,7 @@ async function approvalLayers(
       approvals: layer(
         "approvals",
         "allows",
-        "Approvals aren't set up on this OpenBot.",
+        "Approvals aren't set up on this AwakenBot.",
       ),
     };
 
@@ -544,7 +544,7 @@ async function approvalLayers(
       "approvals",
       "allows",
       group
-        ? "No rule asks about this, with OpenBot's default settings for a member."
+        ? "No rule asks about this, with AwakenBot's default settings for a member."
         : "No rule or setting asks about this.",
       ruleExtra,
     );

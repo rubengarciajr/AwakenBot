@@ -5,10 +5,10 @@ import { cleanup, render } from "@testing-library/react";
 import { OnboardingFrame } from "@/components/onboarding/onboarding-frame";
 
 /**
- * In OpenBot Desktop on macOS the window can be dragged by onboarding's top strip.
+ * In AwakenBot Desktop on macOS the window can be dragged by onboarding's top strip.
  *
  * The Mac window's title bar is an overlay, so the page has to say where a press moves the window.
- * The desktop runs `OVERLAY_TITLE_BAR_PAGE` (desktop/src-tauri/src/main.rs) in OpenBot's page on
+ * The desktop runs `OVERLAY_TITLE_BAR_PAGE` (desktop/src-tauri/src/main.rs) in AwakenBot's page on
  * macOS only, and it marks those places `data-tauri-drag-region`. Onboarding has no sidebar, so
  * until its header was marked nothing on the page moved the window.
  *

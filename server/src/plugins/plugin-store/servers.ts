@@ -215,7 +215,7 @@ export function serverMethods(context: StoreContext) {
         eventType: "configuration.changed",
         targetType: "mcp_server",
         targetId: resolved.entry.key,
-        // OpenBot adds Routines at its first start, and the personal edition's web search.
+        // AwakenBot adds Routines at its first start, and the personal edition's web search.
         ...initiatedBy(input.by),
         payload: {
           actor: input.by,
@@ -275,14 +275,14 @@ export function serverMethods(context: StoreContext) {
       }
 
       /*
-       * Nor the name OpenBot's own memory tools are spelled under. Their refs are `memory/<tool>`,
+       * Nor the name AwakenBot's own memory tools are spelled under. Their refs are `memory/<tool>`,
        * so a server at `memory` would list `memory/recall_personal_memory` beside them: two tools
        * one name, and the one an admin typed could be taken for the person's own memory by
        * anything that reads a ref.
        */
       if (input.id === MEMORY_TOOLS_SERVER) {
         throw new CustomServerRefusedError(
-          `${input.id} is the name of OpenBot's own memory tools. Choose another.`,
+          `${input.id} is the name of AwakenBot's own memory tools. Choose another.`,
         );
       }
 
@@ -303,7 +303,7 @@ export function serverMethods(context: StoreContext) {
       for (const [screen] of BROKERED_SCREEN_NAMES) {
         if (input.id === screen) {
           throw new CustomServerRefusedError(
-            `${screen} is the name of one of OpenBot's own screens, so a server added there could never be opened. Choose another.`,
+            `${screen} is the name of one of AwakenBot's own screens, so a server added there could never be opened. Choose another.`,
           );
         }
       }
@@ -335,7 +335,7 @@ export function serverMethods(context: StoreContext) {
       for (const { idPrefix } of BROKERED_ID_PREFIXES) {
         if (input.id.startsWith(idPrefix)) {
           throw new CustomServerRefusedError(
-            `Names beginning ${idPrefix} are kept for the apps people connect through OpenBot, so ${input.id} can't be used for a server added by URL. Choose another.`,
+            `Names beginning ${idPrefix} are kept for the apps people connect through AwakenBot, so ${input.id} can't be used for a server added by URL. Choose another.`,
           );
         }
       }
@@ -2015,7 +2015,7 @@ export function serverMethods(context: StoreContext) {
      * Refresh. For a vendor's app that is right: asking costs a request, and the vendor decides what
      * it offers. For an app whose tools are this code, the saved list is a copy of an older build, so
      * a release that renames a tool or rewords a description never reached an existing install. The
-     * personal edition (OpenBot Desktop) has no Admin page to press Refresh on, and a team's admin
+     * personal edition (AwakenBot Desktop) has no Admin page to press Refresh on, and a team's admin
      * has no reason to. Found when a goal's trigger tools kept telling the model about "the Bot's
      * Responsibilities page" after the page and the code both said Goals.
      *

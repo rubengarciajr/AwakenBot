@@ -54,8 +54,8 @@ describe("what Intelligence's entitlement answer means for this deployment", () 
   });
 
   test("an unlicensed self-hosted Intelligence names where the licence goes", () => {
-    // The state a self-hosted deployment reaches when OpenBot has the licence and Intelligence does
-    // not: memory is refused with nothing in OpenBot's log saying why.
+    // The state a self-hosted deployment reaches when AwakenBot has the licence and Intelligence does
+    // not: memory is refused with nothing in AwakenBot's log saying why.
     const warning = entitlementWarning(
       notReady(
         "misconfigured",
@@ -198,7 +198,7 @@ const UNLICENSED = {
 };
 
 /**
- * Intelligence's `GET /api/entitlements/runtime` over real HTTP, as a first install of OpenBot's Helm
+ * Intelligence's `GET /api/entitlements/runtime` over real HTTP, as a first install of AwakenBot's Helm
  * bundle meets it. While the migrations Job runs, every request fails reading a table that is not
  * there yet and Express answers 500 `INTERNAL_SERVER_ERROR`; between the migrations and the bootstrap
  * Job, which stores the runtime key, the key is not found and the route answers 401
@@ -259,7 +259,7 @@ function startingIntelligence(
 }
 
 /*
- * Kink 17 of the Helm bundle build. OpenBot's server is up before Intelligence's migrations run,
+ * Kink 17 of the Helm bundle build. AwakenBot's server is up before Intelligence's migrations run,
  * by design, and the boot check used to ask once: every first install logged
  * `intelligence-entitlement-unreadable` (status 500) about a licence that was fine, under the runtime
  * client's own multi-line dump of the failed read, and never looked again. These run the boot check

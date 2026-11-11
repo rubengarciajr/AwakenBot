@@ -11,7 +11,7 @@ import { useDesktopOpenRequests } from "@/lib/desktop/open-requests";
 import { settleReactWork } from "./settle-react-work";
 
 /**
- * A click on a notification opens its page in OpenBot Desktop as a route change. MEASURED on
+ * A click on a notification opens its page in AwakenBot Desktop as a route change. MEASURED on
  * Windows: each click loaded the whole page again, losing what the person was in the middle of.
  * The shell runs `notice::open_script` in the page (desktop/src-tauri/src/notice.rs); this is that
  * script, as its test there pins it, run against the page's real router.
@@ -69,7 +69,7 @@ test("a page that does not handle it is loaded at the notice's page instead", ()
   window.location.assign = originalAssign;
 });
 
-test("only a page of this OpenBot is opened, never another site", async () => {
+test("only a page of this AwakenBot is opened, never another site", async () => {
   function Page() {
     useDesktopOpenRequests();
     return null;

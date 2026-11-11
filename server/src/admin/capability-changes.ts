@@ -55,7 +55,7 @@ export type CapabilityChangesCheck =
   | { ok: false; error: string; problems: CapabilityChangeProblem[] };
 
 /**
- * Changes from one description. Enough to take three permissions from one group in an OpenBot with
+ * Changes from one description. Enough to take three permissions from one group in an AwakenBot with
  * thirty groups; more is not one sentence's worth.
  */
 export const MAX_CAPABILITY_CHANGES = 100;
@@ -116,7 +116,7 @@ export function checkCapabilityChanges(
         "scope",
         groups.length > 0
           ? `There's no group called "${change.scopeId}". The groups are ${list(groups)}.`
-          : `There's no group called "${change.scopeId}". OpenBot has no groups yet.`,
+          : `There's no group called "${change.scopeId}". AwakenBot has no groups yet.`,
       );
     if (change.scopeKind === "group" && change.allowed === false)
       problem(

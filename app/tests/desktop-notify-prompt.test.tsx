@@ -21,7 +21,7 @@ import {
 import { settleReactWork } from "./settle-react-work";
 
 /**
- * The offer to turn on notifications, in the OpenBot Desktop window. There the desktop app shows
+ * The offer to turn on notifications, in the AwakenBot Desktop window. There the desktop app shows
  * them, through Tauri's notification plugin, and it needs nobody's yes to: so the page does not
  * ask, on any launch. It used to ask on every launch, because it read the window's own answer,
  * which a WKWebView can never make "granted", and the yes it remembered was kept per port.
@@ -52,14 +52,14 @@ afterAll(async () => {
 
 const OFFER = "Get notified when your Bot finishes or needs your approval.";
 
-/** A launch of OpenBot Desktop: the window's scripts, then a page that has read nothing yet. */
+/** A launch of AwakenBot Desktop: the window's scripts, then a page that has read nothing yet. */
 function launch() {
   const desktop = launchDesktop({ plugin: true });
   refreshNotificationPermission();
   return desktop;
 }
 
-test("OpenBot Desktop never offers notifications: not on opening, not on coming back, not after reopening on another port", async () => {
+test("AwakenBot Desktop never offers notifications: not on opening, not on coming back, not after reopening on another port", async () => {
   launch();
 
   const first = render(<NotifyPrompt />);
@@ -136,13 +136,13 @@ const EXPENSES_NEEDS_YOU = {
   tag: "openbot-attention-expenses",
 };
 
-test("in OpenBot Desktop a Bot that starts needing the person is shown by the desktop app, naming the page a click opens", async () => {
+test("in AwakenBot Desktop a Bot that starts needing the person is shown by the desktop app, naming the page a click opens", async () => {
   const desktop = launch();
 
   await aBotStartsNeedingThePerson();
 
   // The desktop app's own notice: on Windows the only kind a click in the notification centre
-  // brings OpenBot back from (desktop/src-tauri/src/notice.rs).
+  // brings AwakenBot back from (desktop/src-tauri/src/notice.rs).
   await waitFor(() =>
     expect(desktop.toDesktopNotify().map((call) => call.args)).toEqual([
       EXPENSES_NEEDS_YOU,
@@ -155,7 +155,7 @@ test("in OpenBot Desktop a Bot that starts needing the person is shown by the de
   ).toEqual([]);
 });
 
-test("the first question after OpenBot Desktop starts raises its notice, though the desktop app had not said yet that notices are on", async () => {
+test("the first question after AwakenBot Desktop starts raises its notice, though the desktop app had not said yet that notices are on", async () => {
   // As on Windows right after a launch: the page has not heard back from the desktop app when the
   // first question arrives, and its yes comes back over IPC a moment later. That notice was dropped.
   const desktop = launchDesktop({
@@ -183,7 +183,7 @@ test("the first question after OpenBot Desktop starts raises its notice, though 
   expect(desktop.shown()).toEqual([EXPENSES_NEEDS_YOU]);
 });
 
-test("in OpenBot Desktop a notice about a Bot waiting in a conversation opens that conversation", async () => {
+test("in AwakenBot Desktop a notice about a Bot waiting in a conversation opens that conversation", async () => {
   const desktop = launch();
 
   await aBotStartsNeedingThePerson("channel-plan");
@@ -225,7 +225,7 @@ test("a desktop app without its own notify shows the notice through the notifica
   await waitFor(() => expect(desktop.shown()).toEqual([EXPENSES_NEEDS_YOU]));
 });
 
-test("in OpenBot Desktop a Bot's notification is shown though the plugin's own first question went unanswered", async () => {
+test("in AwakenBot Desktop a Bot's notification is shown though the plugin's own first question went unanswered", async () => {
   // As on a Mac with 0.3.3's grant timing: the plugin script asked as the page started, was
   // refused, and its Notification.permission stays "default" for good. The shell answers yes from
   // then on.

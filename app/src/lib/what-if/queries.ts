@@ -8,7 +8,7 @@ export const whatIfKeys = {
 };
 
 /**
- * What an action may name on this OpenBot: its Bots and their owners, its people and groups, and its
+ * What an action may name on this AwakenBot: its Bots and their owners, its people and groups, and its
  * apps with their tools. The only values an action's chips hold, and the only ones the model may pick.
  */
 export function whatIfVocabularyQueryOptions() {
@@ -17,7 +17,7 @@ export function whatIfVocabularyQueryOptions() {
     queryFn: async (): Promise<WhatIfVocabulary> =>
       (
         await client("/api/admin/what-if/vocabulary", {
-          fallback: "Couldn't load this OpenBot's Bots and apps",
+          fallback: "Couldn't load this AwakenBot's Bots and apps",
         })
       ).json(),
   });

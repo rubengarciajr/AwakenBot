@@ -18,7 +18,7 @@ import { TEST_POOL, testDatabaseUrl } from "./support/database";
  * Two rows Settings > Activity showed in the personal edition that a person could not read.
  *
  * "Choose tools for a run / 96 of 96 tools / Couldn't choose, so all were offered" on every turn,
- * which is OpenBot's own working: the page now asks the server to leave it out, and Admin, which
+ * which is AwakenBot's own working: the page now asks the server to leave it out, and Admin, which
  * asks without that, keeps it. And choosing a folder for a Bot read "Change a setting", with no Bot
  * and no folder, because the row named the Bot as `botId` and the folder not at all.
  *

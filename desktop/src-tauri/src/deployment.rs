@@ -111,7 +111,12 @@ pub fn reference(root: &Path, published: &str) -> Result<String, String> {
         .images
         .get(published)
         .map(|image| image.reference.clone())
-        .ok_or_else(|| format!("OpenBot {} does not include {published}.", manifest.version))
+        .ok_or_else(|| {
+            format!(
+                "AwakenBot {} does not include {published}.",
+                manifest.version
+            )
+        })
 }
 
 /// Every image the stack runs, or a failure that names the one that is missing.
@@ -240,7 +245,7 @@ fn covers(recorded: &[String]) -> bool {
     })
 }
 
-/// Whether the deployment on disk is a release from before OpenBot's server and worker were
+/// Whether the deployment on disk is a release from before AwakenBot's server and worker were
 /// Compose services.
 ///
 /// Such a release ran both as Bun processes on the host, and this app no longer starts those. Its
@@ -302,7 +307,7 @@ fn layout() -> Vec<String> {
 ///
 /// Nothing runs from source on the host either. Earlier versions laid out `agent-computer` and the
 /// `shared` files it imports, for a browser of the person's own they ran on the desktop beside the
-/// server; the person's browser is on the one computer now, shown in the OpenBot window. A stamp that
+/// server; the person's browser is on the one computer now, shown in the AwakenBot window. A stamp that
 /// laid those out still covers this layout ([`needs_fetch`]), and Start's upgrade takes the files
 /// away with the previous version (`upgrade::KEPT`).
 pub const LAYOUT: [&str; 1] = ["docker-compose.yml"];
@@ -519,7 +524,7 @@ TRIED AGAIN, WAITING LONGER EACH TIME. One connection cut part-way through Bun's
 fail the whole Start, though the same download finished in under three seconds a minute later. And
 on 2026-11-08 the Desktop's first update after an install asked GitHub for the commit's archive and
 got no answer for 30 seconds, three times running; it gave up after its third attempt, about a
-minute and a half in, and the update was put back. Opening OpenBot again two minutes later
+minute and a half in, and the update was put back. Opening AwakenBot again two minutes later
 downloaded the same archive in two seconds. So a failure that says nothing about the file is tried
 again, `RETRY_DELAYS` apart, for about four minutes at worst: the server could not be reached, sent
 nothing for the stall window, did not send the whole body, or answered 5xx or 429. Any other
@@ -548,7 +553,7 @@ pub fn get(url: &str) -> Result<Vec<u8>, String> {
 pub const DOWNLOADS: &str = "https://downloads.copilotkit.ai";
 
 /// Where downloads.copilotkit.ai keeps its copy of a GitHub download, for the downloads it copies:
-/// OpenBot's release assets and a tag's source archive (kept with the release, as
+/// AwakenBot's release assets and a tag's source archive (kept with the release, as
 /// `releases/<tag>/<tag>.tar.gz`), and the Podman and Compose builds `install.rs` installs, each
 /// under the same version and file name. `None` for anything else, a commit's archive included.
 pub fn mirrored(url: &str) -> Option<String> {
@@ -932,7 +937,7 @@ mod tests {
 
     /// The Desktop's first update after an install, 2026-11-08: GitHub sent nothing for the
     /// commit's archive for 30 seconds three times running, the download gave up after its third
-    /// attempt, and the update was put back. Opening OpenBot again two minutes later downloaded it
+    /// attempt, and the update was put back. Opening AwakenBot again two minutes later downloaded it
     /// in two seconds. A download that stalls is given up after the stall window and tried again,
     /// for long enough to outlast that.
     #[test]
@@ -1028,7 +1033,7 @@ mod tests {
         let root = crate::test_support::temp_root("deployment-host-server");
         std::fs::create_dir_all(&root).unwrap();
         // The shape of every release before the server moved into Compose: services, none of them
-        // OpenBot's own, and one commented-out line that must not count.
+        // AwakenBot's own, and one commented-out line that must not count.
         std::fs::write(
             root.join("docker-compose.yml"),
             "services:\n  postgres:\n    image: postgres\n  # server: on the host\n  supervisor:\n    \
@@ -1172,7 +1177,7 @@ mod tests {
     fn only_the_compose_file_is_laid_out() {
         let root = crate::test_support::temp_root("deployment-layout");
         std::fs::create_dir_all(&root).unwrap();
-        unpack(&root, &whole_release("OpenBot-0.3.1")).unwrap();
+        unpack(&root, &whole_release("AwakenBot-0.3.1")).unwrap();
         for entry in LAYOUT {
             assert!(root.join(entry).exists(), "{entry} is not laid out");
         }
@@ -1235,7 +1240,7 @@ mod tests {
     fn an_installation_laid_out_before_a_layout_change_is_laid_out_again_at_its_version() {
         let root = crate::test_support::temp_root("deployment-older-layout");
         std::fs::create_dir_all(&root).unwrap();
-        let tarball = whole_release("OpenBot-0.0.7");
+        let tarball = whole_release("AwakenBot-0.0.7");
         unpack(&root, &tarball).unwrap();
         std::fs::remove_file(root.join("docker-compose.yml")).unwrap();
         // Laid out by an app that left the Compose file out.
@@ -1299,7 +1304,7 @@ mod tests {
 
         // The latest release's Compose file has the server and worker in it.
         let tarball = release_tarball(
-            "OpenBot-0.0.16",
+            "AwakenBot-0.0.16",
             &[(
                 "docker-compose.yml",
                 "services:\n  server: {}\n  worker: {}\n",
@@ -1444,7 +1449,7 @@ mod tests {
         std::fs::write(dir.join(".env"), "KEEP=1").unwrap();
         let pin = pin_from(full_pin_text(), "0123456789abcdef").unwrap();
         let archive = tarball(&[(
-            "OpenBot-0123456789abcdef/docker-compose.yml",
+            "AwakenBot-0123456789abcdef/docker-compose.yml",
             b"services: {}",
         )]);
         fetch_pinned_with(&dir, &pin, |url| {
@@ -1478,7 +1483,7 @@ mod tests {
         // Guards the guard: if the archive did not hold `..` the next test would
         // pass for the wrong reason.
         let archive = tarball(&[(
-            "OpenBot-0.0.8/agent-computer/src/../../../escaped.txt",
+            "AwakenBot-0.0.8/agent-computer/src/../../../escaped.txt",
             b"owned",
         )]);
         let decoder = flate2::read::GzDecoder::new(&archive[..]);
@@ -1497,7 +1502,7 @@ mod tests {
             .collect();
         assert_eq!(
             paths,
-            ["OpenBot-0.0.8/agent-computer/src/../../../escaped.txt"]
+            ["AwakenBot-0.0.8/agent-computer/src/../../../escaped.txt"]
         );
     }
 
@@ -1512,7 +1517,7 @@ mod tests {
         std::fs::create_dir_all(&root).expect("the root is made");
 
         let archive = tarball(&[(
-            "OpenBot-0.0.8/agent-computer/src/../../../escaped.txt",
+            "AwakenBot-0.0.8/agent-computer/src/../../../escaped.txt",
             b"owned",
         )]);
         let outcome = unpack(&root, &archive);
@@ -1534,10 +1539,10 @@ mod tests {
         let dir = scratch("ordinary");
 
         let archive = tarball(&[
-            ("OpenBot-0.0.8/docker-compose.yml", b"services: {}"),
+            ("AwakenBot-0.0.8/docker-compose.yml", b"services: {}"),
             // Not part of a deployment: skipped, not refused.
-            ("OpenBot-0.0.8/agent-computer/src/index.ts", b"export {}"),
-            ("OpenBot-0.0.8/docs/readme.md", b"# hi"),
+            ("AwakenBot-0.0.8/agent-computer/src/index.ts", b"export {}"),
+            ("AwakenBot-0.0.8/docs/readme.md", b"# hi"),
         ]);
         unpack(&dir, &archive).expect("an ordinary download is laid out");
 

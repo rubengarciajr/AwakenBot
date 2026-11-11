@@ -200,7 +200,7 @@ describe("real HTTP provider adapters", () => {
       "";
     expect(body).not.toContain("\uFFFD");
     expect(body).toBe(
-      `${"a".repeat(1399)}…\nOpen OpenBot to read the full message.`,
+      `${"a".repeat(1399)}…\nOpen AwakenBot to read the full message.`,
     );
   });
   test("Expo sends canonical deep links and reads receipts including invalid devices", async () => {
@@ -219,7 +219,7 @@ describe("real HTTP provider adapters", () => {
     expect(
       await push.send({
         token: "ExpoPushToken[abc]",
-        title: "OpenBot",
+        title: "AwakenBot",
         body: "Question",
         channelId: "ch1",
         kind: "question",

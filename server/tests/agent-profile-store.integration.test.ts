@@ -1010,7 +1010,7 @@ describe("agent profile store integration", () => {
 
   /*
    * The personal starter on the harness picked at setup sits at the address of the container
-   * OpenBot started for it, "agent-harness:4206" on OpenBot Desktop. Its Bot page names the
+   * AwakenBot started for it, "agent-harness:4206" on AwakenBot Desktop. Its Bot page names the
    * framework instead, so the profile it reads says which one runs it, by what runs it.
    */
   test("serves the framework a Bot runs on, read from what runs it, for its Bot page", async () => {
@@ -1047,7 +1047,7 @@ describe("agent profile store integration", () => {
         ).agent;
 
       expect((await detail(picked.agentId)).framework).toBe("LangChain");
-      // An agent connected by address with no framework named: OpenBot doesn't know, so it says none.
+      // An agent connected by address with no framework named: AwakenBot doesn't know, so it says none.
       expect(await detail(unnamed.agentId)).not.toHaveProperty("framework");
     } finally {
       for (const [name, value] of Object.entries(saved)) {

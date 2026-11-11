@@ -261,21 +261,21 @@ describe("a routine the person names", () => {
 });
 
 /*
- * FOUND ON WINDOWS: asked to "make a goal to check the latest OpenBot release every morning and tell
- * me what changed", a Bot made the goal "Track OpenBot releases" and, with no title as its tool says,
+ * FOUND ON WINDOWS: asked to "make a goal to check the latest AwakenBot release every morning and tell
+ * me what changed", a Bot made the goal "Track AwakenBot releases" and, with no title as its tool says,
  * a daily routine to run it. The Bot's page and Activity listed that routine by the sentence the Bot
- * wrote for the next turn: `Run the existing goal "Track OpenBot releases" and report its result in
+ * wrote for the next turn: `Run the existing goal "Track AwakenBot releases" and report its result in
  * this conversation.`
  */
 describe("a routine a Bot makes to run one of its goals", () => {
   const instruction =
-    "Run the existing goal \u201cTrack OpenBot releases\u201d and report its result in this conversation.";
+    "Run the existing goal \u201cTrack AwakenBot releases\u201d and report its result in this conversation.";
 
   async function withGoal() {
     const setup = await setUp();
     const goal = await callTool(setup.connection, "create_goal", {
-      title: "Track OpenBot releases",
-      instruction: "Check the latest OpenBot release and say what changed.",
+      title: "Track AwakenBot releases",
+      instruction: "Check the latest AwakenBot release and say what changed.",
       successCriteria: "The person is told what changed in the latest release.",
       recurring: true,
     });
@@ -299,14 +299,17 @@ describe("a routine a Bot makes to run one of its goals", () => {
     });
 
     expect(result.isError).toBe(false);
-    expect(result.text).toContain('"Track OpenBot releases", instruction');
+    expect(result.text).toContain('"Track AwakenBot releases", instruction');
     const page = await routinesPage(owner);
     expect(page.routines).toEqual([
-      expect.objectContaining({ title: "Track OpenBot releases", instruction }),
+      expect.objectContaining({
+        title: "Track AwakenBot releases",
+        instruction,
+      }),
     ]);
     const scheduled = (await activity.forBot(owner.id, agentId)).scheduled;
     expect(scheduled.find((item) => item.kind === "routine")?.title).toBe(
-      "Track OpenBot releases",
+      "Track AwakenBot releases",
     );
     expect(scheduled.map((item) => item.title)).not.toContain(instruction);
   });

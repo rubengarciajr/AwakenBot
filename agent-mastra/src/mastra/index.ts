@@ -3,13 +3,13 @@
  *
  * Mastra brings its own HTTP server, so unlike the Python harnesses this one is not a FastAPI app
  * with a route bolted on: it is a plain Mastra server, and that is the whole point. Mastra already
- * serves its agents over its own API, and OpenBot dials that API through `@ag-ui/mastra`, the bridge
+ * serves its agents over its own API, and AwakenBot dials that API through `@ag-ui/mastra`, the bridge
  * Mastra and AG-UI maintain between them. See `remoteTransport` in server/src/copilot.ts.
  *
  * SO THERE IS NO AG-UI ROUTE HERE, deliberately. An earlier version mounted `registerCopilotKit`
  * from `@ag-ui/mastra/copilotkit`, which serves the CopilotKit Runtime protocol rather than AG-UI:
  * a different wire format that answers a run with a complaint about a missing `method` field. The
- * translation belongs on OpenBot's side, in one place, where every remote Bot is governed the same
+ * translation belongs on AwakenBot's side, in one place, where every remote Bot is governed the same
  * way — not in each harness.
  */
 import { Agent } from "@mastra/core/agent";
@@ -84,9 +84,9 @@ export const openbotBaseInstructions =
   "Answer the question you are asked, briefly and correctly.";
 
 const OPENBOT_CONTEXT_DESCRIPTIONS = [
-  "OpenBot standing role",
-  "OpenBot granted tools guidance",
-  "OpenBot learned skills",
+  "AwakenBot standing role",
+  "AwakenBot granted tools guidance",
+  "AwakenBot learned skills",
 ] as const;
 
 type OpenBotInstructionArgs = {
@@ -125,13 +125,13 @@ function isUsableEntry(entry: unknown): entry is ContextEntry {
 }
 
 /**
- * What the model is told: the base line, OpenBot's three model-visible entries in a fixed order,
+ * What the model is told: the base line, AwakenBot's three model-visible entries in a fixed order,
  * then whatever the calling surface sent, as `description: value`.
  *
- * Every other `OpenBot …` entry is for this process, not the model: the Bot id, the deployment's
+ * Every other `AwakenBot …` entry is for this process, not the model: the Bot id, the deployment's
  * tool list, and the signed run assertion, which is a credential. The server keeps callers out of
  * that namespace (`RESERVED_MASTRA_CONTEXT_DESCRIPTIONS` in server/src/copilot.ts), so the prefix
- * is a safe line to draw. `OpenBot personal memory` is for the model, but as untrusted data, not
+ * is a safe line to draw. `AwakenBot personal memory` is for the model, but as untrusted data, not
  * as an instruction: the server sends the same records as a quoted conversation row
  * (`quotedConversationRow` in server/src/copilot.ts), so it stays out of here too. Caller context
  * used to be dropped here altogether, although the server forwards it and every other harness puts
@@ -149,7 +149,7 @@ export function buildOpenBotInstructions({
         .map((entry) => entry.value.trim()),
   );
   const callerInstructions = contextEntries
-    .filter((entry) => !entry.description.startsWith("OpenBot "))
+    .filter((entry) => !entry.description.startsWith("AwakenBot "))
     .map((entry) =>
       entry.description.trim()
         ? `${entry.description.trim()}: ${entry.value.trim()}`
@@ -168,7 +168,7 @@ const openbot = new Agent({
   model: await buildModel(),
 });
 
-/** The one header OpenBot's server sends, compared without leaking length through timing. */
+/** The one header AwakenBot's server sends, compared without leaking length through timing. */
 function carriesTheServerToken(request: Request): boolean {
   const expected = (process.env.MANAGED_AGENT_TOKEN ?? "").trim();
   const offered = (request.headers.get("x-openbot-agent-token") ?? "").trim();

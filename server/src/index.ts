@@ -606,7 +606,7 @@ const betterAuth =
       )
     : undefined;
 /*
- * Microsoft Entra on both sides: a person's app calling OpenBot with their Entra token, and a server
+ * Microsoft Entra on both sides: a person's app calling AwakenBot with their Entra token, and a server
  * an admin marked as reached as the signed-in person called with a token Entra issues for them.
  * Built on Better Auth's sign-in, so only where Microsoft sign-in is what this deployment runs.
  */
@@ -633,7 +633,7 @@ const { resolveRequestActor, identifyUser, identifyActor } = createRequestActor(
     rolesForUser: (id) => roleRepository.rolesForUser(id),
   },
 );
-// Where a person's own OpenBot browser may go: not where Bots may, but where their browser on their own laptop would
+// Where a person's own AwakenBot browser may go: not where Bots may, but where their browser on their own laptop would
 // (browser/egress.ts). On a host-side computer of people's browsers that is their own desktop, so everywhere.
 const personBrowserPolicy = personBrowserEgressPolicy({
   native: config.browser !== undefined,
@@ -979,7 +979,7 @@ const computerGateway = computerProvider
               .where(inArray(users.id, ids))
           ).map((row) => [row.id, { name: row.name, email: row.email }]),
         ),
-      // Whose OpenBot browser each one is: the server minted its Recorder connection under the browser's own install id.
+      // Whose AwakenBot browser each one is: the server minted its Recorder connection under the browser's own install id.
       browserOwners: async (computerIds) => {
         const rows = await database
           .selectDistinct({ userId: recorderConnections.userId })
@@ -1644,7 +1644,7 @@ const hostAccessBroker = createHostAccessBroker(Date.now, {
 // grant, the policy and the audit row are exactly where they were. Host-folder tools are also
 // server-dispatched: the selected Bot and the signed-in owner are bound here, then the desktop worker
 // receives only opaque grant ids and relative paths.
-// Memory lives in CopilotKit Intelligence when this deployment is entitled to it, and in OpenBot's own
+// Memory lives in CopilotKit Intelligence when this deployment is entitled to it, and in AwakenBot's own
 // tables when it is not; see memory/store.ts. Its own client, like the thread reader's: the
 // constructor opens nothing.
 const personalMemoryStore = createMemoryStore(database, {
@@ -2956,7 +2956,7 @@ await installEnterpriseControls({
   databaseUrl: config.databaseUrl,
   auditStore: bootAuditStore,
   personBrowserPolicy,
-  // While a person records in a Bot's browser, the Recorder there reaches OpenBot and the gateway; the Bot does not.
+  // While a person records in a Bot's browser, the Recorder there reaches AwakenBot and the gateway; the Bot does not.
   duringRecording: botBrowserNetwork({
     connections: recorderExtension.connections,
     openbotUrls: [config.publicUrl, config.appUrl],
@@ -3218,7 +3218,7 @@ const app = createApp(
             }),
             recorder: recorderExtension,
             openbotUrl: openbotAddress(config),
-            // On a single-user OpenBot the person is its admin: a setup failure is theirs to see to.
+            // On a single-user AwakenBot the person is its admin: a setup failure is theirs to see to.
             singleUser: config.singleUser,
           },
         }
@@ -3417,4 +3417,4 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
   });
 }
 
-console.info(`OpenBot server listening on http://127.0.0.1:${port}`);
+console.info(`AwakenBot server listening on http://127.0.0.1:${port}`);

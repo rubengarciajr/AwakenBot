@@ -1,5 +1,5 @@
 /**
- * Settings → General's AI model, from the report: somebody on OpenBot Desktop 1.0.0 could not find
+ * Settings → General's AI model, from the report: somebody on AwakenBot Desktop 1.0.0 could not find
  * which AI provider they had signed in with, or change it.
  *
  * These tests stand in for the IPC Tauri injects into the Desktop window, answering as the shell's
@@ -130,11 +130,11 @@ test("Change asks the desktop app to change the AI connection", async () => {
   await waitFor(() =>
     expect(calls).toContain("plugin:openbot-desktop|change_ai_connection"),
   );
-  // OpenBot is stopping and this page goes with it; nothing more to press.
+  // AwakenBot is stopping and this page goes with it; nothing more to press.
   expect(
     (
       within(dialog).getByRole("button", {
-        name: "Stopping OpenBot…",
+        name: "Stopping AwakenBot…",
       }) as HTMLButtonElement
     ).disabled,
   ).toBe(true);

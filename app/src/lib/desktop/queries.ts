@@ -3,7 +3,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { desktopShell } from "./shell";
 
 /**
- * Settings → This computer, read from the OpenBot Desktop app rather than the server.
+ * Settings → This computer, read from the AwakenBot Desktop app rather than the server.
  *
  * Inside Desktop the page is loaded in the desktop app's own window, which lets exactly this app's
  * origin call the commands of one plugin (`openbot-desktop`). In a plain browser there is no
@@ -15,10 +15,10 @@ export type DesktopPart = { name: string; memoryBytes: number | null };
 
 /** What the desktop app reports about what it runs here. */
 export type DesktopStatus = {
-  /** OpenBot answers on its own address, whoever started it. */
+  /** AwakenBot answers on its own address, whoever started it. */
   openbotRunning: boolean;
   /**
-   * The desktop app holds OpenBot's processes, so Restart can bring them back. False for an OpenBot
+   * The desktop app holds AwakenBot's processes, so Restart can bring them back. False for an AwakenBot
    * left running by an earlier session of the desktop app that ended without quitting.
    */
   openbotHeld: boolean;
@@ -49,9 +49,9 @@ export type IntelligenceReadiness =
   | "unknown";
 
 /**
- * A newer OpenBot Desktop, as the desktop app last read it from its update feed. The app reads the
+ * A newer AwakenBot Desktop, as the desktop app last read it from its update feed. The app reads the
  * feed itself, at launch and every six hours; this page only asks the app, so a browser showing a
- * self-hosted OpenBot (no desktop app around it) never asks anybody.
+ * self-hosted AwakenBot (no desktop app around it) never asks anybody.
  */
 export type DesktopAppUpdate = {
   /** The version to offer; null when there is none, or this person closed the banner on it. */
@@ -93,7 +93,7 @@ export type DesktopAppUpdateCheck =
   | { found: "notOffered"; current: string };
 
 /**
- * Which AI provider and sign-in OpenBot starts with, as the desktop app last saved it. Never a key
+ * Which AI provider and sign-in AwakenBot starts with, as the desktop app last saved it. Never a key
  * or a token: the setup window holds those, and changing the connection happens there.
  */
 export type DesktopAiConnection = {
@@ -140,7 +140,7 @@ export async function invokeDesktop<T>(
   args?: Record<string, unknown>,
 ): Promise<T> {
   const shell = desktopShell();
-  if (!shell) throw new Error("This page needs the OpenBot desktop app.");
+  if (!shell) throw new Error("This page needs the AwakenBot desktop app.");
   return (await shell.invoke(`${PLUGIN}|${command}`, args)) as T;
 }
 
@@ -254,10 +254,10 @@ export function diagnostics(
           )
           .join(", ");
   return [
-    `OpenBot Desktop ${status.version} (${status.build})`,
+    `AwakenBot Desktop ${status.version} (${status.build})`,
     `Installed in ${status.root}${status.appPort ? `, app on port ${status.appPort}` : ""}`,
     `Container engine: ${status.engine ?? "not answering"}`,
-    `OpenBot: ${status.openbotRunning ? "running" : "stopped"}`,
+    `AwakenBot: ${status.openbotRunning ? "running" : "stopped"}`,
     `  processes: ${parts(status.processes)}`,
     `  containers: ${parts(status.containers)}`,
     status.intelligenceStack

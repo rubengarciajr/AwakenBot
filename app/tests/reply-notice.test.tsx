@@ -29,7 +29,7 @@ import { closeDesktop, launchDesktop } from "./desktop-notifications.fixture";
 import { settleReactWork } from "./settle-react-work";
 
 /**
- * A Bot's reply while OpenBot is out of sight raises a notice: "Expenses replied", over the reply's
+ * A Bot's reply while AwakenBot is out of sight raises a notice: "Expenses replied", over the reply's
  * first line, opening the conversation on a click. It comes off the app's one live socket, the way a
  * reply from a routine, a hand-off or another tab reaches the page, through the real hook that keeps
  * the roster live.
@@ -263,7 +263,7 @@ async function settle() {
   await act(() => new Promise((resolve) => setTimeout(resolve, 20)));
 }
 
-test("a Bot's reply while OpenBot is out of sight shows one notice, naming the Bot over the reply's first line, and a click opens the conversation", async () => {
+test("a Bot's reply while AwakenBot is out of sight shows one notice, naming the Bot over the reply's first line, and a click opens the conversation", async () => {
   const { socket, router } = await openPage({});
   const event = reply();
 
@@ -303,7 +303,7 @@ test("a tab that is visible but behind another app still shows it", async () => 
   );
 });
 
-test("no notice while the person is looking at OpenBot", async () => {
+test("no notice while the person is looking at AwakenBot", async () => {
   visibility = "visible";
   focused = true;
   const { socket } = await openPage({});
@@ -393,7 +393,7 @@ const DESKTOP_REPLY = {
   tag: "openbot-march-receipts",
 };
 
-test("in OpenBot Desktop the desktop app shows it, naming the conversation a click opens", async () => {
+test("in AwakenBot Desktop the desktop app shows it, naming the conversation a click opens", async () => {
   const desktop = launchDesktop({ plugin: true });
   refreshNotificationPermission();
   await settle();
@@ -416,7 +416,7 @@ test("in a desktop app from before its own notify, the plugin shows it, with the
   await waitFor(() => expect(desktop.shown()).toEqual([DESKTOP_REPLY]));
 });
 
-test("in OpenBot Desktop no notice while the person is looking at it", async () => {
+test("in AwakenBot Desktop no notice while the person is looking at it", async () => {
   visibility = "visible";
   focused = true;
   const desktop = launchDesktop({ plugin: true });
@@ -524,7 +524,7 @@ test("a Bot set to only when it needs the person raises no reply notice, though 
   expect(shown).toEqual([]);
 });
 
-test("no notice of either kind while the person is looking at OpenBot", async () => {
+test("no notice of either kind while the person is looking at AwakenBot", async () => {
   visibility = "visible";
   focused = true;
   const { socket } = await openPage({ badge: true });

@@ -7,13 +7,13 @@ const ROOT = join(import.meta.dir, "..");
 
 test("a build that doesn't update itself says what happened and what to do", () => {
   expect(DOESNT_UPDATE_ITSELF).toBe(
-    "This version of OpenBot doesn't update itself. Install a released version of OpenBot to get updates.",
+    "This version of AwakenBot doesn't update itself. Install a released version of AwakenBot to get updates.",
   );
 });
 
 /**
  * The setup window and Settings › This computer said this in two spellings once, one of them
- * without "of OpenBot". Each now reads the shared sentence, so neither may write its own.
+ * without "of AwakenBot". Each now reads the shared sentence, so neither may write its own.
  */
 test("the setup window and Settings say it only through the shared sentence", async () => {
   const spelled: string[] = [];
@@ -23,7 +23,7 @@ test("the setup window and Settings say it only through the shared sentence", as
       const text = await Bun.file(join(ROOT, dir, file)).text();
       // JSX wraps long text across lines, so the words are compared with the whitespace folded.
       if (
-        /This\s+version\s+of\s+OpenBot\s+doesn't\s+update\s+itself/.test(text)
+        /This\s+version\s+of\s+AwakenBot\s+doesn't\s+update\s+itself/.test(text)
       )
         spelled.push(`${dir}/${file}`);
     }
@@ -32,11 +32,11 @@ test("the setup window and Settings say it only through the shared sentence", as
 });
 
 test("a newer version says how ready it is, in one plain sentence", () => {
-  expect(updateOffered("1.0.1")).toBe("OpenBot 1.0.1 is available.");
-  expect(updateOffered("1.0.1", null)).toBe("OpenBot 1.0.1 is available.");
+  expect(updateOffered("1.0.1")).toBe("AwakenBot 1.0.1 is available.");
+  expect(updateOffered("1.0.1", null)).toBe("AwakenBot 1.0.1 is available.");
   expect(
     updateOffered("1.0.1", { state: "preparing", done: 40, total: 100 }),
-  ).toBe("OpenBot 1.0.1 is downloading in the background (40%).");
+  ).toBe("AwakenBot 1.0.1 is downloading in the background (40%).");
   // Never 100% until every byte is in and the app says it is ready.
   expect(
     updateOffered("1.0.1", { state: "preparing", done: 999, total: 1000 }),
@@ -45,6 +45,6 @@ test("a newer version says how ready it is, in one plain sentence", () => {
     updateOffered("1.0.1", { state: "preparing", done: 0, total: 0 }),
   ).toContain("(0%)");
   expect(updateOffered("1.0.1", { state: "ready" })).toBe(
-    "OpenBot 1.0.1 is ready to install. It takes a few minutes.",
+    "AwakenBot 1.0.1 is ready to install. It takes a few minutes.",
   );
 });

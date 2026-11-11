@@ -18,10 +18,10 @@ export function ReadingStatus({
   edited,
 }: {
   check: { ok: true } | { ok: false; error: string };
-  /** What a passing check means: "Compiles. OpenBot can check it on every action." */
+  /** What a passing check means: "Compiles. AwakenBot can check it on every action." */
   passed: string;
   /**
-   * What a failing check means, before its error: "Doesn't compile, so OpenBot won't save it." Empty
+   * What a failing check means, before its error: "Doesn't compile, so AwakenBot won't save it." Empty
    * where the error says it all.
    */
   failed: string;
@@ -105,9 +105,9 @@ export function RuleReading({
           : null
       }
       explanation={written.explanation}
-      failed="Doesn't compile, so OpenBot won't save it."
+      failed="Doesn't compile, so AwakenBot won't save it."
       heading="What this rule does"
-      passed="Compiles. OpenBot can check it on every action."
+      passed="Compiles. AwakenBot can check it on every action."
       warning={written.warning}
     />
   );

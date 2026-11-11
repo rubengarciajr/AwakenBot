@@ -29,7 +29,7 @@ import {
 } from "./desktop-shell.fixture";
 
 /**
- * Narration in the OpenBot Desktop window. The window's web view (WKWebView, WebView2) has no on-device speech
+ * Narration in the AwakenBot Desktop window. The window's web view (WKWebView, WebView2) has no on-device speech
  * recognition, so narration listens through the desktop app's (desktop/src-tauri/src/speech.rs) there, and through the
  * browser's own anywhere else; either way the Recorder gets the same phrases, timed by the same rule.
  */

@@ -1,9 +1,9 @@
 //! Raising the stack: the Compose services.
 //!
-//! Compose runs all of OpenBot: postgres, the supervisor, `agent-computer`, the Bots, a one-shot
+//! Compose runs all of AwakenBot: postgres, the supervisor, `agent-computer`, the Bots, a one-shot
 //! `migrate`, and the published image's `server` and `worker` under the `openbot` profile. Docker's
 //! restart policy keeps them up. Nothing runs on the host: the person's own browser is on the one
-//! computer, shown in the OpenBot window.
+//! computer, shown in the AwakenBot window.
 //!
 //! [`HOST_PROCESSES`] still names what earlier versions ran on the host, the server, the app, the
 //! worker and a browser of the person's own on their desktop, so a Start or a Stop can find and end
@@ -22,7 +22,7 @@ use crate::problem::Problem;
 /// The services Compose owns. `migrate` is deliberately absent: it is run once, to completion,
 /// rather than raised, and treating it as a long-lived service makes it look like a crash loop.
 ///
-/// `server` and `worker` are OpenBot itself, from the published server image: the API, the app it
+/// `server` and `worker` are AwakenBot itself, from the published server image: the API, the app it
 /// serves, and the routines sweep. They used to be Bun processes this app started on the host after
 /// downloading Bun and running `bun install`, which on a fresh Windows machine took longer than
 /// everything else in the install put together. Now they are containers like the rest, and the
@@ -171,7 +171,7 @@ fn volume_inventory(engine: &Address, root: &Path) -> Result<Vec<String>, Proble
 
 fn postgres_volume_problem(detail: impl Into<String>) -> Problem {
     Problem::with(
-        "OpenBot couldn't check whether this installation already has your data saved, so it \
+        "AwakenBot couldn't check whether this installation already has your data saved, so it \
          changed nothing. Try again.",
         detail,
     )
@@ -421,7 +421,7 @@ impl LeftoverVolumes {
 
 fn leftover_container_problem(detail: impl Into<String>) -> Problem {
     Problem::with(
-        "OpenBot couldn't check what an earlier installation left behind, so it changed nothing. \
+        "AwakenBot couldn't check what an earlier installation left behind, so it changed nothing. \
          Try again.",
         detail,
     )
@@ -693,7 +693,7 @@ pub fn reset_leftover_volumes(
             .output()
             .map_err(|error| {
                 Problem::with(
-                    format!("OpenBot could not remove {name}. {}", so_far()),
+                    format!("AwakenBot could not remove {name}. {}", so_far()),
                     format!("Could not run {kind} removal: {error}"),
                 )
             })?;
@@ -704,7 +704,7 @@ pub fn reset_leftover_volumes(
                 "It may still be in use."
             };
             return Err(Problem::with(
-                format!("OpenBot could not remove {name}. {why} {} Stop the installation using it, then try Start again.", so_far()),
+                format!("AwakenBot could not remove {name}. {why} {} Stop the installation using it, then try Start again.", so_far()),
                 format!("{kind} removal exited with {}. Output omitted because it can contain credentials.", output.status),
             ));
         }
@@ -771,7 +771,7 @@ fn harness_port_overlay(root: &Path, ipv4_only: bool) -> Result<Option<String>, 
     )
     .map_err(|error| {
         Problem::with(
-            "OpenBot could not read the Bot's local port.",
+            "AwakenBot could not read the Bot's local port.",
             error.to_string(),
         )
     })?;
@@ -830,7 +830,7 @@ fn append_compose_overlay(
     if std::fs::read(&overlay).ok().as_deref() != Some(contents.as_bytes()) {
         std::fs::write(&overlay, contents).map_err(|error| {
             Problem::with(
-                "OpenBot couldn't prepare its settings on this computer. Try again.",
+                "AwakenBot couldn't prepare its settings on this computer. Try again.",
                 error.to_string(),
             )
         })?;
@@ -872,7 +872,7 @@ fn compose_start_command(
         .args(["config", "--environment"])
         .output();
     // Only the optional telemetry overrides need the probe here. An older Compose without it, or
-    // one that fails it, starts OpenBot as before: telemetry never blocks Start, opted out or not.
+    // one that fails it, starts AwakenBot as before: telemetry never blocks Start, opted out or not.
     let optional_only = desktop_telemetry && !macos_podman && harness_ports.is_none();
     if optional_only
         && environment
@@ -888,19 +888,19 @@ fn compose_start_command(
     }
     let environment = environment.map_err(|error| {
         Problem::with(
-            "OpenBot couldn't read its installation's settings. Repair the installation.",
+            "AwakenBot couldn't read its installation's settings. Repair the installation.",
             error.to_string(),
         )
     })?;
     if !environment.status.success() {
         return Err(Problem::with(
-            "OpenBot couldn't read its installation's settings. Repair the installation.",
+            "AwakenBot couldn't read its installation's settings. Repair the installation.",
             command_said(&environment.stderr),
         ));
     }
     let environment = String::from_utf8(environment.stdout).map_err(|_| {
         Problem::with(
-            "OpenBot couldn't read its installation's settings. Repair the installation.",
+            "AwakenBot couldn't read its installation's settings. Repair the installation.",
             "Compose returned unreadable deployment settings",
         )
     })?;
@@ -934,7 +934,7 @@ fn compose_start_command(
         }
     }
     // Last, so the native opt-out wins over any override. Optional like the rest of telemetry: a
-    // file that cannot be written is logged, and OpenBot starts.
+    // file that cannot be written is logged, and AwakenBot starts.
     if desktop_telemetry && desktop_telemetry_disabled(secrets) {
         if let Err(error) = append_compose_overlay(
             &mut command,
@@ -981,7 +981,7 @@ fn compose_files(root: &Path, environment: &str) -> Result<Vec<String>, Problem>
     ])
     .ok_or_else(|| {
         Problem::with(
-            "Part of OpenBot's installation is missing. Repair the installation.",
+            "Part of AwakenBot's installation is missing. Repair the installation.",
             "the selected installation has no Compose file",
         )
     })?;
@@ -1024,7 +1024,7 @@ pub fn installation_images_in(
     )
 }
 
-/// A Compose of OpenBot's own that runs without any engine, for `config`: the standalone binary
+/// A Compose of AwakenBot's own that runs without any engine, for `config`: the standalone binary
 /// `install.rs` downloads (`docker-compose`), with the same settings as `compose_command`. Before
 /// Podman is on a computer, this is the only Compose there is.
 pub fn standalone_compose_command(compose: &Path, root: &Path, secrets: &Secrets) -> Command {
@@ -1060,13 +1060,13 @@ pub fn installation_images_by(
         .output()
         .map_err(|e| {
             Problem::with(
-                "OpenBot could not check which software to install.",
+                "AwakenBot could not check which software to install.",
                 e.to_string(),
             )
         })?;
     if !output.status.success() {
         return Err(Problem::with(
-            "OpenBot could not check which software to install.",
+            "AwakenBot could not check which software to install.",
             command_said(&output.stderr),
         ));
     }
@@ -1078,7 +1078,7 @@ pub fn installation_images_by(
         .collect();
     if images.is_empty() {
         return Err(Problem::plain(
-            "This deployment does not identify the software OpenBot needs to install.",
+            "This deployment does not identify the software AwakenBot needs to install.",
         ));
     }
     Ok(images.into_iter().collect())
@@ -1148,7 +1148,7 @@ pub fn make_sign_in_folder(root: &Path) -> Result<PathBuf, crate::problem::Probl
     let folder = root.join(".openbot");
     std::fs::create_dir_all(&folder).map_err(|error| {
         crate::problem::Problem::with(
-            "OpenBot couldn't prepare its sign-in folder. Try again.",
+            "AwakenBot couldn't prepare its sign-in folder. Try again.",
             format!("{}: {error}", folder.display()),
         )
     })?;
@@ -1156,7 +1156,7 @@ pub fn make_sign_in_folder(root: &Path) -> Result<PathBuf, crate::problem::Probl
 }
 
 /// How long `up` waits before each new try while Docker Desktop cannot see a folder yet: 15
-/// seconds in all. On OpenBot Desktop 1.0.0's first Start it took seconds.
+/// seconds in all. On AwakenBot Desktop 1.0.0's first Start it took seconds.
 const FOLDER_NOT_SHARED_YET_WAITS: [std::time::Duration; 4] = [
     std::time::Duration::from_secs(1),
     std::time::Duration::from_secs(2),
@@ -1168,7 +1168,7 @@ const FOLDER_NOT_SHARED_YET_WAITS: [std::time::Duration; 4] = [
 Docker Desktop's file sharing refused a bind mount's source folder, which the host has.
 
 Seen on a Mac on the first Start of a new installation, for the sign-in folder Start had made a
-moment before: `invalid mount config for type "bind": stat /host_mnt/Users/<name>/OpenBot/.openbot:
+moment before: `invalid mount config for type "bind": stat /host_mnt/Users/<name>/AwakenBot/.openbot:
 operation not permitted`. A few seconds later the same mount worked, and so did Retry. Docker Desktop
 documents no such delay, so this matches the daemon's own words for exactly that refusal and nothing
 else: every other error still fails the `up` at once.
@@ -1184,8 +1184,8 @@ fn folder_not_shared_yet(said: &str) -> bool {
 The folder of this installation's that Docker Desktop on a Mac refused to stat, as the Mac names it.
 
 Docker Desktop shares the Mac's folders into its VM under `/host_mnt` and names the one it could not
-open: `stat /host_mnt/Users/<name>/OpenBot/.openbot: operation not permitted`. Only a folder inside
-`root` counts. Anything else is not OpenBot's to touch.
+open: `stat /host_mnt/Users/<name>/AwakenBot/.openbot: operation not permitted`. Only a folder inside
+`root` counts. Anything else is not AwakenBot's to touch.
 */
 fn refused_folder_in(said: &str, root: &Path) -> Option<PathBuf> {
     let roots = [Some(root.to_path_buf()), std::fs::canonicalize(root).ok()];
@@ -1230,7 +1230,7 @@ fn local_image_for_share_refresh(
 Make Docker Desktop look at `folder` again, by reading it through a container that is gone at once.
 
 Docker Desktop's file sharing on a Mac keeps a handle on a folder it has shared. Move that folder to
-the Trash and make a new one at the same place, as reinstalling OpenBot does, and the handle still
+the Trash and make a new one at the same place, as reinstalling AwakenBot does, and the handle still
 follows the old one into `~/.Trash`, which macOS keeps from other apps. Every bind mount of the new
 folder is then refused with `operation not permitted`, and waiting does not change that. Reading the
 folder through its parent makes Docker Desktop look it up again, and the next `up` mounts it.
@@ -1263,20 +1263,21 @@ fn refresh_docker_desktop_share(engine: &Address, root: &Path, secrets: &Secrets
         .output();
     match output {
         Ok(output) if output.status.success() => {
-            log::info!("[compose up] refreshed Docker Desktop's view of the OpenBot folder")
+            log::info!("[compose up] refreshed Docker Desktop's view of the AwakenBot folder")
         }
         Ok(output) => log::warn!(
-            "[compose up] refreshing Docker Desktop's view of the OpenBot folder failed: {}",
+            "[compose up] refreshing Docker Desktop's view of the AwakenBot folder failed: {}",
             command_said(&output.stderr)
         ),
         Err(error) => log::warn!(
-            "[compose up] could not refresh Docker Desktop's view of the OpenBot folder: {error}"
+            "[compose up] could not refresh Docker Desktop's view of the AwakenBot folder: {error}"
         ),
     }
 }
 
-/// What a person is told when Docker Desktop still cannot open the OpenBot folder after a refresh.
-const DOCKER_DESKTOP_STALE_FOLDER: &str = "Docker Desktop is still using an older OpenBot folder, \
+/// What a person is told when Docker Desktop still cannot open the AwakenBot folder after a refresh.
+const DOCKER_DESKTOP_STALE_FOLDER: &str =
+    "Docker Desktop is still using an older AwakenBot folder, \
      so it can't open the new one. Restart Docker Desktop, then try again.";
 
 /**
@@ -1308,7 +1309,7 @@ fn up_retrying(
                 if let (Some(folder), false) = (&refused, refreshed) {
                     refreshed = true;
                     log::warn!(
-                        "[compose up] Docker Desktop cannot open a folder OpenBot mounts; refreshing its file sharing and trying again"
+                        "[compose up] Docker Desktop cannot open a folder AwakenBot mounts; refreshing its file sharing and trying again"
                     );
                     refresh_docker_desktop_share(engine, root, secrets, folder);
                     continue;
@@ -1509,7 +1510,7 @@ pub fn down(engine: &Address, root: &Path) -> Result<(), String> {
          * earlier run started, and whether that run picked one is not something a Stop can know.
          *
          * `openbot` for the same reason: `server` and `worker` sit behind it, and a Stop that left them
-         * running would leave the app answering a window that says OpenBot is stopped.
+         * running would leave the app answering a window that says AwakenBot is stopped.
          */
         let output = compose_command(engine, root, &Secrets::new())
             .args([
@@ -1609,7 +1610,7 @@ fn record_windows_host_processes_with(
 ) -> Result<(), Problem> {
     let problem = |detail| {
         Problem::with(
-            "OpenBot could not verify its Windows host process ownership.",
+            "AwakenBot could not verify its Windows host process ownership.",
             format!(
                 "{}: {detail}; ownership records retained",
                 host_pids_path(root).display()
@@ -1701,7 +1702,7 @@ fn recorded_host_pid_file(root: &Path) -> Result<Option<RecordedHostPidFile>, Pr
     let path = host_pids_path(root);
     let problem = |detail| {
         Problem::with(
-            "OpenBot could not read its recorded host processes.",
+            "AwakenBot could not read its recorded host processes.",
             format!("{}: {detail}", path.display()),
         )
     };
@@ -1731,7 +1732,7 @@ fn write_host_pid_file<T: Serialize>(root: &Path, value: &T) -> Result<(), Probl
     let path = host_pids_path(root);
     let problem = |operation: &str, error: &dyn std::fmt::Display| {
         Problem::with(
-            "OpenBot could not record its host processes.",
+            "AwakenBot could not record its host processes.",
             format!("{}: {operation}: {error}", path.display()),
         )
     };
@@ -1821,7 +1822,7 @@ pub fn replace_windows_host_process_with(
     let pid = child.id();
     let problem = |detail| {
         Problem::with(
-            "OpenBot could not verify its Windows replacement process ownership.",
+            "AwakenBot could not verify its Windows replacement process ownership.",
             format!("{name}, pid {pid}: {detail}; ownership retained"),
         )
     };
@@ -1862,7 +1863,7 @@ pub fn replace_windows_host_process_with(
 #[cfg(unix)]
 fn unix_ownership_problem(detail: impl Into<String>) -> Problem {
     Problem::with(
-        "OpenBot could not verify its host process ownership.",
+        "AwakenBot could not verify its host process ownership.",
         detail,
     )
 }
@@ -2300,7 +2301,7 @@ where
         return Ok(true);
     }
     Err(Problem::with(
-        "OpenBot could not stop one of its host processes.",
+        "AwakenBot could not stop one of its host processes.",
         format!(
             "pid {pid} is still running after SIGKILL; ownership ancestor and records retained"
         ),
@@ -2339,7 +2340,7 @@ fn signal_unix_process(pid: i32, signal: i32) -> Result<bool, Problem> {
         return Ok(false);
     }
     Err(Problem::with(
-        "OpenBot could not stop one of its host processes.",
+        "AwakenBot could not stop one of its host processes.",
         format!("could not send signal {signal} to pid {pid}: {error}"),
     ))
 }
@@ -2354,7 +2355,7 @@ pub fn stop_processes_under(_root: &Path) -> Result<usize, Problem> {
      *
      * MEASURED ON WINDOWS SERVER 2022. Stop took the five containers down, reported success, and
      * left every host process running: the server on 3001, the worker, and both halves of the app
-     * still answering 200 on 3010. Somebody who pressed Stop still had OpenBot serving.
+     * still answering 200 on 3010. Somebody who pressed Stop still had AwakenBot serving.
      *
      * So they are found by the ports the deployment publishes, which the shell already owns and
      * already checks for clashes, and each is ended WITH ITS CHILDREN: `bun run serve` starts the
@@ -2381,7 +2382,7 @@ fn stop_windows_processes_with_inventory(
             // A previous Start wrote these PIDs, but a reopened window cannot prove their
             // process instances. Keep that unresolved evidence without authorizing a signal.
             return Err(Problem::with(
-                "OpenBot could not verify its recorded host processes.",
+                "AwakenBot could not verify its recorded host processes.",
                 format!(
                     "{}: legacy PID-only evidence lacks Windows process-instance identity; cleanup unresolved; ownership records retained",
                     host_pids_path(root).display()
@@ -2422,7 +2423,7 @@ fn stop_windows_processes_under_with(
         })
     }) {
         return Err(Problem::with(
-            "OpenBot could not verify one of its recorded host processes.",
+            "AwakenBot could not verify one of its recorded host processes.",
             format!(
                 "{}: process inventory lacks usable identity metadata for pid {}; ownership records retained",
                 host_pids_path(root).display(),
@@ -2442,7 +2443,7 @@ fn stop_windows_processes_under_with(
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
         Err(error) => {
             return Err(Problem::with(
-                "OpenBot could not remove its recorded host processes.",
+                "AwakenBot could not remove its recorded host processes.",
                 format!("{}: could not remove pidfile: {error}", path.display()),
             ));
         }
@@ -2500,7 +2501,7 @@ where
 
 fn cleanup_spawn_problem(operation: &str, error: std::io::Error) -> Problem {
     Problem::with(
-        "OpenBot could not inspect or stop its host processes.",
+        "AwakenBot could not inspect or stop its host processes.",
         format!("could not run {operation}: {error}"),
     )
 }
@@ -2518,14 +2519,14 @@ fn cleanup_status_problem(operation: &str, output: &std::process::Output) -> Pro
         detail.push_str(&stdout);
     }
     Problem::with(
-        "OpenBot could not inspect or stop its host processes.",
+        "AwakenBot could not inspect or stop its host processes.",
         detail,
     )
 }
 
 fn combined_cleanup_problem(failures: Vec<Problem>) -> Problem {
     Problem::with(
-        "OpenBot could not inspect or stop its host processes.",
+        "AwakenBot could not inspect or stop its host processes.",
         failures
             .into_iter()
             .map(problem_detail)
@@ -2630,7 +2631,7 @@ fn windows_processes_with(powershell: &Path) -> Result<Vec<WindowsProcess>, Prob
     if !output.status.success() {
         // The inventory includes other processes' command lines. Never echo a partial snapshot.
         return Err(Problem::with(
-            "OpenBot could not inspect its Windows host processes.",
+            "AwakenBot could not inspect its Windows host processes.",
             format!("{operation} exited with status {}", output.status),
         ));
     }
@@ -2641,7 +2642,7 @@ fn windows_processes_with(powershell: &Path) -> Result<Vec<WindowsProcess>, Prob
 fn windows_process_output(output: &[u8]) -> Result<Vec<WindowsProcess>, Problem> {
     let invalid_encoding = || {
         Problem::with(
-            "OpenBot could not inspect its Windows host processes.",
+            "AwakenBot could not inspect its Windows host processes.",
             "powershell Get-CimInstance Win32_Process returned invalid UTF-8 or UTF-16LE",
         )
     };
@@ -2676,7 +2677,7 @@ enum WindowsProcessListing {
 pub fn windows_processes_in(listing: &str) -> Result<Vec<WindowsProcess>, Problem> {
     let listing = serde_json::from_str::<WindowsProcessListing>(listing).map_err(|error| {
         Problem::with(
-            "OpenBot could not inspect its Windows host processes.",
+            "AwakenBot could not inspect its Windows host processes.",
             format!(
                 "powershell Get-CimInstance Win32_Process returned invalid process JSON: {error}"
             ),
@@ -2688,7 +2689,7 @@ pub fn windows_processes_in(listing: &str) -> Result<Vec<WindowsProcess>, Proble
     })
 }
 
-/// Recorded OpenBot root processes whose live identity still matches the pid file.
+/// Recorded AwakenBot root processes whose live identity still matches the pid file.
 pub fn verified_openbot_root_pids(
     recorded: &[RecordedHostProcess],
     processes: &[WindowsProcess],
@@ -2705,7 +2706,7 @@ pub fn verified_openbot_root_pids(
         .collect()
 }
 
-/// Recorded OpenBot processes, or their live children, listening on one of the host ports.
+/// Recorded AwakenBot processes, or their live children, listening on one of the host ports.
 ///
 /// A pid file entry is not ownership by itself: the live process must still match the recorded
 /// executable, command line and creation time before its tree is eligible for cleanup.
@@ -3044,7 +3045,7 @@ explain a failure that has already happened, and a second failure on top of it h
 */
 /**
 This machine's IPv4 address as the engine gives it to containers: what `host.docker.internal`
-resolves to inside OpenBot's own `server` container, which `docker-compose.yml` maps to the
+resolves to inside AwakenBot's own `server` container, which `docker-compose.yml` maps to the
 engine's host gateway (or `OPENBOT_HOST_GATEWAY`). The same address the Bots reach this machine at.
 None when the server is not running or answers nothing usable. See `learning_model` for why the
 local cluster is given this rather than a name.
@@ -3101,7 +3102,7 @@ pub fn services_that_exited_among(
         .output()
         .map_err(|error| {
             crate::problem::Problem::with(
-                "OpenBot couldn't check on its own services. Try again.",
+                "AwakenBot couldn't check on its own services. Try again.",
                 format!("could not run {operation}: {error}"),
             )
         })?;
@@ -3119,7 +3120,7 @@ pub fn services_that_exited_among(
             detail.push_str(&stdout);
         }
         return Err(crate::problem::Problem::with(
-            "OpenBot couldn't check on its own services. Try again.",
+            "AwakenBot couldn't check on its own services. Try again.",
             detail,
         ));
     }
@@ -3131,7 +3132,7 @@ pub fn services_that_exited_among(
         }
         let Some((service, state)) = line.split_once('\t') else {
             return Err(crate::problem::Problem::with(
-                "OpenBot couldn't check on its own services. Try again.",
+                "AwakenBot couldn't check on its own services. Try again.",
                 format!("unusable {operation} row: {line}"),
             ));
         };
@@ -3139,7 +3140,7 @@ pub fn services_that_exited_among(
         let state = state.trim();
         if service.is_empty() || state.is_empty() {
             return Err(crate::problem::Problem::with(
-                "OpenBot couldn't check on its own services. Try again.",
+                "AwakenBot couldn't check on its own services. Try again.",
                 format!("unusable {operation} row: {line}"),
             ));
         }
@@ -3175,8 +3176,8 @@ The ports this deployment's own containers already publish.
 
 MEASURED, AND IT LEAVES A PERSON STUCK. A start that fails after `compose up` leaves the containers
 it raised running, so the next press of Start finds the harness port held and refuses with
-"something is already listening on port 4206, which OpenBot uses for the Bot you picked" — about a
-container OpenBot itself started, which the person never saw and cannot find. There is no way
+"something is already listening on port 4206, which AwakenBot uses for the Bot you picked" — about a
+container AwakenBot itself started, which the person never saw and cannot find. There is no way
 forward from that screen.
 
 Our own containers are not a conflict: `compose up` is idempotent and reuses them. The check exists
@@ -3215,13 +3216,13 @@ pub fn server_publishes(engine: &Address, root: &Path, ports: &[u16]) -> Result<
         .output()
         .map_err(|error| {
             Problem::with(
-                "OpenBot couldn't check on its own services. Try again.",
+                "AwakenBot couldn't check on its own services. Try again.",
                 format!("could not run {operation}: {error}"),
             )
         })?;
     if !output.status.success() {
         return Err(Problem::with(
-            "OpenBot couldn't check on its own services. Try again.",
+            "AwakenBot couldn't check on its own services. Try again.",
             format!("{operation}: {}", command_said(&output.stderr)),
         ));
     }
@@ -3302,7 +3303,7 @@ pub fn host_token_in(environment: &[u8]) -> Result<Option<String>, String> {
 }
 
 /**
-Restart OpenBot itself, the server and the worker, and leave everything else running.
+Restart AwakenBot itself, the server and the worker, and leave everything else running.
 
 What the Status window's Restart did to the host processes, now done by the engine that runs them:
 the database and the Bots stay up, so nothing is lost and it takes seconds. The profile is named
@@ -3316,7 +3317,7 @@ fn restart_openbot_now(engine: &Address, root: &Path) -> Result<(), String> {
     let output = compose_command(engine, root, &Secrets::new())
         .args(["--profile", OPENBOT_PROFILE, "restart", "server", "worker"])
         .output()
-        .map_err(|error| format!("could not restart OpenBot: {error}"))?;
+        .map_err(|error| format!("could not restart AwakenBot: {error}"))?;
     if output.status.success() {
         return Ok(());
     }
@@ -3330,7 +3331,7 @@ Those apps ran Compose from the deployment folder with no `-p` and the file name
 the project was the folder's own name as Compose normalises it: lower case, with everything but
 `a-z`, `0-9`, `_` and `-` dropped, then any leading `_` or `-` trimmed. `~/OpenBot` is `openbot`.
 
-ONLY A LEGACY NAME NOW, NEVER ONE TO ADOPT. A developer who runs OpenBot from a source checkout
+ONLY A LEGACY NAME NOW, NEVER ONE TO ADOPT. A developer who runs AwakenBot from a source checkout
 called `openbot` gets Compose project `openbot` too, and on such a machine an installation that
 named itself after its folder took the developer's containers and data for its own previous
 installation and refused to start over them. See `project` for the name an installation runs as.
@@ -3405,7 +3406,7 @@ computers and their volumes, provided no other folder is running that project ri
 
 When another folder is running it (a developer's checkout called `openbot`), whose data the volume
 holds cannot be told, so nothing is decided and nothing is recorded: Install stops and says so,
-and runs again once that other OpenBot is stopped. Old volumes are never deleted or renamed here.
+and runs again once that other AwakenBot is stopped. Old volumes are never deleted or renamed here.
 */
 pub fn project(engine: &Address, root: &Path) -> Result<String, Problem> {
     project_choosing(engine, root, &project_name(root))
@@ -3446,7 +3447,7 @@ pub fn project_choosing(engine: &Address, root: &Path, legacy: &str) -> Result<S
     )
     .map_err(|error| {
         Problem::with(
-            "OpenBot couldn't save which parts of OpenBot belong to this installation. Try again.",
+            "AwakenBot couldn't save which parts of AwakenBot belong to this installation. Try again.",
             error,
         )
     })?;
@@ -3455,7 +3456,7 @@ pub fn project_choosing(engine: &Address, root: &Path, legacy: &str) -> Result<S
 
 fn project_choice_problem(detail: impl Into<String>) -> Problem {
     Problem::with(
-        "OpenBot couldn't tell which parts of OpenBot belong to this installation, so it changed \
+        "AwakenBot couldn't tell which parts of AwakenBot belong to this installation, so it changed \
          nothing. Try again.",
         detail,
     )
@@ -3465,7 +3466,7 @@ fn project_choice_problem(detail: impl Into<String>) -> Problem {
 fn legacy_in_use_problem(legacy: &str, folder: &Path) -> Problem {
     Problem::with(
         format!(
-            "OpenBot found the data of your earlier installation, but another copy of OpenBot on this computer is using it right now, from {}. Stop that copy, then try again. Nothing was changed or deleted.",
+            "AwakenBot found the data of your earlier installation, but another copy of AwakenBot on this computer is using it right now, from {}. Stop that copy, then try again. Nothing was changed or deleted.",
             folder.display()
         ),
         format!(
@@ -3726,7 +3727,7 @@ pub fn port_already_taken_except(
         }
         if something_answers(*port) {
             return Some(format!(
-                "Port {port} for the {name} became unavailable. Try Start again so OpenBot can choose another local port."
+                "Port {port} for the {name} became unavailable. Try Start again so AwakenBot can choose another local port."
             ));
         }
     }
@@ -3813,7 +3814,7 @@ pub fn wait_until_healthy_saying(
     let deadline = started + patience;
     let mut waited = crate::logging::WaitLog::new(
         format!(
-            "OpenBot's services, GET /health on port {} (API) and port {} (app)",
+            "AwakenBot's services, GET /health on port {} (API) and port {} (app)",
             ready.api, ready.app
         ),
         started,
@@ -3821,7 +3822,7 @@ pub fn wait_until_healthy_saying(
     let client = reqwest::blocking::Client::builder()
         .timeout(std::time::Duration::from_secs(3))
         .build()
-        .map_err(|error| format!("could not ask OpenBot's services: {error}"))?;
+        .map_err(|error| format!("could not ask AwakenBot's services: {error}"))?;
     let mut api_up = false;
 
     while std::time::Instant::now() < deadline && keep_going() {
@@ -3921,7 +3922,7 @@ pub fn startup_problem(problem: Problem, secrets: &Secrets) -> Problem {
         detail = detail.replace(value, &format!("<{key}>"));
     }
     let mut problem = Problem::with(
-        "OpenBot could not finish starting. Try Start again, or share the details below for help.",
+        "AwakenBot could not finish starting. Try Start again, or share the details below for help.",
         detail,
     );
     problem.database_reset = database_reset;
@@ -3938,14 +3939,14 @@ pub fn startup_problem(problem: Problem, secrets: &Secrets) -> Problem {
 pub fn deployment_problem(root: &Path) -> Option<String> {
     if !root.exists() {
         return Some(format!(
-            "{} does not exist yet. OpenBot needs a copy of the deployment there before it can \
+            "{} does not exist yet. AwakenBot needs a copy of the deployment there before it can \
              start one.",
             root.display()
         ));
     }
     if !root.join("docker-compose.yml").exists() {
         return Some(format!(
-            "{} is not an OpenBot deployment: it has no docker-compose.yml.",
+            "{} is not an AwakenBot deployment: it has no docker-compose.yml.",
             root.display()
         ));
     }
@@ -4075,7 +4076,7 @@ pub fn start_runtime_database(
 /// Return the database to the dump taken before an update, whoever else is connected to it.
 ///
 /// The database is published on the host's loopback, so anything on this computer can hold
-/// sessions open to it and reconnect the moment they are cut: a developer's OpenBot server left
+/// sessions open to it and reconnect the moment they are cut: a developer's AwakenBot server left
 /// running on the host was found holding twelve. `pg_restore --clean --create` issues a plain
 /// `DROP DATABASE`, which any one of those sessions refuses. So, the standard way, and with no
 /// moment where a client could connect to half a database:
@@ -4190,7 +4191,7 @@ pub struct CarriedOver {
 Bring each person's Bots' files and browser logins from the computer the supervisor made for them
 into the one computer the personal edition shares, once.
 
-WHY. Before the personal edition, OpenBot Desktop ran a supervisor that gave each person a computer of
+WHY. Before the personal edition, AwakenBot Desktop ran a supervisor that gave each person a computer of
 their own, with two volumes: `<namespace>-workspace-person-<person>`, where each Bot's files are in
 `computers/<bot>`, and `<namespace>-profile-person-<person>`, where each Bot's browser profile, its
 logins, is `<bot>`. The personal edition runs no supervisor: every Bot is on the Compose
@@ -6583,7 +6584,7 @@ fn main() {
         }
         let refusals: usize = std::fs::read_to_string(".fixture-refusals").unwrap().trim().parse().unwrap();
         if tries <= refusals {
-            let said = format!("Error response from daemon: invalid mount config for type \"bind\": stat /host_mnt{home}/OpenBot/.openbot: operation not permitted");
+            let said = format!("Error response from daemon: invalid mount config for type \"bind\": stat /host_mnt{home}/AwakenBot/.openbot: operation not permitted");
             eprint!(" Network openbot-desktop_default Creating \n Network openbot-desktop_default Created \n Container openbot-desktop-postgres-1 Created \n Container openbot-desktop-migrate-1 Created \n Container openbot-desktop-server-1 Creating \n Container openbot-desktop-server-1 {said} \n{said}\n");
             std::process::exit(1);
         }
@@ -6952,7 +6953,7 @@ fn main() {
 
         assert_eq!(
             problem.said,
-            "OpenBot couldn't check on its own services. Try again."
+            "AwakenBot couldn't check on its own services. Try again."
         );
         assert!(
             problem
@@ -6981,7 +6982,7 @@ fn main() {
 
         assert_eq!(
             problem.said,
-            "OpenBot couldn't check on its own services. Try again."
+            "AwakenBot couldn't check on its own services. Try again."
         );
         let detail = problem.detail.as_deref().unwrap_or_default();
         assert!(
@@ -7047,7 +7048,7 @@ fn main() {
 
             assert_eq!(
                 problem.said,
-                "OpenBot couldn't check on its own services. Try again."
+                "AwakenBot couldn't check on its own services. Try again."
             );
             assert!(
                 problem
@@ -7098,7 +7099,7 @@ fn main() {
             attempted.push(pid);
             if pid == 9000 {
                 Err(Problem::with(
-                    "OpenBot could not inspect or stop its host processes.",
+                    "AwakenBot could not inspect or stop its host processes.",
                     format!("taskkill /PID {pid} /T /F exited with status 5"),
                 ))
             } else {
@@ -7110,7 +7111,7 @@ fn main() {
         assert_eq!(attempted, vec![9000, 9001]);
         assert_eq!(
             problem.said,
-            "OpenBot could not inspect or stop its host processes."
+            "AwakenBot could not inspect or stop its host processes."
         );
         assert!(
             problem
@@ -8439,7 +8440,7 @@ fn main() {
     #[test]
     fn a_space_inside_the_path_is_part_of_the_path() {
         // Only the ends. "Documents and Settings" is a directory, and a person whose home has a
-        // space in it must still be able to say where OpenBot lives.
+        // space in it must still be able to say where AwakenBot lives.
         assert_eq!(
             root_from("/home/me/My Files/OpenBot"),
             PathBuf::from("/home/me/My Files/OpenBot")
@@ -8479,7 +8480,7 @@ fn main() {
     }
 
     /// Stop has to name both profiles, or what sits behind them keeps running: the one Bot the
-    /// person picked, and OpenBot's own server and worker.
+    /// person picked, and AwakenBot's own server and worker.
     #[test]
     fn stopping_names_the_harness_and_openbot_profiles() {
         let source = include_str!("stack.rs");
@@ -8750,7 +8751,7 @@ fn main() {
         )
         .unwrap();
         assert_eq!(command.get_args().collect::<Vec<_>>(), ["compose"]);
-        // An opted-out person is never kept from starting by an optional probe either: OpenBot
+        // An opted-out person is never kept from starting by an optional probe either: AwakenBot
         // starts as Compose finds it, with no desktop identity handed to the server.
         let command = compose_start_command(
             &Address::new(crate::engine::Engine::Docker, None),
@@ -8784,7 +8785,7 @@ fn main() {
             ]
         );
         std::fs::remove_dir(root.join(DESKTOP_TELEMETRY_FILE)).unwrap();
-        // And when the opt-out override itself cannot be written, OpenBot still starts.
+        // And when the opt-out override itself cannot be written, AwakenBot still starts.
         std::fs::remove_file(root.join(DESKTOP_TELEMETRY_DISABLED_FILE)).ok();
         std::fs::create_dir(root.join(DESKTOP_TELEMETRY_DISABLED_FILE)).unwrap();
         assert!(compose_start_command(
@@ -9080,8 +9081,8 @@ fn main() {
     }
 
     /**
-    OpenBot Desktop 1.0.0's first Start on a Mac with Docker Desktop: `up` was refused with
-    `invalid mount config for type "bind": stat /host_mnt/Users/<name>/OpenBot/.openbot: operation
+    AwakenBot Desktop 1.0.0's first Start on a Mac with Docker Desktop: `up` was refused with
+    `invalid mount config for type "bind": stat /host_mnt/Users/<name>/AwakenBot/.openbot: operation
     not permitted` for the sign-in folder made a moment before, and the person was told "Something
     went wrong". Seconds later the same mount worked. Start now waits and tries again on exactly
     that refusal, and on nothing else.
@@ -9128,7 +9129,7 @@ fn main() {
                 .detail
                 .as_deref()
                 .unwrap()
-                .contains("/OpenBot/.openbot: operation not permitted"),
+                .contains("/AwakenBot/.openbot: operation not permitted"),
             "{problem:?}"
         );
 
@@ -9144,8 +9145,8 @@ fn main() {
         assert!(problem.detail.unwrap().contains("is already in use"));
     }
 
-    /// Docker Desktop's words from OpenBot Desktop 1.0.2-rc.1 on a Mac, after `~/OpenBot` went to
-    /// the Trash and OpenBot was installed again, with the person's name in place of theirs.
+    /// Docker Desktop's words from AwakenBot Desktop 1.0.2-rc.1 on a Mac, after `~/OpenBot` went to
+    /// the Trash and AwakenBot was installed again, with the person's name in place of theirs.
     const STALE_SHARE_SAID: &str = " Container openbot-desktop-server-1 Creating \n Container openbot-desktop-server-1 Error response from daemon: invalid mount config for type \"bind\": stat /host_mnt/Users/person/OpenBot/.openbot: operation not permitted \nError response from daemon: invalid mount config for type \"bind\": stat /host_mnt/Users/person/OpenBot/.openbot: operation not permitted";
 
     #[test]
@@ -9155,7 +9156,7 @@ fn main() {
             refused_folder_in(STALE_SHARE_SAID, Path::new("/Users/person/OpenBot")),
             Some(PathBuf::from("/Users/person/OpenBot/.openbot"))
         );
-        // Another installation's folder, or somebody else's, is not OpenBot's to touch.
+        // Another installation's folder, or somebody else's, is not AwakenBot's to touch.
         assert_eq!(
             refused_folder_in(STALE_SHARE_SAID, Path::new("/Users/person/OpenBot-work")),
             None
@@ -9182,8 +9183,8 @@ fn main() {
     }
 
     /**
-    OpenBot Desktop 1.0.2-rc.1 on a Mac with Docker Desktop: `~/OpenBot` went to the Trash and
-    OpenBot was installed again. Docker Desktop's file sharing still pointed at the old folder, so
+    AwakenBot Desktop 1.0.2-rc.1 on a Mac with Docker Desktop: `~/OpenBot` went to the Trash and
+    AwakenBot was installed again. Docker Desktop's file sharing still pointed at the old folder, so
     every `up` was refused for the new sign-in folder, Retry and relaunching repeated it, and the
     person read "Something went wrong". One read of the folder's parent through a container made
     Docker Desktop look again. Start now does that read itself, with an image already there, and
@@ -9792,7 +9793,7 @@ fn main() {
             result.unwrap_err(),
             format!("the API is not answering on port {port}.")
         );
-        let what = format!("[wait] OpenBot's services, GET /health on port {port} (API)");
+        let what = format!("[wait] AwakenBot's services, GET /health on port {port} (API)");
         let first = &lines[0];
         assert!(first.starts_with(&what), "{lines:#?}");
         assert!(
@@ -10011,7 +10012,7 @@ fn main() {
 
     /// The upgrade every person makes: they quit the earlier app (which takes its containers
     /// down), install this one, and open it. Their database is still on the engine and has to be
-    /// the one OpenBot runs on, not a new empty one beside it.
+    /// the one AwakenBot runs on, not a new empty one beside it.
     #[test]
     fn an_upgraded_install_keeps_its_data_after_its_containers_were_taken_down() {
         if crate::test_support::isolated_process(
@@ -10067,7 +10068,7 @@ fn main() {
         assert!(
             problem
                 .said
-                .contains("another copy of OpenBot on this computer is using it"),
+                .contains("another copy of AwakenBot on this computer is using it"),
             "{}",
             problem.said
         );

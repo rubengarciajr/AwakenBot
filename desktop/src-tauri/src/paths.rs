@@ -1,9 +1,9 @@
 //! A folder as a person reads it.
 //!
 //! `std::fs::canonicalize` answers on Windows in the extended-length form,
-//! `\\?\C:\Users\Ada\OpenBot`, which every Windows API accepts and nobody types. Kept, it reached
-//! Settings as "Installed in \\?\C:\Users\Ada\OpenBot". `plain` gives the same folder back as
-//! `C:\Users\Ada\OpenBot`, and `\\?\UNC\server\share\OpenBot` as `\\server\share\OpenBot`.
+//! `\\?\C:\Users\Ada\AwakenBot`, which every Windows API accepts and nobody types. Kept, it reached
+//! Settings as "Installed in \\?\C:\Users\Ada\AwakenBot". `plain` gives the same folder back as
+//! `C:\Users\Ada\AwakenBot`, and `\\?\UNC\server\share\AwakenBot` as `\\server\share\AwakenBot`.
 //!
 //! Not the `dunce` crate, which does this for drive paths: its last release is from August 2024,
 //! and it leaves a UNC path in its extended-length form.
@@ -98,7 +98,7 @@ mod tests {
     #[test]
     fn a_name_means_itself_without_the_prefix_unless_windows_would_rewrite_it() {
         for name in [
-            "OpenBot",
+            "AwakenBot",
             "Administrator",
             "My Documents",
             ".openbot",
@@ -143,18 +143,18 @@ mod tests {
     fn plain_drops_the_extended_length_prefix_from_drive_and_unc_paths() {
         for (verbatim, expected) in [
             (
-                r"\\?\C:\Users\Administrator\OpenBot",
-                r"C:\Users\Administrator\OpenBot",
+                r"\\?\C:\Users\Administrator\AwakenBot",
+                r"C:\Users\Administrator\AwakenBot",
             ),
-            (r"\\?\c:\Users\ada\OpenBot", r"c:\Users\ada\OpenBot"),
+            (r"\\?\c:\Users\ada\AwakenBot", r"c:\Users\ada\AwakenBot"),
             (r"\\?\D:\", r"D:\"),
             (
                 r"\\?\C:\Users\RUNNER~1\AppData\Local\Temp\openbot-1",
                 r"C:\Users\RUNNER~1\AppData\Local\Temp\openbot-1",
             ),
             (
-                r"\\?\UNC\fileserver\homes\ada\OpenBot",
-                r"\\fileserver\homes\ada\OpenBot",
+                r"\\?\UNC\fileserver\homes\ada\AwakenBot",
+                r"\\fileserver\homes\ada\AwakenBot",
             ),
             (r"\\?\UNC\fileserver\homes", r"\\fileserver\homes"),
         ] {
@@ -167,23 +167,23 @@ mod tests {
     fn plain_keeps_a_path_whose_meaning_the_prefix_carries() {
         for path in [
             // Already plain.
-            r"C:\Users\Administrator\OpenBot",
+            r"C:\Users\Administrator\AwakenBot",
             r"\\fileserver\homes\ada",
             // Names Windows would rewrite or read as a device.
             r"\\?\C:\Users\ada\CON",
-            r"\\?\C:\Users\ada\nul.txt\OpenBot",
+            r"\\?\C:\Users\ada\nul.txt\AwakenBot",
             r"\\?\C:\Users\ada\trailing.",
             r"\\?\C:\Users\ada\trailing ",
             r"\\?\C:\Users\ada\a/b",
             r"\\?\C:\Users\ada\..\bob",
-            r"\\?\C:\Users\ada\.\OpenBot",
+            r"\\?\C:\Users\ada\.\AwakenBot",
             r"\\?\UNC\fileserver\CON\ada",
             // A drive without its root is that drive's current folder.
             r"\\?\C:",
             // Not a drive or a share: no plain form names them.
-            r"\\?\Volume{26a21bda-a627-11d7-9931-806e6f6e6963}\OpenBot",
-            r"\\?\GLOBALROOT\Device\HarddiskVolume1\OpenBot",
-            r"\\.\C:\OpenBot",
+            r"\\?\Volume{26a21bda-a627-11d7-9931-806e6f6e6963}\AwakenBot",
+            r"\\?\GLOBALROOT\Device\HarddiskVolume1\AwakenBot",
+            r"\\.\C:\AwakenBot",
             r"\\?\UNC\fileserver",
         ] {
             assert_eq!(plain(PathBuf::from(path)), PathBuf::from(path), "{path}");
@@ -195,8 +195,8 @@ mod tests {
     #[test]
     fn a_canonical_folder_comes_back_plain_and_still_the_same_folder() {
         let root = crate::test_support::temp_root("plain-path");
-        std::fs::create_dir_all(root.join("OpenBot")).unwrap();
-        let canonical = std::fs::canonicalize(root.join("OpenBot")).unwrap();
+        std::fs::create_dir_all(root.join("AwakenBot")).unwrap();
+        let canonical = std::fs::canonicalize(root.join("AwakenBot")).unwrap();
         let shown = plain(canonical.clone());
         assert!(
             !shown.to_string_lossy().starts_with(r"\\?\"),

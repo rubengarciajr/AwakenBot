@@ -229,7 +229,7 @@ describe("host access tools", () => {
     const text = await list.execute({});
     // The team edition: an admin chooses a Bot's folders, on Admin → Computers.
     const reason =
-      "This Bot has no folders it can read right now. Folder access ends when OpenBot stops. An admin gives a Bot a folder with Choose folder in Admin → Computers.";
+      "This Bot has no folders it can read right now. Folder access ends when AwakenBot stops. An admin gives a Bot a folder with Choose folder in Admin → Computers.";
     expect(text).toBe(`${REFUSAL_MARKER} ${reason}`);
     expect(events.at(-1)).toMatchObject({
       eventType: "computer.action_refused",
@@ -237,7 +237,7 @@ describe("host access tools", () => {
     });
   });
   /*
-   * The desktop's Deny now says "Declined in OpenBot Desktop." where it said "The local owner denied
+   * The desktop's Deny now says "Declined in AwakenBot Desktop." where it said "The local owner denied
    * this operation.", which the person read about themselves. The server reads that sentence to
    * record the refusal as the person's own, so Activity says they declined it; a sentence it did
    * not know would have recorded an ordinary refusal.
@@ -251,7 +251,7 @@ describe("host access tools", () => {
       "utf8",
     );
     const declined = source.match(/const DECLINED: &str = "([^"]+)";/)?.[1];
-    expect(declined).toBe("Declined in OpenBot Desktop.");
+    expect(declined).toBe("Declined in AwakenBot Desktop.");
     expect(DENIED_ON_DESKTOP.has(declined as string)).toBe(true);
 
     const broker = createHostAccessBroker();

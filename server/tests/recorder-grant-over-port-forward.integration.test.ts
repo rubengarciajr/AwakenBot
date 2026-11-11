@@ -1,7 +1,7 @@
-// The Recorder's capture pass on an OpenBot whose only address is a `kubectl port-forward`.
+// The Recorder's capture pass on an AwakenBot whose only address is a `kubectl port-forward`.
 //
-// The Helm chart that installs Intelligence beside OpenBot turns INTELLIGENCE_GATEWAY_PROXY on, so
-// the gateway's client socket is reached through OpenBot's own address, and a vanilla install has no
+// The Helm chart that installs Intelligence beside AwakenBot turns INTELLIGENCE_GATEWAY_PROXY on, so
+// the gateway's client socket is reached through AwakenBot's own address, and a vanilla install has no
 // public URL: the person opens it at http://127.0.0.1:<port> over a port-forward, single-user. The page
 // is told the socket as a path and resolves it against itself. The Recorder is not on the page, and
 // was handed the same path in its capture pass, which the runtime refuses as no URL at all: every
@@ -95,7 +95,7 @@ beforeAll(async () => {
 
   port = await reservePort();
   // As the chart writes it for a bundled Intelligence: in a container, single-user, the gateway
-  // carried by OpenBot, and no public URL anywhere.
+  // carried by AwakenBot, and no public URL anywhere.
   const config = loadConfig({
     DATABASE_URL: "postgres://openbot:openbot@127.0.0.1:5432/openbot",
     KEY_ENCRYPTION_KEY: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
@@ -177,7 +177,7 @@ beforeAll(async () => {
   });
 
   await initializeDevActorUser(database, true);
-  // Connected as the person connects it: a code minted on OpenBot's page, exchanged by the Recorder.
+  // Connected as the person connects it: a code minted on AwakenBot's page, exchanged by the Recorder.
   const minted = await fetch(
     `http://127.0.0.1:${port}${recorderPaths.connectCodes}`,
     {
@@ -245,7 +245,7 @@ function pass(headers: Record<string, string> = {}) {
 }
 
 describe("the Recorder's capture pass over a port-forward, with no public URL", () => {
-  test("names the gateway socket as a whole address on OpenBot, as the Recorder reached it", async () => {
+  test("names the gateway socket as a whole address on AwakenBot, as the Recorder reached it", async () => {
     const answer = await pass();
 
     expect(answer.status).toBe(200);
@@ -314,7 +314,7 @@ describe("the Recorder's capture pass over a port-forward, with no public URL", 
   });
 });
 
-describe("OpenBot's own origin, as a caller on this machine reached it", () => {
+describe("AwakenBot's own origin, as a caller on this machine reached it", () => {
   const singleUser = {
     singleUser: true,
     singleUserAccess: { thisMachineOnly: false, hosts: [] },

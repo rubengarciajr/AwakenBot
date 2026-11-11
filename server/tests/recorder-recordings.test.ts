@@ -298,8 +298,8 @@ describe("createRecordings", () => {
     ]);
   });
 
-  test("recordings are listed by when they were made, not by when OpenBot first heard of them", async () => {
-    // OpenBot Desktop, 2026-11-07: three recordings held by the Recorder reached OpenBot together minutes later, and
+  test("recordings are listed by when they were made, not by when AwakenBot first heard of them", async () => {
+    // AwakenBot Desktop, 2026-11-07: three recordings held by the Recorder reached AwakenBot together minutes later, and
     // Teach a Bot listed them 8:46, 8:49, 8:41, in the order of those late bindings.
     const at = (minute: number) =>
       `2026-11-07T04:${String(minute).padStart(2, "0")}:00.000Z`;

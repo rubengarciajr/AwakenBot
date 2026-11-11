@@ -31,7 +31,7 @@ import { testEnvironment } from "./support/environment";
  * turn would run in, the computer a live screen shows, the tool a Bot calls.
  *
  * Every refusal here was an admission on main: a page on any website could drive a single-user
- * OpenBot, anybody on the same network was its administrator, and a name pointed at 127.0.0.1 was
+ * AwakenBot, anybody on the same network was its administrator, and a name pointed at 127.0.0.1 was
  * same-origin with it.
  */
 
@@ -42,11 +42,11 @@ const APP_ORIGIN = "http://127.0.0.1:3010";
 const EXTENSION_ORIGIN = `chrome-extension://${RECORDER_EXTENSION_ID}`;
 const REBOUND = "rebind.evil.example";
 const CROSS_SITE =
-  "OpenBot only takes this from its own pages. Open OpenBot and try again there.";
+  "AwakenBot only takes this from its own pages. Open AwakenBot and try again there.";
 const WRONG_HOST =
-  "OpenBot doesn't answer at this address. Open it at localhost or 127.0.0.1 on this computer.";
+  "AwakenBot doesn't answer at this address. Open it at localhost or 127.0.0.1 on this computer.";
 const OTHER_MACHINE =
-  "This OpenBot only answers on the computer it runs on. Open it there, or set up sign-in so other people can use it.";
+  "This AwakenBot only answers on the computer it runs on. Open it there, or set up sign-in so other people can use it.";
 
 /** This machine's address on its network: a connection to it arrives from there, as another machine's would. */
 const lanAddress = Object.values(networkInterfaces())
@@ -56,7 +56,7 @@ const lanAddress = Object.values(networkInterfaces())
       entry !== undefined && !entry.internal && entry.family === "IPv4",
   )?.address;
 
-/** A single-user OpenBot with no sign-in, as `.env.example` and OpenBot Desktop run it. */
+/** A single-user AwakenBot with no sign-in, as `.env.example` and AwakenBot Desktop run it. */
 function singleUserEnvironment(overrides: Record<string, string | undefined>) {
   return testEnvironment({
     GOOGLE_OAUTH_CLIENT_ID: undefined,
@@ -435,7 +435,7 @@ describe("a page on another website", () => {
   });
 });
 
-describe("OpenBot's own callers", () => {
+describe("AwakenBot's own callers", () => {
   test("the app, through the proxy that serves it, starts a turn and reads the runtime", async () => {
     // app/serve.ts and Vite pass the browser's Host on, so a proxied call is same-origin.
     const posted = await fetch(
@@ -588,7 +588,7 @@ describe("a page whose name was pointed at this machine (DNS rebinding)", () => 
 
 describe("the app opened at an address on the network, the only one configured", () => {
   /*
-   * `OPENBOT_PUBLIC_URL` alone, as somebody making a single-user OpenBot reachable on their network
+   * `OPENBOT_PUBLIC_URL` alone, as somebody making a single-user AwakenBot reachable on their network
    * writes it. Another machine opens the app on the same host at the app's port, and the app opens its
    * sockets straight to this server's port from there, so `Origin` names the app's port and `Host` this
    * server's. The address is written out rather than read from this machine: what is asked is the
@@ -682,7 +682,7 @@ describe("the app opened at an address on the network, the only one configured",
 });
 
 describe.skipIf(!lanIsPrivate)("another machine on the network", () => {
-  test("is not the administrator of an OpenBot running on somebody's own machine", async () => {
+  test("is not the administrator of an AwakenBot running on somebody's own machine", async () => {
     const me = await overTheNetwork({ port: local.port, path: "/api/me" });
     expect(me.status).toBe(403);
     expect(JSON.parse(me.body)).toEqual({ error: OTHER_MACHINE });
@@ -770,7 +770,7 @@ describe.skipIf(!lanIsPrivate)("another machine on the network", () => {
     expect(shared.turns).toEqual(["named"]);
   });
 
-  test("is the administrator of an OpenBot in a container, where every caller comes through the engine", async () => {
+  test("is the administrator of an AwakenBot in a container, where every caller comes through the engine", async () => {
     const contained = await boot({ OPENBOT_IN_CONTAINER: "true" });
     const posted = await overTheNetwork({
       port: contained.port,

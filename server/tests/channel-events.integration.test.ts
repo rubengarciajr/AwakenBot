@@ -240,7 +240,7 @@ describe("channel activity delivery", () => {
   });
 
   /*
-   * A Bot's reply is what a browser notification shows when it lands while OpenBot is out of sight:
+   * A Bot's reply is what a browser notification shows when it lands while AwakenBot is out of sight:
    * its first line, as plain text. The roster's preview collapses every line into one, so it cannot
    * say where the first one ends.
    */

@@ -526,7 +526,7 @@ describe("a single-user install owns its Arcade project and points the verifier 
     expect(response.status).toBe(503);
     const { error } = (await response.json()) as { error: string };
     expect(error).toContain("Couldn't start connecting Gmail");
-    // The address to set by hand, since OpenBot could not set it.
+    // The address to set by hand, since AwakenBot could not set it.
     expect(error).toContain(here.verifier);
     expect(error).not.toContain("expires within fifteen minutes");
     expect(project.requests).not.toContain("POST /v1/auth/authorize");

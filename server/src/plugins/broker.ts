@@ -1049,8 +1049,8 @@ export class BrokerReturnUrlError extends BrokerRefusalError {
     const { vendor } = BROKERED_PROFILE[provider];
     super(
       address === "unbuilt"
-        ? "OpenBot has no address to bring you back to, so connecting didn't start. Nothing was asked of your account. Ask an admin to set OpenBot's address."
-        : "OpenBot's return address isn't a web address, so connecting didn't start. Nothing was asked of your account. Ask an admin to fix OpenBot's address.",
+        ? "AwakenBot has no address to bring you back to, so connecting didn't start. Nothing was asked of your account. Ask an admin to set AwakenBot's address."
+        : "AwakenBot's return address isn't a web address, so connecting didn't start. Nothing was asked of your account. Ask an admin to fix AwakenBot's address.",
     );
     this.operatorMessage =
       address === "unbuilt"

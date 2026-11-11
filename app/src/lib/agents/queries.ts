@@ -28,12 +28,12 @@ export type AgentProfile = {
    */
   builtIn: boolean;
   /**
-   * Whether it runs inside OpenBot on OpenBot's own model. Only such a Bot gets the composer's model
+   * Whether it runs inside AwakenBot on AwakenBot's own model. Only such a Bot gets the composer's model
    * picker; a Bot on its own framework picks its own model. Absent reads as no.
    */
   runsOnOpenBotModel?: boolean;
   /**
-   * Whether OpenBot gives it a key for its tools on every run, because OpenBot runs it: the harness
+   * Whether AwakenBot gives it a key for its tools on every run, because AwakenBot runs it: the harness
    * picked in setup, or the Bot in the box. It needs no key of its own. Absent reads as no.
    */
   keyFromOpenBot?: boolean;
@@ -72,7 +72,7 @@ export type AgentProfile = {
   isolationActive: boolean;
   /**
    * Why an isolated Bot is running on a shared computer instead, or null. `admin`: the owner no
-   * longer holds "Isolated Bots". `deployment`: this OpenBot cannot make a second computer.
+   * longer holds "Isolated Bots". `deployment`: this AwakenBot cannot make a second computer.
    */
   isolationOffReason: "admin" | "deployment" | null;
   /**
@@ -82,8 +82,8 @@ export type AgentProfile = {
    */
   instructions?: string | null;
   /**
-   * What runs it, by the name a person reads ("LangChain", "OpenBot"). Absent when
-   * OpenBot doesn't know, such as an agent connected by address with no framework named.
+   * What runs it, by the name a person reads ("LangChain", "AwakenBot"). Absent when
+   * AwakenBot doesn't know, such as an agent connected by address with no framework named.
    */
   framework?: string;
 };
@@ -127,7 +127,7 @@ export function agentCapabilitiesQueryOptions() {
     queryKey: agentKeys.capabilities(),
     queryFn: (): Promise<AgentCapabilities> =>
       client("/api/agents/capabilities", "capabilities", {
-        fallback: "Couldn't load what OpenBot supports.",
+        fallback: "Couldn't load what AwakenBot supports.",
       }),
     // Deployment configuration, not data: it cannot change without the server restarting.
     staleTime: Number.POSITIVE_INFINITY,

@@ -1,5 +1,5 @@
 /**
- * What a person reads for each container the Status window lists: the part of OpenBot it is, never
+ * What a person reads for each container the Status window lists: the part of AwakenBot it is, never
  * Docker's name for it. Docker's names stay in Copy diagnostics, where support needs them.
  *
  * Matched on the Compose service at the end of the name (`<project>-<service>-<n>`), because the
@@ -35,10 +35,10 @@ const BACK_END: [RegExp, string][] = [
 ];
 
 /**
- * A container OpenBot runs that the table doesn't know yet. The card it is listed under already
+ * A container AwakenBot runs that the table doesn't know yet. The card it is listed under already
  * says which side it's on.
  */
-const UNKNOWN = "OpenBot service";
+const UNKNOWN = "AwakenBot service";
 
 export function partLabel(name: string, group: PartGroup): string {
   for (const [pattern, label] of group === "bots" ? BOTS : BACK_END)

@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import logo from "@/assets/openbot-logo.png";
 
 /**
- * OpenBot's own mark, the orb the desktop app and the extension use, drawn where a navigation icon
+ * AwakenBot's own mark, the orb the desktop app and the extension use, drawn where a navigation icon
  * goes. An SVG around the picture, so every frame sizes it with the same rules it sizes its Tabler
  * icons by; `stroke` is accepted and ignored, because there is no line to draw.
  */

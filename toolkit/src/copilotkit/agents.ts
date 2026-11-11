@@ -41,7 +41,7 @@ import {
 } from "./expected-answers";
 
 /**
- * The CopilotKit agents OpenBot runs its Bots as: a built-in Bot that will not send a broken
+ * The CopilotKit agents AwakenBot runs its Bots as: a built-in Bot that will not send a broken
  * conversation, one whose tools are chosen when its run starts, a remote Bot that survives being
  * cloned, a Bot that is no longer there, and the platform client with its expected answers kept quiet.
  *
@@ -712,7 +712,7 @@ const LOCK_CONFLICT_RETRY_MAX_MS = 1_000;
  * A gateway address on `localhost` as 127.0.0.1, and any other as it is.
  *
  * The Recorder opens a plain ws:// gateway only at 127.0.0.1 or [::1], never at the name (Decision 21,
- * `isAllowedGatewayUrl` in shared/recorder-api.ts), and refused OpenBot Desktop's `ws://localhost:<port>` after
+ * `isAllowedGatewayUrl` in shared/recorder-api.ts), and refused AwakenBot Desktop's `ws://localhost:<port>` after
  * Intelligence had already minted the recording's join token. A local gateway answers on 127.0.0.1 wherever it answers
  * on localhost (Docker publishes its ports there), and the page opens it there as well as it did at the name.
  */

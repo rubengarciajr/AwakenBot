@@ -97,7 +97,7 @@ export function withBot(search: string, bot: string | undefined): string {
 }
 
 /**
- * A view's query as the personal edition's Activity asks it: without OpenBot's own working, asked of
+ * A view's query as the personal edition's Activity asks it: without AwakenBot's own working, asked of
  * the server so the page still holds a full page of rows. The export asks the same, so the file is
  * the table.
  */
@@ -131,7 +131,7 @@ function withSkillTitles(
   });
 }
 
-/** Admin's "Why?" on a row one of OpenBot's controls decided: see `what-if/why-button.tsx`. */
+/** Admin's "Why?" on a row one of AwakenBot's controls decided: see `what-if/why-button.tsx`. */
 const whyFor = (event: AuditEvent) =>
   explainable(event) ? <WhyButton event={event} /> : null;
 
@@ -199,7 +199,7 @@ export function AuditPage({
     ...auditVocabularyQueryOptions(),
     enabled: ask && vocabularyWanted,
   }).data;
-  // The stored event names and OpenBot's own working are Admin's to read; the personal edition's
+  // The stored event names and AwakenBot's own working are Admin's to read; the personal edition's
   // Activity is anybody's page. Its route has the edition loaded before this draws.
   const edition = useQuery(deploymentCapabilitiesQueryOptions()).data?.edition;
   const asked = ask ? withFilters(view, chips) : withBot(view, bot);

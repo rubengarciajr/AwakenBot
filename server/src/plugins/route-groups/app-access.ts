@@ -84,7 +84,7 @@ function unavailableSentence(
     case "composio_unconfigured":
       return `${title} can't be connected until ${BROKERED_PROFILE[provider].envVar} is set. Set it, then ${again}.`;
     case "scheme_unreadable":
-      return `${title} is turned on, but OpenBot can't read how it connects. Remove it and turn it on again under ${appsPage()}, then ${again}.`;
+      return `${title} is turned on, but AwakenBot can't read how it connects. Remove it and turn it on again under ${appsPage()}, then ${again}.`;
     case "oauth_client_missing":
       return `${title} has no OAuth client yet. Register one on its page under ${appsPage()}, then ${again}.`;
     case "token_missing":
@@ -467,7 +467,10 @@ export function mountAppAccessRoutes({
             ownerGrantsAllowed: await ownerAppsAllowed(context.var.actor.id),
           });
     if (!inspected)
-      return context.json({ error: `OpenBot has no app called ${app}.` }, 404);
+      return context.json(
+        { error: `AwakenBot has no app called ${app}.` },
+        404,
+      );
     return context.json({ app: inspected.access });
   });
 
@@ -520,7 +523,7 @@ export function mountAppAccessRoutes({
         app,
         bot: agentId,
         reason: "no_such_app",
-        error: `OpenBot has no app called ${app}.`,
+        error: `AwakenBot has no app called ${app}.`,
         status: 404,
       });
     const { access } = inspected;
@@ -700,7 +703,10 @@ export function mountAppAccessRoutes({
       ownerGrantsAllowed: await ownerAppsAllowed(context.var.actor.id),
     });
     if (!found || !(found.vouched || found.access.granted))
-      return context.json({ error: `OpenBot has no app called ${app}.` }, 404);
+      return context.json(
+        { error: `AwakenBot has no app called ${app}.` },
+        404,
+      );
     return { agentId, inspected: found };
   };
 

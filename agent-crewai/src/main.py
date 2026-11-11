@@ -5,7 +5,7 @@ integration that CrewAI's own ecosystem publishes, mounted on FastAPI, with noth
 written here. `agent-bot` and `agent-langgraph` speak AG-UI by hand because they predate the rule
 that we do not write adapters. This one imports `ag_ui_crewai` and stops.
 
-The contract with the rest of OpenBot is the same one the other Bots meet, and it is small:
+The contract with the rest of AwakenBot is the same one the other Bots meet, and it is small:
 serve AG-UI on a port, answer `/health`, and refuse anybody who does not carry the server's token.
 """
 
@@ -30,7 +30,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from litellm import acompletion
 
-# The one header OpenBot's server sends when it calls a managed Bot. Same name the TypeScript Bots
+# The one header AwakenBot's server sends when it calls a managed Bot. Same name the TypeScript Bots
 # check, because a Bot is a Bot whatever it is written in.
 TOKEN_HEADER = "x-openbot-agent-token"
 
@@ -40,7 +40,7 @@ def _expected_token() -> str:
 
 
 def _model() -> str:
-    """The provider and model OpenBot chose, in the form litellm wants.
+    """The provider and model AwakenBot chose, in the form litellm wants.
 
     `BOT_PROVIDER` and `BOT_MODEL` are set by the shell from the model screen. litellm addresses a
     model as `provider/model`, and it reads that provider's key from the environment itself, which

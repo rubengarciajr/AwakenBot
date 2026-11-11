@@ -58,9 +58,9 @@ function actionFrom(raw: string | undefined): WhatIfAction | null {
 }
 
 /**
- * "What would happen if…": an admin asks what OpenBot would do with one action. The model only reads
+ * "What would happen if…": an admin asks what AwakenBot would do with one action. The model only reads
  * the question as the action, shown as chips the admin can change; Check then asks every control in
- * the order OpenBot asks them, and says which one decides.
+ * the order AwakenBot asks them, and says which one decides.
  *
  * Under What happened in Admin, beside Audit, whose rows answer the same question about the past.
  */
@@ -109,7 +109,7 @@ function WhatIfPage() {
 
   const missing = vocabulary.data
     ? missingFrom(action, vocabulary.data)
-    : "Loading this OpenBot's Bots and apps.";
+    : "Loading this AwakenBot's Bots and apps.";
 
   const check = async () => {
     if (missing || checking) return;
@@ -126,7 +126,7 @@ function WhatIfPage() {
 
   return (
     <PageShell
-      description="Ask what OpenBot would do if a Bot took an action. Every control answers in the order OpenBot checks them, and you see which one decides."
+      description="Ask what AwakenBot would do if a Bot took an action. Every control answers in the order AwakenBot checks them, and you see which one decides."
       title="What would happen"
     >
       <form
@@ -185,7 +185,7 @@ function WhatIfPage() {
       <PageSection
         description={
           asked
-            ? "This is how OpenBot read your question. Change anything it got wrong, then check it."
+            ? "This is how AwakenBot read your question. Change anything it got wrong, then check it."
             : "Ask a question above, or set the action yourself."
         }
         title="The action"
@@ -204,7 +204,7 @@ function WhatIfPage() {
         >
           {vocabulary.isError ? (
             <p className="text-destructive text-sm" role="alert">
-              Couldn't load this OpenBot's Bots and apps. Reload the page.
+              Couldn't load this AwakenBot's Bots and apps. Reload the page.
             </p>
           ) : (
             <ActionChips
@@ -231,7 +231,7 @@ function WhatIfPage() {
 
       {checked ? (
         <PageSection
-          description="Each control, in the order OpenBot checks them."
+          description="Each control, in the order AwakenBot checks them."
           title="What happens"
         >
           <WhatIfResultView result={checked.result} />

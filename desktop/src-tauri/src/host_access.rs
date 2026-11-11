@@ -202,7 +202,7 @@ pub struct CommandPrompt {
     pub working_directory: Option<PathBuf>,
     pub command: String,
     pub writable: bool,
-    /// The member's OpenBot setting after the team cap, as the server sent it.
+    /// The member's AwakenBot setting after the team cap, as the server sent it.
     pub command_policy: CommandPolicy,
 }
 

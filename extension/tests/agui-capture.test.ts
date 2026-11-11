@@ -47,7 +47,7 @@ let runtimes: AgentRuntimeInfo[] = [];
 let calls: StepCall[] = [];
 let started: string[] = [];
 let steps: StepAssembler | null = null;
-/** The OpenBot the recording is connected to: a test recording OpenBot's own page names it. */
+/** The AwakenBot the recording is connected to: a test recording AwakenBot's own page names it. */
 let openbot = OPENBOT;
 
 const fallback: PageFallback = {
@@ -436,8 +436,8 @@ test("CopilotKit through Intelligence: each run answers with its channel, and th
   );
 });
 
-test("a recording made in OpenBot itself sees its chat's runs, as on any other site, and none of OpenBot's other calls", async () => {
-  // Run 3b of the end-to-end check, recorded again over CDP: OpenBot's chat posts connect, then run, to its own
+test("a recording made in AwakenBot itself sees its chat's runs, as on any other site, and none of AwakenBot's other calls", async () => {
+  // Run 3b of the end-to-end check, recorded again over CDP: AwakenBot's chat posts connect, then run, to its own
   // CopilotKit runtime, and joins the Thread's channel on Intelligence's socket with the credentials connect answered.
   const fixture = loadFixture("openbot-chat");
   const navigate = String(marks(fixture, "navigate")[0]?.data?.url);
@@ -474,8 +474,8 @@ test("a recording made in OpenBot itself sees its chat's runs, as on any other s
     expect.objectContaining({ kind: "end", outcome: "failed" }),
   ]);
   expect((run.body as { threadId: string }).threadId).toBe(thread);
-  // OpenBot's other calls (its router, the channel, its busy flag and activity, its polling) and its own channel socket
-  // are nothing to the agent events, and none of OpenBot's calls is ever a step's.
+  // AwakenBot's other calls (its router, the channel, its busy flag and activity, its polling) and its own channel socket
+  // are nothing to the agent events, and none of AwakenBot's calls is ever a step's.
   expect(new Set(observations.map(({ streamId }) => streamId))).toEqual(
     new Set([streamOf(connect.id), streamOf(run.id)]),
   );
@@ -483,10 +483,10 @@ test("a recording made in OpenBot itself sees its chat's runs, as on any other s
   expect(started).toEqual([]);
 });
 
-test("a recording made in OpenBot itself knows its page runs CopilotKit: its runtime answered the info call, and nothing else OpenBot answered says so", async () => {
-  // End-to-end run 3's clicks named no Thread at all: OpenBot's page asked its runtime's `info` (GET
+test("a recording made in AwakenBot itself knows its page runs CopilotKit: its runtime answered the info call, and nothing else AwakenBot answered says so", async () => {
+  // End-to-end run 3's clicks named no Thread at all: AwakenBot's page asked its runtime's `info` (GET
   // /api/copilotkit/info, answered with CopilotKit's RuntimeInfo) when it loaded and again after the run, but the capture
-  // ignored it with the rest of OpenBot's own calls.
+  // ignored it with the rest of AwakenBot's own calls.
   const fixture = loadFixture("openbot-chat");
   const navigate = String(marks(fixture, "navigate")[0]?.data?.url);
   openbot = new URL(navigate).origin;
@@ -515,9 +515,9 @@ test("a recording made in OpenBot itself knows its page runs CopilotKit: its run
   expect(started).toEqual([]);
 });
 
-test("an Intelligence gateway served on OpenBot's own origin: the channel's socket is followed, its events the run's", async () => {
-  // The traffic of the Intelligence test above, with the gateway's origin as the connected OpenBot's, as a deployment
-  // that serves Intelligence's socket on OpenBot's host has it: the sockets opened with join credentials are followed,
+test("an Intelligence gateway served on AwakenBot's own origin: the channel's socket is followed, its events the run's", async () => {
+  // The traffic of the Intelligence test above, with the gateway's origin as the connected AwakenBot's, as a deployment
+  // that serves Intelligence's socket on AwakenBot's host has it: the sockets opened with join credentials are followed,
   // and each channel's ag_ui_event payloads are still that run's events.
   const fixture = loadFixture("intelligence-websocket");
   const sockets = events(fixture, "Network.webSocketCreated").filter(

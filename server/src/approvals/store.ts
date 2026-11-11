@@ -45,7 +45,7 @@ const DEFAULT_TEAM: ApprovalTeamSettings = {
   enforceAutoReview: false,
   customRulesEnabled: true,
   hostCommandsCap: "allow",
-  // Every kind open: OpenBot opens things by default, and closing one is the admin's call.
+  // Every kind open: AwakenBot opens things by default, and closing one is the admin's call.
   actionKinds: {},
 };
 

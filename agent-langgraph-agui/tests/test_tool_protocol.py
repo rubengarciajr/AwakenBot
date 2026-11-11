@@ -269,7 +269,7 @@ async def test_only_provider_auth_status_emits_model_refresh_code(
         assert "controlled provider refusal" in errors[-1]["message"]
 
 
-# OpenAI's answer to a run offered 202 tools, captured from its API on 2026-11-07. Seen on OpenBot
+# OpenAI's answer to a run offered 202 tools, captured from its API on 2026-11-07. Seen on AwakenBot
 # Desktop as "Error code: 400 - Invalid 'tools': array too long. …" in red under the person's message.
 OPENAI_TOO_MANY_TOOLS = (
     400,
@@ -456,7 +456,7 @@ async def test_a2ui_catalog_context_reaches_model_without_entering_history(bound
 @pytest.mark.parametrize("name", ["computer_navigate", "computer_run_command", "copilotkit_load_skill", "copilotkit_read_skill_file"])
 async def test_surface_tool_calls_end_then_consume_actual_client_result(boundary, name):
     body = run_input([name])
-    body["context"] = [{"description": "OpenBot learned skills", "value": "LEARNED_CATALOG_MARKER"}]
+    body["context"] = [{"description": "AwakenBot learned skills", "value": "LEARNED_CATALOG_MARKER"}]
     first = await run_protocol(body)
     assert "LEARNED_CATALOG_MARKER" in json.dumps(boundary["model"][0]["messages"])
     assert [t["function"]["name"] for t in boundary["model"][0].get("tools", [])] == [

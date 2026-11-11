@@ -96,7 +96,7 @@ function composioHolding(
 ) {
   const config = {
     id: `ac_${toolkit}`,
-    name: `${toolkit} (OpenBot)`,
+    name: `${toolkit} (AwakenBot)`,
     status: "ENABLED",
   };
   const asked = { listed: 0, minted: [] as string[] };
@@ -286,7 +286,7 @@ afterAll(async () => {
   await database.$client.end();
 });
 
-describe("Connect, where Composio already holds this person's account and OpenBot has no row", () => {
+describe("Connect, where Composio already holds this person's account and AwakenBot has no row", () => {
   test("records the account Composio holds and answers connected, as confirm would", async () => {
     const toolkit = `github-${suite}-held`;
     await enable(toolkit, "personal");

@@ -27,7 +27,7 @@ import {
  *
  * On the Mac Desktop (main 3b400d2c1) a person wrote the skill "Pirate haiku", whose instructions
  * ended with a marker line, and picked it from the `/` menu in a fresh conversation. Both the
- * personal starter (on the LangGraph harness) and a Bot they made on OpenBot's own harness wrote a
+ * personal starter (on the LangGraph harness) and a Bot they made on AwakenBot's own harness wrote a
  * pirate haiku, guessed from the command's name, and never the marker; asked to quote the skill's
  * instructions, the starter said it had received none. The browser sent them as a system row of
  * its own, which a built-in Bot's runtime drops and every harness this deployment runs reads as
@@ -35,7 +35,7 @@ import {
  * skill this Bot holds into the instructions it writes for the run itself.
  *
  * Built through `buildAgents`, the path a person's run takes, with what reached the model read off
- * the wire (OpenBot's own harness) or off the request the endpoint was sent (a harness).
+ * the wire (AwakenBot's own harness) or off the request the endpoint was sent (a harness).
  */
 
 const MARKER = "SKILL-P1-ARRR";
@@ -121,7 +121,7 @@ describe("leadingSkillCommand", () => {
   });
 });
 
-describe("a skill picked for a Bot on OpenBot's own harness", () => {
+describe("a skill picked for a Bot on AwakenBot's own harness", () => {
   const llm = new LLMock();
   const wire: string[] = [];
   let recorder: ReturnType<typeof Bun.serve> | undefined;

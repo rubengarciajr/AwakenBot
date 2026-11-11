@@ -25,7 +25,7 @@ function readDismissed(): boolean {
 }
 
 /**
- * The home page's link to OpenBot for Business, in the personal edition only.
+ * The home page's link to AwakenBot for Business, in the personal edition only.
  *
  * Hidden until the deployment says which edition it is, so it never flashes on a team deployment.
  */
@@ -48,7 +48,7 @@ export function BusinessLink() {
         target="_blank"
       >
         <span>
-          Meet OpenBot for Business
+          Meet AwakenBot for Business
           <Trademark />
         </span>
       </a>

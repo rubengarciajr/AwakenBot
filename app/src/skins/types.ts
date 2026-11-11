@@ -18,9 +18,9 @@ export type Skin = {
   /** One line for the picker. */
   description: string;
   /**
-   * Replaces OpenBot's sidebar frame around every page under `/_authed/_app`. It must render
+   * Replaces AwakenBot's sidebar frame around every page under `/_authed/_app`. It must render
    * `children` (the page) and must give the person a way to reach Settings, so a skin can always
-   * be switched back. Absent, the page keeps OpenBot's own frame.
+   * be switched back. Absent, the page keeps AwakenBot's own frame.
    */
   Frame?: ComponentType<{ children: ReactNode }>;
   /**
@@ -29,7 +29,7 @@ export type Skin = {
    */
   botLook?: "orb" | "face";
   /**
-   * Screens only this skin has, served at `/s/<key>`. They draw OpenBot's existing data; a skin
+   * Screens only this skin has, served at `/s/<key>`. They draw AwakenBot's existing data; a skin
    * adds no endpoint. A key the active skin does not have goes home.
    */
   screens?: Record<string, ComponentType>;

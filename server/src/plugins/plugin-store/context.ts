@@ -69,19 +69,19 @@ import {
 function entraRefusal(reason: EntraRefusal, title: string): string {
   switch (reason) {
     case "not-admitted":
-      return `You no longer have access to OpenBot, so ${title} wasn't used.`;
+      return `You no longer have access to AwakenBot, so ${title} wasn't used.`;
     case "no-sign-in":
-      return `${title} uses your Microsoft account, and OpenBot doesn't have your Microsoft sign-in. Sign in to OpenBot with Microsoft in the browser once, then ask again.`;
+      return `${title} uses your Microsoft account, and AwakenBot doesn't have your Microsoft sign-in. Sign in to AwakenBot with Microsoft in the browser once, then ask again.`;
     case "sign-in-expired":
       return `Your Microsoft sign-in has expired, so ${title} wasn't used. Sign in with Microsoft again and ask again.`;
     case "no-consent":
-      return `An admin hasn't given OpenBot access to ${title} in Microsoft Entra. Ask an admin to grant it.`;
+      return `An admin hasn't given AwakenBot access to ${title} in Microsoft Entra. Ask an admin to grant it.`;
     case "no-api-consent":
-      return `OpenBot doesn't have consent for its own API in Microsoft Entra, so it can't reach ${title} as you. Ask an admin to grant it.`;
+      return `AwakenBot doesn't have consent for its own API in Microsoft Entra, so it can't reach ${title} as you. Ask an admin to grant it.`;
     case "no-api":
-      return `OpenBot isn't set up in Microsoft Entra to reach ${title} as you. Ask an admin to expose OpenBot's API there.`;
+      return `AwakenBot isn't set up in Microsoft Entra to reach ${title} as you. Ask an admin to expose AwakenBot's API there.`;
     case "refused":
-      return `Microsoft wouldn't let OpenBot reach ${title} as you. Try again, or ask an admin if it keeps happening.`;
+      return `Microsoft wouldn't let AwakenBot reach ${title} as you. Try again, or ask an admin if it keeps happening.`;
   }
 }
 
@@ -318,7 +318,7 @@ export function createStoreContext(options: PluginStoreOptions) {
       .limit(1);
     if (!dialled)
       return {
-        refusal: `OpenBot has no app called ${serverId}.`,
+        refusal: `AwakenBot has no app called ${serverId}.`,
       };
     /*
      * THE NAME IS THE DIALLED ROW'S; THE ACCOUNT IS THE APP'S.
@@ -345,7 +345,7 @@ export function createStoreContext(options: PluginStoreOptions) {
     const app = toolkit ? await brokeredAppRow(toolkit) : null;
     if (toolkit && !app)
       return {
-        refusal: `OpenBot has no app called ${serverId}.`,
+        refusal: `AwakenBot has no app called ${serverId}.`,
       };
     const row = app
       ? {
@@ -1765,7 +1765,7 @@ export function createStoreContext(options: PluginStoreOptions) {
     if (!existing) return;
     if (accessFor(existing, null).credential !== "brokered") return;
     throw new CustomServerRefusedError(
-      `${serverId} is an app people connect through OpenBot, and people may have connected their accounts to it. Remove the app first, which ends those accounts, and the name is then free.`,
+      `${serverId} is an app people connect through AwakenBot, and people may have connected their accounts to it. Remove the app first, which ends those accounts, and the name is then free.`,
     );
   }
 

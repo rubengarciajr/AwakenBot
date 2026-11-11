@@ -29,7 +29,7 @@ import { createWorkQueue } from "../../server/src/work/queue";
 import { loadWorkerEnv, routineRunUrl } from "./env";
 import { workerStatus } from "./status";
 
-console.info(`OpenBot worker status: ${workerStatus().status}`);
+console.info(`AwakenBot worker status: ${workerStatus().status}`);
 
 /*
  * The worker's three settings, parsed and validated in one place (`./env`).

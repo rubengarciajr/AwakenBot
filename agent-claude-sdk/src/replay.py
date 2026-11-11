@@ -1,6 +1,6 @@
 """Every new SDK query answers from the thread the server sent, never from this process's memory.
 
-OpenBot restores a thread from Intelligence and sends all of it in `input.messages`, on every run.
+AwakenBot restores a thread from Intelligence and sends all of it in `input.messages`, on every run.
 Upstream `ag-ui-claude-sdk` reads only `messages[-1]` and keeps the rest in a long-lived worker per
 thread, so a restart, or the 30-minute idle eviction, leaves the Bot answering the newest message
 alone. The worker also builds its options once, so context and grants changed after the first run
@@ -65,7 +65,7 @@ IMAGE_TOKENS = 4_784
 # `fit_to_budget`. Enough for the head of a listing or a document and the ids in it.
 OLD_RESULT_CHARS = 4_000
 # The most of one tool result a model is shown, in characters: what Claude Code keeps inline for one
-# of OpenBot's tools (`INLINE_RESULT_CHARS` in the adapter). In a running query Claude Code saves a
+# of AwakenBot's tools (`INLINE_RESULT_CHARS` in the adapter). In a running query Claude Code saves a
 # larger result to a file and shows a preview; a replay is one prompt, and a result in it was sent
 # whole, however large. One larger than the model's window refused the turn as too long.
 RESULT_CHARS = 100_000

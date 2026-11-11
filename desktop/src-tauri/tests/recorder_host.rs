@@ -1,4 +1,4 @@
-//! OpenBot Desktop's binary run the way its callers run it: `--install-recorder-host` as the app's setup
+//! AwakenBot Desktop's binary run the way its callers run it: `--install-recorder-host` as the app's setup
 //! and a person would, and the native messaging host as Chrome starts it.
 use serde_json::{json, Value};
 use std::io::{BufRead, BufReader, ErrorKind, Read, Write};
@@ -465,7 +465,7 @@ fn http(status: &str, headers: &str, body: &str) -> String {
 
 const MINTED: &str = r#"{"code":"obc_fixture","expiresAt":"2026-10-18T12:00:00.000Z"}"#;
 
-// A debug binary lets a test point the host at an OpenBot it started itself. A release binary has no
+// A debug binary lets a test point the host at an AwakenBot it started itself. A release binary has no
 // such seam: CI runs this file with `--release` on Windows, where the same variable changes nothing.
 #[test]
 fn the_test_app_address_reaches_only_a_debug_binary() {

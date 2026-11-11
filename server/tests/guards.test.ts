@@ -17,7 +17,7 @@ const noSessionAuth = {
 function authenticatedAs(
   userId: string,
   email = "member@openbot.test",
-  name = "OpenBot Member",
+  name = "AwakenBot Member",
   image = "https://example.test/member.png",
 ) {
   return {
@@ -67,7 +67,7 @@ describe("server authorization", () => {
       user: {
         id: "member",
         email: "member@openbot.test",
-        name: "OpenBot Member",
+        name: "AwakenBot Member",
         image: "https://example.test/member.png",
         role: "user",
         // No store was passed, so this deployment tracks no onboarding and the app gates nobody.

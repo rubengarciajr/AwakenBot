@@ -46,7 +46,7 @@ test("a step whose outcome is unknown says so without telling the person what th
   const sent =
     "This action was started but its outcome is unknown. It was not repeated. Check whether it happened before asking the person again.";
   expect(outcomeForPerson(sent)).toBe(
-    "It started, but OpenBot can't tell whether it finished. It wasn't run again.",
+    "It started, but AwakenBot can't tell whether it finished. It wasn't run again.",
   );
   expect(sent).toBe(OUTCOME_UNKNOWN);
 });

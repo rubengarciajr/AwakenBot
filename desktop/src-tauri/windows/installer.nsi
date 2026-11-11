@@ -1,14 +1,14 @@
-; >>> OpenBot
-; OpenBot Desktop's Windows installer: bundle.windows.nsis.template in tauri.conf.json.
+; >>> AwakenBot
+; AwakenBot Desktop's Windows installer: bundle.windows.nsis.template in tauri.conf.json.
 ; https://v2.tauri.app/distribute/windows-installer/
 ;
 ; This is Tauri's own template from tauri-cli v2.11.4
-; (crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi), with OpenBot's lines added between
+; (crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi), with AwakenBot's lines added between
 ; these markers and nothing else changed. desktop/scripts/installer-update.test.ts checks that the
 ; rest is Tauri's file as it was, and holds it to the Tauri CLI in desktop/bun.lock: a CLI upgrade
-; fails that test until this file is copied again and OpenBot's lines put back.
+; fails that test until this file is copied again and AwakenBot's lines put back.
 ;
-; What OpenBot adds: running a new installer over an installed OpenBot showed "Already Installed"
+; What AwakenBot adds: running a new installer over an installed AwakenBot showed "Already Installed"
 ; with "Uninstall before installing" chosen, and leaving that page ran the old version's uninstaller
 ; as it was. Its window opened in the middle of the update, with a "Delete the application data"
 ; box, and one wrong tick deleted the person's Bots and conversations. Now the page only notes the
@@ -20,10 +20,10 @@
 ; what it runs. Uninstalling from Windows' Apps runs the uninstaller on its own and is unchanged, so
 ; the person can still delete the data there.
 ;
-; And every OpenBot this installer starts, after an in-app update and from the last page, is started
+; And every AwakenBot this installer starts, after an in-app update and from the last page, is started
 ; by OPENBOT_RUN_AFTER_INSTALL (windows/hooks.nsh), so it comes to the front as its window first
 ; shows rather than behind the window Windows put in front when the old version closed.
-; <<< OpenBot
+; <<< AwakenBot
 Unicode true
 ManifestDPIAware true
 ; Add in `dpiAwareness` `PerMonitorV2` to manifest for Windows 10 1607+ (note this should not affect lower versions since they should be able to ignore this and pick up `dpiAware` `true` set by `ManifestDPIAware true`)
@@ -334,10 +334,10 @@ Function PageReinstallUpdateSelection
   ${EndIf}
 FunctionEnd
 Function PageLeaveReinstall
-  ; >>> OpenBot
+  ; >>> AwakenBot
   ; A choice made on an earlier visit to this page never carries over.
   StrCpy $OpenBotUninstallFirst 0
-  ; <<< OpenBot
+  ; <<< AwakenBot
   ${NSD_GetState} $R2 $R1
 
   ; If migrating from Wix, always uninstall
@@ -375,17 +375,17 @@ Function PageLeaveReinstall
   ${EndIf}
 
   reinst_uninstall:
-    ; >>> OpenBot
-    ; An NSIS install (any of OpenBot's) is uninstalled on the Installing page instead, with this
+    ; >>> AwakenBot
+    ; An NSIS install (any of AwakenBot's) is uninstalled on the Installing page instead, with this
     ; installer's window on screen (NSIS_HOOK_PREINSTALL in windows/hooks.nsh). Here it would run
-    ; with the window hidden. A running OpenBot is asked about and closed now. WiX goes on as
+    ; with the window hidden. A running AwakenBot is asked about and closed now. WiX goes on as
     ; Tauri runs it.
     ${If} $WixMode <> 1
       !insertmacro OPENBOT_BEFORE_OLD_UNINSTALLER
       StrCpy $OpenBotUninstallFirst 1
       Goto reinst_done
     ${EndIf}
-    ; <<< OpenBot
+    ; <<< AwakenBot
     HideWindow
     ClearErrors
 
@@ -458,12 +458,12 @@ Var AppStartMenuFolder
 !insertmacro MUI_PAGE_FINISH
 
 Function RunMainBinary
-  ; >>> OpenBot
-  ; Started as every OpenBot the installer starts: free to come to the front, and told the
+  ; >>> AwakenBot
+  ; Started as every AwakenBot the installer starts: free to come to the front, and told the
   ; installer started it (OPENBOT_RUN_AFTER_INSTALL in windows/hooks.nsh).
   !insertmacro OPENBOT_RUN_AFTER_INSTALL ""
   Return
-  ; <<< OpenBot
+  ; <<< AwakenBot
   nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" ""
 FunctionEnd
 
@@ -795,13 +795,13 @@ Function .onInstSuccess
     ${GetOptions} $CMDLINE "/R" $R0
     ${IfNot} ${Errors}
       ${GetOptions} $CMDLINE "/ARGS" $R0
-      ; >>> OpenBot
+      ; >>> AwakenBot
       ; After an in-app update: the new version, free to come to the front, and told the installer
       ; started it (OPENBOT_RUN_AFTER_INSTALL in windows/hooks.nsh), with the arguments the updater
       ; handed on.
       !insertmacro OPENBOT_RUN_AFTER_INSTALL "$R0"
       Return
-      ; <<< OpenBot
+      ; <<< AwakenBot
       nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" "$R0"
     ${EndIf}
   ${EndIf}

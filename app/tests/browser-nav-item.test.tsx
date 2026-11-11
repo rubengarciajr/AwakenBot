@@ -112,7 +112,7 @@ function receipt(phase: LauncherState["phase"]): RecorderActivity {
   };
 }
 
-/** The Recorder in the open OpenBot browser at `phase`: its own report, and the `activity` the server makes of it. */
+/** The Recorder in the open AwakenBot browser at `phase`: its own report, and the `activity` the server makes of it. */
 function recording(
   phase: LauncherState["phase"],
   shows: BrowserWindow = "native",
@@ -242,7 +242,7 @@ for (const shows of ["native", "screen", undefined] as const) {
   });
 }
 
-test("the sidebar has no Teach a Bot link where OpenBot cannot run a browser, or cannot say", async () => {
+test("the sidebar has no Teach a Bot link where AwakenBot cannot run a browser, or cannot say", async () => {
   state = {
     available: false,
     computerId: PERSON_BROWSER,
@@ -278,7 +278,7 @@ for (const shows of ["native", "screen"] as const) {
     await view.findByRole("link", { name: "Teach a Bot" });
     expect(dots(view)).toEqual([]);
 
-    // Record, pressed in the Recorder's own toolbar button: the only place OpenBot hears of it is the state it reads.
+    // Record, pressed in the Recorder's own toolbar button: the only place AwakenBot hears of it is the state it reads.
     const asked = reads();
     state = recording("recording", shows);
     const dot = await view.findByRole(
@@ -339,8 +339,8 @@ test("the red dot shows while a recording starts as well, and its tooltip names 
   );
 });
 
-test("a recording in the person's everyday browser puts the red dot on Teach a Bot with no OpenBot browser open, and Stop there takes it away", async () => {
-  // Nothing of OpenBot's own is open: the server's `activity` is the one thing saying a Recorder records.
+test("a recording in the person's everyday browser puts the red dot on Teach a Bot with no AwakenBot browser open, and Stop there takes it away", async () => {
+  // Nothing of AwakenBot's own is open: the server's `activity` is the one thing saying a Recorder records.
   state = { ...closedState("native"), activity: receipt("recording") };
   const { view } = draw();
   const dot = await view.findByRole("img", {
@@ -354,8 +354,8 @@ test("a recording in the person's everyday browser puts the red dot on Teach a B
   await waitFor(() => expect(dots(view)).toEqual([]), { timeout: 2000 });
 });
 
-test("the dot is the server's activity, not the OpenBot browser's own report: one that records nothing lights nothing", async () => {
-  // The server folds the OpenBot browser's Recorder into `activity` itself (server/src/browser/routes.ts); the sidebar
+test("the dot is the server's activity, not the AwakenBot browser's own report: one that records nothing lights nothing", async () => {
+  // The server folds the AwakenBot browser's Recorder into `activity` itself (server/src/browser/routes.ts); the sidebar
   // reads that alone, so one rule decides the dot wherever the person records.
   const { activity: _folded, ...unfolded } = recording("recording");
   state = unfolded;

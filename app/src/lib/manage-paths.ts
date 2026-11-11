@@ -48,11 +48,11 @@ export function managePaths(edition: "team" | "personal") {
       auditLabel: "Activity",
       audit: () => linkOptions({ to: "/settings/activity" }),
       /*
-       * What a sentence calls the product itself. The person running OpenBot alone reads its name;
+       * What a sentence calls the product itself. The person running AwakenBot alone reads its name;
        * an admin reads "this deployment", the exact word Admin is allowed (see `openbot-copy`).
        * Mid-sentence; `atStart` capitalises it where it opens one.
        */
-      deploymentName: "OpenBot",
+      deploymentName: "AwakenBot",
       /** Which edition these paths are for, for the sentences that differ beyond a name. */
       edition: "personal" as const,
     };
@@ -91,7 +91,7 @@ export function managePaths(edition: "team" | "personal") {
   };
 }
 
-/** A name from these paths at the start of a sentence: "This deployment", and "OpenBot" as it is. */
+/** A name from these paths at the start of a sentence: "This deployment", and "AwakenBot" as it is. */
 export function atStart(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }

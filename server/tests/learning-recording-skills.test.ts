@@ -19,8 +19,8 @@ import {
 
 /*
  * Teach a Bot, once a recording saves: which skills Learning proposed from that recording, and why Learning can't run
- * when OpenBot Desktop could give it no model. The person's routes are built directly over a fake Intelligence holding
- * their recordings space; nothing here reads OpenBot's database.
+ * when AwakenBot Desktop could give it no model. The person's routes are built directly over a fake Intelligence holding
+ * their recordings space; nothing here reads AwakenBot's database.
  */
 
 const ada = "recording-skills-ada";
@@ -162,9 +162,9 @@ describe("the skills learned from one recording", () => {
   });
 });
 
-describe("Learning with no model on OpenBot Desktop", () => {
+describe("Learning with no model on AwakenBot Desktop", () => {
   const unsupported =
-    "Learning can't run on the model you signed in with. To use it, sign OpenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan.";
+    "Learning can't run on the model you signed in with. To use it, sign AwakenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan.";
 
   test("the person's review says why Learning can't run, before anyone presses Learn now", async () => {
     const { app } = routes({ modelUnavailable: "unsupported" });

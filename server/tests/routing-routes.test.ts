@@ -40,7 +40,7 @@ const ROSTER = [
   },
   {
     id: "picked-harness",
-    name: "OpenBot",
+    name: "AwakenBot",
     roleDescription: "the package-selected harness",
     visibility: "public",
   },
@@ -173,7 +173,7 @@ describe("choosing the default route target", () => {
         }),
         profile({
           id: "picked-harness",
-          name: "OpenBot",
+          name: "AwakenBot",
           roleDescription: "the package-selected harness",
           visibility: "public",
         }),

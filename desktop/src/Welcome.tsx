@@ -6,14 +6,14 @@ import {
 } from "./EarlyDownloads";
 import { ExternalLink } from "./ExternalLink";
 
-/** OpenBot's one booking link. */
+/** AwakenBot's one booking link. */
 export const BOOK_A_DEMO = "https://open.bot/business";
 
 /**
- * What OpenBot is, before it asks for anything.
+ * What AwakenBot is, before it asks for anything.
  *
- * Three short paragraphs, in this order: what this OpenBot is (self-contained, all on this
- * computer, its backend too), how long setup takes, and where OpenBot for Business runs, with the
+ * Three short paragraphs, in this order: what this AwakenBot is (self-contained, all on this
+ * computer, its backend too), how long setup takes, and where AwakenBot for Business runs, with the
  * one booking link. Usage data is not said here: it is the last screen's choice
  * (`UsageDataChoice`).
  *
@@ -21,8 +21,8 @@ export const BOOK_A_DEMO = "https://open.bot/business";
  * far they are (`EarlyDownloadsLine`). Once they are done it says nothing: Install is the next step
  * either way.
  *
- * On a disk too full for OpenBot, Install waits with the line that says so, and is there once the
- * download starts by itself. On Windows F it was pressable at 15 GB free: it built OpenBot's machine,
+ * On a disk too full for AwakenBot, Install waits with the line that says so, and is there once the
+ * download starts by itself. On Windows F it was pressable at 15 GB free: it built AwakenBot's machine,
  * then the next step stopped for space, with less free than before. An Install pressed before the
  * downloads have looked at the disk asks them first (`earlyDownloadsMeasured`).
  */
@@ -49,24 +49,24 @@ export function Welcome({
       <div className="lockup">
         <div className="orb" aria-hidden="true" />
         <span>
-          OpenBot
+          AwakenBot
           <sup className="trademark" aria-hidden="true">
             ™
           </sup>
         </span>
       </div>
-      <h1>Set up OpenBot (self-contained)</h1>
+      <h1>Set up AwakenBot (self-contained)</h1>
       <p className="lede big">
-        This version of OpenBot is fully self-contained and runs entirely on
-        your computer, including the OpenBot backend.
+        This version of AwakenBot is fully self-contained and runs entirely on
+        your computer, including the AwakenBot backend.
       </p>
       <p className="lede big">
         Depending on your internet speed, setup can take between 1 and 10
         minutes.
       </p>
       <p className="lede big">
-        In production, <strong>OpenBot for Business</strong> runs on your own
-        infrastructure with Kubernetes, or on OpenBot Cloud.{" "}
+        In production, <strong>AwakenBot for Business</strong> runs on your own
+        infrastructure with Kubernetes, or on AwakenBot Cloud.{" "}
         <ExternalLink href={BOOK_A_DEMO}>Book a demo</ExternalLink> for early
         access.
       </p>

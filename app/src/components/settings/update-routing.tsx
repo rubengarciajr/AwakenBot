@@ -33,7 +33,7 @@ import { queryClient } from "@/query-client";
 
 /**
  * How each channel is turned on: Slack and Teams through an OpenTag pairing, text messages through Twilio, push through
- * the OpenBot phone app. Each is a setting where OpenBot runs, read at start-up, so the docs say what to set; the two
+ * the AwakenBot phone app. Each is a setting where AwakenBot runs, read at start-up, so the docs say what to set; the two
  * sections sit together there. The setup checklist links the same page for Slack and Teams.
  */
 export const CHANNEL_SETUP_DOCS =
@@ -75,7 +75,7 @@ export function UpdateRoutingSection() {
   const reach = useQuery(deliveryQueryOptions());
   const save = useMutation(setUpdateRoutingMutationOptions(queryClient));
   /*
-   * Who can turn a channel on: an admin, or the one person running OpenBot themselves (the same rule as Settings,
+   * Who can turn a channel on: an admin, or the one person running AwakenBot themselves (the same rule as Settings,
    * Setup). They get the way to; anyone else is told it's their admin's to do.
    */
   const user = useQuery(currentUserQueryOptions());
@@ -102,7 +102,7 @@ export function UpdateRoutingSection() {
     !routing.error &&
     shown.length > 0;
   /*
-   * OpenBot Desktop runs OpenBot on this computer, and every one of these channels needs OpenBot where the internet can
+   * AwakenBot Desktop runs AwakenBot on this computer, and every one of these channels needs AwakenBot where the internet can
    * reach it (a phone, OpenTag, Twilio calling it). Its settings are the Desktop's own, so it gets no link to them.
    */
   const desktop = desktopShell() !== null;
@@ -138,12 +138,12 @@ export function UpdateRoutingSection() {
             ) : undefined
           }
           icon={IconRoute}
-          title="Updates stay in OpenBot"
+          title="Updates stay in AwakenBot"
         >
           {desktop
-            ? "Push, Slack, Microsoft Teams and text messages need OpenBot running on a server."
+            ? "Push, Slack, Microsoft Teams and text messages need AwakenBot running on a server."
             : setsUp
-              ? "Push, Slack, Microsoft Teams and text messages show up here once they're set up where OpenBot runs."
+              ? "Push, Slack, Microsoft Teams and text messages show up here once they're set up where AwakenBot runs."
               : "Push, Slack, Microsoft Teams and text messages show up here once your admin sets them up."}
         </PageEmpty>
       ) : (

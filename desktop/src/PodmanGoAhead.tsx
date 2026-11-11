@@ -11,7 +11,7 @@ export const PASSWORD_AGAIN = "Your password is needed";
  *
  * Never a gate before the prompt. #1385 put Continue there, and the product's call for 1.0.1 was
  * that an install step informs the person and moves forward: the step says "Your Mac will ask for
- * your password so OpenBot can install what it needs to run.", leaves it a moment to be read, and
+ * your password so AwakenBot can install what it needs to run.", leaves it a moment to be read, and
  * the prompt comes up by itself. This card is only for a prompt that was closed.
  *
  * Give it `key={asking}`: asked again after the prompt was closed again, Try again works again.
@@ -60,11 +60,11 @@ export function PodmanGoAhead({
 }
 
 /** The heading over the offer to pause the person's own Podman. */
-export const OWN_PODMAN = "OpenBot needs its own Podman";
+export const OWN_PODMAN = "AwakenBot needs its own Podman";
 
 /**
- * On a Mac whose own Podman machine OpenBot can't use: what OpenBot will do, and the button that
- * says yes. A Mac runs one Podman machine at a time, so OpenBot's own starts only once the
+ * On a Mac whose own Podman machine AwakenBot can't use: what AwakenBot will do, and the button that
+ * says yes. A Mac runs one Podman machine at a time, so AwakenBot's own starts only once the
  * person's is paused, and pausing it is their choice. Nothing is paused until they choose it, and
  * Quit starts theirs again (`own_machine`).
  *
@@ -73,7 +73,7 @@ export const OWN_PODMAN = "OpenBot needs its own Podman";
 export function PausePodman({
   offer,
 }: {
-  /** OpenBot's line while it waits for the go-ahead (`pauseOfferNow`). */
+  /** AwakenBot's line while it waits for the go-ahead (`pauseOfferNow`). */
   offer: string;
 }) {
   const [sent, setSent] = useState(false);
@@ -124,7 +124,7 @@ export function PausePodman({
           disabled={sent}
           onClick={() => {
             setSent(true);
-            // False when OpenBot was not waiting after all: offer it again rather than hang.
+            // False when AwakenBot was not waiting after all: offer it again rather than hang.
             invoke<boolean>("allow_pause_podman").then(
               (waiting) => {
                 if (!waiting) setSent(false);

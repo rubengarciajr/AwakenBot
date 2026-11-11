@@ -33,11 +33,9 @@ mod tests {
                 let offset = (y * 64 + x) * 4;
                 let pixel = &image.rgba()[offset..offset + 4];
                 assert!(pixel[3] >= 128, "the orb interior must remain visible");
-                let channels = &pixel[..3];
-                assert!(
-                    channels.iter().max().unwrap() - channels.iter().min().unwrap() > 20,
-                    "the orb interior must retain its color"
-                );
+                // AwakenBot: upstream per-pixel saturation check is dropped here. It held the
+                // icon to the upstream pink-and-blue orb; AwakenBot's ice orb (brand/logo.png) has
+                // near-white highlights. Visibility above and variety below still apply.
                 colors.insert([pixel[0], pixel[1], pixel[2]]);
             }
         }

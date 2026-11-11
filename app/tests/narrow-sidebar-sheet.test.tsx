@@ -103,7 +103,7 @@ function renderNarrowApp(start = "/channel/models") {
     defaultOptions: { queries: { retry: false, staleTime: Infinity } },
   });
   clients.push(queryClient);
-  // The personal edition, as on the Windows install: OpenBot for Business sits in the account menu.
+  // The personal edition, as on the Windows install: AwakenBot for Business sits in the account menu.
   queryClient.setQueryData(deploymentKeys.capabilities(), {
     generativeUi: true,
     selfHostBanner: false,
@@ -133,7 +133,7 @@ function renderNarrowApp(start = "/channel/models") {
     bots: [],
     lastPingId: null,
   });
-  // OpenBot can run a browser here, so Teach a Bot is in the sidebar.
+  // AwakenBot can run a browser here, so Teach a Bot is in the sidebar.
   queryClient.setQueryDefaults(browserKeys.state, { refetchInterval: false });
   queryClient.setQueryData(browserKeys.state, {
     available: true,
@@ -235,7 +235,7 @@ test("Settings in the account menu closes the sheet and opens Settings", async (
   expect(app.router.state.location.pathname).toBe("/settings");
 });
 
-test("OpenBot for Business in the account menu closes the sheet and opens its dialog", async () => {
+test("AwakenBot for Business in the account menu closes the sheet and opens its dialog", async () => {
   const app = renderNarrowApp();
   const sheet = await app.openSheet();
   await app.user.click(
@@ -243,10 +243,10 @@ test("OpenBot for Business in the account menu closes the sheet and opens its di
   );
   const menu = await app.view.findByRole("menu");
   await app.user.click(
-    within(menu).getByRole("menuitem", { name: "OpenBot for Business" }),
+    within(menu).getByRole("menuitem", { name: "AwakenBot for Business" }),
   );
   await app.sheetCloses();
-  await app.view.findByRole("dialog", { name: "OpenBot for Business" });
+  await app.view.findByRole("dialog", { name: "AwakenBot for Business" });
   expect(app.router.state.location.pathname).toBe("/channel/models");
 });
 

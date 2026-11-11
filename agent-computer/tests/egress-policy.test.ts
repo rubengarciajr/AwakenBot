@@ -65,7 +65,7 @@ describe("the network policy rules", () => {
     );
     expect(
       parseEgressRules([
-        { type: "domain", value: "OpenBot.Example.com", ports: "443, 8443" },
+        { type: "domain", value: "AwakenBot.Example.com", ports: "443, 8443" },
         { type: "domain", value: "gateway.example.com", ports: "" },
       ]),
     ).toEqual({
@@ -626,7 +626,7 @@ describe("the filter proxy", () => {
     const target = await origin();
     const filter = await startEgressFilter({ env: {} });
     const secret = egressFor("sales", {})?.password;
-    // As the server pushes it for a person's hosted browser: OpenBot by name, on its own port.
+    // As the server pushes it for a person's hosted browser: AwakenBot by name, on its own port.
     const pushed = await handleEgressPolicyRequest(
       "sales",
       new Request("http://computer/egress-policy", {
@@ -709,7 +709,7 @@ describe("the filter proxy", () => {
     setEgressPolicy("sales", { mode: "allow_all", rules: [] });
     const shared = await asABrowser(filter.port, METADATA);
     expect(shared).toContain(
-      "169.254.169.254 is a cloud metadata or link-local address, which OpenBot never opens.",
+      "169.254.169.254 is a cloud metadata or link-local address, which AwakenBot never opens.",
     );
     expect(shared).not.toMatch(/\bBot\b/);
 

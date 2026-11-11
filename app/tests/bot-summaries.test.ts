@@ -51,7 +51,7 @@ test("setup names where it runs", () => {
 
 /*
  * The personal edition's starter runs on the harness its one person picked at setup, at the address
- * of the container OpenBot started for it ("agent-harness:4206" on Windows). That address means
+ * of the container AwakenBot started for it ("agent-harness:4206" on Windows). That address means
  * nothing to them; the framework does. A team deployment still shows the address.
  */
 test("the personal edition names what runs a Bot instead of its address", () => {
@@ -72,7 +72,7 @@ test("the personal edition names what runs a Bot instead of its address", () => 
   ).toBe("127.0.0.1:8000");
   expect(
     setupSummary(
-      { builtIn: true, endpoint: null, framework: "OpenBot" },
+      { builtIn: true, endpoint: null, framework: "AwakenBot" },
       "personal",
     ),
   ).toBe("Built in");
@@ -83,7 +83,7 @@ test("a public Bot nobody published is still open to everyone, not 'Not shared'"
 });
 
 test("reach names the places a Bot continues the conversation", () => {
-  expect(reachSummary([])).toBe("Only in OpenBot");
+  expect(reachSummary([])).toBe("Only in AwakenBot");
   expect(reachSummary(["slack"])).toBe("Slack");
   expect(reachSummary(["sms", "slack", "slack"])).toBe("Slack, SMS");
   expect(reachSummary(["teams"])).toBe("Microsoft Teams");

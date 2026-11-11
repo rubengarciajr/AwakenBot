@@ -814,14 +814,14 @@ export function createChannelAttachmentRoutes(
       const error =
         mimeType === "image/svg+xml"
           ? `'${name}' can't be attached. SVG files aren't accepted.`
-          : `'${name}' can't be attached. OpenBot can't read ${mimeType} images.`;
+          : `'${name}' can't be attached. AwakenBot can't read ${mimeType} images.`;
       return context.json({ error }, 415);
     }
 
     if (kind === "unsupported") {
       return context.json(
         {
-          error: `'${name}' isn't a file type OpenBot can read${describeType(mimeType)}.`,
+          error: `'${name}' isn't a file type AwakenBot can read${describeType(mimeType)}.`,
         },
         415,
       );

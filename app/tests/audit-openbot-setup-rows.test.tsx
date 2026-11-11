@@ -30,10 +30,10 @@ import { settleReactWork } from "./settle-react-work";
 /*
  * What a fresh personal install showed on Settings > Activity after one message. Seen locally:
  * "Choose a Bot for a message / Sent to the default Bot / fallback: one-candidate" on every message,
- * fifteen "Publish a component / showTable" rows and two "Start the computer" rows that OpenBot
+ * fifteen "Publish a component / showTable" rows and two "Start the computer" rows that AwakenBot
  * wrote setting itself up, and ids where words belong: "showActivityReport · botActivity" over a
  * reason sending the person to an admin, "find-a-notion-page" under a skill, a key's id under
- * "Save a credential", and "Change a setting" for OpenBot setting up Learning. Admin keeps all of it
+ * "Save a credential", and "Change a setting" for AwakenBot setting up Learning. Admin keeps all of it
  * as it was.
  */
 
@@ -84,7 +84,7 @@ function row(
   };
 }
 
-/** OpenBot's own working, as the server records it: what Activity no longer asks for. */
+/** AwakenBot's own working, as the server records it: what Activity no longer asks for. */
 const ROUTED = row("routed", 30, {
   eventType: "channel.routed",
   targetType: "agent",
@@ -239,7 +239,7 @@ test("Activity asks without routing, a build's components or the computer's star
   // Seeded only under the query that leaves them out: rows drawn mean the page asked for exactly that.
   const view = await renderPage("personal", { [LEAVE_OUT]: KEPT });
   const person = "Started by a person";
-  const openbot = "Started by OpenBot";
+  const openbot = "Started by AwakenBot";
   expect(drawn(view.container)).toEqual([
     {
       what: [

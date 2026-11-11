@@ -24,7 +24,7 @@ function generatedJwk(): JsonWebKey {
 const ON = { WEB_BOT_AUTH: "on" };
 
 describe("whether Web Bot Auth is on", () => {
-  // A signed request names the deployment to every site a Bot visits, and OpenBot is private by
+  // A signed request names the deployment to every site a Bot visits, and AwakenBot is private by
   // design, so no address, however public, switches it on by itself.
   test.each([
     PUBLIC,

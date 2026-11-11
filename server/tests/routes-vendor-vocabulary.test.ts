@@ -14,7 +14,7 @@
  * moved — the same sentence, word for word, but for the vendor's name.
  *
  * TWO AUDIENCES, ONE RULE ABOUT THE BROKER. No sentence names it: a person, the admin included,
- * connects apps through OpenBot (see `.claude/skills/openbot-copy/SKILL.md`). The two admin
+ * connects apps through AwakenBot (see `.claude/skills/openbot-copy/SKILL.md`). The two admin
  * sentences (removing and enabling an app) still name the ACTIVE provider's variable, because the
  * admin is the one who sets it. The connect, confirm, re-check and disconnect sentences answer
  * whoever pressed the button, and name no variable either. Neither lets a deployment read the

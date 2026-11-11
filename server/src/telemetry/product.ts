@@ -43,7 +43,7 @@ export type ProductRunContext = {
   purpose: "ordinary" | "setup" | "unknown";
 };
 /**
- * What Intelligence is told about a run: the shared contract, version 1 ("OpenBot telemetry:
+ * What Intelligence is told about a run: the shared contract, version 1 ("AwakenBot telemetry:
  * Intelligence build" in Notion). Only these fields, and only pseudonyms: no name, prompt, URL or
  * raw identifier of a person or a task.
  */
@@ -510,7 +510,7 @@ export async function createProductTelemetry(options: {
             const observed = { outcome, failure };
             const duration = Math.max(0, now().getTime() - started.getTime());
             /*
-             * Decided a tick later, for a run OpenBot stopped. A stopped run's stream can end before
+             * Decided a tick later, for a run AwakenBot stopped. A stopped run's stream can end before
              * the stop is known here: the runner aborts the agent, which can end its stream on the
              * spot, and only then detaches it, which is what says it was a stop. A run that finished
              * before it was stopped keeps its finish; a lost lock is never marked, and stays as seen.
@@ -623,7 +623,7 @@ export async function createProductTelemetry(options: {
     recordAudit,
     enabled: () => enabled,
     /*
-     * What CopilotKit's own runtime events carry for OpenBot. The app always, so OpenBot's traffic
+     * What CopilotKit's own runtime events carry for AwakenBot. The app always, so AwakenBot's traffic
      * is separable; this deployment's ID only while product telemetry is on.
      */
     deploymentProperties: (): { app_id: "openbot"; deployment_id?: string } =>

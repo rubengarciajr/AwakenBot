@@ -98,7 +98,7 @@ describe("finding the built Recorder", () => {
     const source = await findRecorder(join(REPO, "extension"));
     expect(source.ok).toBe(false);
     if (!source.ok) {
-      expect(source.error).toContain("not a built OpenBot Recorder");
+      expect(source.error).toContain("not a built AwakenBot Recorder");
       expect(source.error).toContain("manifest.json");
     }
   });
@@ -127,7 +127,7 @@ describe("finding the built Recorder", () => {
     if (!noWorker.ok) expect(noWorker.error).toContain("service-worker.js");
   });
 
-  test("its setup and connect pages are the ones a browser OpenBot opened closes", () => {
+  test("its setup and connect pages are the ones a browser AwakenBot opened closes", () => {
     const id = RECORDER_EXTENSION_ID;
     expect(isRecorderSetupPage(`chrome-extension://${id}/setup.html`, id)).toBe(
       true,
@@ -181,7 +181,7 @@ describe("launching a person's browser", () => {
     "darwin",
   );
 
-  test("a native window starts with exactly what OpenBot's control needs, and no test default that stops a person using it as their own", () => {
+  test("a native window starts with exactly what AwakenBot's control needs, and no test default that stops a person using it as their own", () => {
     // Started without Playwright, so this is its whole command line: none of Playwright's defaults is under it.
     expect(native.args).toEqual([
       "--remote-debugging-pipe",
@@ -391,7 +391,7 @@ describe("the person's password manager hookups", () => {
     ).toBe(onePassword);
   });
 
-  test("OpenBot Desktop's own Recorder host is not copied: the launcher connects the Recorder itself", async () => {
+  test("AwakenBot Desktop's own Recorder host is not copied: the launcher connects the Recorder itself", async () => {
     const theirs = await tempDir();
     const ours = join(await tempDir(), "NativeMessagingHosts");
     await writeFile(
@@ -485,7 +485,7 @@ describe("which computer a person's browser may run on", () => {
       kind: "person",
       id: "u-ada",
     });
-    // The personal edition's one computer, started as its one person's (scripts/start.sh, OpenBot Desktop).
+    // The personal edition's one computer, started as its one person's (scripts/start.sh, AwakenBot Desktop).
     expect(
       computerOwner({
         COMPUTER_PERSON_ID: "personal",
@@ -644,7 +644,7 @@ describe("a page that did not open, said to the person", () => {
   });
 });
 
-describe("a browser that cannot start here, said to whoever runs OpenBot", () => {
+describe("a browser that cannot start here, said to whoever runs AwakenBot", () => {
   /*
    * Playwright 1.62.1's own messages. The first two were captured from real launches on this Mac
    * (PLAYWRIGHT_BROWSERS_PATH pointing at an empty folder, and a channel whose browser is not

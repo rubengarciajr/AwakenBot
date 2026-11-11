@@ -1,8 +1,8 @@
-"""A Claude Agent SDK Bot starts with OpenBot's working rules, because nothing else gives it any.
+"""A Claude Agent SDK Bot starts with AwakenBot's working rules, because nothing else gives it any.
 
 This harness hands Claude Code the server's own system messages as its whole system prompt
 (`system_prompt_in_file`), which replaces Claude Code's own. So "act when you have enough", "report
-what you skipped" and every other rule Claude Code would have carried are gone unless OpenBot sends
+what you skipped" and every other rule Claude Code would have carried are gone unless AwakenBot sends
 them. `fixtures/server-instructions.json` is what the server sends a Claude SDK Bot on a routine, kept
 byte for byte by the server's own test (`server/tests/copilot.test.ts`, "a Claude Agent SDK Bot on a
 routine"); this runs it through the adapter and reads the prompt Claude Code is started with.
@@ -116,7 +116,7 @@ def test_a_routine_starts_claude_code_with_openbots_working_rules(sdk):
     assert "take it in the same reply instead of saying you will" in system_prompt
     assert "Nobody is watching this run" in system_prompt
     assert "What I could not confirm" in system_prompt
-    # Told OpenBot asks before what it gives the Bot, so the Bot does not ask a second time.
-    assert "When you use the apps and tools OpenBot gives you, OpenBot asks" in system_prompt
+    # Told AwakenBot asks before what it gives the Bot, so the Bot does not ask a second time.
+    assert "When you use the apps and tools AwakenBot gives you, AwakenBot asks" in system_prompt
     # The server's instructions are the whole prompt, first: Claude Code's own is not added.
     assert system_prompt.startswith("<identity>\nYou are Risk")

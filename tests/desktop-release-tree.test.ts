@@ -26,7 +26,7 @@ function constant(file: string, name: string): string[] {
   );
 }
 
-// What OpenBot Desktop keeps of a release's tag tarball (deployment.rs `LAYOUT`): the Compose file
+// What AwakenBot Desktop keeps of a release's tag tarball (deployment.rs `LAYOUT`): the Compose file
 // the containers run from. Every container, the computer and the person's browser on it included,
 // runs from the release's images.
 const layout = () => constant("deployment.rs", "LAYOUT");
@@ -41,7 +41,7 @@ function trackedUnder(paths: string[]): string[] {
     .filter(Boolean);
 }
 
-describe("OpenBot Desktop's release tree", () => {
+describe("AwakenBot Desktop's release tree", () => {
   test("lays out the Compose file, and nothing the containers run", () => {
     const paths = layout();
     expect(paths).toContain("docker-compose.yml");
@@ -70,7 +70,7 @@ describe("OpenBot Desktop's release tree", () => {
 
   // Earlier versions ran a browser of the person's own on the desktop, from `agent-computer` and
   // the `shared` files it imports. The person's browser is on the one computer now, shown in the
-  // OpenBot window, so nothing of it is laid out on the host.
+  // AwakenBot window, so nothing of it is laid out on the host.
   test("lays out no browser to run on the person's desktop", () => {
     expect(
       trackedUnder(layout()).filter(

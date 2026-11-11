@@ -1,5 +1,5 @@
-// Where a person's own OpenBot browser may go, judged by the computer's own filter rule (agent-computer/src/egress.ts,
-// which the server imports rather than copies) against real addresses: the open web, OpenBot and the Intelligence
+// Where a person's own AwakenBot browser may go, judged by the computer's own filter rule (agent-computer/src/egress.ts,
+// which the server imports rather than copies) against real addresses: the open web, AwakenBot and the Intelligence
 // gateway by name, and nothing a person's laptop could not reach.
 import { describe, expect, test } from "bun:test";
 import {
@@ -72,7 +72,7 @@ describe("a person's browser on a computer in the cloud", () => {
     expect(allowed("split.example", ["93.184.215.14", "10.1.2.3"])).toBe(false);
   });
 
-  test("reaches OpenBot and the Intelligence gateway by name wherever they resolve, and only those names", () => {
+  test("reaches AwakenBot and the Intelligence gateway by name wherever they resolve, and only those names", () => {
     expect(allowed("openbot.example.com", ["10.0.0.7"])).toBe(true);
     expect(allowed("app.example.com", ["10.0.0.8"])).toBe(true);
     expect(allowed("gateway.example.com", ["172.20.1.1"])).toBe(true);
@@ -81,7 +81,7 @@ describe("a person's browser on a computer in the cloud", () => {
     expect(allowed("openbot.example.com", ["169.254.169.254"])).toBe(false);
   });
 
-  test("OpenBot and the gateway by name are allowed on their own ports, never the name's others", () => {
+  test("AwakenBot and the gateway by name are allowed on their own ports, never the name's others", () => {
     // Resolving inside the deployment, where the public ranges do not already allow them: a name on its own port only.
     const port = (host: string, to: number, resolved: string[]) =>
       egressDecision(cloud, host, to, resolved).allowed;
@@ -109,7 +109,7 @@ describe("a person's browser on a computer in the cloud", () => {
     ).toBe(false);
   });
 
-  test("an address given for OpenBot is allowed as that address alone, on its own port", () => {
+  test("an address given for AwakenBot is allowed as that address alone, on its own port", () => {
     const literal = personBrowserEgressPolicy({
       native: false,
       allowPrivateHosts: false,
@@ -123,9 +123,9 @@ describe("a person's browser on a computer in the cloud", () => {
     expect(egressDecision(literal, "fd00::9", 3001).allowed).toBe(false);
   });
 
-  // The end-to-end run's hosted OpenBot: it and the gateway both on 127.0.0.1, and the person's browser loaded the
+  // The end-to-end run's hosted AwakenBot: it and the gateway both on 127.0.0.1, and the person's browser loaded the
   // Intelligence UI on 7555 and a probe on 7498 because the address was allowed on every port.
-  test("OpenBot and the gateway on one address let the browser reach those two ports, never the address's others", () => {
+  test("AwakenBot and the gateway on one address let the browser reach those two ports, never the address's others", () => {
     const shared = personBrowserEgressPolicy({
       native: false,
       allowPrivateHosts: false,

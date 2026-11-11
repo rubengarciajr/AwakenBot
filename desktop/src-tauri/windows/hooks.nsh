@@ -1,4 +1,4 @@
-; OpenBot Desktop's NSIS installer hooks: bundle.windows.nsis.installerHooks in tauri.conf.json.
+; AwakenBot Desktop's NSIS installer hooks: bundle.windows.nsis.installerHooks in tauri.conf.json.
 ; https://v2.tauri.app/distribute/windows-installer/
 
 ; The header image (bundle.windows.nsis.headerImage) goes on the right of each page's header, where NSIS puts its icon
@@ -8,14 +8,14 @@
 
 ; Uninstalling takes away what the Recorder host install wrote for this person (src/recorder_install.rs): each
 ; browser's native messaging host key and the one manifest they all point at, which sits beside the app in
-; %LOCALAPPDATA%\OpenBot. Not on an update, which runs the old uninstaller with /UPDATE; the new version writes them
+; %LOCALAPPDATA%\AwakenBot. Not on an update, which runs the old uninstaller with /UPDATE; the new version writes them
 ; again when it starts.
 ;
 ; And the data of the browser earlier versions ran on the person's desktop: its whole data root,
-; %LOCALAPPDATA%\OpenBot\local-computer, which holds the profile they signed in to by hand. Desktop no longer runs that
-; browser (the person's browser is shown in the OpenBot window), but an installation that did keeps it until it is
+; %LOCALAPPDATA%\AwakenBot\local-computer, which holds the profile they signed in to by hand. Desktop no longer runs that
+; browser (the person's browser is shown in the AwakenBot window), but an installation that did keeps it until it is
 ; uninstalled. Each of Desktop's folders goes with everything in it (RMDir /r);
-; %LOCALAPPDATA%\OpenBot itself only once nothing else is left in it, since the app may be installed there.
+; %LOCALAPPDATA%\AwakenBot itself only once nothing else is left in it, since the app may be installed there.
 ;
 ; And what registered the Recorder from its stores with Chrome and Edge (src/recorder_external.rs): each store id's
 ; HKCU Extensions key, with which the browser takes the Recorder it installed back out, and Desktop's note of them.
@@ -39,9 +39,9 @@
   Pop $0
 !macroend
 
-; Installing over an installed OpenBot with "Uninstall before installing" uninstalls the old version
+; Installing over an installed AwakenBot with "Uninstall before installing" uninstalls the old version
 ; first. Tauri's page ran the old uninstaller itself, with the installer's window hidden, and run
-; silently that left nothing on screen: on a live update from 1.0.1, OpenBot had closed and no window
+; silently that left nothing on screen: on a live update from 1.0.1, AwakenBot had closed and no window
 ; showed for two and a half minutes. So the page only notes the choice ($OpenBotUninstallFirst, in
 ; windows/installer.nsi), and the old version is uninstalled on the Installing page, with a line in
 ; plain words and the page's progress bar moving (OPENBOT_UNINSTALL_OLD_VERSION).
@@ -50,9 +50,9 @@ Var OpenBotOldUninstaller
 Var OpenBotOldFolder
 Var OpenBotProgress
 
-; Leaving the page with a running OpenBot asks first, with the words a running OpenBot gets
+; Leaving the page with a running AwakenBot asks first, with the words a running AwakenBot gets
 ; everywhere else (appRunningOkKill in installer-english.nsh), and OK closes it there and then, as the
-; words say, as Tauri's own check does. Cancel stays on the page, where the person can close OpenBot
+; words say, as Tauri's own check does. Cancel stays on the page, where the person can close AwakenBot
 ; themselves or choose "Do not uninstall". A passive install asks nothing, as Tauri's own check
 ; doesn't, and the old uninstaller closes it.
 Var OpenBotRunning
@@ -111,7 +111,7 @@ Var OpenBotRunning
 ; The old version uninstalled, on the Installing page: as an update (/UPDATE), which keeps the data
 ; and shows no "Delete the application data" box, and silently (/S), with no window of its own, in
 ; the folder the old version is in (`_?=`, last, as NSIS reads it, so the installer waits for it).
-; Tauri's own check comes first, for an OpenBot opened again since the page: Cancel stops the install
+; Tauri's own check comes first, for an AwakenBot opened again since the page: Cancel stops the install
 ; before anything is removed. An old uninstaller that fails leaves the new version installed over the
 ; old, as "Do not uninstall" would.
 !macro OPENBOT_UNINSTALL_OLD_VERSION
@@ -119,7 +119,7 @@ Var OpenBotRunning
   ReadRegStr $OpenBotOldFolder SHCTX "${MANUPRODUCTKEY}" ""
   ReadRegStr $OpenBotOldUninstaller SHCTX "${UNINSTKEY}" "UninstallString"
   ${If} $OpenBotOldUninstaller != ""
-    DetailPrint "Removing the previous version of OpenBot. Your Bots and data stay."
+    DetailPrint "Removing the previous version of AwakenBot. Your Bots and data stay."
     !insertmacro OPENBOT_PROGRESS_MOVING 1
     ClearErrors
     ; ExecWait says "Execute: <the command>" on the page's status line, over the plain line, for as
@@ -130,7 +130,7 @@ Var OpenBotRunning
     ${IfThen} ${Errors} ${|} StrCpy $0 2 ${|}
     !insertmacro OPENBOT_PROGRESS_MOVING 0
     ${If} $0 <> 0
-      DetailPrint "Couldn't remove the previous version of OpenBot. Installing over it."
+      DetailPrint "Couldn't remove the previous version of AwakenBot. Installing over it."
     ${ElseIf} $OpenBotOldFolder != $INSTDIR
       ; Run in place, the old uninstaller cannot delete itself or its folder.
       Delete "$OpenBotOldFolder\uninstall.exe"
@@ -139,17 +139,17 @@ Var OpenBotRunning
   ${EndIf}
 !macroend
 
-; Uninstalling (not updating) stops what OpenBot runs before its files go: OpenBot's containers, the
-; backend when OpenBot created it, and OpenBot's own Podman machine, "openbot". Before this, the
+; Uninstalling (not updating) stops what AwakenBot runs before its files go: AwakenBot's containers, the
+; backend when AwakenBot created it, and AwakenBot's own Podman machine, "openbot". Before this, the
 ; uninstaller closed the app and left all of them running with no app to stop them. The app does it
 ; headless (src/uninstall.rs), so it stops exactly what Stop stops and never the person's own
 ; machines or containers. With "Delete the application data" ticked (--delete-data) it also removes
-; the backend OpenBot created, OpenBot's machine and OpenBot's files in the installation folder, so
+; the backend AwakenBot created, AwakenBot's machine and AwakenBot's files in the installation folder, so
 ; a new installation starts from nothing. Otherwise all of them stay, stopped, for a reinstall to
-; find. A running OpenBot is closed first (Tauri's own check, which asks), so it cannot start
+; find. A running AwakenBot is closed first (Tauri's own check, which asks), so it cannot start
 ; anything again meanwhile. The app's plain lines go to the uninstaller's details and the technical
-; ones to OpenBot's log. It gives up after five minutes, and whatever it could not stop never keeps
-; OpenBot from being uninstalled.
+; ones to AwakenBot's log. It gives up after five minutes, and whatever it could not stop never keeps
+; AwakenBot from being uninstalled.
 !macro OPENBOT_STOP_WHAT_OPENBOT_RUNS
   !insertmacro CheckIfAppIsRunning "${MAINBINARYNAME}.exe" "${PRODUCTNAME}"
   ${If} $DeleteAppDataCheckboxState = 1
@@ -160,16 +160,16 @@ Var OpenBotRunning
   Pop $0
 !macroend
 
-; Every OpenBot the installer starts, after an in-app update (/R, in .onInstSuccess) and from its last
+; Every AwakenBot the installer starts, after an in-app update (/R, in .onInstSuccess) and from its last
 ; page (RunMainBinary), is started here, so it can come to the front as its window first shows. On
-; box H, after an in-app update, the new OpenBot opened behind the maximised Edge that Windows put in
-; front as the old one closed, and Starting OpenBot ran there unseen for four minutes. Windows lets
+; box H, after an in-app update, the new AwakenBot opened behind the maximised Edge that Windows put in
+; front as the old one closed, and Starting AwakenBot ran there unseen for four minutes. Windows lets
 ; only some processes set the foreground window, and one that may can let every other process do it
-; (AllowSetForegroundWindow with ASFW_ANY, -1) until the person next gives input. The updating OpenBot
+; (AllowSetForegroundWindow with ASFW_ANY, -1) until the person next gives input. The updating AwakenBot
 ; passes that on before its window goes (src/main.rs), and the person's click on Finish gives it to
-; the installer, so the installer passes it on again, then starts OpenBot with
+; the installer, so the installer passes it on again, then starts AwakenBot with
 ; --started-by-installer, which has it come forward once (`forward_at_first_show` in src/main.rs).
-; Where Windows still says no, OpenBot flashes its taskbar button. An update hands the old version's
+; Where Windows still says no, AwakenBot flashes its taskbar button. An update hands the old version's
 ; own arguments on (/ARGS), which carry the flag from the last update, so it is added only when
 ; missing. RunAsUser is how Tauri starts the app, as the person rather than an elevated installer.
 !define OPENBOT_STARTED_BY_INSTALLER "--started-by-installer"
@@ -207,10 +207,10 @@ Var OpenBotFlagAt
     DeleteRegKey HKCU "Software\Microsoft\Edge\NativeMessagingHosts\ai.copilotkit.openbot.recorder"
     DeleteRegKey HKCU "Software\Chromium\NativeMessagingHosts\ai.copilotkit.openbot.recorder"
     SetShellVarContext current
-    Delete "$LOCALAPPDATA\OpenBot\recorder\ai.copilotkit.openbot.recorder.json"
-    Delete "$LOCALAPPDATA\OpenBot\recorder\recorder-store-extensions.json"
-    RMDir /r "$LOCALAPPDATA\OpenBot\recorder"
-    RMDir /r "$LOCALAPPDATA\OpenBot\local-computer"
-    RMDir "$LOCALAPPDATA\OpenBot"
+    Delete "$LOCALAPPDATA\AwakenBot\recorder\ai.copilotkit.openbot.recorder.json"
+    Delete "$LOCALAPPDATA\AwakenBot\recorder\recorder-store-extensions.json"
+    RMDir /r "$LOCALAPPDATA\AwakenBot\recorder"
+    RMDir /r "$LOCALAPPDATA\AwakenBot\local-computer"
+    RMDir "$LOCALAPPDATA\AwakenBot"
   ${EndIf}
 !macroend

@@ -370,7 +370,7 @@ test("a pending plan sign-in completion is ignored after switching provider rows
 /*
  * A ChatGPT sign-in left behind keeps listening for the browser. Its tab can still finish, and the
  * browser then says "You're signed in" while this screen has moved on and dropped the result. So
- * leaving it stops it: the tab then gets OpenBot's own page saying the sign-in ended.
+ * leaving it stops it: the tab then gets AwakenBot's own page saying the sign-in ended.
  */
 test("leaving a ChatGPT sign-in that is still waiting stops it", async () => {
   invokeHandler = async (command) => {

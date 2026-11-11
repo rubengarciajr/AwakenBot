@@ -5,7 +5,7 @@ import type { MemoryStore } from "./store";
 import type { LoadPersonalMemory } from "./tools";
 
 /**
- * What of memory runs while OpenBot runs: what a Bot's turn is told it remembers, and the sweep that
+ * What of memory runs while AwakenBot runs: what a Bot's turn is told it remembers, and the sweep that
  * reads memory sources and mirrors memories to Intelligence.
  *
  * NOTHING IN AN EDITION WITHOUT MEMORY (`editionHasMemory`). No loader, so no turn picks up memory

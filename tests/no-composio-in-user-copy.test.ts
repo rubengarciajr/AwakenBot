@@ -4,8 +4,8 @@ import { join, relative } from "node:path";
 import ts from "typescript";
 
 /**
- * Guard: no text a person reads names Composio. A person connects their work apps through OpenBot,
- * and the company OpenBot connects through is never named on a screen, the admin's included (see
+ * Guard: no text a person reads names Composio. A person connects their work apps through AwakenBot,
+ * and the company AwakenBot connects through is never named on a screen, the admin's included (see
  * .claude/skills/openbot-copy).
  *
  * Read are the string literals, template text and JSX text of the desktop window, the app, the

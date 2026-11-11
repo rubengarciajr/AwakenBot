@@ -325,7 +325,7 @@ for (const connected of [true, false]) {
 test("no screen names the broker, and only an admin is told the variable to set", () => {
   for (const provider of ["arcade", "composio"] as const) {
     expect(brokeredDisconnectNote(provider)).toBe(
-      "Disconnecting also removes OpenBot's access to your account.",
+      "Disconnecting also removes AwakenBot's access to your account.",
     );
     expect(brokeredKeyMissing(provider, "team", "person")).toBe(
       "Connecting apps isn't set up yet, so this account can't be connected or disconnected here. Ask an admin to set it up.",

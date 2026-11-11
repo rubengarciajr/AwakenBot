@@ -353,7 +353,7 @@ export function createLearningAutoAssign(options: {
 
   const instructions =
     options.instructions ??
-    `Run bun scripts/setup-learning.ts, or create a container with ID "${containerId}" in the backend dashboard; OpenBot assigns it within ${Math.round((options.retryMs ?? RETRY_MS) / 60_000)} minutes.`;
+    `Run bun scripts/setup-learning.ts, or create a container with ID "${containerId}" in the backend dashboard; AwakenBot assigns it within ${Math.round((options.retryMs ?? RETRY_MS) / 60_000)} minutes.`;
   /** Whether this process already tried `create`: once at boot, again only when Admin asks. */
   let createTried = false;
   let createError: string | undefined;
@@ -408,7 +408,7 @@ export function createLearningAutoAssign(options: {
   const sayUnavailable = () =>
     once("unavailable", {
       message:
-        "Intelligence could not be asked about the Learning container. OpenBot tries again.",
+        "Intelligence could not be asked about the Learning container. AwakenBot tries again.",
     });
 
   const absent = (): LearningAutoAssignState => ({
@@ -434,7 +434,7 @@ export function createLearningAutoAssign(options: {
     once("configured_absent", {
       containerId: target.containerId,
       variable: "CPK_INTELLIGENCE_LEARNING_CONTAINER_ID",
-      message: `CPK_INTELLIGENCE_LEARNING_CONTAINER_ID is "${target.containerId}", but this Intelligence has no Learning container with that ID, so OpenBot ignores it${options.enabled ? ` and assigns "${containerId}" instead` : ""}. Remove it from the environment, or set it to a container this Intelligence has.`,
+      message: `CPK_INTELLIGENCE_LEARNING_CONTAINER_ID is "${target.containerId}", but this Intelligence has no Learning container with that ID, so AwakenBot ignores it${options.enabled ? ` and assigns "${containerId}" instead` : ""}. Remove it from the environment, or set it to a container this Intelligence has.`,
     });
     return "forgotten";
   };
@@ -461,7 +461,7 @@ export function createLearningAutoAssign(options: {
     options.store.setAside(saved.containerId);
     once("saved_absent", {
       containerId: saved.containerId,
-      message: `The saved default Learning container is "${saved.containerId}", but this Intelligence has no Learning container with that ID, so OpenBot ignores it here${options.enabled ? ` and uses "${containerId}" instead` : ""}. The saved choice is kept, for an Intelligence that has it. Saving another default container replaces it.`,
+      message: `The saved default Learning container is "${saved.containerId}", but this Intelligence has no Learning container with that ID, so AwakenBot ignores it here${options.enabled ? ` and uses "${containerId}" instead` : ""}. The saved choice is kept, for an Intelligence that has it. Saving another default container replaces it.`,
     });
     return { checked: "set_aside", containerId: saved.containerId };
   };
@@ -514,7 +514,7 @@ export function createLearningAutoAssign(options: {
     if (found === "learning_off") {
       once("learning_off", {
         message:
-          "Learning is switched off in this Intelligence, so Automatic Learning collects nothing. Turn it on in Intelligence (learning.enabled in its Helm chart); OpenBot checks again.",
+          "Learning is switched off in this Intelligence, so Automatic Learning collects nothing. Turn it on in Intelligence (learning.enabled in its Helm chart); AwakenBot checks again.",
       });
       return { state: "learning_off" };
     }
@@ -565,7 +565,7 @@ export function createLearningAutoAssign(options: {
         once("error", {
           errorType: error instanceof Error ? error.name : typeof error,
           message:
-            "Automatic Learning container assignment failed. OpenBot tries again.",
+            "Automatic Learning container assignment failed. AwakenBot tries again.",
         });
         return { state: "unavailable" } as LearningAutoAssignState;
       })

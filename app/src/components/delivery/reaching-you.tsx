@@ -295,7 +295,7 @@ export function ReachingYou({ agentId: fixedBot }: { agentId?: string }) {
 
 /**
  * Choose the conversation, then link an account or verify a phone. Linking an account answers with a
- * one-time `link <code>` message to send to the OpenBot app; a phone answers with a text carrying a
+ * one-time `link <code>` message to send to the AwakenBot app; a phone answers with a text carrying a
  * code to type back here.
  */
 function ConnectDialog({
@@ -512,7 +512,7 @@ function ConnectDialog({
             <Item size="sm" variant="muted">
               <ItemContent>
                 <ItemDescription className="line-clamp-none">
-                  Send this message to the OpenBot app in a direct message in{" "}
+                  Send this message to the AwakenBot app in a direct message in{" "}
                   {linked.platform === "teams" ? "Microsoft Teams" : "Slack"}{" "}
                   within {Math.ceil((linked.expiresAt - Date.now()) / 60_000)}{" "}
                   minutes. It links that account to this conversation and Bot.

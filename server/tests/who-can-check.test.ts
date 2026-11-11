@@ -162,7 +162,7 @@ describe("checkCapabilityChanges", () => {
     );
   });
 
-  test("an OpenBot with no groups says so when a change names one", () => {
+  test("an AwakenBot with no groups says so when a change names one", () => {
     const check = checkCapabilityChanges(
       [
         {
@@ -175,7 +175,7 @@ describe("checkCapabilityChanges", () => {
       [],
     );
     expect(check.ok ? "" : check.error).toBe(
-      'Change 1: There\'s no group called "Contractors". OpenBot has no groups yet.',
+      'Change 1: There\'s no group called "Contractors". AwakenBot has no groups yet.',
     );
   });
 

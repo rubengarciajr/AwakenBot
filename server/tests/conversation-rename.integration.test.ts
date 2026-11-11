@@ -243,7 +243,7 @@ describe("renaming a conversation", () => {
     }
   });
 
-  test("an empty name gives the conversation back the one OpenBot chose", async () => {
+  test("an empty name gives the conversation back the one AwakenBot chose", async () => {
     const owner = await person();
     const channelId = await conversationOf(owner);
     const browser = browserFor(owner);

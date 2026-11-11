@@ -1,13 +1,13 @@
 // The Recorder's launcher API: what the process that launched this browser, and alone holds its DevTools pipe, calls in
-// this service worker as `globalThis[LAUNCHER_GLOBAL]` (shared/openbot-browser.ts). OpenBot opens a person's own
+// this service worker as `globalThis[LAUNCHER_GLOBAL]` (shared/openbot-browser.ts). AwakenBot opens a person's own
 // browser with the Recorder in it, and hands it its connection and its Record, Stop and narration through here.
 //
 // Reachable only by code running in this service worker itself: the launcher evaluates it over the DevTools protocol
 // (Runtime.evaluate in the worker's target). There is no chrome.runtime message route to it, internal or external, so
 // no web page, content script or other extension can reach it, and none of the Recorder's own pages does either: each
-// of them is its own global scope. A connection taken here is checked as a Connect would check it (the OpenBot address
+// of them is its own global scope. A connection taken here is checked as a Connect would check it (the AwakenBot address
 // rule and the organization's policy), and every command goes through the same paths the popup's own do. A revoke
-// OpenBot tells it of goes through the path a signed-out answer from OpenBot takes.
+// AwakenBot tells it of goes through the path a signed-out answer from AwakenBot takes.
 import {
   LAUNCHER_GLOBAL,
   type LauncherApi,
@@ -57,7 +57,7 @@ type LauncherDeps = {
   now: () => number;
 };
 
-/** How long a connection waits on OpenBot to say who it is for: it is stored either way, and the keep-alive asks again. */
+/** How long a connection waits on AwakenBot to say who it is for: it is stored either way, and the keep-alive asks again. */
 const ME_WAIT_MS = 5_000;
 const TITLE_MAX = 200;
 const PHRASE_MAX = 4_000;
@@ -65,14 +65,14 @@ const PHRASE_MAX = 4_000;
 const SENTENCES = {
   invalid: "The Recorder could not read that request.",
   address:
-    "That OpenBot address is not one the Recorder connects to. It must be https, or http on 127.0.0.1 or [::1] with a port.",
+    "That AwakenBot address is not one the Recorder connects to. It must be https, or http on 127.0.0.1 or [::1] with a port.",
   policyInvalid:
-    "Your organization's Recorder policy names an OpenBot address the Recorder cannot use. Ask your IT team.",
+    "Your organization's Recorder policy names an AwakenBot address the Recorder cannot use. Ask your IT team.",
   pinnedElsewhere:
-    "Your organization's Recorder policy does not allow this OpenBot. Ask your IT team.",
+    "Your organization's Recorder policy does not allow this AwakenBot. Ask your IT team.",
   refused:
-    "OpenBot did not accept this browser's connection. Open the browser from OpenBot again.",
-  notConnected: "Connect this browser to OpenBot first.",
+    "AwakenBot did not accept this browser's connection. Open the browser from AwakenBot again.",
+  notConnected: "Connect this browser to AwakenBot first.",
   noTab: "There is no tab to record. Open one and try again.",
   failed: "The Recorder could not do that. Try again.",
 } as const;
@@ -187,9 +187,9 @@ function voiceOf(state: RecorderState): NonNullable<LauncherState["voice"]> {
 }
 
 /** The recording Stop ended last, by name and with what it held, once it went to Intelligence (a Disconnect or a
- * failed send leaves none), and not when the person's own Learning space is known not to take it: OpenBot confirms it
- * went there, or says it held nothing. One stopped by an earlier build, which did not count, is not reported: OpenBot
- * would say it held nothing. OpenBot's own page reads it the same way (openbot-page.ts). */
+ * failed send leaves none), and not when the person's own Learning space is known not to take it: AwakenBot confirms it
+ * went there, or says it held nothing. One stopped by an earlier build, which did not count, is not reported: AwakenBot
+ * would say it held nothing. AwakenBot's own page reads it the same way (openbot-page.ts). */
 export function lastStopped(
   state: RecorderState,
 ): LauncherState["lastStopped"] {
@@ -274,8 +274,8 @@ export function createLauncher(
     };
   }
 
-  /** Who OpenBot says a connection is for, as the popup would ask when it opens, asked BEFORE the connection is taken:
-   * `signed-out` when OpenBot revoked it already, `unknown` when OpenBot cannot answer for now (the connection is taken,
+  /** Who AwakenBot says a connection is for, as the popup would ask when it opens, asked BEFORE the connection is taken:
+   * `signed-out` when AwakenBot revoked it already, `unknown` when AwakenBot cannot answer for now (the connection is taken,
    * and the keep-alive asks again). */
   async function ask(connection: ConnectionRecord): Promise<
     | { kind: "ok"; value: RecorderMe }
@@ -353,7 +353,7 @@ export function createLauncher(
          * Asked before it is taken. Two opens of one browser can cross, and the older one's connection, revoked by the
          * newer one's, can arrive last: taking it first would sign out the connection that stands and stop its
          * recording. A revoked connection is refused and the one held stays; with none held (or this one), it ends as
-         * OpenBot's own signed-out answer does, with the notice.
+         * AwakenBot's own signed-out answer does, with the notice.
          */
         const asked = await ask(record);
         if (asked.kind === "signed-out") {
@@ -425,7 +425,7 @@ export function createLauncher(
               title: input.title.trim(),
               tabId,
               language,
-              // Whether the person narrates, as OpenBot's own Record form asked them.
+              // Whether the person narrates, as AwakenBot's own Record form asked them.
               ...(typeof input.narrate === "boolean"
                 ? { narrate: input.narrate }
                 : {}),
@@ -467,11 +467,11 @@ export function createLauncher(
       () => refuse(SENTENCES.failed),
     ),
 
-    // OpenBot revoked this browser's connection (the person disconnected it in Settings, Browsers) and says so now,
-    // rather than leaving the Recorder to hear it on its next call to OpenBot, which on a quiet browser is the keep-alive,
-    // hours away. It goes the way OpenBot answering that the token is gone goes: the connection is forgotten with the
+    // AwakenBot revoked this browser's connection (the person disconnected it in Settings, Browsers) and says so now,
+    // rather than leaving the Recorder to hear it on its next call to AwakenBot, which on a quiet browser is the keep-alive,
+    // hours away. It goes the way AwakenBot answering that the token is gone goes: the connection is forgotten with the
     // signed-out notice, a recording under it stops as signed out and is kept for its person, and the next connection
-    // the launcher hands in sends it. OpenBot has revoked the token already, so it is not asked to again.
+    // the launcher hands in sends it. AwakenBot has revoked the token already, so it is not asked to again.
     disconnect: guarded(
       async (): Promise<LauncherResult> => {
         const connection = await currentConnection();

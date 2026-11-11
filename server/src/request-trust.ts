@@ -12,7 +12,7 @@ import type { DeploymentConfig, SingleUserAccess } from "./config";
  * Two questions, answered in front of every route rather than in each one.
  *
  * WHICH SITE IS ASKING. A browser attaches the person's standing to any request a page makes: their
- * cookies, and on a single-user OpenBot simply being on the machine. So a page on another website
+ * cookies, and on a single-user AwakenBot simply being on the machine. So a page on another website
  * could POST to this server, open its sockets, and before this read `/api/copilotkit`, whose runtime
  * answered `Access-Control-Allow-Origin: *` by default. The browser says which page is asking in
  * `Origin` and `Sec-Fetch-Site`, and a page cannot forge either. A request that changes something,
@@ -57,15 +57,15 @@ export function callerOf(context: Context): NetworkCaller | undefined {
 
 /** What a page from another site is told. The person reads it when something they did not start was stopped. */
 export const CROSS_SITE_REFUSAL =
-  "OpenBot only takes this from its own pages. Open OpenBot and try again there.";
+  "AwakenBot only takes this from its own pages. Open AwakenBot and try again there.";
 
-/** What a single-user OpenBot says to a request addressed to a name it does not answer to. */
+/** What a single-user AwakenBot says to a request addressed to a name it does not answer to. */
 export const SINGLE_USER_HOST_REFUSAL =
-  "OpenBot doesn't answer at this address. Open it at localhost or 127.0.0.1 on this computer.";
+  "AwakenBot doesn't answer at this address. Open it at localhost or 127.0.0.1 on this computer.";
 
-/** What a single-user OpenBot on somebody's own machine says to another machine. */
+/** What a single-user AwakenBot on somebody's own machine says to another machine. */
 export const SINGLE_USER_MACHINE_REFUSAL =
-  "This OpenBot only answers on the computer it runs on. Open it there, or set up sign-in so other people can use it.";
+  "This AwakenBot only answers on the computer it runs on. Open it there, or set up sign-in so other people can use it.";
 
 /**
  * Whether a browser origin is one of this deployment's own pages, or the Recorder extension.
@@ -190,7 +190,7 @@ function hostName(request: Request): string | null {
 }
 
 /**
- * Why a request may not be this single-user OpenBot's administrator, or null when it may.
+ * Why a request may not be this single-user AwakenBot's administrator, or null when it may.
  *
  * Asked wherever that administrator is admitted (the single-user guard, the runtime, the live screen's
  * socket) and nowhere else. The routes that answer containers and services (a Bot calling back, the
@@ -261,17 +261,17 @@ export function createSingleUserGate(
 }
 
 /**
- * OpenBot's own origin as a caller on this machine reached it, or null.
+ * AwakenBot's own origin as a caller on this machine reached it, or null.
  *
- * For an address handed to something that is not one of OpenBot's pages, and so has no page to
+ * For an address handed to something that is not one of AwakenBot's pages, and so has no page to
  * resolve a path against: the Recorder's capture pass names the Intelligence gateway's socket on
- * OpenBot's own address (intelligence-gateway-proxy.ts). Where no public URL is configured, as over a
+ * AwakenBot's own address (intelligence-gateway-proxy.ts). Where no public URL is configured, as over a
  * `kubectl port-forward`, the only name that address has is the one the caller used to reach it.
  *
  * Made from `Host` only where nobody else could have written it. The caller is on loopback: the
  * socket's peer, which nobody can write, and what a port-forward's connection is inside the pod. The
  * Host is one of this machine's own loopback names, which no DNS answer can stand in for. And a
- * single-user OpenBot admits the request at all ({@link singleUserRefusal}). Any other caller's Host
+ * single-user AwakenBot admits the request at all ({@link singleUserRefusal}). Any other caller's Host
  * is its own say-so, and it gets nothing made from it. The scheme is the connection's own, which over
  * a port-forward is plain HTTP.
  *

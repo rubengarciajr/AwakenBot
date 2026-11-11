@@ -632,7 +632,7 @@ describe("a Bot gives part of its work to a subagent", () => {
     expect(
       text(sub.messages[0] ?? { role: "system", content: "" }),
     ).toStartWith(
-      `<identity>\nYou are Notes, a Bot in OpenBot. ${selfAddressGuidance("Notes")}\n</identity>\n\n<role>\n${ROLE}`,
+      `<identity>\nYou are Notes, a Bot in AwakenBot. ${selfAddressGuidance("Notes")}\n</identity>\n\n<role>\n${ROLE}`,
     );
     expect(offered(sub)).toContain(modelName(SEARCH));
     expect(offered(sub)).toContain(modelName(POST));
@@ -859,7 +859,7 @@ describe("a Bot gives part of its work to a subagent", () => {
           message.content.startsWith("You are a subagent"),
       ),
     );
-    // Both parts ran on OpenBot, at the same time, as the same remote Bot with no nesting.
+    // Both parts ran on AwakenBot, at the same time, as the same remote Bot with no nesting.
     expect(subs).toHaveLength(2);
     expect(remoteSubagents.most).toBe(2);
     for (const body of subs)

@@ -2,7 +2,7 @@
  * A vanilla install from the licence and the model key alone, rendered by real Helm from the real
  * chart: the README's secrets file is those two lines, and the chart makes everything else.
  *
- * What must not regress, because each one is a person stuck before OpenBot ever starts, or a database
+ * What must not regress, because each one is a person stuck before AwakenBot ever starts, or a database
  * locked out of itself on the next upgrade:
  *  - with the bundled database, the key encryption key, the computer token and the database password
  *    are generated when nobody gives them, into Secrets the chart writes and keeps on uninstall, and

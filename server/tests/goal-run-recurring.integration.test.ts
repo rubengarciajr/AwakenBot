@@ -47,7 +47,7 @@ import { TEST_POOL, testDatabaseUrl } from "./support/database";
 /**
  * A run of a goal that repeats records its result and leaves the goal active.
  *
- * FOUND ON WINDOWS: asked "check the latest OpenBot release every morning and tell me what changed,
+ * FOUND ON WINDOWS: asked "check the latest AwakenBot release every morning and tell me what changed,
  * and run it now", the Personal Assistant made a goal and a daily 08:00 UTC routine that runs it, and
  * ran it. The run met the goal's success criteria, as every run of it would, and called
  * `complete_goal`. The Bot then made a second goal and pointed the routine at that one, which left
@@ -67,7 +67,7 @@ const BOT = `goal-recurring-assistant-${suite}`;
 const CONVERSATION = {
   id: `goal-recurring-conversation-${suite}`,
   threadId: `goal-recurring-thread-${suite}`,
-  title: "Morning OpenBot release check",
+  title: "Morning AwakenBot release check",
 } as const;
 
 const pluginStore = createPluginStore({
@@ -105,7 +105,7 @@ const routineStore = createRoutineStore(database);
 const SUMMARY =
   "v0.3.2 is the latest release, published today: 14 changes, mostly desktop updates.";
 const REPLY =
-  "OpenBot v0.3.2 is out. It has 14 changes, mostly to how the desktop app updates.";
+  "AwakenBot v0.3.2 is out. It has 14 changes, mostly to how the desktop app updates.";
 
 /** What the stand-in model was sent, request by request. */
 const requests: RunAgentInput[] = [];
@@ -311,7 +311,7 @@ function answers(input: RunAgentInput | undefined) {
 /** "Make the goal and a daily 08:00 UTC routine that runs it, and run it now", as the Bot did. */
 async function askedInTheConversation(options: { recurring?: boolean } = {}) {
   const made = await call("create_goal", {
-    title: "Morning OpenBot release check",
+    title: "Morning AwakenBot release check",
     instruction:
       "Check the latest release on github.com/CopilotKit/OpenBot/releases and tell the person what changed since the last check.",
     successCriteria:
@@ -549,7 +549,7 @@ describe("ending a goal that repeats", () => {
     const fired = await call("run_goal", { id: goal.id });
     expect(fired.isError).toBe(true);
     expect(fired.text).toContain(
-      '"Morning OpenBot release check" is complete, so it no longer runs and nothing was done.',
+      '"Morning AwakenBot release check" is complete, so it no longer runs and nothing was done.',
     );
     expect(await runsOf(goal.id)).toEqual([]);
   });
@@ -570,12 +570,12 @@ describe("ending a goal that repeats", () => {
       (
         await call("update_goal", {
           id: goal.id,
-          patch: { title: "OpenBot release notes" },
+          patch: { title: "AwakenBot release notes" },
         })
       ).isError,
     ).toBe(false);
     expect(await goalStore.get(OWNER, goal.id)).toMatchObject({
-      title: "OpenBot release notes",
+      title: "AwakenBot release notes",
       recurring: true,
       subscriptions: [{ source: "github", eventType: "release.published" }],
     });
@@ -670,7 +670,7 @@ describe("which goal a routine runs", () => {
       .where(eq(routines.ownerUserId, OWNER));
     expect(routine).toMatchObject({
       goalId: goal.id,
-      title: "Morning OpenBot release check",
+      title: "Morning AwakenBot release check",
       goalByTitle: false,
     });
 
@@ -695,7 +695,7 @@ describe("which goal a routine runs", () => {
     });
     expect(made.isError).toBe(true);
     expect(made.text).toContain(
-      '"Morning OpenBot release check" is complete, so a routine can\'t run it.',
+      '"Morning AwakenBot release check" is complete, so a routine can\'t run it.',
     );
     const unknown = await call("create_routine", {
       instruction: "Check the latest release.",

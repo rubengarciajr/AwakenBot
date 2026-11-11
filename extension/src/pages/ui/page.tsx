@@ -21,7 +21,7 @@ function useColourScheme() {
 }
 
 /**
- * The frame every extension page sits in. `prose` is OpenBot's own column and header from
+ * The frame every extension page sits in. `prose` is AwakenBot's own column and header from
  * `page-parts`, minus the sidebar toggle and back button that belong to the app's router.
  */
 export function Page({

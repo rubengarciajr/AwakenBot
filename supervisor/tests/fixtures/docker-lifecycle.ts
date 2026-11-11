@@ -497,7 +497,7 @@ describe("a computer built from an older image", () => {
   }, 180_000);
 
   /*
-   * Found on OpenBot Desktop: quit and opened again, compose removed its network and made a new one,
+   * Found on AwakenBot Desktop: quit and opened again, compose removed its network and made a new one,
    * and the person's stopped computer still named the old one. Docker refused to start it ("network
    * not found") and the Bot said Docker was unreachable.
    */
@@ -623,7 +623,7 @@ cat > "$repo/build/DEBIAN/control" <<'CONTROL'
 Package: openbot-test-tool
 Version: 1.0
 Architecture: all
-Maintainer: OpenBot Tests <test@example.invalid>
+Maintainer: AwakenBot Tests <test@example.invalid>
 Description: Local package installation regression fixture
 CONTROL
 cat > "$repo/build/usr/local/bin/openbot-test-tool" <<'TOOL'

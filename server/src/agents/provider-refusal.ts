@@ -1,7 +1,7 @@
 /**
  * A model provider refusing a run, said in words a person can act on.
  *
- * Seen on OpenBot Desktop: a Bot on the LangGraph harness ended its turn in red with "Error code: 400
+ * Seen on AwakenBot Desktop: a Bot on the LangGraph harness ended its turn in red with "Error code: 400
  * - Invalid 'tools': array too long. Expected an array with maximum length 128, but got an array with
  * length 202 instead." That is the OpenAI SDK's text for the provider's answer, passed through as the
  * RUN_ERROR both surfaces draw. Every harness has its own spelling of the same refusals: the Python

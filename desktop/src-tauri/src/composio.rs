@@ -155,7 +155,7 @@ pub enum Provisioned {
     New(ProvisionedKey),
 }
 
-/// Where the CLI writes the key it brings back. OpenBot's own folder, owner-only, removed with
+/// Where the CLI writes the key it brings back. AwakenBot's own folder, owner-only, removed with
 /// what is in it as soon as the key is read, whatever the CLI did.
 const HANDOFF: &str = ".openbot-apps";
 const HANDOFF_FILE: &str = "composio.env";
@@ -168,13 +168,13 @@ Connect this installation's apps, once a CopilotKit sign-in is in place.
 
 `cli` runs `copilotkit integrations composio provision` for the installation id, writing into the
 file it is given (`local_eval::provision_apps_installed`). The CLI is the one that talks to
-CopilotKit Ops, with the session its own `login` saved: OpenBot never reads that session. Ops
+CopilotKit Ops, with the session its own `login` saved: AwakenBot never reads that session. Ops
 makes one Composio project per installation, owned by the signed-in account and organization, and
 replays the same key for it later.
 
 Only adds a key. A key the person supplied, an Arcade choice, or a key kept from an earlier
 connection means nothing is asked for. A new key goes to the protected store, never to `.env`.
-Callers treat a failure as apps unavailable: OpenBot still starts.
+Callers treat a failure as apps unavailable: AwakenBot still starts.
 */
 pub fn connect(
     root: &Path,
@@ -204,7 +204,7 @@ pub fn provision(
 pub fn save(root: &Path, key: ProvisionedKey) -> Result<(), Problem> {
     crate::vault::remember(root, PROVISIONED_KEY, &key.0).map_err(|_| {
         Problem::plain(
-            "OpenBot couldn't save your apps securely. Check access to its folder, then choose Connect apps.",
+            "AwakenBot couldn't save your apps securely. Check access to its folder, then choose Connect apps.",
         )
     })
 }
@@ -251,7 +251,7 @@ fn request_with_cli(
 
 /// What the person reads when apps could not be connected. Nothing the CLI or Ops said is in it.
 pub fn setup_problem() -> Problem {
-    Problem::plain("OpenBot couldn't connect your apps. Check your connection, then choose Connect apps. If it keeps happening, ask an admin.")
+    Problem::plain("AwakenBot couldn't connect your apps. Check your connection, then choose Connect apps. If it keeps happening, ask an admin.")
 }
 
 fn provision_with(
@@ -276,7 +276,7 @@ fn provision_with(
     }
     if !provider.is_empty() && provider != "composio" {
         return Err(Problem::with(
-            "OpenBot's app settings aren't valid. Ask an admin to check them.",
+            "AwakenBot's app settings aren't valid. Ask an admin to check them.",
             "OPENBOT_BROKER_PROVIDER must be composio or arcade.",
         ));
     }
@@ -384,7 +384,7 @@ fn installation_identity(root: &Path, configured: Option<&str>) -> Result<String
 }
 
 fn identity_problem() -> Problem {
-    Problem::plain("OpenBot couldn't read this installation's app settings. Check access to its folder, then choose Connect apps.")
+    Problem::plain("AwakenBot couldn't read this installation's app settings. Check access to its folder, then choose Connect apps.")
 }
 
 #[cfg(test)]
@@ -602,7 +602,7 @@ mod tests {
             })
         });
         let rendered = serde_json::to_string(&failed.err().unwrap()).unwrap();
-        assert!(rendered.contains("OpenBot couldn't connect your apps."));
+        assert!(rendered.contains("AwakenBot couldn't connect your apps."));
         assert!(!rendered.contains("synthetic-"));
         assert!(!root.join(HANDOFF).exists());
 

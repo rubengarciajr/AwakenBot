@@ -1,5 +1,5 @@
 // The Recorder's launcher API, end to end through the Recorder's own code: the real service worker (connection,
-// recording, router, setup) and the real offscreen document side by side over a fake OpenBot and Intelligence, driven
+// recording, router, setup) and the real offscreen document side by side over a fake AwakenBot and Intelligence, driven
 // through `globalThis[LAUNCHER_GLOBAL]` as the process that launched the browser drives it over its DevTools pipe. The
 // steps are rows of the full end-to-end run (fixtures/e2e-held-steps.json).
 import { afterEach, beforeEach, expect, test } from "bun:test";
@@ -66,29 +66,29 @@ async function until(check: () => boolean | Promise<boolean>, label: string) {
   }
 }
 
-// ---- The fake OpenBot and Intelligence --------------------------------------------------------
+// ---- The fake AwakenBot and Intelligence --------------------------------------------------------
 
 let gateway: FakeGateway;
-/** The tokens OpenBot still knows, and how often each asked who it is for. */
+/** The tokens AwakenBot still knows, and how often each asked who it is for. */
 let liveTokens = new Set<string>();
 let meAsked: string[] = [];
-/** Whose each token is, as OpenBot answers who a connection is for; Ada's unless a test hands out another's. */
+/** Whose each token is, as AwakenBot answers who a connection is for; Ada's unless a test hands out another's. */
 let tokenOwners = new Map<string, typeof ada>();
-/** Every call the Recorder made to OpenBot's own routes, as `<method> <path>`. */
+/** Every call the Recorder made to AwakenBot's own routes, as `<method> <path>`. */
 let openbotAsked: string[] = [];
-/** The person's own Learning space, as OpenBot answers the Recorder's popup; none until a test sets one. */
+/** The person's own Learning space, as AwakenBot answers the Recorder's popup; none until a test sets one. */
 let learning: LearningSpaceState | null = null;
-/** The token OpenBot mints for OpenBot Desktop's code, and the tokens the Recorder asked OpenBot to revoke. */
+/** The token AwakenBot mints for AwakenBot Desktop's code, and the tokens the Recorder asked AwakenBot to revoke. */
 const DESKTOP_TOKEN = "obr_desktop-made";
 let revokedTokens: string[] = [];
 /** While set, the runtime's capture pass refuses with this status and body, as an Intelligence with Trajectories
  * turned off does (404 TRAJECTORIES_UNAVAILABLE). */
 let passRefusal: { status: number; body: Record<string, unknown> } | null =
   null;
-/** While set, OpenBot answers the exchange of OpenBot Desktop's code only once it resolves. */
+/** While set, AwakenBot answers the exchange of AwakenBot Desktop's code only once it resolves. */
 let exchangeHeld: Promise<void> | null = null;
 let exchangeArrived = () => {};
-/** OpenBot taking OpenBot Desktop's code, when it is asked to and once `exchangeHeld` lets it. */
+/** AwakenBot taking AwakenBot Desktop's code, when it is asked to and once `exchangeHeld` lets it. */
 async function exchange(): Promise<Response> {
   exchangeArrived();
   if (exchangeHeld) await exchangeHeld;
@@ -117,7 +117,7 @@ function route(request: Request): Response | Promise<Response> | null {
     if (!liveTokens.has(token))
       return Response.json(
         {
-          error: "This browser is no longer connected to OpenBot.",
+          error: "This browser is no longer connected to AwakenBot.",
           code: RECORDER_SIGNED_OUT,
           reason: "revoked",
         },
@@ -410,7 +410,7 @@ test("connect stores the connection as an approved Connect does, with no Connect
     via: "openbot-browser",
     narration: "external",
   });
-  // OpenBot said who the connection is for, as the popup asks when it opens, and the keep-alive is satisfied.
+  // AwakenBot said who the connection is for, as the popup asks when it opens, and the keep-alive is satisfied.
   expect(meAsked).toEqual([TOKEN]);
   expect(fake.storage.session.get("me")).toMatchObject({
     value: { user: ada, connectionId: `c-${TOKEN}` },
@@ -431,7 +431,7 @@ test("connect stores the connection as an approved Connect does, with no Connect
       via: "openbot-browser",
     },
   });
-  // With the connection it holds by id and the address it reaches OpenBot at, which OpenBot keeps rather than making
+  // With the connection it holds by id and the address it reaches AwakenBot at, which AwakenBot keeps rather than making
   // another at every open while that is still its address.
   expect(await launcher().state()).toEqual({
     connected: true,
@@ -456,7 +456,7 @@ test("connect stores the connection as an approved Connect does, with no Connect
   expect(stored()?.connectedAt).toBe(connectedAt);
 });
 
-test("connect refuses an address the Recorder would not connect to, a malformed request and a policy that pins another OpenBot", async () => {
+test("connect refuses an address the Recorder would not connect to, a malformed request and a policy that pins another AwakenBot", async () => {
   for (const openbotUrl of [
     "http://openbot.example.com",
     "http://localhost:3010",
@@ -492,13 +492,13 @@ test("connect refuses an address the Recorder would not connect to, a malformed 
   ).toEqual({
     ok: false,
     error:
-      "Your organization's Recorder policy does not allow this OpenBot. Ask your IT team.",
+      "Your organization's Recorder policy does not allow this AwakenBot. Ask your IT team.",
   });
   expect(stored()).toBeUndefined();
   expect(meAsked).toEqual([]);
 });
 
-test("a connection OpenBot already signed out is refused and forgotten, with the signed-out notice", async () => {
+test("a connection AwakenBot already signed out is refused and forgotten, with the signed-out notice", async () => {
   liveTokens.clear();
   expect(
     await launcher().connect({ connection: connection(), narration: "own" }),
@@ -513,7 +513,7 @@ test("a connection OpenBot already signed out is refused and forgotten, with the
 
 test("a revoked connection handed to a Recorder holding a good one is refused and leaves the good one, recording or not", async () => {
   // Two opens of one browser that cross: the older one's connection was revoked by the newer one's, and it reaches the
-  // Recorder last. The Recorder asks OpenBot before it takes a connection, so the one that stands keeps it.
+  // Recorder last. The Recorder asks AwakenBot before it takes a connection, so the one that stands keeps it.
   expect(
     await launcher().connect({ connection: connection(), narration: "own" }),
   ).toEqual({ ok: true });
@@ -532,11 +532,11 @@ test("a revoked connection handed to a Recorder holding a good one is refused an
   });
 });
 
-test("disconnect forgets the connection OpenBot revoked at once and reports signed out, as OpenBot's own signed-out answer does", async () => {
+test("disconnect forgets the connection AwakenBot revoked at once and reports signed out, as AwakenBot's own signed-out answer does", async () => {
   // The second end-to-end run: Disconnect in Settings, Browsers, and the Recorder went on reporting itself connected
-  // until its next call to OpenBot, which on a quiet browser is the keep-alive, twelve hours away.
+  // until its next call to AwakenBot, which on a quiet browser is the keep-alive, twelve hours away.
   await launcher().connect({ connection: connection(), narration: "external" });
-  // OpenBot revoked the connection, then told the browser.
+  // AwakenBot revoked the connection, then told the browser.
   liveTokens.delete(TOKEN);
   const asked = openbotAsked.length;
   expect(await launcher().disconnect()).toEqual({ ok: true });
@@ -564,13 +564,13 @@ test("disconnect forgets the connection OpenBot revoked at once and reports sign
     connection: null,
     notice: { kind: "signed-out", reason: "revoked" },
   });
-  // OpenBot revoked the token itself, so it is not asked to again, nor asked who the token is for.
+  // AwakenBot revoked the token itself, so it is not asked to again, nor asked who the token is for.
   expect(openbotAsked.slice(asked)).toEqual([]);
   // Record is refused until the launcher hands in a connection again.
   openOrder();
   expect(
     await launcher().record({ action: "start", title: "After Disconnect" }),
-  ).toEqual({ ok: false, error: "Connect this browser to OpenBot first." });
+  ).toEqual({ ok: false, error: "Connect this browser to AwakenBot first." });
 
   // Told again, or told with nothing stored: nothing more happens.
   expect(await launcher().disconnect()).toEqual({ ok: true });
@@ -591,7 +591,7 @@ test.each([
   ["", 0],
   [", even when the document is slow to store the outcome", 30],
 ])(
-  "a recording disconnect finds running stops as a sign-out stops one, kept for its person, and goes to OpenBot's backend once the browser is connected again%s",
+  "a recording disconnect finds running stops as a sign-out stops one, kept for its person, and goes to AwakenBot's backend once the browser is connected again%s",
   async (_, delayMs) => {
     await launcher().connect({
       connection: connection(),
@@ -628,7 +628,7 @@ test.each([
     ]);
     expect(names(trajectoryId)).not.toContain("click");
 
-    // Record after Disconnect: OpenBot connects the browser again first, and the kept recording goes, its outcome saying
+    // Record after Disconnect: AwakenBot connects the browser again first, and the kept recording goes, its outcome saying
     // the browser was signed out.
     const NEXT = "obr_openbot-browser-token-next";
     liveTokens.add(NEXT);
@@ -665,14 +665,14 @@ test.each([
   15_000,
 );
 
-test("an OpenBot browser shows no setup tab and no Connect page: none on a later launch, and the first launch's are closed", async () => {
-  // OpenBot Desktop's native host answers in this profile too, and hands over a code its OpenBot takes.
+test("an AwakenBot browser shows no setup tab and no Connect page: none on a later launch, and the first launch's are closed", async () => {
+  // AwakenBot Desktop's native host answers in this profile too, and hands over a code its AwakenBot takes.
   fake.native.reply = (message) =>
     (message as { type: string }).type === "ping"
       ? { ok: true }
       : { ok: true, openbotUrl: gateway.httpUrl, code: "obc_fixture" };
 
-  // The first launch: the install opens its setup tab, and connects through OpenBot Desktop, before the launcher does.
+  // The first launch: the install opens its setup tab, and connects through AwakenBot Desktop, before the launcher does.
   fake.fireInstalled("install");
   await until(
     () => fake.opened.length === 1 && stored()?.via === "desktop",
@@ -685,8 +685,8 @@ test("an OpenBot browser shows no setup tab and no Connect page: none on a later
   expect([...fake.removed].sort()).toEqual(opened.sort());
   expect(fake.storage.session.get("pendingConnect")).toBeUndefined();
   expect(stored()).toMatchObject({ via: "openbot-browser", token: TOKEN });
-  // The connection the install made on its own is revoked: OpenBot would otherwise count this browser as one of the
-  // person's own that OpenBot Desktop connected.
+  // The connection the install made on its own is revoked: AwakenBot would otherwise count this browser as one of the
+  // person's own that AwakenBot Desktop connected.
   expect(revokedTokens).toEqual([DESKTOP_TOKEN]);
 
   // The next launch: the Recorder is loaded afresh (an install again) with its storage, the connection in it.
@@ -706,7 +706,7 @@ test("an OpenBot browser shows no setup tab and no Connect page: none on a later
   expect(stored()).toMatchObject({ via: "openbot-browser", token: TOKEN });
 });
 
-test("the launcher's connection that comes while the install's OpenBot Desktop code is exchanged keeps that one out, revoked", async () => {
+test("the launcher's connection that comes while the install's AwakenBot Desktop code is exchanged keeps that one out, revoked", async () => {
   fake.native.reply = (message) =>
     (message as { type: string }).type === "ping"
       ? { ok: true }
@@ -986,7 +986,7 @@ test("speaking is refused while nothing records and in a browser that hears its 
   });
   // A page that heard the person stop as the recording ended says so after it: there is nothing to hold.
   expect(await launcher().speaking({ since: null })).toEqual({ ok: true });
-  // OpenBot's Record form asked the person, and they chose to narrate.
+  // AwakenBot's Record form asked the person, and they chose to narrate.
   await record(clock, "Own voice", { narrate: true });
   await until(() => speech.instances.length === 1, "the speech recognition");
   expect(await launcher().speaking({ since: clock - 500 })).toEqual({
@@ -1008,7 +1008,7 @@ test("speaking is refused while nothing records and in a browser that hears its 
 test("the Recorder says whether it hears the person: off while nothing records, listening, muted, or unavailable when the microphone is refused", async () => {
   await launcher().connect({ connection: connection(), narration: "own" });
   expect((await launcher().state()).voice).toBe("off");
-  // OpenBot's Record form asked the person, and they chose to narrate.
+  // AwakenBot's Record form asked the person, and they chose to narrate.
   await record(clock, "Own voice", { narrate: true });
   await until(() => speech.instances.length === 1, "the speech recognition");
   speech.instances[0]?.begin();
@@ -1046,7 +1046,7 @@ test("the Recorder says whether it hears the person: off while nothing records, 
   expect((await launcher().state()).voice).toBeUndefined();
 }, 15_000);
 
-test("Stop leaves the recording it ended, by name, for OpenBot to confirm it went to the person's Learning space", async () => {
+test("Stop leaves the recording it ended, by name, for AwakenBot to confirm it went to the person's Learning space", async () => {
   await launcher().connect({ connection: connection(), narration: "external" });
   const trajectoryId = await record(clock, "Archive order 1043");
   const recordingId = (await launcher().state()).recordingId;
@@ -1065,7 +1065,7 @@ test("Stop leaves the recording it ended, by name, for OpenBot to confirm it wen
     () => names(trajectoryId).filter((name) => name === "outcome").length === 2,
     "the recording stopped",
   );
-  // Nothing was done and nothing said in it: both counts say so, for OpenBot to say nothing was recorded.
+  // Nothing was done and nothing said in it: both counts say so, for AwakenBot to say nothing was recorded.
   expect((await launcher().state()).lastStopped).toEqual({
     recordingId: recordingId ?? "",
     title: "Archive order 1043",
@@ -1101,9 +1101,9 @@ test("Stop says the recording is still sending until the last of it has reached 
   expect(after).not.toHaveProperty("sending");
 }, 15_000);
 
-test("a recording Intelligence refused is reported kept, never sent or still sending, for OpenBot to say it was not saved", async () => {
-  // OpenBot Desktop, 2026-11-06: the local Intelligence has Trajectories turned off and refused the capture pass, and
-  // OpenBot said the recording was saved to the person's Learning space.
+test("a recording Intelligence refused is reported kept, never sent or still sending, for AwakenBot to say it was not saved", async () => {
+  // AwakenBot Desktop, 2026-11-06: the local Intelligence has Trajectories turned off and refused the capture pass, and
+  // AwakenBot said the recording was saved to the person's Learning space.
   passRefusal = {
     status: 404,
     body: {
@@ -1139,8 +1139,8 @@ test("a recording Intelligence refused is reported kept, never sent or still sen
   expect(stopped).not.toHaveProperty("discarded");
 }, 15_000);
 
-test("a stopped recording whose capture pass keeps failing reports why while it retries, and goes once OpenBot answers", async () => {
-  // OpenBot Desktop, 2026-11-07: the capture pass could not reach OpenBot, the Recorder retried it for half an hour
+test("a stopped recording whose capture pass keeps failing reports why while it retries, and goes once AwakenBot answers", async () => {
+  // AwakenBot Desktop, 2026-11-07: the capture pass could not reach AwakenBot, the Recorder retried it for half an hour
   // before holding it, and the whole time Teach a Bot said "Saving … to your Learning space" with no reason.
   passRefusal = { status: 503, body: {} };
   await launcher().connect({ connection: connection(), narration: "external" });
@@ -1164,9 +1164,9 @@ test("a stopped recording whose capture pass keeps failing reports why while it 
     recordingId: recordingId ?? "",
     sending: true,
     retrying:
-      "OpenBot's backend is busy or unreachable. Retrying; nothing is lost.",
+      "AwakenBot's backend is busy or unreachable. Retrying; nothing is lost.",
   });
-  // OpenBot answers again: the reason goes, and so does the rest of the recording.
+  // AwakenBot answers again: the reason goes, and so does the rest of the recording.
   passRefusal = null;
   const drains = () =>
     (fake.storage.local.get("drains") as DrainRecord[] | undefined) ?? [];
@@ -1196,7 +1196,7 @@ test("a stopped recording a disconnect catches part sent is kept for its person,
 }, 15_000);
 
 test("Stop reports what the recording held: narration alone is something, and actions and phrases are both counted", async () => {
-  // The fifth end-to-end run: a recording of three narrated phrases and no clicks reached Intelligence, and OpenBot's
+  // The fifth end-to-end run: a recording of three narrated phrases and no clicks reached Intelligence, and AwakenBot's
   // page said nothing was recorded, from the only count it had, the actions.
   await launcher().connect({ connection: connection(), narration: "external" });
   const click = rows.archiveClick;
@@ -1297,7 +1297,7 @@ test("a recording a sign-out stops leaves what it held too", async () => {
       endedAt: click.timestamp + 200,
     }),
   ).toEqual({ ok: true });
-  // OpenBot revoked the connection and said so: the recording stops as a sign-out stops one.
+  // AwakenBot revoked the connection and said so: the recording stops as a sign-out stops one.
   liveTokens.delete(TOKEN);
   clock = click.timestamp + 1_000;
   expect(await launcher().disconnect()).toEqual({ ok: true });
@@ -1310,7 +1310,7 @@ test("a recording a sign-out stops leaves what it held too", async () => {
 
 test("a recording the person's Learning space will not take is not confirmed as gone there", async () => {
   await launcher().connect({ connection: connection(), narration: "external" });
-  // No Learning space is assigned to them, as OpenBot answers the Recorder's popup.
+  // No Learning space is assigned to them, as AwakenBot answers the Recorder's popup.
   learning = { state: "unassigned", containerId: null };
   expect(
     await fake.sendFromPage(

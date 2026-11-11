@@ -1,5 +1,5 @@
 /**
- * Settings → General's Share usage data: OpenBot Desktop's usage data could only be turned off with
+ * Settings → General's Share usage data: AwakenBot Desktop's usage data could only be turned off with
  * an environment variable at launch. The switch writes the same opt-out.
  *
  * These tests stand in for the IPC Tauri injects into the Desktop window, answering as the shell's
@@ -80,18 +80,20 @@ function renderGeneral() {
   );
 }
 
-test("Share usage data says what is sent and when a change applies, and links what OpenBot sends", async () => {
+test("Share usage data says what is sent and when a change applies, and links what AwakenBot sends", async () => {
   const view = renderGeneral();
   await view.findByRole("heading", { name: "Privacy" });
   const toggle = view.getByRole("switch", { name: "Share usage data" });
   expect(toggle.getAttribute("aria-checked")).toBe("true");
   expect(
     view.getByText(
-      /It never sends your conversations, files or keys\. Changes apply the next time OpenBot starts\./,
+      /It never sends your conversations, files or keys\. Changes apply the next time AwakenBot starts\./,
     ),
   ).toBeTruthy();
   expect(
-    view.getByRole("link", { name: "What OpenBot sends" }).getAttribute("href"),
+    view
+      .getByRole("link", { name: "What AwakenBot sends" })
+      .getAttribute("href"),
   ).toBe(
     "https://github.com/CopilotKit/OpenBot/blob/main/desktop/TELEMETRY.md",
   );

@@ -5,7 +5,7 @@ a failure, so `setup_failed` never says it.
 
 STEPS THAT RUN LONG (`StepWatch`). The Start, update and setup journeys measure how long each step
 typically takes: a first setup and an update of the back end on Windows D30 (`SETUP`, `UPDATE`),
-OpenBot's own start (`OPEN`) in desktop/src/journey.ts, and OpenBot updating itself (`RELEASE`) in
+AwakenBot's own start (`OPEN`) in desktop/src/journey.ts, and AwakenBot updating itself (`RELEASE`) in
 StartJourney.tsx. `journeyTimings.json` beside them holds the same numbers for this side, and
 journeyTimings.test.ts fails when the two differ. A step that runs three times as long as it
 typically takes, and two minutes over at least (`limit`), is said once. If it then finishes,
@@ -13,7 +13,7 @@ nothing more is said; if it fails, `setup_failed` says so.
 
 Downloads are not timed as steps. The journeys measure a download by its bytes rather than by the
 step it holds up, and a download that stops moving fails on its own (`local_images::Limits::stall`,
-the CLI's own pull limit). So the steps inside a plan's download stretch, and OpenBot's own download
+the CLI's own pull limit). So the steps inside a plan's download stretch, and AwakenBot's own download
 rows, are not timed, and a download that is moving restarts the clock of the step it holds up.
 
 THE WINDOW (`UiWatch`). On Windows a setup window froze for minutes: the native side kept working
@@ -22,7 +22,7 @@ heartbeat every few seconds while its setup, start or update screens show, and a
 progress event reaches it, carrying the highest progress number it has taken. Progress the page has
 not taken for over 30 seconds, while the window is on screen (shown, not minimised, and on macOS
 not covered), is a stall. It is said once, with its length, when the page catches up, the window
-leaves the screen, the page is replaced, or OpenBot quits.
+leaves the screen, the page is replaced, or AwakenBot quits.
 
 Neither watch reads a clock: every call is given the time, so the rules are tested second by second.
 */
@@ -38,7 +38,7 @@ use crate::telemetry::{FailingStep, StallPart, StallStep};
 /// The journeys' measured timings, mirrored from desktop/src (`journeyTimings.test.ts`).
 const TIMINGS: &str = include_str!("../../src/journeyTimings.json");
 
-/// OpenBot's own download, as start rows: "Downloading OpenBot." (`plain_row`).
+/// AwakenBot's own download, as start rows: "Downloading AwakenBot." (`plain_row`).
 const START_DOWNLOADS: [&str; 2] = ["deployment", "images"];
 
 /// The seconds a step that typically takes `typical` may run before it is said: three times as
@@ -218,7 +218,7 @@ struct Slot {
 }
 
 /// The step each journey is in, and whether it has run past its limit. One step at a time per
-/// journey; the journeys themselves can overlap (a first setup's back end beside OpenBot's install).
+/// journey; the journeys themselves can overlap (a first setup's back end beside AwakenBot's install).
 #[derive(Default)]
 pub struct StepWatch {
     slots: Vec<Slot>,
@@ -406,7 +406,7 @@ impl UiWatch {
         self.end(now)
     }
 
-    /// OpenBot is quitting: a stall still going is said now.
+    /// AwakenBot is quitting: a stall still going is said now.
     pub fn quit(&mut self, now: Instant) -> Option<UiNews> {
         self.end(now)
     }
@@ -483,7 +483,10 @@ mod tests {
             typical(StallPart::Release, "Downloading the update."),
             (50, false)
         );
-        assert_eq!(typical(StallPart::Release, "Starting OpenBot."), (35, true));
+        assert_eq!(
+            typical(StallPart::Release, "Starting AwakenBot."),
+            (35, true)
+        );
         assert!(step_names().contains(&"dependencies_wait"));
         assert!(step_names().contains(&"carry_over"));
         assert!(!step_names().contains(&"image_download"));
@@ -686,7 +689,7 @@ mod tests {
     }
 
     /// A page that loaded after progress was sent took none of it; its first heartbeat counts that
-    /// as taken. A page replaced by another (OpenBot opening) is not waited on.
+    /// as taken. A page replaced by another (AwakenBot opening) is not waited on.
     #[test]
     fn a_fresh_page_and_a_replaced_page_are_not_stalls() {
         let start = Instant::now();

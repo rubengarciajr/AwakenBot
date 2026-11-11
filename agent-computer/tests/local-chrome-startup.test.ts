@@ -56,7 +56,7 @@ describe("starting the local computer", () => {
         "win32",
         "C:\\Users\\Operator",
       ).root,
-    ).toBe("C:\\Users\\Operator\\AppData\\Local\\OpenBot\\local-computer");
+    ).toBe("C:\\Users\\Operator\\AppData\\Local\\AwakenBot\\local-computer");
   });
 
   test("rejects a relative data directory, invalid port and an incompatible backend", () => {

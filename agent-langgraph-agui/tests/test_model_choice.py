@@ -356,7 +356,7 @@ async def test_a_plan_refusing_a_model_ends_the_run_with_its_reason_and_refreshe
     assert len(plan.listings) == 2
 
 
-# The Codex backend's refusal of a tool schema, as the harness log showed it on OpenBot Desktop:
+# The Codex backend's refusal of a tool schema, as the harness log showed it on AwakenBot Desktop:
 # `openai.APIError: Invalid JSON schema: regex lookaround is not supported. Found at
 # $.properties.email_address.pattern.` raised from `bind_tools(model).ainvoke`. The message is the
 # backend's, verbatim. The envelope is the one shape that raises that class from a stream: the

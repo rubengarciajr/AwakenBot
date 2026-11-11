@@ -3,10 +3,10 @@ import type { DesktopAiConnection } from "./queries";
 /** One line of the AI model dialog: what it is, and this installation's answer. */
 export type AiConnectionDetail = { label: string; value: string };
 
-/** The AI connection in a person's words: who provides it, how OpenBot signs in, and the model. */
+/** The AI connection in a person's words: who provides it, how AwakenBot signs in, and the model. */
 export type AiConnectionSummary = {
   provider: string;
-  /** The row's second line: how OpenBot signs in, and the model when one was named. */
+  /** The row's second line: how AwakenBot signs in, and the model when one was named. */
   summary: string;
   details: AiConnectionDetail[];
 };

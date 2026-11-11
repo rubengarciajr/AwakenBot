@@ -1,4 +1,4 @@
-//! Which AI provider and sign-in OpenBot starts with, for Settings in OpenBot's own page.
+//! Which AI provider and sign-in AwakenBot starts with, for Settings in AwakenBot's own page.
 //!
 //! Read from what Start recorded beside the installation (`saved_intent`): the kind of connection
 //! chosen, the model named with it, and for a custom address, its host. Never a key, a token or a

@@ -496,7 +496,7 @@ describe("reviewing proposed skills in Admin, against Intelligence's project-key
     expect(intelligence.requests).toEqual([]);
   });
 
-  test("an admin reads the SKILL.md and evidence, approves it, and OpenBot's audit names them", async () => {
+  test("an admin reads the SKILL.md and evidence, approves it, and AwakenBot's audit names them", async () => {
     const { app, store, events, intelligence } = admin();
     await useDefault(store);
     expect(await (await app.request("/proposals")).json()).toMatchObject({
@@ -618,7 +618,7 @@ describe("reviewing proposed skills in Admin, against Intelligence's project-key
     });
     await useDefault(store);
     const said =
-      "Learning can't run on the model you signed in with. To use it, sign OpenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan.";
+      "Learning can't run on the model you signed in with. To use it, sign AwakenBot in with an OpenAI or Anthropic API key, or a Claude or ChatGPT plan.";
     const response = await post(app, "/runs");
     expect(response.status).toBe(409);
     expect(await response.json()).toEqual({ error: said });
@@ -628,7 +628,7 @@ describe("reviewing proposed skills in Admin, against Intelligence's project-key
     expect(overview.overview.modelProblem).toBe(said);
   });
 
-  test("an Intelligence OpenBot Desktop did not set up keeps telling its admin to give it a model", async () => {
+  test("an Intelligence AwakenBot Desktop did not set up keeps telling its admin to give it a model", async () => {
     const { app, store } = admin("current", "admin", "no-dashboard", {
       noModel: true,
       modelUnavailable: learningModelUnavailable({}),
@@ -654,7 +654,7 @@ describe("reviewing proposed skills in Admin, against Intelligence's project-key
     expect(await response.json()).toEqual({
       overview: {
         configuration: "configured",
-        container: { id: "openbot", name: "OpenBot" },
+        container: { id: "openbot", name: "AwakenBot" },
         pendingThreadCount: 1,
         pendingCandidateCount: 1,
         publishedSkillCount: 1,

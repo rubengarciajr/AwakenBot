@@ -157,7 +157,13 @@ function composioHolding(toolkit: string, accounts: HeldAccount[]) {
       list: async (query) => ({
         items:
           query.toolkit === toolkit
-            ? [{ id: config, name: `${toolkit} (OpenBot)`, status: "ENABLED" }]
+            ? [
+                {
+                  id: config,
+                  name: `${toolkit} (AwakenBot)`,
+                  status: "ENABLED",
+                },
+              ]
             : [],
         nextCursor: null,
       }),

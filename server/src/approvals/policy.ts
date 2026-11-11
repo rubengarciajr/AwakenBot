@@ -278,7 +278,7 @@ const SAFETY_REQUIREMENTS: readonly {
  * can allow it once, for the conversation, or always, and an admin can close each kind so it asks
  * every time or is left to the person (see {@link decideAction} and `offersStandingRule`).
  *
- * This reverses #998, which made these ask every time with Allow once and Deny only. OpenBot opens
+ * This reverses #998, which made these ask every time with Allow once and Deny only. AwakenBot opens
  * things by default, and closing them is the organisation's call.
  *
  * Matched only on what the action is called (see {@link actionName}), never on what it carries.
@@ -515,7 +515,7 @@ const DESTRUCTIVE_REASON =
   "The app marks this as deleting or overwriting something, so it asks you first.";
 
 /**
- * The kind of action this is, where OpenBot recognises one, and how it asks by default: `ask` for
+ * The kind of action this is, where AwakenBot recognises one, and how it asks by default: `ask` for
  * every kind, open to standing answers, and `hand_off` only for a credential typed on a website
  * ({@link TYPED_CREDENTIAL}). The admin's setting for the kind is applied in {@link decideAction}.
  */
@@ -650,7 +650,7 @@ function pressesSend(candidate: ApprovalCandidate): boolean {
   );
 }
 
-/** OpenBot's own memory and Bot-settings tools, which change only the Bot itself. */
+/** AwakenBot's own memory and Bot-settings tools, which change only the Bot itself. */
 const OWN_TOOLS = /^memory\/|^bot\/[^/]*(settings|preferences)/i;
 
 /**
@@ -727,7 +727,7 @@ function addressesPeople(args: unknown): boolean {
  */
 export function reviewable(candidate: ApprovalCandidate): boolean {
   if (candidate.effect === "read") return false;
-  // OpenBot's own memory and Bot-settings tools only. Matched anywhere in the ref, "settings" also
+  // AwakenBot's own memory and Bot-settings tools only. Matched anywhere in the ref, "settings" also
   // exempted vendor tools such as `composio/GITHUB_UPDATE_REPOSITORY_SETTINGS`.
   return !OWN_TOOLS.test(candidate.toolRef);
 }
@@ -933,7 +933,7 @@ export function closedKind(
 /**
  * The whole decision, layer by layer.
  *
- * 1. A kind of action OpenBot recognises (`safetyRequirement`): a credential typed on a website is
+ * 1. A kind of action AwakenBot recognises (`safetyRequirement`): a credential typed on a website is
  *    handed to the person, and a kind the admin closed asks every time or is handed to the person
  *    (`closedKind`). Nothing below changes either.
  * 2. The strictest rule: the admin's, the person's, and the person's "Allow for this conversation"

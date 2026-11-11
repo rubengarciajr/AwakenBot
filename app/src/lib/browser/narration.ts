@@ -1,11 +1,11 @@
 /*
- * NARRATION FROM THE PAGE. On hosted OpenBot and OpenBot Desktop the person's browser runs on a computer with no
+ * NARRATION FROM THE PAGE. On hosted AwakenBot and AwakenBot Desktop the person's browser runs on a computer with no
  * microphone, so this page listens to them instead, in their own browser, with the Web Speech API, and hands each final
  * phrase to the Recorder with when they started and stopped saying it. It also says when a phrase began, as soon as its
  * first words come back, so the Recorder holds the steps taken while it is said until it arrives. In a window on the
  * person's desktop none of this runs: the Recorder hears the microphone itself.
  *
- * In the OpenBot Desktop window the page is in the system's web view, which has no on-device recognition, so the
+ * In the AwakenBot Desktop window the page is in the system's web view, which has no on-device recognition, so the
  * desktop app's own takes the browser's place (@/lib/desktop/speech, `narrationRecognition`), on the device as well.
  *
  * It is the browser's own speech recognition (`SpeechRecognition`, or the `webkitSpeechRecognition` Chrome and Safari
@@ -69,7 +69,7 @@ export function speechRecognition(
 }
 
 /**
- * The recognition narration listens with: in the OpenBot Desktop window the desktop app's, which recognises speech on
+ * The recognition narration listens with: in the AwakenBot Desktop window the desktop app's, which recognises speech on
  * the person's computer where the window's web view cannot; anywhere else the browser's own.
  */
 export function narrationRecognition(

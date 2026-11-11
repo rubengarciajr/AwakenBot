@@ -1,4 +1,4 @@
-//! Exercise the production emitter against an explicit local receiver, without starting OpenBot.
+//! Exercise the production emitter against an explicit local receiver, without starting AwakenBot.
 use openbot_desktop_lib::telemetry::{
     AppVersion, Architecture, Config, Context, CredentialPath, Distribution, Engine, EventData,
     Platform, Provider, RuntimeEnv, Step, Telemetry,

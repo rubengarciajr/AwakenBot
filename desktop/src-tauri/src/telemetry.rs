@@ -927,7 +927,7 @@ impl EventData {
 }
 
 /// Which journey a stalled step is part of: the back end's first setup (`local setup`), its update
-/// (`local update`), OpenBot's own start, or OpenBot updating itself.
+/// (`local update`), AwakenBot's own start, or AwakenBot updating itself.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum StallPart {

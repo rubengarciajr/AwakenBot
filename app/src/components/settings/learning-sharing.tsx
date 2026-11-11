@@ -56,7 +56,7 @@ export const SHARING_CHOICES: {
     mode: "open",
     icon: IconUsersGroup,
     title: "Everyone's Bots",
-    description: "Every Bot on OpenBot draws on all of your skills.",
+    description: "Every Bot on AwakenBot draws on all of your skills.",
   },
   {
     mode: "choose",
@@ -104,8 +104,8 @@ function emptySentence(
 /** What the Your Skills section says about who draws on them, in the mode chosen. */
 const SKILLS_DESCRIPTION: Record<LearningSharingMode, string> = {
   closed: "Only the Bots you use draw on these skills.",
-  open: "Every Bot on OpenBot draws on these skills.",
-  choose: "Open a skill to let every Bot on OpenBot use it.",
+  open: "Every Bot on AwakenBot draws on these skills.",
+  choose: "Open a skill to let every Bot on AwakenBot use it.",
 };
 
 /**

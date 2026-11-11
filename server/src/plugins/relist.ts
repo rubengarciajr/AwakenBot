@@ -28,14 +28,14 @@ export function startBrokeredRelist(
       behind = ["(all)"];
       if (!warned)
         console.warn(
-          `OpenBot couldn't list its apps again after the upgrade (${error instanceof Error ? error.message : String(error)}). It will keep trying.`,
+          `AwakenBot couldn't list its apps again after the upgrade (${error instanceof Error ? error.message : String(error)}). It will keep trying.`,
         );
       warned = true;
     }
     if (behind.length === 0 || stopped) return;
     if (!warned)
       console.warn(
-        `${behind.join(", ")} couldn't be listed again after the upgrade, so its actions ask as they did before. OpenBot will keep trying.`,
+        `${behind.join(", ")} couldn't be listed again after the upgrade, so its actions ask as they did before. AwakenBot will keep trying.`,
       );
     warned = true;
     const delay = retryMs[Math.min(retry, retryMs.length - 1)] ?? 300_000;

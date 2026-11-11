@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
-// The shim the desktop window injects into OpenBot's pages (`outside_links.rs`).
+// The shim the desktop window injects into AwakenBot's pages (`outside_links.rs`).
 const SHIM = readFileSync(
   join(import.meta.dir, "../src-tauri/src/outside-links.js"),
   "utf8",
@@ -64,7 +64,7 @@ test("a link to another site meant for a new tab is handed over, not followed he
   link.remove();
 });
 
-test("OpenBot's own pages are left alone", () => {
+test("AwakenBot's own pages are left alone", () => {
   const link = document.createElement("a");
   link.href = "http://127.0.0.1:3010/bots";
   link.target = "_blank";

@@ -25,7 +25,7 @@ import { createPluginStore } from "../../src/plugins/store";
 import { TEST_POOL, testDatabaseUrl } from "./database";
 
 /**
- * The server's `/api/plugins` routes as OpenBot Personal mounts them, over the test database, for a
+ * The server's `/api/plugins` routes as AwakenBot Personal mounts them, over the test database, for a
  * browser test that wants the real answers rather than a copy of their shapes.
  *
  * Wired the way `index.ts` and `app.ts` wire them: the personal edition's defaults wrap the store,

@@ -49,8 +49,8 @@ describe("the personal edition's capabilities", () => {
     "proactive",
     "useBots",
     "cloudBrowser",
-    // Folders on the person's own machine, through OpenBot Desktop. It was refused with "isn't part
-    // of OpenBot Personal" on the desktop that offers it.
+    // Folders on the person's own machine, through AwakenBot Desktop. It was refused with "isn't part
+    // of AwakenBot Personal" on the desktop that offers it.
     "localComputer",
   ] as const)("keeps %s on", (capability) => {
     setEdition("personal");

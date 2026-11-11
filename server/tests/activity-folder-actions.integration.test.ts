@@ -13,7 +13,7 @@ import { TEST_POOL, testDatabaseUrl } from "./support/database";
 /**
  * What a Bot's folder actions on the person's own computer leave on the trail.
  *
- * Seen on Windows with folder access on (OpenBot Desktop, personal edition): every folder call a Bot
+ * Seen on Windows with folder access on (AwakenBot Desktop, personal edition): every folder call a Bot
  * made, reading a file, a write the person denied, a command, showed in Settings > Activity as
  * "Change a setting / Configuration changed / Started by a person". The denied write was not under
  * Blocked and none were under Computer actions, because each was written as `configuration.changed`.

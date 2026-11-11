@@ -8,11 +8,11 @@ import { createProductTelemetry } from "../src/telemetry/product";
 import { testEnvironment } from "./support/environment";
 
 /**
- * CopilotKit's own runtime events, not OpenBot's product events, carry `app_id=openbot` always and
- * this deployment's ID only while OpenBot's product telemetry is on.
+ * CopilotKit's own runtime events, not AwakenBot's product events, carry `app_id=openbot` always and
+ * this deployment's ID only while AwakenBot's product telemetry is on.
  *
  * Through the real runtime: the handler `mountCopilotRuntime` returns, answering a run request,
- * which the runtime records as `oss.runtime.copilot_request_created` with the properties OpenBot set
+ * which the runtime records as `oss.runtime.copilot_request_created` with the properties AwakenBot set
  * on it. What the runtime hands its telemetry transport is captured in place of the network send,
  * so nothing leaves this machine. The Intelligence platform is a fake on 127.0.0.1 that refuses
  * everything; the event is recorded before the run reaches it.

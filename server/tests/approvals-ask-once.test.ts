@@ -12,8 +12,8 @@ import { builtInAgentConfiguration, standingRoleMessage } from "../src/copilot";
  * One ask for one consequential action.
  *
  * The person was asked twice for one delete: once by the Bot, on its own approval card, and again by
- * OpenBot's safety policy, which asks whatever came before. The policy's card names the exact action,
- * so it is the one that stays, and a Bot OpenBot runs is told not to ask first. That is safe only for
+ * AwakenBot's safety policy, which asks whatever came before. The policy's card names the exact action,
+ * so it is the one that stays, and a Bot AwakenBot runs is told not to ask first. That is safe only for
  * as long as the policy really asks about every action the Bot is told it asks about, which is what
  * the second half pins.
  */
@@ -45,13 +45,13 @@ const prompt = (() => {
   return "prompt" in configuration ? (configuration.prompt ?? "") : "";
 })();
 
-describe("a Bot OpenBot runs leaves the asking to OpenBot", () => {
-  test("it is told OpenBot asks before consequential actions, and not to ask first", () => {
+describe("a Bot AwakenBot runs leaves the asking to AwakenBot", () => {
+  test("it is told AwakenBot asks before consequential actions, and not to ask first", () => {
     expect(prompt).toContain(ASKING_GUIDANCE);
     expect(ASKING_GUIDANCE).toContain("do not ask them first");
   });
 
-  test("a remote Bot is told so only for what OpenBot gives it: its own tools don't go through OpenBot's gate", () => {
+  test("a remote Bot is told so only for what AwakenBot gives it: its own tools don't go through AwakenBot's gate", () => {
     const role = standingRoleMessage({
       id: "risk",
       name: "Risk",
@@ -62,11 +62,11 @@ describe("a Bot OpenBot runs leaves the asking to OpenBot", () => {
     expect(role.content).toContain(BROUGHT_BOT_ASKING_GUIDANCE);
     const said = BROUGHT_BOT_ASKING_GUIDANCE.replace(/\s+/g, " ");
     expect(said).toContain(
-      "When you use the apps and tools OpenBot gives you, OpenBot asks the person itself before you delete",
+      "When you use the apps and tools AwakenBot gives you, AwakenBot asks the person itself before you delete",
     );
     // Its own tools are not covered, so it still asks before one of them does something final.
     expect(said).toContain(
-      "Tools of your own that OpenBot did not give you are not covered: ask before one of those does something that cannot be undone.",
+      "Tools of your own that AwakenBot did not give you are not covered: ask before one of those does something that cannot be undone.",
     );
   });
 
@@ -79,7 +79,7 @@ describe("a Bot OpenBot runs leaves the asking to OpenBot", () => {
     ["pay for", "Pay", "ask"],
     ["buy", "Buy now", "ask"],
   ] as const)(
-    "the guidance says OpenBot asks before you %s, and it does",
+    "the guidance says AwakenBot asks before you %s, and it does",
     (said, button, behaviour) => {
       expect(ASKING_GUIDANCE.replace(/\s+/g, " ")).toContain(said);
       expect(safetyRequirement(click(button))?.behaviour).toBe(behaviour);
@@ -119,7 +119,7 @@ describe("a Bot OpenBot runs leaves the asking to OpenBot", () => {
     );
   });
 
-  test("the guidance says OpenBot asks before you archive, and it does", () => {
+  test("the guidance says AwakenBot asks before you archive, and it does", () => {
     expect(ASKING_GUIDANCE.replace(/\s+/g, " ")).toContain(
       "delete, archive, send",
     );
@@ -128,7 +128,7 @@ describe("a Bot OpenBot runs leaves the asking to OpenBot", () => {
     );
   });
 
-  test("a tool its app marks destructive says so on itself, in the words the guidance names, and OpenBot asks", () => {
+  test("a tool its app marks destructive says so on itself, in the words the guidance names, and AwakenBot asks", () => {
     const guidance = ASKING_GUIDANCE.replace(/\s+/g, " ");
     expect(guidance).toContain(
       "before you use a tool that says it deletes or overwrites something",

@@ -23,7 +23,7 @@ export const DECLINED_BY_PERSON =
   "The person declined this action when you asked for their approval, so it was not done. This was their decision, not a policy or a boundary. Do not try this action, or anything equivalent, again in this conversation unless the person asks you to in words; tell them you did not do it because they declined.";
 /** What a Bot retrying an action that is still waiting is told, instead of opening a second request. */
 export const ALREADY_WAITING =
-  "An identical request is already waiting for the person's decision on the Bot's page in OpenBot, so this was not done and no second request was made. Do not repeat it; wait for their answer.";
+  "An identical request is already waiting for the person's decision on the Bot's page in AwakenBot, so this was not done and no second request was made. Do not repeat it; wait for their answer.";
 /**
  * ONE VOICE FOR EVERY STEP THAT DID NOT RUN: what happened, then the same two ways on.
  *
@@ -102,7 +102,7 @@ const FOR_PERSON = new Map<string, string>([
   [NOT_RUN_AFTER_FAILURE, "Not done. A step before it didn't work."],
   [
     OUTCOME_UNKNOWN,
-    "It started, but OpenBot can't tell whether it finished. It wasn't run again.",
+    "It started, but AwakenBot can't tell whether it finished. It wasn't run again.",
   ],
 ]);
 

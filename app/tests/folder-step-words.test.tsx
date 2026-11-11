@@ -20,7 +20,7 @@ import { settleReactWork } from "./settle-react-work";
 /**
  * A step on a folder on the person's computer, as the conversation draws it.
  *
- * FOUND ON WINDOWS: the person pressed Deny on OpenBot Desktop's "Allow this file change?" and the
+ * FOUND ON WINDOWS: the person pressed Deny on AwakenBot Desktop's "Allow this file change?" and the
  * step read "Blocked: Saved a file", past tense for a file that was never saved. A blocked step says
  * what was tried, and which file, the way a blocked step on the Bot's own computer does
  * ("Blocked: Save a file  notes.txt · You declined it.").
@@ -34,7 +34,7 @@ afterAll(async () => {
 });
 
 /** What the desktop answers when the person presses Deny, behind the server's refusal marker. */
-const DECLINED = `${REFUSAL_MARKER} Declined in OpenBot Desktop.`;
+const DECLINED = `${REFUSAL_MARKER} Declined in AwakenBot Desktop.`;
 
 const write = JSON.stringify({
   grantId: "host-grant-1",
@@ -237,7 +237,7 @@ test("an opened Check your folders step names the folders, never JSON or a grant
     JSON.stringify({ connected: false, folders: [] }),
   );
   expect(offline.container.textContent).toContain(
-    "No folders are shared with this Bot. OpenBot Desktop isn't running.",
+    "No folders are shared with this Bot. AwakenBot Desktop isn't running.",
   );
 });
 

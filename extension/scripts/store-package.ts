@@ -252,7 +252,7 @@ async function main() {
     writeFileSync(path.join(outDir, EDGE_PACKAGE), made.edge);
     console.log(
       [
-        `OpenBot Recorder ${made.version}, ${made.files} files, id ${made.id}${made.id === RECORDER_EXTENSION_ID ? " (the Recorder's fixed id)" : ""}`,
+        `AwakenBot Recorder ${made.version}, ${made.files} files, id ${made.id}${made.id === RECORDER_EXTENSION_ID ? " (the Recorder's fixed id)" : ""}`,
         `${path.join(outDir, CHROME_PACKAGE)}: no manifest key, ${KEY_FILE} at its root (${made.chrome.length} bytes)`,
         `${path.join(outDir, EDGE_PACKAGE)}: no manifest key, no key file (${made.edge.length} bytes)`,
       ].join("\n"),

@@ -139,7 +139,7 @@ export function planToolSearch(
 }
 
 /**
- * Whether a tool is one a Bot needs on every step: anything OpenBot gives it itself, Routines, and
+ * Whether a tool is one a Bot needs on every step: anything AwakenBot gives it itself, Routines, and
  * the tools that search and read the web. Only an app's other tools can wait, or be left out.
  */
 function staysInFront(tool: GrantedTool): boolean {
@@ -153,10 +153,10 @@ function staysInFront(tool: GrantedTool): boolean {
 /**
  * At most `limit` of a run's tools, for an endpoint that is sent every tool it is offered.
  *
- * A Bot at another endpoint (the harness OpenBot Desktop installs, or one somebody runs) cannot wait
+ * A Bot at another endpoint (the harness AwakenBot Desktop installs, or one somebody runs) cannot wait
  * behind a search the way a built-in one does: whatever it is sent reaches its model in one request,
  * and a provider refuses a request past its count. FOUND ON WINDOWS: the starter Bot on LangGraph,
- * with an OpenAI key and no app turned on, was sent 92 tools of OpenBot's and 43 of the browser's,
+ * with an OpenAI key and no app turned on, was sent 92 tools of AwakenBot's and 43 of the browser's,
  * and OpenAI refused all 135 ("array too long ... maximum length 128"), so it could not answer
  * anything. With a 64-action app on, it was 202.
  *
