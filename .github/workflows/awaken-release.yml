@@ -86,7 +86,9 @@ jobs:
     name: mac app
     needs: plan
     if: needs.plan.outputs.release == 'true'
-    runs-on: macos-latest
+    # A named image rather than macos-latest: on 2026-11-11 jobs on macos-latest went unclaimed for
+    # 15 minutes and were dropped. macos-15 is Apple silicon, which the app is built for.
+    runs-on: macos-15
     timeout-minutes: 120
     steps:
       # The whole history: build.rs reads the commit the app was built from.
