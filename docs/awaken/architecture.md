@@ -11,6 +11,7 @@ brand/                         logo.png (ice orb), updater-public.key
 scripts/awaken/brand.ts        name, bundle id, colors, repository (the settings)
 scripts/awaken/apply.ts        writes those settings into OpenBot's files (idempotent)
 scripts/awaken/version.ts      sets the release version
+scripts/awaken/release-mac.sh  builds the Mac app on this Mac and publishes (runner fallback)
 scripts/awaken-brand-icons.sh  logo.png -> every icon
 app/src/awaken/                palette.css (two colors), theme.css (web app tokens)
 desktop/src/awaken.css         setup window tokens, logo, no trademark sign
@@ -65,6 +66,14 @@ flowchart LR
   the new release (backing up the database first; rolling back if anything fails).
 - **Not used:** CopilotKit's download mirror (only for `CopilotKit/OpenBot` URLs), pinned
   deployments, OpenBot's `publish-release.yml` and signing workflows.
+
+## When GitHub's Mac runners are busy
+
+The workflow's `mac app` job can sit unclaimed ("The job was not acquired by Runner...") when
+GitHub's Apple silicon runners are at capacity. The images still build. Then, on an Apple silicon
+Mac with the updater key: `scripts/awaken/release-mac.sh`. It downloads the run's
+`container-images.json`, builds and signs the app and its update exactly as the job would, makes the
+DMG with `hdiutil`, and publishes the release. A later rerun of the workflow sees the tag and stops.
 
 ## Known limits
 

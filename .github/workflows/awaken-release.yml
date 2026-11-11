@@ -13,6 +13,8 @@ name: AwakenBot release
 #   4. publishes GitHub Release vX.Y.Z as Latest, with container-images.json (what the app installs),
 #      the DMG, and latest.json + AwakenBot.app.tar.gz (what installed apps update from).
 # A push whose version is already released does nothing past step 1's version check.
+# If the mac job is never picked up (GitHub's Apple silicon runners at capacity), run
+# scripts/awaken/release-mac.sh on an Apple silicon Mac once the images have finished.
 on:
   push:
     branches: [main]
